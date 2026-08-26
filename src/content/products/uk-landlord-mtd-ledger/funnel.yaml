@@ -1,0 +1,9 @@
+checkout:
+  provider: etsy
+  provider_url_or_id: null
+offers:
+  order_bump: null
+  bundle_upgrade: null
+  cross_sell: null
+  upsell: null
+funnel_version: '1.0'

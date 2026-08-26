@@ -1,0 +1,58 @@
+product_id: WVD-PROP-001
+name: UK Landlord MTD-Ready Bookkeeping Ledger
+slug: uk-landlord-mtd-ledger
+status: paused
+category: property
+audience_cluster: uk-landlords
+product_type: spreadsheet
+pricing:
+  standard_price: 0
+  launch_price: null
+  currency: GBP
+customer:
+  target: UK landlords who keep their own property income and expense records.
+  problem: Property bookkeeping can become fragmented and difficult to prepare for digital reporting workflows.
+  desired_outcome: Maintain orderly spreadsheet-based records ready for review and compatible bridging-software preparation.
+copy:
+  headline: Keep your landlord bookkeeping organised
+  subheadline: A structured Excel ledger for property income and expense records.
+  short_description: A practical spreadsheet system for maintaining landlord bookkeeping records during the 2026/27 tax year.
+  benefits:
+    - Keep income and expense records in one structured workbook.
+    - Reduce time spent reorganising transactions before review.
+    - Prepare spreadsheet records for use with compatible bridging software.
+  features:
+    - Capacity for up to 1,000 transaction rows in the current release.
+    - Clearly separated input and summary areas.
+    - Excel-only workbook format.
+contents:
+  included_files:
+    - Landlord bookkeeping ledger workbook
+    - Getting-started guide
+  requirements:
+    - A supported desktop version of Microsoft Excel
+    - Basic familiarity with spreadsheet data entry
+  compatibility:
+    - Microsoft Excel only
+trust:
+  version: '1.0'
+  last_updated: 2026-08-26
+  support_boundary: Product support covers access to the supplied files and correction of confirmed file defects. It does not include tax, accounting, legal, setup, or personalised advice.
+opportunity_scores:
+  shelf_life: 4
+  maintenance: 3
+  urgency: 3
+  pain_consequence: 4
+  opportunity_window: 4
+  external_dependency: 4
+how_it_works:
+  - Download and open the workbook in Microsoft Excel.
+  - Enter property income and expense transactions as they occur.
+  - Review the summaries and prepare the records for your chosen compatible workflow.
+faqs:
+  - question: Does this work with Google Sheets?
+    answer: No. The current release is designed and supported for Microsoft Excel only.
+  - question: Does this submit information to HMRC?
+    answer: No. It is a record-keeping workbook and does not file returns or replace compatible submission software.
+disclosure: This product is a bookkeeping aid, not tax, accounting, legal, or financial advice. Check current requirements with HMRC or a suitably qualified professional.
+featured: true
