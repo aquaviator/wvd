@@ -1,0 +1,4 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'; import {loadProducts} from '../../lib/validation/load'; const products=loadProducts().filter(x=>x.product.status!=='draft');
+---
+<BaseLayout title="Digital products | Wear Valley Digital" description="Browse practical digital products from Wear Valley Digital." canonical="https://wearvalleydigital.com/products/"><section class="hero"><div class="wrap"><p class="eyebrow">Product catalogue</p><h1>Useful tools, clearly explained</h1></div></section><section class="section"><div class="wrap grid">{products.map(x=><article class="card"><p class="eyebrow">{x.product.category} · {x.product.status}</p><h2><a href={`/products/${x.product.category}/${x.product.slug}/`}>{x.product.name}</a></h2><p>{x.product.copy.short_description}</p></article>)}</div></section></BaseLayout>

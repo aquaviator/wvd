@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wearvalleydigital.com/sitemap-index.xml
