@@ -1,0 +1,1 @@
+export const trackEvent = (name: string, parameters: Record<string, string | number | boolean | undefined> = {}) => { if (typeof window === 'undefined' || localStorage.getItem('wvd-analytics-consent') !== 'granted') return; const dataLayer = ((window as unknown as { dataLayer?: unknown[] }).dataLayer ??= []); dataLayer.push({ event: name, ...parameters }); };
