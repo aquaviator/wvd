@@ -1,0 +1,47 @@
+1
+00:00:00,000 --> 00:00:04,500
+Landlord bookkeeping does not need another complicated monthly subscription.
+
+2
+00:00:04,500 --> 00:00:10,000
+This practical, local-first Excel ledger helps organise property income and expenses.
+
+3
+00:00:11,000 --> 00:00:20,000
+Record each transaction with a clear property, type and category, while protected formulas keep calculated areas separate from the information you enter.
+
+4
+00:00:21,000 --> 00:00:28,000
+Built-in warnings highlight incomplete or invalid records, helping you correct the source row before relying on the figures.
+
+5
+00:00:29,000 --> 00:00:37,000
+Quarterly and annual summaries provide useful checks, while M T D Export prepares cumulative figures for compatible bridging software.
+
+6
+00:00:38,000 --> 00:00:41,960
+There are no macros, telemetry or hidden web connections.
+
+7
+00:00:41,960 --> 00:00:49,000
+Version one supports one thousand preformatted rows and is tested in Microsoft 365 Excel for Windows.
+
+8
+00:00:50,000 --> 00:00:51,286
+Set it up.
+
+9
+00:00:51,286 --> 00:00:52,571
+Record the money.
+
+10
+00:00:52,571 --> 00:00:53,857
+Check the warnings.
+
+11
+00:00:53,857 --> 00:00:55,143
+Review the figures.
+
+12
+00:00:55,143 --> 00:00:59,000
+A calmer, practical way to keep landlord bookkeeping organised.

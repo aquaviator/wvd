@@ -1,0 +1,28 @@
+---
+import type { Media } from '../../schemas/manifests';
+const { video, eventPrefix } = Astro.props as { video: Media['video']['promo']; eventPrefix: 'promo_video' | 'demo_video' };
+---
+<div class="video-facade" data-video-facade data-source={video.source} data-captions={video.captions} data-event-prefix={eventPrefix}>
+  <img src={video.poster} alt="" width="1280" height="853" loading="lazy" decoding="async" />
+  <button type="button" class="video-play" aria-label={`Play video: ${video.title}`}>
+    <span aria-hidden="true">▶</span> Play video
+  </button>
+  <noscript><p><a href={video.source}>Open {video.title}</a> · <a href={video.captions}>Captions</a></p></noscript>
+</div>
+<p class="video-meta"><strong>{video.title}</strong> · {video.duration} · <a href={video.captions}>Captions</a></p>
+<script>
+  import { trackEvent } from '../../lib/analytics/client';
+  document.querySelectorAll<HTMLElement>('[data-video-facade]').forEach(facade => {
+    const button = facade.querySelector<HTMLButtonElement>('.video-play');
+    button?.addEventListener('click', () => {
+      const video = document.createElement('video');
+      video.controls = true; video.autoplay = true; video.playsInline = true; video.preload = 'metadata';
+      video.setAttribute('aria-label', button.getAttribute('aria-label') ?? 'Product video');
+      const source = document.createElement('source'); source.src = facade.dataset.source ?? ''; source.type = 'video/mp4'; video.append(source);
+      const track = document.createElement('track'); track.kind = 'captions'; track.label = 'English'; track.srclang = 'en'; track.src = facade.dataset.captions ?? ''; track.default = true; video.append(track);
+      const prefix = facade.dataset.eventPrefix ?? 'video'; trackEvent(`${prefix}_start`);
+      video.addEventListener('ended', () => trackEvent(`${prefix}_complete`), { once: true });
+      facade.replaceChildren(video);
+    }, { once: true });
+  });
+</script>

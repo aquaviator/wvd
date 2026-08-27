@@ -28,8 +28,11 @@ copy:
     - No direct HMRC submission or final tax calculation.
 contents:
   included_files:
-    - Landlord bookkeeping ledger workbook
-    - Getting-started guide
+    - Read Me First PDF
+    - Blank v1.0.1 workbook
+    - Fictional example v1.0.1 workbook
+    - MTD Bookkeeping Guide
+    - Bridging Software Guide
   requirements:
     - Microsoft 365 Excel for Windows
     - Basic familiarity with spreadsheet data entry

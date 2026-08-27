@@ -5,6 +5,20 @@ const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'must be a lowercase
 const date = z.string().date();
 const url = z.string().url();
 const image = z.object({ src: z.string().min(1), alt: z.string().min(1), width: z.number().int().positive(), height: z.number().int().positive() });
+const mediaImage = z.object({ path: z.string().startsWith('/'), alt: z.string().min(8), width: z.number().int().positive(), height: z.number().int().positive(), caption: z.string().min(1).optional() });
+const mediaVideo = z.object({ provider: z.literal('local_fixture'), source: z.string().startsWith('/'), poster: z.string().startsWith('/'), captions: z.string().startsWith('/'), title: z.string().min(1), duration: z.string().regex(/^\d{2}:\d{2}$/), claim_ids: z.array(z.string().regex(/^MTD-UK-\d{3}$/)) });
+
+export const mediaSchema = z.object({
+  product_id: id,
+  version: z.literal('1.0.1'),
+  brand: z.object({ category: z.string().min(1) }),
+  hero: z.object({ website: mediaImage, product_card: mediaImage }),
+  screenshots: z.array(mediaImage.extend({ id: slug })).min(1),
+  video: z.object({ promo: mediaVideo, tutorial: mediaVideo }),
+  website: z.object({ how_it_works: mediaImage, whats_included: mediaImage, compatibility: mediaImage, privacy: mediaImage }),
+  etsy: z.object({ primary: mediaImage, gallery: z.array(mediaImage) }),
+  social: z.object({ vertical: z.array(z.string().startsWith('/')), square: z.array(z.string().startsWith('/')), landscape: z.array(z.string().startsWith('/')) })
+});
 
 export const productSchema = z.object({
   product_id: id,
@@ -51,3 +65,4 @@ export type Seo = z.infer<typeof seoSchema>;
 export type Category = z.infer<typeof categorySchema>;
 export type Marketing = z.infer<typeof marketingSchema>;
 export type Claim = z.infer<typeof claimSchema>;
+export type Media = z.infer<typeof mediaSchema>;

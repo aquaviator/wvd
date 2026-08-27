@@ -1,0 +1,69 @@
+product_id: WVD-PROP-001
+version: 1.0.1
+brand:
+  category: Property Tools
+hero:
+  website: { path: /media/products/uk-landlord-mtd-ledger/hero/website.avif, alt: "Wear Valley Digital Property Tools hero showing the v1.0.1 Excel landlord transaction ledger.", width: 1280, height: 720 }
+  product_card: { path: /media/products/uk-landlord-mtd-ledger/hero/product-card.png, alt: "UK Landlord MTD-Ready Bookkeeping Ledger v1.0.1 product card with an Excel workbook preview.", width: 1200, height: 900 }
+screenshots:
+  - { id: setup, path: /media/products/uk-landlord-mtd-ledger/screenshots/setup.webp, alt: "Excel setup sheet for entering landlord and property information.", caption: "Set up the workbook for your properties.", width: 946, height: 478 }
+  - { id: transactions, path: /media/products/uk-landlord-mtd-ledger/screenshots/transactions.webp, alt: "Excel transaction ledger showing date, property, income or expense type, category and amount columns.", caption: "Record property income and expenses in a structured ledger.", width: 946, height: 478 }
+  - { id: quarterly-summary, path: /media/products/uk-landlord-mtd-ledger/screenshots/quarterly-summary.webp, alt: "Excel quarterly summary showing cumulative property income and expense totals.", caption: "Review cumulative quarterly bookkeeping summaries.", width: 946, height: 478 }
+  - { id: annual-summary, path: /media/products/uk-landlord-mtd-ledger/screenshots/annual-summary.webp, alt: "Excel annual summary showing property bookkeeping totals by category.", caption: "Review annual income and expense totals.", width: 946, height: 478 }
+  - { id: mtd-export, path: /media/products/uk-landlord-mtd-ledger/screenshots/mtd-export.webp, alt: "Excel MTD export sheet prepared for use with compatible bridging software.", caption: "Prepare records for a compatible bridging-software workflow.", width: 946, height: 478 }
+video:
+  promo:
+    provider: local_fixture
+    source: /media/products/uk-landlord-mtd-ledger/video/promo-v1.0.1.mp4
+    poster: /media/products/uk-landlord-mtd-ledger/video/poster.webp
+    captions: /media/products/uk-landlord-mtd-ledger/video/promo-v1.0.1.vtt
+    title: Landlord Bookkeeping Made Practical
+    duration: '01:00'
+    claim_ids: [MTD-UK-007, MTD-UK-008]
+  tutorial:
+    provider: local_fixture
+    source: /media/products/uk-landlord-mtd-ledger/video/tutorial-v1.0.1.mp4
+    poster: /media/products/uk-landlord-mtd-ledger/video/poster.webp
+    captions: /media/products/uk-landlord-mtd-ledger/video/tutorial-v1.0.1.vtt
+    title: UK Landlord Ledger v1.0.1 Demonstration
+    duration: '04:52'
+    claim_ids: [MTD-UK-007, MTD-UK-008, MTD-UK-010, MTD-UK-014]
+website:
+  how_it_works: { path: /media/products/uk-landlord-mtd-ledger/website/how-it-works.webp, alt: "Three-step graphic showing download, record keeping and review of the Excel landlord ledger.", width: 1280, height: 720 }
+  whats_included: { path: /media/products/uk-landlord-mtd-ledger/website/whats-included.webp, alt: "Five supplied files: Read Me First, blank and example v1.0.1 workbooks, MTD Bookkeeping Guide and Bridging Software Guide.", width: 1280, height: 720 }
+  compatibility: { path: /media/products/uk-landlord-mtd-ledger/website/compatibility.webp, alt: "Compatibility graphic stating tested in Microsoft 365 Excel for Windows, with Mac and Excel 2021 unverified and Google Sheets unsupported.", width: 1280, height: 720 }
+  privacy: { path: /media/products/uk-landlord-mtd-ledger/website/local-first.webp, alt: "Local-first workbook graphic stating no macros, telemetry, hidden web requests or required cloud account.", width: 1280, height: 720 }
+etsy:
+  primary: { path: /media/products/uk-landlord-mtd-ledger/etsy/01-cover.png, alt: "Etsy cover for the UK Landlord MTD-Ready Bookkeeping Ledger v1.0.1.", width: 2000, height: 2000 }
+  gallery:
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/02-problem.png, alt: "Etsy graphic describing fragmented landlord bookkeeping records.", width: 2000, height: 2000 }
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/03-how-it-works.png, alt: "Etsy graphic explaining how the landlord bookkeeping ledger works.", width: 2000, height: 2000 }
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/04-transactions.png, alt: "Etsy gallery view of the Excel transactions sheet.", width: 2000, height: 2000 }
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/05-summaries.png, alt: "Etsy gallery view of the workbook summary sheets.", width: 2000, height: 2000 }
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/06-mtd-export.png, alt: "Etsy gallery view of the MTD export sheet for compatible bridging software.", width: 2000, height: 2000 }
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/07-whats-included.png, alt: "Etsy graphic showing the five files included with the download.", width: 2000, height: 2000 }
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/08-capacity.png, alt: "Etsy capacity graphic stating support for 1,000 preformatted transaction rows.", width: 2000, height: 2000 }
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/09-compatibility.png, alt: "Etsy compatibility graphic for Microsoft 365 Excel for Windows.", width: 2000, height: 2000 }
+    - { path: /media/products/uk-landlord-mtd-ledger/etsy/10-faq-boundaries.png, alt: "Etsy FAQ graphic explaining the workbook's product boundaries.", width: 2000, height: 2000 }
+social:
+  landscape:
+    - /media/products/uk-landlord-mtd-ledger/social/landscape/problem-hook.png
+    - /media/products/uk-landlord-mtd-ledger/social/landscape/product-demonstration.png
+    - /media/products/uk-landlord-mtd-ledger/social/landscape/feature-highlight.png
+    - /media/products/uk-landlord-mtd-ledger/social/landscape/customer-scenario.png
+    - /media/products/uk-landlord-mtd-ledger/social/landscape/faq.png
+    - /media/products/uk-landlord-mtd-ledger/social/landscape/product-cta.png
+  square:
+    - /media/products/uk-landlord-mtd-ledger/social/square/problem-hook.png
+    - /media/products/uk-landlord-mtd-ledger/social/square/product-demonstration.png
+    - /media/products/uk-landlord-mtd-ledger/social/square/feature-highlight.png
+    - /media/products/uk-landlord-mtd-ledger/social/square/customer-scenario.png
+    - /media/products/uk-landlord-mtd-ledger/social/square/faq.png
+    - /media/products/uk-landlord-mtd-ledger/social/square/product-cta.png
+  vertical:
+    - /media/products/uk-landlord-mtd-ledger/social/vertical/problem-hook.png
+    - /media/products/uk-landlord-mtd-ledger/social/vertical/product-demonstration.png
+    - /media/products/uk-landlord-mtd-ledger/social/vertical/feature-highlight.png
+    - /media/products/uk-landlord-mtd-ledger/social/vertical/customer-scenario.png
+    - /media/products/uk-landlord-mtd-ledger/social/vertical/faq.png
+    - /media/products/uk-landlord-mtd-ledger/social/vertical/product-cta.png

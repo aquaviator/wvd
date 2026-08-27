@@ -12,7 +12,7 @@ try {
   const productIds = new Set(products.map(x => x.product.product_id)); const categorySlugs = new Set(categories.map(x => x.slug)); const profileIds = new Set(profiles.map(x => x.profile_id));
   const claims = products.flatMap(record => record.compliance.approved_claims);
   for (const record of products) {
-    const { product, funnel, compliance } = record;
+    const { product, funnel, compliance, media } = record;
     if (!categorySlugs.has(product.category)) errors.push(`${product.product_id}: unknown category '${product.category}'`);
     if (product.status === 'active' && !product.disclosure) errors.push(`${product.product_id}: active product requires disclosure`);
     if (compliance.regulatory_sensitive && product.status === 'active') {
@@ -24,6 +24,11 @@ try {
     for (const claim of compliance.approved_claims) if (claim.expires_at && claim.expires_at < today) errors.push(`${product.product_id}: approved claim ${claim.id} expired (${claim.expires_at})`);
     for (const [kind, offer] of Object.entries(funnel.offers)) if (offer) { if (offer.product_id === product.product_id) errors.push(`${product.product_id}: ${kind} references itself`); if (!productIds.has(offer.product_id)) errors.push(`${product.product_id}: ${kind} references missing product ${offer.product_id}`); const target = products.find(x => x.product.product_id === offer.product_id); if (target?.product.status === 'retired') errors.push(`${product.product_id}: ${kind} references retired product`); }
     for (const image of product.images ?? []) if (!fs.existsSync(path.join(process.cwd(), 'public', image.src.replace(/^\//, '')))) errors.push(`${product.product_id}: missing image ${image.src}`);
+    if (media.product_id !== product.product_id) errors.push(`${product.product_id}: media manifest product ID mismatch`);
+    const mediaPaths = [media.hero.website.path, media.hero.product_card.path, ...media.screenshots.map(x => x.path), media.video.promo.source, media.video.promo.poster, media.video.promo.captions, media.video.tutorial.source, media.video.tutorial.poster, media.video.tutorial.captions, ...Object.values(media.website).map(x => x.path), media.etsy.primary.path, ...media.etsy.gallery.map(x => x.path), ...media.social.vertical, ...media.social.square, ...media.social.landscape];
+    for (const mediaPath of mediaPaths) if (!fs.existsSync(path.join(process.cwd(), 'public', mediaPath.replace(/^\//, '')))) errors.push(`${product.product_id}: missing media ${mediaPath}`);
+    const approvedClaimIds = new Set(compliance.approved_claims.filter(x => x.status === 'approved').map(x => x.id));
+    for (const claimId of [...media.video.promo.claim_ids, ...media.video.tutorial.claim_ids]) if (!approvedClaimIds.has(claimId)) errors.push(`${product.product_id}: media references unapproved claim ${claimId}`);
   }
   for (const asset of marketing) {
     if (!productIds.has(asset.product_id)) errors.push(`${asset.concept_id}: missing product ${asset.product_id}`);
