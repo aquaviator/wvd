@@ -7,6 +7,6 @@ dist/
 playwright-report/
 test-results/
 coverage/
+reports/lighthouse/*.json
 .DS_Store
 Thumbs.db
-
