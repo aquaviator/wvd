@@ -16,7 +16,6 @@ The listing was inspected read-only on 27 August 2026.
 
 | Location | Existing text | Issue | Recommended replacement/action |
 |---|---|---|---|
-| Etsy price | £17.99 | Conflicts with the approved £14.99 launch price | Founder should change Etsy price to £14.99 before product activation. |
+| Etsy price | £14.99 | Resolved — matches the approved launch price | No price correction required. |
 
-The listing’s phrases “MTD-ready bookkeeping ledger”, “structured digital bookkeeping records”, “cumulative figures”, and “compatible bridging software” map to the proposed safe phrase list and claims MTD-UK-007, 008 and 010. Its explicit non-certification, non-submission, non-tax-calculation and no-advice boundaries are appropriate. No Etsy change was made.
-
+The listing’s phrases “MTD-ready bookkeeping ledger”, “structured digital bookkeeping records”, “cumulative figures”, and “compatible bridging software” map to the approved safe phrase list and claims MTD-UK-007, 008 and 010. Its explicit non-certification, non-submission, non-tax-calculation and no-advice boundaries are appropriate. The founder confirmed on 27 August 2026 that the live listing displays the approved £14.99 launch price; no Etsy change was made from this repository.

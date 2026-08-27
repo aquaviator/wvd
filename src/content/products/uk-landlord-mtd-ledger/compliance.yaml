@@ -4,7 +4,7 @@ verified_at: 2026-08-27
 review_by: 2026-10-27
 expires_at: null
 disclaimer: This product is a bookkeeping aid, not tax, accounting, legal, or financial advice.
-approval_status: pending_approval
+approval_status: approved
 safe_marketing_phrases:
   - MTD-ready bookkeeping ledger
   - Designed for structured digital property records
@@ -35,7 +35,7 @@ approved_claims:
     review_by: 2026-10-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Commencement is historical after 6 April 2026; do not rewrite it as future urgency.
   - id: MTD-UK-002
     statement: For 2026/27, the relevant threshold is qualifying income of more than £50,000, assessed using the 2024/25 Self Assessment tax return.
@@ -47,7 +47,7 @@ approved_claims:
     review_by: 2026-10-27
     expires_at: null
     marketing_expires_at: 2027-04-06
-    status: pending_approval
+    status: approved
     notes: Use “more than”, not “at least”. Fact remains historically true after marketing expiry.
   - id: MTD-UK-003
     statement: From 6 April 2027, the relevant threshold is qualifying income of more than £30,000, assessed using the 2025/26 Self Assessment tax return.
@@ -59,7 +59,7 @@ approved_claims:
     review_by: 2026-10-27
     expires_at: null
     marketing_expires_at: 2028-04-06
-    status: pending_approval
+    status: approved
     notes: Scheduled future threshold; recheck before any forward-looking campaign.
   - id: MTD-UK-004
     statement: From 6 April 2028, the relevant threshold is qualifying income of more than £20,000, assessed using the 2026/27 Self Assessment tax return.
@@ -71,10 +71,10 @@ approved_claims:
     review_by: 2026-10-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Scheduled future threshold; recheck before any forward-looking campaign.
   - id: MTD-UK-005
-    statement: Qualifying income is total gross income from relevant self-employment and property sources before expenses and tax.
+    statement: Qualifying income is total gross income from relevant self-employment and property sources before expenses.
     claim_type: regulatory_fact
     source_name: Get ready for MTD — Understanding Making Tax Digital for Income Tax
     source_url: https://www.gov.uk/guidance/get-ready-for-mtd-an-agent-toolkit/understanding-making-tax-digital-for-income-tax
@@ -83,7 +83,7 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Exceptions and special cases exist; do not use this claim to decide an individual's status.
   - id: MTD-UK-006
     statement: Qualifying income generally combines relevant gross income from self-employment and property.
@@ -95,7 +95,7 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: “Generally” preserves official exclusions and residence-specific treatment.
   - id: MTD-UK-007
     statement: A spreadsheet may be used to create digital records when it is digitally linked to compatible bridging software before quarterly updates or the tax return are submitted.
@@ -107,7 +107,7 @@ approved_claims:
     review_by: 2027-02-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Spreadsheet record keeping, digital linking, bridging, and HMRC submission are distinct functions.
   - id: MTD-UK-008
     statement: The WVD workbook does not submit information to HMRC; compatible bridging or other HMRC-recognised submission software is required.
@@ -119,7 +119,7 @@ approved_claims:
     review_by: 2027-02-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Product fact; not represented as an HMRC statement.
   - id: MTD-UK-009
     statement: Affected users must send quarterly updates every three months for each self-employment and property business they have.
@@ -131,7 +131,7 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Quarterly updates are summaries, not tax returns.
   - id: MTD-UK-010
     statement: Each quarterly update is cumulative from the start of the tax year to the end of that update period.
@@ -143,7 +143,7 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Do not describe HMRC updates as standalone quarter-only totals.
   - id: MTD-UK-011
     statement: Standard update periods run cumulatively from 6 April to 5 July, 5 October, 5 January and 5 April.
@@ -155,7 +155,7 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: These align to the 6 April to 5 April tax year.
   - id: MTD-UK-012
     statement: Calendar update periods may be selected in compatible software before the first quarterly update and run cumulatively from 1 April to 30 June, 30 September, 31 December and 31 March.
@@ -167,7 +167,7 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: The election cannot be changed for a tax year after a quarterly update has been sent.
   - id: MTD-UK-013
     statement: Quarterly-update deadlines are 7 August, 7 November, 7 February and 7 May, for both standard and calendar update periods.
@@ -179,7 +179,7 @@ approved_claims:
     review_by: 2026-10-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: The May deadline falls in the following tax year.
   - id: MTD-UK-014
     statement: For jointly let property, a landlord only needs digital records relating to their own share of the income and expenses.
@@ -191,7 +191,7 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: HMRC guidance also permits less-detailed records and omission of joint-property expenses from quarterly updates subject to year-end completion.
   - id: MTD-UK-015
     statement: Simpler categorisation may be used for a tax year where total UK property turnover is less than £90,000, including jointly let property.
@@ -203,7 +203,7 @@ approved_claims:
     review_by: 2026-10-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Recheck the VAT threshold and special rules before publication; foreign property income is treated differently.
   - id: MTD-UK-016
     statement: A landlord using simpler categorisation for UK residential property must still distinguish expenses that are restricted finance costs.
@@ -215,7 +215,7 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: This is a record-categorisation statement, not advice on whether a cost qualifies.
   - id: MTD-UK-017
     statement: HMRC will not apply penalty points for late quarterly updates for 2026/27, but digital records and quarterly updates are still required before the tax return can be submitted, and late-tax-return penalties can still apply.
@@ -227,7 +227,7 @@ approved_claims:
     review_by: 2026-10-27
     expires_at: null
     marketing_expires_at: 2027-04-06
-    status: pending_approval
+    status: approved
     notes: Do not turn this into fear-based or “avoid fines” marketing.
   - id: MTD-UK-018
     statement: After making required adjustments and adding other income and gains, affected users must submit their tax return through compatible software by 31 January following the end of the tax year.
@@ -239,5 +239,5 @@ approved_claims:
     review_by: 2026-11-27
     expires_at: null
     marketing_expires_at: null
-    status: pending_approval
+    status: approved
     notes: Avoid obsolete “End of Period Statement” terminology.

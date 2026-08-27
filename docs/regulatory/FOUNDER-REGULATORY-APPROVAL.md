@@ -2,9 +2,11 @@
 
 Product: **UK Landlord MTD-Ready Bookkeeping Ledger v1.0.1**  
 Prepared: **27 August 2026**  
-Current state: **paused / noindex / checkout inactive**
+Founder decision recorded: **approved 27 August 2026**
+Release readiness: **release-ready**
+Public state: **paused / noindex / checkout inactive pending final media-pack and independent QA**
 
-Approve or reject each claim individually. Approval must be recorded by changing only that claim's `status` after review; do not edit the exact statement silently.
+The founder approved MTD-UK-001 through MTD-UK-018. MTD-UK-005 was approved with the exact replacement wording recorded below; every other exact statement was preserved.
 
 ## MTD-UK-001
 
@@ -40,7 +42,7 @@ Approve or reject each claim individually. Approval must be recorded by changing
 
 ## MTD-UK-005
 
-**Exact claim:** Qualifying income is total gross income from relevant self-employment and property sources before expenses and tax.  
+**Exact claim:** Qualifying income is total gross income from relevant self-employment and property sources before expenses.
 **Source:** HMRC, [Agent toolkit](https://www.gov.uk/guidance/get-ready-for-mtd-an-agent-toolkit/understanding-making-tax-digital-for-income-tax)  
 **Verified / review by / expiry:** 27 Aug 2026 / 27 Nov 2026 / none  
 **May be used:** Product page, FAQ, tutorial and qualified listing copy.  
@@ -154,21 +156,21 @@ Approve or reject each claim individually. Approval must be recorded by changing
 
 | Claim ID | Approve | Reject | Notes/date/initials |
 |---|---|---|---|
-| MTD-UK-001 | ☐ | ☐ | |
-| MTD-UK-002 | ☐ | ☐ | |
-| MTD-UK-003 | ☐ | ☐ | |
-| MTD-UK-004 | ☐ | ☐ | |
-| MTD-UK-005 | ☐ | ☐ | |
-| MTD-UK-006 | ☐ | ☐ | |
-| MTD-UK-007 | ☐ | ☐ | |
-| MTD-UK-008 | ☐ | ☐ | |
-| MTD-UK-009 | ☐ | ☐ | |
-| MTD-UK-010 | ☐ | ☐ | |
-| MTD-UK-011 | ☐ | ☐ | |
-| MTD-UK-012 | ☐ | ☐ | |
-| MTD-UK-013 | ☐ | ☐ | |
-| MTD-UK-014 | ☐ | ☐ | |
-| MTD-UK-015 | ☐ | ☐ | |
-| MTD-UK-016 | ☐ | ☐ | |
-| MTD-UK-017 | ☐ | ☐ | |
-| MTD-UK-018 | ☐ | ☐ | |
+| MTD-UK-001 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-002 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-003 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-004 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-005 | ☒ | ☐ | Approved with founder-supplied replacement wording, 27 Aug 2026 |
+| MTD-UK-006 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-007 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-008 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-009 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-010 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-011 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-012 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-013 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-014 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-015 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-016 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-017 | ☒ | ☐ | Approved 27 Aug 2026 |
+| MTD-UK-018 | ☒ | ☐ | Approved 27 Aug 2026 |
