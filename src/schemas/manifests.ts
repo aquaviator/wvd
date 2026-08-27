@@ -20,9 +20,20 @@ export const productSchema = z.object({
   images: z.array(image).optional(), successor_product_id: id.optional(), disclosure: z.string().min(1).optional(), featured: z.boolean().default(false)
 });
 
+export const claimSchema = z.object({
+  id: z.string().regex(/^MTD-UK-\d{3}$/),
+  statement: z.string().min(1),
+  claim_type: z.enum(['regulatory_fact', 'product_boundary']),
+  source_name: z.string().min(1), source_url: url, source_type: z.enum(['gov_uk', 'hmrc', 'product_specification']),
+  verified_at: date, review_by: date, expires_at: date.nullable(), marketing_expires_at: date.nullable(),
+  status: z.enum(['proposed', 'pending_approval', 'approved', 'retired']), notes: z.string().min(1)
+});
+
 export const complianceSchema = z.object({
   regulatory_sensitive: z.boolean(), regulatory_baseline: z.string().min(1).nullable(), verified_at: date.nullable(), review_by: date.nullable(), expires_at: date.nullable(), disclaimer: z.string().min(1).nullable(),
-  approved_claims: z.array(z.object({ id: z.string().regex(/^CLAIM-\d{3}$/), statement: z.string().min(1), source: url, verified_at: date, review_by: date, expires_at: date.nullable() }))
+  approval_status: z.enum(['not_required', 'pending_approval', 'approved']),
+  safe_marketing_phrases: z.array(z.string().min(1)), prohibited_marketing_phrases: z.array(z.string().min(1)),
+  approved_claims: z.array(claimSchema)
 });
 
 const offer = z.object({ product_id: id, label: z.string().min(1) });
@@ -39,3 +50,4 @@ export type Compliance = z.infer<typeof complianceSchema>;
 export type Seo = z.infer<typeof seoSchema>;
 export type Category = z.infer<typeof categorySchema>;
 export type Marketing = z.infer<typeof marketingSchema>;
+export type Claim = z.infer<typeof claimSchema>;

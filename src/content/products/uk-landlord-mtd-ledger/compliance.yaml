@@ -1,7 +1,243 @@
 regulatory_sensitive: true
-regulatory_baseline: Product remains paused until founder-approved claims, sources, and review dates are supplied.
-verified_at: null
-review_by: null
+regulatory_baseline: Proposed claims researched against current HMRC and GOV.UK guidance on 27 August 2026. None is approved for publication until founder review.
+verified_at: 2026-08-27
+review_by: 2026-10-27
 expires_at: null
 disclaimer: This product is a bookkeeping aid, not tax, accounting, legal, or financial advice.
-approved_claims: []
+approval_status: pending_approval
+safe_marketing_phrases:
+  - MTD-ready bookkeeping ledger
+  - Designed for structured digital property records
+  - Prepare cumulative quarterly figures
+  - Designed for use with compatible bridging software
+  - UK landlord bookkeeping in Excel
+prohibited_marketing_phrases:
+  - HMRC approved
+  - HMRC certified
+  - fully MTD compliant
+  - guaranteed compliant
+  - avoids HMRC fines
+  - submits directly to HMRC
+  - calculates your tax bill
+  - replaces your accountant
+  - tax advice
+  - legally protected
+  - penalty proof
+  - official HMRC spreadsheet
+approved_claims:
+  - id: MTD-UK-001
+    statement: Making Tax Digital for Income Tax became mandatory from 6 April 2026 for qualifying sole traders and landlords whose qualifying income for 2024/25 was more than £50,000.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Before you use this guide
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/before-you-use-this-guide
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-10-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Commencement is historical after 6 April 2026; do not rewrite it as future urgency.
+  - id: MTD-UK-002
+    statement: For 2026/27, the relevant threshold is qualifying income of more than £50,000, assessed using the 2024/25 Self Assessment tax return.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Before you use this guide
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/before-you-use-this-guide
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-10-27
+    expires_at: null
+    marketing_expires_at: 2027-04-06
+    status: pending_approval
+    notes: Use “more than”, not “at least”. Fact remains historically true after marketing expiry.
+  - id: MTD-UK-003
+    statement: From 6 April 2027, the relevant threshold is qualifying income of more than £30,000, assessed using the 2025/26 Self Assessment tax return.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Before you use this guide
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/before-you-use-this-guide
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-10-27
+    expires_at: null
+    marketing_expires_at: 2028-04-06
+    status: pending_approval
+    notes: Scheduled future threshold; recheck before any forward-looking campaign.
+  - id: MTD-UK-004
+    statement: From 6 April 2028, the relevant threshold is qualifying income of more than £20,000, assessed using the 2026/27 Self Assessment tax return.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Before you use this guide
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/before-you-use-this-guide
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-10-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Scheduled future threshold; recheck before any forward-looking campaign.
+  - id: MTD-UK-005
+    statement: Qualifying income is total gross income from relevant self-employment and property sources before expenses and tax.
+    claim_type: regulatory_fact
+    source_name: Get ready for MTD — Understanding Making Tax Digital for Income Tax
+    source_url: https://www.gov.uk/guidance/get-ready-for-mtd-an-agent-toolkit/understanding-making-tax-digital-for-income-tax
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Exceptions and special cases exist; do not use this claim to decide an individual's status.
+  - id: MTD-UK-006
+    statement: Qualifying income generally combines relevant gross income from self-employment and property.
+    claim_type: regulatory_fact
+    source_name: Get ready for MTD — Understanding Making Tax Digital for Income Tax
+    source_url: https://www.gov.uk/guidance/get-ready-for-mtd-an-agent-toolkit/understanding-making-tax-digital-for-income-tax
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: “Generally” preserves official exclusions and residence-specific treatment.
+  - id: MTD-UK-007
+    statement: A spreadsheet may be used to create digital records when it is digitally linked to compatible bridging software before quarterly updates or the tax return are submitted.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Create digital records
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/create-digital-records
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2027-02-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Spreadsheet record keeping, digital linking, bridging, and HMRC submission are distinct functions.
+  - id: MTD-UK-008
+    statement: The WVD workbook does not submit information to HMRC; compatible bridging or other HMRC-recognised submission software is required.
+    claim_type: product_boundary
+    source_name: UK Landlord MTD-Ready Bookkeeping Ledger v1.0.1 product specification
+    source_url: https://wearvalleydigital.com/products/property/uk-landlord-mtd-ledger/
+    source_type: product_specification
+    verified_at: 2026-08-27
+    review_by: 2027-02-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Product fact; not represented as an HMRC statement.
+  - id: MTD-UK-009
+    statement: Affected users must send quarterly updates every three months for each self-employment and property business they have.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Send quarterly updates
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/send-quarterly-updates
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Quarterly updates are summaries, not tax returns.
+  - id: MTD-UK-010
+    statement: Each quarterly update is cumulative from the start of the tax year to the end of that update period.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Send quarterly updates
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/send-quarterly-updates
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Do not describe HMRC updates as standalone quarter-only totals.
+  - id: MTD-UK-011
+    statement: Standard update periods run cumulatively from 6 April to 5 July, 5 October, 5 January and 5 April.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Send quarterly updates
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/send-quarterly-updates
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: These align to the 6 April to 5 April tax year.
+  - id: MTD-UK-012
+    statement: Calendar update periods may be selected in compatible software before the first quarterly update and run cumulatively from 1 April to 30 June, 30 September, 31 December and 31 March.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Send quarterly updates
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/send-quarterly-updates
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: The election cannot be changed for a tax year after a quarterly update has been sent.
+  - id: MTD-UK-013
+    statement: Quarterly-update deadlines are 7 August, 7 November, 7 February and 7 May, for both standard and calendar update periods.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Send quarterly updates
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/send-quarterly-updates
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-10-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: The May deadline falls in the following tax year.
+  - id: MTD-UK-014
+    statement: For jointly let property, a landlord only needs digital records relating to their own share of the income and expenses.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Create digital records
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/create-digital-records
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: HMRC guidance also permits less-detailed records and omission of joint-property expenses from quarterly updates subject to year-end completion.
+  - id: MTD-UK-015
+    statement: Simpler categorisation may be used for a tax year where total UK property turnover is less than £90,000, including jointly let property.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Create digital records
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/create-digital-records
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-10-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Recheck the VAT threshold and special rules before publication; foreign property income is treated differently.
+  - id: MTD-UK-016
+    statement: A landlord using simpler categorisation for UK residential property must still distinguish expenses that are restricted finance costs.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Create digital records
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/create-digital-records
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: This is a record-categorisation statement, not advice on whether a cost qualifies.
+  - id: MTD-UK-017
+    statement: HMRC will not apply penalty points for late quarterly updates for 2026/27, but digital records and quarterly updates are still required before the tax return can be submitted, and late-tax-return penalties can still apply.
+    claim_type: regulatory_fact
+    source_name: Penalties for Making Tax Digital for Income Tax
+    source_url: https://www.gov.uk/guidance/penalties-for-making-tax-digital-for-income-tax
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-10-27
+    expires_at: null
+    marketing_expires_at: 2027-04-06
+    status: pending_approval
+    notes: Do not turn this into fear-based or “avoid fines” marketing.
+  - id: MTD-UK-018
+    statement: After making required adjustments and adding other income and gains, affected users must submit their tax return through compatible software by 31 January following the end of the tax year.
+    claim_type: regulatory_fact
+    source_name: Use Making Tax Digital for Income Tax — Submit your tax return
+    source_url: https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax/submit-your-tax-return
+    source_type: hmrc
+    verified_at: 2026-08-27
+    review_by: 2026-11-27
+    expires_at: null
+    marketing_expires_at: null
+    status: pending_approval
+    notes: Avoid obsolete “End of Period Statement” terminology.
