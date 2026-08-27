@@ -41,3 +41,36 @@ test('Etsy routing works when analytics consent is declined', async ({ page }) =
   await page.getByRole('link', { name: 'Continue to Etsy fixture' }).click();
   expect(await page.evaluate(() => (window as unknown as { dataLayer?: unknown[] }).dataLayer)).toBeUndefined();
 });
+
+test('media facades defer video loading and emit start and complete events', async ({ page }) => {
+  await page.goto('/products/property/uk-landlord-mtd-ledger/');
+  await page.evaluate(() => localStorage.setItem('wvd-analytics-consent', 'granted'));
+  await page.reload();
+  expect(await page.locator('video').count()).toBe(0);
+  await page.getByRole('button', { name: 'Play video: Landlord Bookkeeping Made Practical' }).click();
+  const video = page.locator('video').first();
+  await expect(video).toBeVisible();
+  await expect(video.locator('track')).toHaveAttribute('src', /promo-v1\.0\.1\.vtt$/);
+  await video.dispatchEvent('ended');
+  const events = await page.evaluate(() => (window as unknown as { dataLayer?: Array<{ event: string }> }).dataLayer?.map(item => item.event) ?? []);
+  expect(events.filter(name => name === 'promo_video_start')).toHaveLength(1);
+  expect(events.filter(name => name === 'promo_video_complete')).toHaveLength(1);
+});
+
+test('media playback is independent of analytics consent', async ({ page }) => {
+  await page.goto('/products/property/uk-landlord-mtd-ledger/');
+  await page.evaluate(() => localStorage.setItem('wvd-analytics-consent', 'declined'));
+  await page.reload();
+  await page.getByRole('button', { name: 'Play video: UK Landlord Ledger v1.0.1 Demonstration' }).click();
+  await expect(page.locator('video')).toBeVisible();
+  expect(await page.evaluate(() => (window as unknown as { dataLayer?: unknown[] }).dataLayer)).toBeUndefined();
+});
+
+test('product media has no horizontal overflow across release viewports', async ({ page }) => {
+  for (const viewport of [{ width: 320, height: 700 }, { width: 390, height: 844 }, { width: 768, height: 1024 }, { width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/products/property/uk-landlord-mtd-ledger/');
+    const sizes = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+    expect(sizes.scroll).toBeLessThanOrEqual(sizes.client);
+  }
+});
