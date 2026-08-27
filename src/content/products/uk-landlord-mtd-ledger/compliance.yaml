@@ -1,5 +1,5 @@
 regulatory_sensitive: true
-regulatory_baseline: Product remains paused until founder-approved claims, sources, review dates, and Etsy URL are supplied.
+regulatory_baseline: Product remains paused until founder-approved claims, sources, and review dates are supplied.
 verified_at: null
 review_by: null
 expires_at: null

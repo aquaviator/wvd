@@ -6,8 +6,8 @@ category: property
 audience_cluster: uk-landlords
 product_type: spreadsheet
 pricing:
-  standard_price: 0
-  launch_price: null
+  standard_price: 14.99
+  launch_price: 14.99
   currency: GBP
 customer:
   target: UK landlords who keep their own property income and expense records.
@@ -22,21 +22,25 @@ copy:
     - Reduce time spent reorganising transactions before review.
     - Prepare spreadsheet records for use with compatible bridging software.
   features:
-    - Capacity for up to 1,000 transaction rows in the current release.
-    - Clearly separated input and summary areas.
-    - Excel-only workbook format.
+    - Digital download supplied after checkout.
+    - 1,000 preformatted transaction rows; automatic expansion beyond 1,000 rows is not supported.
+    - Joint owners enter their own reportable share; the ownership percentage is informational.
+    - No direct HMRC submission or final tax calculation.
 contents:
   included_files:
     - Landlord bookkeeping ledger workbook
     - Getting-started guide
   requirements:
-    - A supported desktop version of Microsoft Excel
+    - Microsoft 365 Excel for Windows
     - Basic familiarity with spreadsheet data entry
   compatibility:
-    - Microsoft Excel only
+    - Tested in Microsoft 365 Excel for Windows
+    - Excel for Mac compatibility is not currently claimed
+    - Excel 2021 compatibility is not currently claimed
+    - Google Sheets is not supported in V1
 trust:
-  version: '1.0'
-  last_updated: 2026-08-26
+  version: '1.0.1'
+  last_updated: 2026-08-27
   support_boundary: Product support covers access to the supplied files and correction of confirmed file defects. It does not include tax, accounting, legal, setup, or personalised advice.
 opportunity_scores:
   shelf_life: 4
@@ -51,8 +55,8 @@ how_it_works:
   - Review the summaries and prepare the records for your chosen compatible workflow.
 faqs:
   - question: Does this work with Google Sheets?
-    answer: No. The current release is designed and supported for Microsoft Excel only.
+    answer: No. Google Sheets is not supported in V1. The current release is tested in Microsoft 365 Excel for Windows.
   - question: Does this submit information to HMRC?
     answer: No. It is a record-keeping workbook and does not file returns or replace compatible submission software.
-disclosure: This product is a bookkeeping aid, not tax, accounting, legal, or financial advice. Check current requirements with HMRC or a suitably qualified professional.
+disclosure: This digital download is a bookkeeping aid. It does not submit directly to HMRC, calculate final tax, or provide accounting or tax advice.
 featured: true

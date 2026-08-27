@@ -1,9 +1,9 @@
 checkout:
   provider: etsy
-  provider_url_or_id: null
+  provider_url_or_id: https://www.etsy.com/uk/listing/4563666470/uk-landlord-mtd-bookkeeping-spreadsheet
 offers:
   order_bump: null
   bundle_upgrade: null
   cross_sell: null
   upsell: null
-funnel_version: '1.0'
+funnel_version: '1.0.1'
