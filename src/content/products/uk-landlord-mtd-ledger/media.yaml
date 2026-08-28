@@ -13,19 +13,21 @@ screenshots:
   - { id: mtd-export, path: /media/products/uk-landlord-mtd-ledger/screenshots/mtd-export.webp, alt: "Excel MTD export sheet prepared for use with compatible bridging software.", caption: "Prepare records for a compatible bridging-software workflow.", width: 946, height: 478 }
 video:
   promo:
-    provider: local_fixture
+    provider: local
     source: /media/products/uk-landlord-mtd-ledger/video/promo-v1.0.1.mp4
     poster: /media/products/uk-landlord-mtd-ledger/video/poster.webp
     captions: /media/products/uk-landlord-mtd-ledger/video/promo-v1.0.1.vtt
     title: Landlord Bookkeeping Made Practical
+    description: A one-minute overview of the UK Landlord MTD-Ready Bookkeeping Ledger.
     duration: '01:00'
     claim_ids: [MTD-UK-007, MTD-UK-008]
   tutorial:
-    provider: local_fixture
+    provider: local
     source: /media/products/uk-landlord-mtd-ledger/video/tutorial-v1.0.1.mp4
     poster: /media/products/uk-landlord-mtd-ledger/video/poster.webp
     captions: /media/products/uk-landlord-mtd-ledger/video/tutorial-v1.0.1.vtt
     title: UK Landlord Ledger v1.0.1 Demonstration
+    description: A paced demonstration of setup, transaction entry, summaries and export readiness.
     duration: '04:52'
     claim_ids: [MTD-UK-007, MTD-UK-008, MTD-UK-010, MTD-UK-014]
 website:

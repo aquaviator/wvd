@@ -6,11 +6,11 @@ const date = z.string().date();
 const url = z.string().url();
 const image = z.object({ src: z.string().min(1), alt: z.string().min(1), width: z.number().int().positive(), height: z.number().int().positive() });
 const mediaImage = z.object({ path: z.string().startsWith('/'), alt: z.string().min(8), width: z.number().int().positive(), height: z.number().int().positive(), caption: z.string().min(1).optional() });
-const mediaVideo = z.object({ provider: z.literal('local_fixture'), source: z.string().startsWith('/'), poster: z.string().startsWith('/'), captions: z.string().startsWith('/'), title: z.string().min(1), duration: z.string().regex(/^\d{2}:\d{2}$/), claim_ids: z.array(z.string().regex(/^MTD-UK-\d{3}$/)) });
+const mediaVideo = z.object({ provider: z.enum(['local', 'youtube', 'cloudflare_stream', 'external']), source: z.string().min(1), poster: z.string().min(1), captions: z.string().min(1), title: z.string().min(1), description: z.string().min(1), duration: z.string().regex(/^\d{2}:\d{2}$/), claim_ids: z.array(z.string().min(1)) });
 
 export const mediaSchema = z.object({
   product_id: id,
-  version: z.literal('1.0.1'),
+  version: z.string().min(1).optional(),
   brand: z.object({ category: z.string().min(1) }),
   hero: z.object({ website: mediaImage, product_card: mediaImage }),
   screenshots: z.array(mediaImage.extend({ id: slug })).min(1),
@@ -56,6 +56,7 @@ export const funnelSchema = z.object({ checkout: z.object({ provider: z.enum(['e
 export const seoSchema = z.object({ title: z.string().min(1).max(65), meta_description: z.string().min(1).max(170), canonical: url, primary_keyword: z.string().min(1), secondary_keywords: z.array(z.string()), og_title: z.string().min(1), og_description: z.string().min(1), og_image: z.string().min(1), index: z.boolean() });
 export const categorySchema = z.object({ category_id: z.string().regex(/^CAT-[A-Z]+$/), name: z.string().min(1), slug, description: z.string().min(1), seo: z.object({ title: z.string().min(1), meta_description: z.string().min(1) }), audience_cluster: slug });
 export const socialProfileSchema = z.object({ profile_id: slug, name: z.string().min(1), platforms: z.array(z.string()), active: z.boolean() });
+export const siteSchema = z.object({ customer_contact_label: z.string().min(1), customer_contact_url: url });
 export const marketingSchema = z.object({ concept_id: id, product_id: id, status: z.enum(['draft','pending_approval','approved','active','paused','expired','retired']), content_type: z.enum(['video','image','carousel','text']), shelf_life_type: z.enum(['evergreen','seasonal','regulatory']), effective_from: date, review_by: date.nullable(), expires_at: date.nullable(), regulatory_locked: z.boolean(), claim_ids: z.array(z.string()), priority: z.number().int().min(1), social_profile_id: slug, executions: z.array(z.object({ platform: z.string().min(1), media_path: z.string().min(1), hook: z.string().min(1), caption: z.string().min(1), cta: z.string().min(1), destination: url })).min(1) });
 
 export type Product = z.infer<typeof productSchema>;

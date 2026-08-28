@@ -4,204 +4,294 @@ Welcome.
 
 2
 00:00:00,393 --> 00:00:06,679
-This is the UK Landlord M T D-Ready Bookkeeping Ledger, version one point zero point one.
+This is the UK Landlord M T D-Ready Bookkeeping
+Ledger, version one point zero point one.
 
 3
-00:00:06,679 --> 00:00:16,107
-It is a local-first Microsoft Excel workbook for organising property income and expenses, checking the records, and preparing cumulative figures for compatible bridging software.
+00:00:06,679 --> 00:00:11,420
+It is a local-first Microsoft Excel workbook
+for organising property income and expenses,
 
 4
-00:00:16,107 --> 00:00:22,000
-It does not submit directly to H M R C or calculate your tax bill.
+00:00:11,420 --> 00:00:16,107
+checking the records, and preparing cumulative
+figures for compatible bridging software.
 
 5
+00:00:16,107 --> 00:00:22,000
+It does not submit directly to H
+M R C or calculate your tax bill.
+
+6
 00:00:24,000 --> 00:00:26,520
 The workbook follows one clear routine.
 
-6
-00:00:26,520 --> 00:00:34,500
-Start here, complete Setup, record transactions, correct any warnings, and then review the summaries and M T D Export.
-
 7
+00:00:26,520 --> 00:00:30,612
+Start here, complete Setup,
+record transactions, correct any
+
+8
+00:00:30,612 --> 00:00:34,500
+warnings, and then review the summaries and M T D Export.
+
+9
 00:00:34,500 --> 00:00:37,020
 White cells are for your input.
 
-8
+10
 00:00:37,020 --> 00:00:38,700
 Protected areas contain formulas.
 
-9
-00:00:38,700 --> 00:00:45,000
-The aim is to keep every reported figure traceable to the transaction that created it.
-
-10
-00:00:47,000 --> 00:00:54,192
-On Setup, choose the tax year, Standard or Calendar update periods, and Simple or Full reporting detail.
-
 11
-00:00:54,192 --> 00:01:00,538
-Then give each property a clear nickname and leave properties you currently use marked Active.
+00:00:38,700 --> 00:00:45,000
+The aim is to keep every reported figure
+traceable to the transaction that created it.
 
 12
-00:01:00,538 --> 00:01:05,615
-For jointly owned property, enter transaction amounts that already represent your share.
+00:00:47,000 --> 00:00:54,192
+On Setup, choose the tax year, Standard or Calendar
+update periods, and Simple or Full reporting detail.
 
 13
-00:01:05,615 --> 00:01:09,000
-The ownership percentage does not adjust figures automatically.
+00:00:54,192 --> 00:01:00,538
+Then give each property a clear nickname and
+leave properties you currently use marked Active.
 
 14
-00:01:11,000 --> 00:01:16,018
-Simple and Full modes control the categories available in the transaction dropdown.
+00:01:00,538 --> 00:01:05,615
+For jointly owned property, enter transaction
+amounts that already represent your share.
 
 15
-00:01:16,018 --> 00:01:20,618
-Simple Mode uses a smaller group of income and expense categories.
+00:01:05,615 --> 00:01:09,000
+The ownership percentage does
+not adjust figures automatically.
 
 16
+00:01:11,000 --> 00:01:16,018
+Simple and Full modes control the categories
+available in the transaction dropdown.
+
+17
+00:01:16,018 --> 00:01:20,618
+Simple Mode uses a smaller group
+of income and expense categories.
+
+18
 00:01:20,618 --> 00:01:23,545
 Full Mode provides more detailed reporting categories.
 
-17
+19
 00:01:23,545 --> 00:01:26,473
 Select the approach appropriate to your circumstances.
 
-18
-00:01:26,473 --> 00:01:34,000
-The workbook provides the structure, but it does not decide whether a reporting option is suitable for you.
+20
+00:01:26,473 --> 00:01:30,165
+The workbook provides the structure, but it does not
 
-19
+21
+00:01:30,165 --> 00:01:34,000
+decide whether a reporting option is suitable for you.
+
+22
 00:01:36,000 --> 00:01:38,940
 Your update-period choice controls the valid dates.
 
-20
-00:01:38,940 --> 00:01:43,980
-Standard periods begin on the sixth of April, July, October and January.
-
-21
-00:01:43,980 --> 00:01:49,020
-Calendar periods begin on the first of April, July, October and January.
-
-22
-00:01:49,020 --> 00:01:57,000
-Once selected, the workbook validates each transaction date and assigns it to the correct one of the four periods.
-
 23
+00:01:38,940 --> 00:01:43,980
+Standard periods begin on the sixth
+of April, July, October and January.
+
+24
+00:01:43,980 --> 00:01:49,020
+Calendar periods begin on the first
+of April, July, October and January.
+
+25
+00:01:49,020 --> 00:01:53,187
+Once selected, the workbook
+validates each transaction date
+
+26
+00:01:53,187 --> 00:01:57,000
+and assigns it to the correct one of the four periods.
+
+27
 00:01:59,000 --> 00:02:01,379
 Use Transactions for the source records.
 
-24
-00:02:01,379 --> 00:02:08,914
-Enter the date, an active property, Income or Expense, a permitted category, a useful description, and a positive amount.
+28
+00:02:01,379 --> 00:02:04,895
+Enter the date, an active property, Income or Expense, a
 
-25
+29
+00:02:04,895 --> 00:02:08,914
+permitted category, a useful
+description, and a positive amount.
+
+30
 00:02:08,914 --> 00:02:14,069
-Add a receipt reference when it helps connect the row to supporting evidence.
+Add a receipt reference when it helps
+connect the row to supporting evidence.
 
-26
+31
 00:02:14,069 --> 00:02:18,828
-Expenses are entered as positive values and are kept separate from income.
+Expenses are entered as positive values
+and are kept separate from income.
 
-27
+32
 00:02:18,828 --> 00:02:22,000
 Do not type over the protected system columns.
 
-28
+33
 00:02:24,000 --> 00:02:27,600
 Warnings tell you that a source row needs attention.
 
-29
-00:02:27,600 --> 00:02:34,800
-Missing amounts, dates outside the selected range, inactive properties, or invalid types and categories can block export readiness.
+34
+00:02:27,600 --> 00:02:31,532
+Missing amounts, dates outside the
+selected range, inactive properties,
 
-30
+35
+00:02:31,532 --> 00:02:34,800
+or invalid types and categories
+can block export readiness.
+
+36
 00:02:34,800 --> 00:02:38,800
 Return to the original row, correct it, and check again.
 
-31
-00:02:38,800 --> 00:02:46,000
-Duplicate receipt references are review warnings, but they do not by themselves prevent the export from becoming ready.
+37
+00:02:38,800 --> 00:02:42,339
+Duplicate receipt references are review warnings, but they
 
-32
-00:02:48,000 --> 00:02:55,846
-The quarterly summary shows standalone activity for each period, including income, expenses, transaction counts and invalid records.
+38
+00:02:42,339 --> 00:02:46,000
+do not by themselves prevent
+the export from becoming ready.
 
-33
+39
+00:02:48,000 --> 00:02:51,833
+The quarterly summary shows
+standalone activity for each period,
+
+40
+00:02:51,833 --> 00:02:55,846
+including income, expenses,
+transaction counts and invalid records.
+
+41
 00:02:55,846 --> 00:03:02,308
-The annual summary gives a full-year bookkeeping overview, together with category and property totals.
+The annual summary gives a full-year bookkeeping
+overview, together with category and property totals.
 
-34
+42
 00:03:02,308 --> 00:03:06,462
 Use both pages to spot values that look unexpected.
 
-35
+43
 00:03:06,462 --> 00:03:12,000
-These are bookkeeping checks, not calculations of taxable profit or tax due.
+These are bookkeeping checks, not
+calculations of taxable profit or tax due.
 
-36
+44
 00:03:14,000 --> 00:03:16,966
 M T D Export presents cumulative figures.
 
-37
+45
 00:03:16,966 --> 00:03:19,085
 Update one contains period one.
 
-38
+46
 00:03:19,085 --> 00:03:22,051
 Update two includes periods one and two.
 
-39
+47
 00:03:22,051 --> 00:03:28,831
-Update three includes the first three periods, and update four covers the full selected update year.
+Update three includes the first three periods, and
+update four covers the full selected update year.
 
-40
-00:03:28,831 --> 00:03:37,305
-Confirm that readiness shows ready, review the setup and totals, then follow the process provided by your compatible bridging software.
+48
+00:03:28,831 --> 00:03:33,194
+Confirm that readiness shows ready,
+review the setup and totals, then
 
-41
+49
+00:03:33,194 --> 00:03:37,305
+follow the process provided by
+your compatible bridging software.
+
+50
 00:03:37,305 --> 00:03:39,000
 Keep a backup first.
 
-42
+51
 00:03:41,000 --> 00:03:44,574
-Version one supports one thousand preformatted transaction rows.
+Version one supports one thousand
+preformatted transaction rows.
 
-43
+52
 00:03:44,574 --> 00:03:47,702
 Automatic expansion beyond that is not supported.
 
-44
+53
 00:03:47,702 --> 00:03:54,404
-Version one point zero point one has been tested in Microsoft 365 Excel for Windows.
+Version one point zero point one has been
+tested in Microsoft 365 Excel for Windows.
 
-45
-00:03:54,404 --> 00:04:02,000
-Compatibility with Excel for Mac and Excel 2021 is not claimed until those environments have been tested.
+54
+00:03:54,404 --> 00:03:58,348
+Compatibility with Excel for Mac and Excel 2021 is not
 
-46
+55
+00:03:58,348 --> 00:04:02,000
+claimed until those environments have been tested.
+
+56
 00:04:04,000 --> 00:04:05,680
 The workbook is local-first.
 
-47
-00:04:05,680 --> 00:04:14,080
-It contains no macros, telemetry, analytics, hidden web requests or built-in cloud synchronisation, and no monthly software account is required.
+57
+00:04:05,680 --> 00:04:10,144
+It contains no macros, telemetry,
+analytics, hidden web requests or built-in
 
-48
-00:04:14,080 --> 00:04:25,000
-You decide where the file is stored, how it is backed up, and when information is transmitted to another service, including cloud storage or bridging software.
+58
+00:04:10,144 --> 00:04:14,080
+cloud synchronisation, and no
+monthly software account is required.
 
-49
+59
+00:04:14,080 --> 00:04:19,471
+You decide where the file is stored, how
+it is backed up, and when information
+
+60
+00:04:19,471 --> 00:04:25,000
+is transmitted to another service, including
+cloud storage or bridging software.
+
+61
 00:04:27,000 --> 00:04:29,091
 That is the complete workflow.
 
-50
-00:04:29,091 --> 00:04:37,036
-Set it up, record transactions consistently, correct warnings, review the summaries, and check M T D Export before bridging.
+62
+00:04:29,091 --> 00:04:33,096
+Set it up, record transactions
+consistently, correct warnings,
 
-51
+63
+00:04:33,096 --> 00:04:37,036
+review the summaries, and check
+M T D Export before bridging.
+
+64
 00:04:37,036 --> 00:04:42,891
-Keep within the documented one thousand rows and use Microsoft 365 Excel for Windows.
+Keep within the documented one thousand rows
+and use Microsoft 365 Excel for Windows.
 
-52
+65
 00:04:42,891 --> 00:04:50,000
-The result is a calmer bookkeeping process with clear boundaries and figures that remain easy to trace.
+The result is a calmer bookkeeping process with clear
+boundaries and figures that remain easy to trace.

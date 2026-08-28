@@ -1,8 +1,9 @@
 ---
 import type { Media } from '../../schemas/manifests';
-const { video, eventPrefix } = Astro.props as { video: Media['video']['promo']; eventPrefix: 'promo_video' | 'demo_video' };
+type ProductContext = { product_id: string; product_slug: string; category: string; funnel_version: string };
+const { video, eventPrefix, productContext } = Astro.props as { video: Media['video']['promo']; eventPrefix: 'promo_video' | 'demo_video'; productContext: ProductContext };
 ---
-<div class="video-facade" data-video-facade data-source={video.source} data-captions={video.captions} data-event-prefix={eventPrefix}>
+<div class="video-facade" data-video-facade data-source={video.source} data-captions={video.captions} data-event-prefix={eventPrefix} data-product-id={productContext.product_id} data-product-slug={productContext.product_slug} data-category={productContext.category} data-funnel-version={productContext.funnel_version}>
   <img src={video.poster} alt="" width="1280" height="853" loading="lazy" decoding="async" />
   <button type="button" class="video-play" aria-label={`Play video: ${video.title}`}>
     <span aria-hidden="true">▶</span> Play video
@@ -20,8 +21,8 @@ const { video, eventPrefix } = Astro.props as { video: Media['video']['promo']; 
       video.setAttribute('aria-label', button.getAttribute('aria-label') ?? 'Product video');
       const source = document.createElement('source'); source.src = facade.dataset.source ?? ''; source.type = 'video/mp4'; video.append(source);
       const track = document.createElement('track'); track.kind = 'captions'; track.label = 'English'; track.srclang = 'en'; track.src = facade.dataset.captions ?? ''; track.default = true; video.append(track);
-      const prefix = facade.dataset.eventPrefix ?? 'video'; trackEvent(`${prefix}_start`);
-      video.addEventListener('ended', () => trackEvent(`${prefix}_complete`), { once: true });
+      const prefix = facade.dataset.eventPrefix ?? 'video'; const context={product_id:facade.dataset.productId,product_slug:facade.dataset.productSlug,category:facade.dataset.category,funnel_version:facade.dataset.funnelVersion}; trackEvent(`${prefix}_start`,context);
+      video.addEventListener('ended', () => trackEvent(`${prefix}_complete`,context), { once: true });
       facade.replaceChildren(video);
     }, { once: true });
   });

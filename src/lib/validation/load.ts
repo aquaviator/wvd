@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
-import { categorySchema, complianceSchema, funnelSchema, marketingSchema, mediaSchema, productSchema, seoSchema, socialProfileSchema, type Category, type Compliance, type Funnel, type Marketing, type Media, type Product, type Seo } from '../../schemas/manifests';
+import { categorySchema, complianceSchema, funnelSchema, marketingSchema, mediaSchema, productSchema, seoSchema, siteSchema, socialProfileSchema, type Category, type Compliance, type Funnel, type Marketing, type Media, type Product, type Seo } from '../../schemas/manifests';
 
 const root = process.cwd();
 const read = (file: string) => YAML.parse(fs.readFileSync(file, 'utf8'));
@@ -19,3 +19,4 @@ export function loadProducts(): ProductRecord[] {
 export const loadCategories = (): Category[] => yamlFiles(path.join(root, 'src/content/categories')).map(x => categorySchema.parse(read(x)));
 export const loadMarketing = (): Marketing[] => yamlFiles(path.join(root, 'src/content/products')).filter(x => x.includes(`${path.sep}marketing${path.sep}`)).map(x => marketingSchema.parse(read(x)));
 export const loadProfiles = () => yamlFiles(path.join(root, 'src/content/social-profiles')).map(x => socialProfileSchema.parse(read(x)));
+export const loadSite = () => siteSchema.parse(read(path.join(root, 'src/content/site.yaml')));

@@ -3,5 +3,5 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="Etsy checkout QA fixture" description="Controlled checkout adapter fixture." canonical="https://wearvalleydigital.com/qa/etsy-checkout/" index={false}>
   <section class="hero"><div class="wrap"><p class="eyebrow">QA fixture</p><h1>Etsy checkout adapter</h1><p class="lede">Controlled non-production destination for routing and analytics verification.</p><a class="button" href="https://example.com/etsy-fixture" data-commerce-cta data-product-id="WVD-QA-001">Continue to Etsy fixture</a></div></section>
-  <script>import {trackEvent} from '../../lib/analytics/client';document.querySelectorAll('[data-commerce-cta]').forEach(el=>el.addEventListener('click',()=>{trackEvent('cta_click',{product_id:'WVD-QA-001'});trackEvent('etsy_outbound',{product_id:'WVD-QA-001'});},{once:true}));</script>
+  <script>import {trackEvent} from '../../lib/analytics/client';const context={product_id:'WVD-QA-001',product_slug:'etsy-checkout-fixture',category:'qa',funnel_version:'fixture-1'};document.querySelectorAll('[data-commerce-cta]').forEach(el=>el.addEventListener('click',()=>{trackEvent('cta_click',context);trackEvent('etsy_outbound',context);},{once:true}));</script>
 </BaseLayout>

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { loadCategories, loadMarketing, loadProducts, loadProfiles } from '../src/lib/validation/load';
 import { validateClaimLifecycle, validateMarketingClaimReferences } from '../src/lib/validation/regulatory';
+import { isPubliclyIndexable } from '../src/lib/product/visibility';
 
 const errors: string[] = [];
 const today = process.env.WVD_VALIDATION_DATE ?? new Date().toISOString().slice(0, 10);
@@ -11,9 +12,14 @@ try {
   duplicate(products.map(x => x.product.product_id), 'product ID'); duplicate(products.map(x => x.product.slug), 'product slug'); duplicate(products.map(x => x.seo.title), 'SEO title'); duplicate(products.map(x => x.seo.canonical), 'canonical URL');
   const productIds = new Set(products.map(x => x.product.product_id)); const categorySlugs = new Set(categories.map(x => x.slug)); const profileIds = new Set(profiles.map(x => x.profile_id));
   const claims = products.flatMap(record => record.compliance.approved_claims);
+  const publicSourceFiles = [path.join(process.cwd(), 'src/pages/legal/[page].astro')];
+  const placeholderPattern = /\b(TODO|PLACEHOLDER|TBC|INSERT|FOUNDER REVIEW|LEGAL REVIEW REQUIRED|HUMAN LEGAL REVIEW REQUIRED)\b/i;
+  for (const file of publicSourceFiles) if (placeholderPattern.test(fs.readFileSync(file, 'utf8'))) errors.push(`${path.relative(process.cwd(), file)}: public legal content contains a drafting placeholder`);
   for (const record of products) {
     const { product, funnel, compliance, media } = record;
     if (!categorySlugs.has(product.category)) errors.push(`${product.product_id}: unknown category '${product.category}'`);
+    if (record.seo.index !== isPubliclyIndexable(product)) errors.push(`${product.product_id}: SEO index flag contradicts lifecycle status '${product.status}'`);
+    if (compliance.approval_status === 'approved' && /none (?:is|are) approved|not approved for publication/i.test(compliance.regulatory_baseline ?? '')) errors.push(`${product.product_id}: approved compliance manifest contains contradictory approval wording`);
     if (product.status === 'active' && !product.disclosure) errors.push(`${product.product_id}: active product requires disclosure`);
     if (compliance.regulatory_sensitive && product.status === 'active') {
       if (!compliance.verified_at || !compliance.review_by || !compliance.disclaimer || compliance.approval_status !== 'approved') errors.push(`${product.product_id}: active regulatory product lacks approved mandatory review information`);
