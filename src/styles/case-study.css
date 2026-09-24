@@ -1,0 +1,36 @@
+.dark .eyebrow,
+.cta-panel .eyebrow {
+  color: #f0b7a9;
+}
+
+.dark .section-intro {
+  color: #cbd9d6;
+}
+
+.human .dark .feature-list li {
+  color: var(--ink);
+}
+
+.pecp .label {
+  color: #104b43;
+}
+
+.pecp .dark .label {
+  color: #9ce5d3;
+}
+
+.pecp .dark .architecture .label {
+  color: #104b43;
+}
+
+.pecp .decision .label {
+  color: #6e4b0d;
+}
+
+.pecp .decision .metric {
+  color: #7a3f1e;
+}
+
+.journey-mix span:nth-child(3) {
+  background: #22675f;
+}

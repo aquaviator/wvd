@@ -6,6 +6,9 @@ for (const [path, heading] of [
   ['/products/', 'Useful tools, clearly explained'],
   ['/products/property/', 'Property'],
   ['/products/property/uk-landlord-mtd-ledger/', 'Keep your landlord bookkeeping organised'],
+  ['/work/', 'Specialist knowledge, shaped into software'],
+  ['/work/human-v1/', 'Human V1 — the athlete’s companion'],
+  ['/work/performance-engineering-control-plane/', 'Performance Engineering starts with questions, not scripts.'],
 ] as const) {
   test(`${path} renders accessibly`, async ({ page }) => {
     await page.goto(path);
@@ -13,6 +16,31 @@ for (const [path, heading] of [
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 }
+
+test('case studies expose truthful software structured data', async ({ page }) => {
+  for (const [route, name] of [
+    ['/work/human-v1/', 'Human V1'],
+    ['/work/performance-engineering-control-plane/', 'Performance Engineering Control Plane'],
+  ] as const) {
+    await page.goto(route);
+    const data = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent() ?? '{}');
+    expect(data.name).toBe(name);
+    expect(data.creator.name).toBe('Wear Valley Digital');
+    expect(data.aggregateRating).toBeUndefined();
+    expect(data.offers).toBeUndefined();
+  }
+});
+
+test('portfolio pages have no horizontal overflow at release viewports', async ({ page }) => {
+  for (const route of ['/work/', '/work/human-v1/', '/work/performance-engineering-control-plane/']) {
+    for (const viewport of [{ width: 320, height: 700 }, { width: 390, height: 844 }, { width: 768, height: 1024 }, { width: 1366, height: 768 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto(route);
+      const sizes = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+      expect(sizes.scroll).toBeLessThanOrEqual(sizes.client);
+    }
+  }
+});
 
 test('paused product keeps the live Etsy destination unavailable', async ({ page }) => {
   await page.goto('/products/property/uk-landlord-mtd-ledger/');
