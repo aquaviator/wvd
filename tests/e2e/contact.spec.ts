@@ -5,6 +5,7 @@ test('company contact prepares a safe draft to the approved mailbox', async ({ p
   await page.goto('/legal/contact/');
   await expect(page.locator('form')).toBeVisible();
   await expect(page.getByRole('link', { name: 'hello@wearvalleydigital.com', exact: true }).first()).toHaveAttribute('href', 'mailto:hello@wearvalleydigital.com');
+  await page.locator('#email-fallback').evaluate((el) => { (el as HTMLDetailsElement).open = true; });
   await page.getByRole('button', { name: 'Prepare email draft' }).click();
   await expect(page.locator('#draft-ready')).toBeHidden();
   await page.getByLabel('Your name').fill('A & B');
@@ -19,7 +20,7 @@ test('company contact prepares a safe draft to the approved mailbox', async ({ p
   expect(uri.searchParams.get('subject')).toBe('WVD general enquiry');
   expect(uri.searchParams.get('body')).toBe(`Name: A & B\nReply email: visitor@example.com\n\n${message}`);
   await expect(page.getByRole('link', { name: 'Open email draft', exact: true })).toBeFocused();
-  await expect(page.locator('main')).toContainText('No message is sent or stored by this website.');
+  await expect(page.locator('main')).toContainText('This fallback prepares an email draft.');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.getByLabel('Message', { exact: true }).fill('Changed');
   await expect(page.locator('#draft-ready')).toBeHidden();

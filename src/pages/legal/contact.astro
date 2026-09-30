@@ -4,38 +4,31 @@ import { loadSite } from '../../lib/validation/load';
 const { company_contact_email: email } = loadSite();
 ---
 <BaseLayout title="Contact | Wear Valley Digital" description="Contact Wear Valley Digital for general company enquiries." canonical="https://wearvalleydigital.com/legal/contact/" index={false}>
-  <section class="hero"><div class="wrap"><p class="eyebrow">Wear Valley Digital</p><h1>Contact</h1><p class="lede">For general company enquiries, email <a href={`mailto:${email}`}>{email}</a> or prepare your message below.</p>
+  <section class="hero"><div class="wrap"><p class="eyebrow">Wear Valley Digital</p><h1>Contact</h1><p class="lede">For general company enquiries, send your message below or email <a href={`mailto:${email}`}>{email}</a>.</p>
     <form id="contact-form" class="panel" hidden data-recipient={email} aria-describedby="contact-help">
-      <p id="contact-help">This form prepares an email draft. Open the draft in your email app, then send it there. No message is sent or stored by this website.</p>
+      <p id="contact-help">Your enquiry is sent to Wear Valley Digital. This website does not keep a message archive. The bot check is provided by Cloudflare Turnstile.</p>
       <label for="contact-name">Your name</label><input id="contact-name" name="name" autocomplete="name" maxlength="100" required />
       <label for="contact-email">Your email</label><input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" required />
       <label for="contact-message">Message</label><textarea id="contact-message" name="message" rows="7" maxlength="1500" required></textarea>
-      <button class="button" type="submit">Prepare email draft</button>
-      <p id="draft-ready" role="status" hidden>Your draft is ready. <a id="draft-link" class="text-link">Open email draft</a>. You still need to send it from your email app.</p>
+      <input name="website" type="text" hidden tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <div id="contact-turnstile"></div>
+      <p id="contact-status" role="status" tabindex="-1">Preparing secure submission…</p>
+      <button id="contact-submit" class="button" type="submit" disabled>Send enquiry</button>
+      <details id="email-fallback"><summary>Having trouble sending? Use your email app</summary>
+        <p>This fallback prepares an email draft. Open it in your email app, then send it there.</p>
+        <button id="prepare-draft" class="button" type="button">Prepare email draft</button>
+        <p id="draft-ready" role="status" hidden>Your draft is ready. <a id="draft-link" class="text-link">Open email draft</a>. You still need to send it from your email app.</p>
+        <p>You can also email <a href={`mailto:${email}`}>{email}</a> directly.</p>
+      </details>
     </form>
     <noscript><p>To send your enquiry, email <a href={`mailto:${email}`}>{email}</a> directly.</p></noscript>
     <section class="section" aria-labelledby="order-support"><h2 id="order-support">Historical Landlord orders</h2><p>For support with an existing UK Landlord MTD Ledger order, use your <a href="https://www.etsy.com/your/purchases">Etsy purchase and order conversation</a>. The product is paused and unavailable to purchase.</p></section>
   </div></section>
 </BaseLayout>
 <style>
-  form{max-width:42rem}label{display:block;font-weight:750;margin-top:1rem}input,textarea{display:block;box-sizing:border-box;width:100%;padding:.7rem;margin:.35rem 0 1rem;border:1px solid var(--muted);border-radius:.35rem;font:inherit;color:var(--ink);background:white}input:focus-visible,textarea:focus-visible{outline:3px solid #3d8bd9;outline-offset:3px}textarea{resize:vertical}
+  form{max-width:42rem}label{display:block;font-weight:750;margin-top:1rem}input:not([hidden]),textarea{display:block;box-sizing:border-box;width:100%;padding:.7rem;margin:.35rem 0 1rem;border:1px solid var(--muted);border-radius:.35rem;font:inherit;color:var(--ink);background:white}input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #3d8bd9;outline-offset:3px}textarea{resize:vertical}button:disabled{background:var(--muted);cursor:not-allowed}details{margin-top:1.5rem}summary{cursor:pointer;font-weight:750}
 </style>
 <script>
-  const form = document.querySelector<HTMLFormElement>('#contact-form');
-  const link = document.querySelector<HTMLAnchorElement>('#draft-link');
-  const ready = document.querySelector<HTMLElement>('#draft-ready');
-  if (form) form.hidden = false;
-  form?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    if (!form.reportValidity() || !link || !ready) return;
-    const data = new FormData(form);
-    const body = `Name: ${data.get('name')}\nReply email: ${data.get('email')}\n\n${data.get('message')}`;
-    link.href = `mailto:${form.dataset.recipient}?subject=${encodeURIComponent('WVD general enquiry')}&body=${encodeURIComponent(body)}`;
-    ready.hidden = false;
-    link.focus();
-  });
-  form?.addEventListener('input', () => {
-    if (ready) ready.hidden = true;
-    link?.removeAttribute('href');
-  });
+  import { initialiseContactForm } from '../../lib/contact/client';
+  initialiseContactForm();
 </script>
