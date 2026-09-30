@@ -56,7 +56,7 @@ export const funnelSchema = z.object({ checkout: z.object({ provider: z.enum(['e
 export const seoSchema = z.object({ title: z.string().min(1).max(65), meta_description: z.string().min(1).max(170), canonical: url, primary_keyword: z.string().min(1), secondary_keywords: z.array(z.string()), og_title: z.string().min(1), og_description: z.string().min(1), og_image: z.string().min(1), index: z.boolean() });
 export const categorySchema = z.object({ category_id: z.string().regex(/^CAT-[A-Z]+$/), name: z.string().min(1), slug, description: z.string().min(1), seo: z.object({ title: z.string().min(1), meta_description: z.string().min(1) }), audience_cluster: slug });
 export const socialProfileSchema = z.object({ profile_id: slug, name: z.string().min(1), platforms: z.array(z.string()), active: z.boolean() });
-export const siteSchema = z.object({ customer_contact_label: z.string().min(1), customer_contact_url: url });
+export const siteSchema = z.object({ company_contact_email: z.string().email() });
 export const marketingSchema = z.object({ concept_id: id, product_id: id, status: z.enum(['draft','pending_approval','approved','active','paused','expired','retired']), content_type: z.enum(['video','image','carousel','text']), shelf_life_type: z.enum(['evergreen','seasonal','regulatory']), effective_from: date, review_by: date.nullable(), expires_at: date.nullable(), regulatory_locked: z.boolean(), claim_ids: z.array(z.string()), priority: z.number().int().min(1), social_profile_id: slug, executions: z.array(z.object({ platform: z.string().min(1), media_path: z.string().min(1), hook: z.string().min(1), caption: z.string().min(1), cta: z.string().min(1), destination: url })).min(1) });
 
 export type Product = z.infer<typeof productSchema>;
