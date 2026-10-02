@@ -11,3 +11,5 @@ coverage/
 reports/lighthouse/*.json
 .DS_Store
 Thumbs.db
+*.sqlite
+*.sqlite-*

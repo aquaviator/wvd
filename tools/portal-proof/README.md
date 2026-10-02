@@ -6,7 +6,7 @@ The owner's instruction to continue development authorises this reversible
 proof; it does not accept the provisional ADR or close affected live-build
 dependencies. No public content, pricing, analytics or external service is changed.
 
-Run `npm --prefix tools/portal-proof test` using Node 20 or later.
+Run `npm --prefix tools/portal-proof test` using Node 22.16 or later.
 
 The model demonstrates active identity, business membership and project grants;
 Owner-only approval; exact milestone version checks; membership revocation;
@@ -61,3 +61,17 @@ connection, read back with a successfully provisioned Google Meet link, then
 deleted successfully. No external attendees were supplied. This verifies the
 chat connector's create/read/Meet/delete path only. The website still needs its
 own scoped credentials and calendar adapter; no production booking is implied.
+
+`durable.mjs` adds an explicit SQLite seed, per-operation transactions and fresh
+reads across connections. State and notification intents commit together;
+failures roll back. The aggregate JSON store is a bounded local adapter and is
+not the selected hosted production database. Filesystem permissions, backups,
+retention, encryption and full imported-data validation remain separate work.
+
+`http.mjs` and `server.mjs` expose the domain through explicit Node server
+construction. Bearer tokens are resolved only by the supplied server adapter;
+there is no default identity or development-auth bypass. The transport enforces
+streamed body bounds, exact schemas, write origins, no-store responses and
+sanitised errors. Loopback tests use synthetic identities on an isolated socket
+and temporary database. Hosting must provide TLS, real token verification,
+rate limits and production configuration; this code starts no public service.

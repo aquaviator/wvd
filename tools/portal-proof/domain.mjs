@@ -96,7 +96,8 @@ export class PortalProof {
     authorise(this.#state, actorId, projectId, 'ticket');
     const ticket = this.#state.tickets.find(x => x.id === ticketId && x.projectId === projectId);
     if (!ticket) denied();
-    return structuredClone({ticket, replies:this.#state.replies.filter(x => x.ticketId === ticketId)});
+    return structuredClone({ticket, replies:this.#state.replies.filter(x =>
+      x.ticketId === ticketId && x.projectId === projectId && x.businessId === ticket.businessId)});
   }
   replyToTicket({actorId,projectId,ticketId,body,operationId}) {
     const {ticket} = this.readTicket(actorId,projectId,ticketId);
