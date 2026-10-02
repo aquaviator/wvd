@@ -10,6 +10,8 @@ npm --prefix tools/factory test
 cd tools/factory
 node cli.mjs preflight
 node cli.mjs run .factory/manifest.json .factory/runs
+node cli.mjs handoff <context.json> <task.json> <new-handoff-directory>
+node cli.mjs assess <work.json> <review.json> <exact-output-file>
 ```
 
 A schemaVersion 1 manifest supplies projectId, sources and tasks. Each source has
@@ -29,6 +31,10 @@ the recorded PID before manually removing a stale lock. Failed context tasks can
 rerun after their missing input is corrected; no model calls or semantic retries occur.
 
 `handoff.mjs` creates immutable worker/verifier packets from exact context bytes.
+For session execution the Controller dispatches the assigned specialist using the
+session agent tools, then dispatches a distinct verifier with exact sources/output.
+The JSON work/review records are supplied through the `assess` CLI; no API key is
+needed for session agents. The CLI is a file bridge, not a background daemon.
 Its assessment checks task/context/output hashes, distinct creator/reviewer IDs,
 complete criterion evidence and absence of blockers. Tests use labelled synthetic
 reviews; no independent live review is claimed. Identity authenticity and semantic
