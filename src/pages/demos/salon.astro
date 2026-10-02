@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/demos.css';
+---
+<BaseLayout title="Salon demo | Wear Valley Digital" description="Explore a fictional single-practitioner salon and simulated duration-based appointment slots." canonical={new URL('/demos/salon/', Astro.site)} disableAnalytics={true}>
+  <aside class="demo-banner" aria-label="Demo notice"><div class="wrap"><p>Fictional demo · Sample slots only. No appointment is booked and no payment is taken.</p></div></aside>
+  <div class="wrap">
+    <div class="demo-hero"><a class="text-link" href="/services/">← Back to WVD services</a><p class="eyebrow">Salon website demonstration</p><h1>Juniper Studio</h1><p class="lede">A fictional salon with one practitioner, Alex, and a simple appointment journey.</p><a class="button" href="#appointment">Explore sample appointments</a></div>
+    <section class="section grid" aria-label="Salon information"><div class="panel"><h2>Treatments</h2><ul class="demo-menu"><li><strong>Express manicure · £25</strong>30 minutes</li><li><strong>Relaxing facial · £45</strong>60 minutes</li><li><strong>Signature treatment · £65</strong>90 minutes</li></ul><p class="demo-note">Illustrative treatments and prices for a fictional salon.</p></div><div class="panel"><h2>One practitioner</h2><p>All example appointments are with Alex. Longer treatments use longer gaps in the sample diary.</p><p>Payment is at the salon. Online payments, deposits and multiple staff calendars are outside this demo.</p></div></section>
+    <section class="section" id="appointment"><h2>Find a sample slot</h2><p>The fictional day runs from 09:00 to 17:00, with 12:00–13:00 already occupied. Choose a treatment to see slots that fit its duration. This is not a live calendar.</p>
+      <div class="demo-form"><label>Treatment<select id="treatment"><option value="30">Express manicure · 30 minutes</option><option value="60">Relaxing facial · 60 minutes</option><option value="90">Signature treatment · 90 minutes</option></select></label><div class="demo-slots" id="slots" role="group" aria-label="Sample appointment start times"></div><button class="button" id="select-slot" type="button" disabled>Simulate appointment request</button><p class="demo-result" id="salon-result" role="status" aria-live="polite" aria-atomic="true">Select a sample start time. No personal details are collected.</p></div>
+      <noscript><p>This optional simulation needs JavaScript. Example: a 60-minute facial could fit at 09:00–10:00; a 90-minute treatment could fit at 09:00–10:30.</p></noscript>
+    </section>
+  </div>
+  <script>
+    const treatment = document.querySelector<HTMLSelectElement>('#treatment');
+    const slots = document.querySelector<HTMLElement>('#slots');
+    const action = document.querySelector<HTMLButtonElement>('#select-slot');
+    const status = document.querySelector<HTMLElement>('#salon-result');
+    let selected: number | null = null;
+    const time = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+    function renderSlots() { if (!slots || !treatment || !action) return; selected = null; action.disabled = true; slots.replaceChildren(); const duration = Number(treatment.value); for (let start = 540; start + duration <= 1020; start += 30) { if (start < 780 && start + duration > 720) continue; const button = document.createElement('button'); button.type = 'button'; button.textContent = `${time(start)}–${time(start + duration)}`; button.setAttribute('aria-pressed', 'false'); button.addEventListener('click', () => { selected = start; slots.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === button))); action.disabled = false; if (status) status.textContent = `Selected sample: ${button.textContent}, with Alex. Submit to view the simulated response.`; }); slots.append(button); } }
+    treatment?.addEventListener('change', () => { renderSlots(); if (status) status.textContent = 'Treatment changed. Sample slots updated; select a new start time.'; });
+    action?.addEventListener('click', () => { if (selected === null || !treatment || !status) return; status.textContent = `Simulated request for ${time(selected)}–${time(selected + Number(treatment.value))}, with Alex. A real service would confirm your appointment and you would pay at the salon. No appointment was created.`; });
+    renderSlots();
+  </script>
+</BaseLayout>

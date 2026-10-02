@@ -2,7 +2,9 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 for (const [path, heading] of [
-  ['/', 'Practical digital tools for real-world problems'],
+  ['/', 'Websites, software and automation'],
+  ['/services/', 'Build around your business'],
+  ['/about/', 'Meet Andy Clarke'],
   ['/products/', 'Useful tools, clearly explained'],
   ['/products/property/', 'Property'],
   ['/products/property/uk-landlord-mtd-ledger/', 'Keep your landlord bookkeeping organised'],
