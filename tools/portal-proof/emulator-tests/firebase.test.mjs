@@ -10,7 +10,7 @@ import {getFirestore} from 'firebase-admin/firestore';
 import {createPortalServer} from '../server.mjs';
 import {createFirebaseBackend} from '../firebase-backend.mjs';
 const config={projectId:'demo-wvd-portal',productId:'test-'+randomUUID(),databaseId:'(default)',mode:'emulator'};
-const fixture=()=>({identities:[{id:'owner',active:true},{id:'member',active:true},{id:'foreign',active:true}],projects:[{id:'p',businessId:'b'},{id:'other',businessId:'other'}],memberships:[{actorId:'owner',businessId:'b',active:true,role:'Owner',projectIds:['p']},{actorId:'member',businessId:'b',active:true,role:'Member',projectIds:['p']},{actorId:'foreign',businessId:'other',active:true,role:'Owner',projectIds:['other']}],milestones:[{id:'m',projectId:'p',currentVersionId:'v',status:'awaiting-client'}]});
+const fixture=()=>({identities:[{id:'owner',active:true},{id:'member',active:true},{id:'foreign',active:true},{id:'admin',active:true,wvdAdmin:true}],projects:[{id:'p',businessId:'b'},{id:'other',businessId:'other'}],memberships:[{actorId:'owner',businessId:'b',active:true,role:'Owner',projectIds:['p']},{actorId:'member',businessId:'b',active:true,role:'Member',projectIds:['p']},{actorId:'foreign',businessId:'other',active:true,role:'Owner',projectIds:['other']}],milestones:[{id:'m',projectId:'p',currentVersionId:'v',status:'awaiting-client'}]});
 const approval={actorId:'owner',projectId:'p',milestoneId:'m',versionId:'v',operationId:'approve'};
 const ticket=id=>({actorId:'owner',projectId:'p',type:'question',subject:'Question',body:'Help',operationId:id});
 test('real Google emulators: identity, product isolation, concurrent atomic writes, denial and persistence',async t=>{
@@ -34,6 +34,7 @@ test('real Google emulators: identity, product isolation, concurrent atomic writ
  await backend.portal.replaceVersion('m','v2');const before=await backend.portal.snapshot();await assert.rejects(()=>backend.portal.approve({...approval,operationId:'stale'}),/VERSION_CONFLICT/);assert.deepEqual(await backend.portal.snapshot(),before);
  await Promise.all(['a','b','c'].map(id=>backend.portal.createTicket(ticket(id))));
  const rehearsal=rehearsePortalBackup(await exportPortalBackup(backend.portal,config),config);assert.equal(rehearsal.verified,true);assert.equal(rehearsal.receipts,1);assert.equal(rehearsal.tickets,3);assert.equal(rehearsal.liveWrites,false);
+ const adminRevision=await backend.portal.accessRevision();assert.equal((await backend.portal.adminOverview('admin')).businesses.find(x=>x.businessId==='b').projects[0].ticketCount,3);assert.equal(await backend.portal.accessRevision(),adminRevision);await assert.rejects(()=>other.portal.adminOverview('admin'),/ACCESS_DENIED/);await assert.rejects(()=>backend.portal.adminOverview('member'),/ACCESS_DENIED/);
  const state=await backend.portal.snapshot();assert.equal(state.tickets.length,3);assert.equal(state.receipts.length,1);assert.equal(state.outbox.length,4);
  const reopened=createFirebaseBackend(config);t.after(()=>reopened.close());assert.deepEqual(await reopened.portal.snapshot(),state);
  await reopened.portal.replaceVersion('m','v3');
@@ -55,7 +56,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  const suffix=randomUUID(),uid='browser-'+suffix,email=uid+'@example.test',password='Synthetic-browser-123!';
  const browserConfig={...config,productId:'browser-'+suffix},backend=createFirebaseBackend(browserConfig);
  t.after(()=>backend.close());
- const state=fixture();state.identities[0].id=uid;state.memberships[0].actorId=uid;
+ const state=fixture();state.identities[0].id=uid;state.memberships[0].actorId=uid;const adminUid='admin-'+suffix;state.identities.find(x=>x.id==='admin').id=adminUid;
  await backend.portal.initialize(state);
  const review=await backend.portal.publishReview({projectId:'p',milestoneId:'m',versionId:'v',title:'Synthetic design review',body:'Review the heading, navigation and contact form before approving this version.'},0,{operatorRef:'synthetic-test',changeRef:'browser-review'});
  const app=initializeApp({projectId:config.projectId},'browser-fixtures-'+suffix),auth=getAuth(app);
@@ -121,5 +122,10 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  assert.equal(await page.locator('#workspace').isVisible(),false);
  assert.equal((await backend.portal.snapshot()).tickets.length,0);
  await capture('disabled-user-signed-out');
+ await auth.createUser({uid:adminUid,email:adminUid+'@example.test',emailVerified:true,password});
+ await page.locator('#login').getByLabel('Email').fill(adminUid+'@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
+ await page.locator('#admin-overview').getByText('Client: b',{exact:true}).waitFor();await page.locator('#admin-overview').getByText('Client: other',{exact:true}).waitFor();
+ assert.equal(await page.locator('#projects option').count(),2);await capture('admin-client-overview');
+ await page.getByRole('button',{name:'Sign out',exact:true}).click();assert.equal(await page.locator('#admin-overview').isVisible(),false);assert.equal(await page.locator('#admin-overview').textContent(),'');
  assert.deepEqual(errors,[]);
 });

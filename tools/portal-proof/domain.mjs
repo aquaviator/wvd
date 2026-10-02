@@ -38,6 +38,24 @@ export class PortalProof {
     this.#state.replies ??= [];
   }
   snapshot() { return structuredClone(this.#state); }
+  workspaceAccess(actorId) {
+    const identity=this.#state.identities.find(x=>x.id===actorId&&x.active);
+    if(!identity)denied();
+    return {admin:identity.wvdAdmin===true};
+  }
+  adminOverview(actorId) {
+    if(!this.workspaceAccess(actorId).admin)denied();
+    // Read-only projection: no credentials, membership rows or notification data.
+    const businesses=[...new Set(this.#state.projects.map(x=>x.businessId))];
+    return structuredClone({businesses:businesses.map(businessId=>({businessId,
+      projects:this.#state.projects.filter(x=>x.businessId===businessId).map(project=>({
+        projectId:project.id,stage:project.stage??null,nextStep:project.nextStep??null,
+        awaitingReview:this.#state.milestones.filter(x=>x.projectId===project.id&&x.status==='awaiting-client').length,
+        feedbackCount:this.#state.feedback.filter(x=>x.projectId===project.id).length,
+        ticketCount:this.#state.tickets.filter(x=>x.projectId===project.id).length
+      }))
+    }))});
+  }
   // Trusted operator capability only. Do not expose this through client routes.
   provisionAccess(request) {
     const fields=['uid','businessId','role','projectIds'];

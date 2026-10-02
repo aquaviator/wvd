@@ -71,3 +71,9 @@ test('client overview histories survive a durable reopen',t=>{
  db.submitFeedback({...approval,body:'Historical feedback.',operationId:'feedback'});db.approve({...approval,reviewDigest:review.digest});db.publishReview({projectId:'p',milestoneId:'m',versionId:'v2',title:'New review',body:'New content.'});
  const view=s.open().projectOverview('o','p');assert.equal(view.approvalHistory[0].review.body,'Historical review text.');assert.equal(view.feedbackHistory[0].body,'Historical feedback.');assert.equal(view.awaitingClient[0].review.body,'New content.');
 });
+
+test('Admin overview survives reopen and does not increment durable revision',t=>{
+ const s=setup(t),seed=fixture();seed.identities.push({id:'admin',active:true,wvdAdmin:true});const portal=s.open(seed);portal.createTicket(ticket('activity'));
+ const before=row(s.path),reopened=s.open();assert.deepEqual(reopened.workspaceAccess('admin'),{admin:true});assert.equal(reopened.adminOverview('admin').businesses[0].projects[0].ticketCount,1);assert.deepEqual(row(s.path),before);
+ assert.throws(()=>reopened.adminOverview('o'),/ACCESS_DENIED/);
+});

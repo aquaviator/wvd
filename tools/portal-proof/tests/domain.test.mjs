@@ -52,3 +52,18 @@ test('Operation IDs cannot cross from feedback to approval',()=>{const m=model()
 test('Operation IDs cannot cross from approval to feedback',()=>{const m=model();m.approve(request());assert.throws(()=>m.submitFeedback(feedbackRequest({actorId:'owner',operationId:'op1'})),/OPERATION_CONFLICT/);});
 test('Clock failure commits neither ticket nor notification',()=>{const m=model(()=> 'invalid');const before=m.snapshot();assert.throws(()=>m.createTicket(ticketRequest()),/INVALID_SERVER_TIME/);assert.deepEqual(m.snapshot(),before);});
 test('Returned ticket and replies cannot mutate model',()=>{const m=model();const t=m.createTicket(ticketRequest());t.body='injected';const result=m.readTicket('member','p1',t.id);result.ticket.subject='injected';assert.equal(m.readTicket('member','p1',t.id).ticket.subject,'Preview question');});
+
+test('Admin overview groups clients and counts activity without exposing private record payloads',()=>{
+ const m=model();m.createTicket(ticketRequest());m.submitFeedback(feedbackRequest());const before=m.snapshot();
+ const view=m.adminOverview('admin');assert.equal(view.businesses.length,2);
+ const project=view.businesses.find(x=>x.businessId==='b1').projects.find(x=>x.projectId==='p1');
+ assert.deepEqual(project,{projectId:'p1',stage:null,nextStep:null,awaitingReview:1,feedbackCount:1,ticketCount:1});
+ assert.equal(JSON.stringify(view).includes('heading'),false);assert.equal(JSON.stringify(view).includes('operationId'),false);
+ view.businesses[0].projects[0].stage='injected';assert.deepEqual(m.snapshot(),before);
+});
+for(const actor of ['owner','member','other','disabled','missing'])test(`Admin overview denied to ${actor}`,()=>assert.throws(()=>model().adminOverview(actor),/ACCESS_DENIED/));
+test('Workspace access derives admin capability only from current active server identity',()=>{
+ const m=model();assert.deepEqual(m.workspaceAccess('owner'),{admin:false});assert.deepEqual(m.workspaceAccess('admin'),{admin:true});
+ assert.throws(()=>m.workspaceAccess('disabled'),/ACCESS_DENIED/);
+ const state=fixture();state.identities.find(x=>x.id==='admin').active=false;assert.throws(()=>new PortalProof(state,()=> '').adminOverview('admin'),/ACCESS_DENIED/);
+});

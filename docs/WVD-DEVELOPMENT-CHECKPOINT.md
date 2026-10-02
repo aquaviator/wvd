@@ -106,3 +106,17 @@ freshness, Meet and reservation/delivery remain unverified. Final guide screensh
 review found an unnecessary analytics prompt; the guide routes now use the
 existing analytics-disabled layout option until an actual integration is ready.
 No site-wide analytics behaviour or marketing provider was changed.
+
+## Admin overview development slice
+
+The existing provider-free domain and SQLite/Firestore read transactions now
+provide an active-WVD-admin-only client/project overview. It groups explicit
+business IDs and shows stage, next step, awaiting-review, feedback and ticket
+counts; it exposes no credentials, membership rows or notification payloads.
+The browser derives visibility from current server-owned identity capability,
+opens existing scoped project conversations, and clears the overview on logout.
+Owner/Member accounts cannot request this cross-client projection, and token or
+request role flags confer no privilege. Admins still cannot approve for clients.
+This is a read-only workflow foundation: client creation, invitation management,
+progress editing, support triage and delivery remain unmet amended-brief work.
+No live resources, authentication provider or subscription was added.

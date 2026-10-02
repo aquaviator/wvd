@@ -10,7 +10,7 @@ let auth,portal,server,dir,invitation;
 const origin='http://127.0.0.1:4702',password='A long private browser test password';
 test.beforeAll(async()=>{
   dir=mkdtempSync(join(tmpdir(),'wvd-browser-'));auth=new LocalAuth(join(dir,'auth.sqlite'));
-  portal=new DurablePortal(join(dir,'portal.sqlite'),{identities:[{id:'owner',active:true},{id:'other',active:true}],projects:[{id:'Client project',businessId:'one',stage:'Design review',nextStep:'Review the first milestone'},{id:'Other private project',businessId:'two'}],memberships:[{actorId:'owner',businessId:'one',active:true,role:'Owner',projectIds:['Client project']},{actorId:'other',businessId:'two',active:true,role:'Owner',projectIds:['Other private project']}],milestones:[{id:'First milestone',projectId:'Client project',currentVersionId:'version-1',status:'awaiting-client'}]});
+  portal=new DurablePortal(join(dir,'portal.sqlite'),{identities:[{id:'owner',active:true},{id:'other',active:true},{id:'admin',active:true,wvdAdmin:true}],projects:[{id:'Client project',businessId:'one',stage:'Design review',nextStep:'Review the first milestone'},{id:'Other private project',businessId:'two'}],memberships:[{actorId:'owner',businessId:'one',active:true,role:'Owner',projectIds:['Client project']},{actorId:'other',businessId:'two',active:true,role:'Owner',projectIds:['Other private project']}],milestones:[{id:'First milestone',projectId:'Client project',currentVersionId:'version-1',status:'awaiting-client'}]});
   invitation=auth.invite('owner','owner@example.test');server=createApplication({portal,auth,allowedOrigin:origin});await new Promise(resolve=>server.listen(4702,'127.0.0.1',resolve));
 });
 test.afterAll(async()=>{server?.closeIdleConnections();if(server)await new Promise(resolve=>server.close(resolve));auth?.close();portal?.close();if(dir)rmSync(dir,{recursive:true,force:true});});
@@ -23,7 +23,7 @@ test('invitation, sign-in, ticket reply, feedback, approval and logout',async({p
   await page.locator('#login').getByLabel('Email').fill('owner@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login').getByRole('button').click();
   await expect(page.getByText('Stage: Design review')).toBeVisible();await expect(page.locator('#projects').getByRole('option')).toHaveCount(1);
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
-  await expect(page.locator('#workspace')).not.toContainText('Other private project');
+  await expect(page.locator('#workspace')).not.toContainText('Other private project');await expect(page.locator('#admin-overview')).toBeHidden();
   await page.getByLabel('Subject').fill('<img src=x onerror=alert(1)>');await page.getByLabel('Details').fill('Could you explain the next step?');await page.getByRole('button',{name:'Send ticket',exact:true}).click();
   await expect(page.getByRole('status')).toContainText('Ticket saved');await expect(page.getByRole('heading',{name:'<img src=x onerror=alert(1)>'})).toBeVisible();await expect(page.locator('#tickets img')).toHaveCount(0);
   await page.getByRole('button',{name:'Read conversation'}).click();await page.getByLabel('Your reply').fill('Thank you.');await page.getByRole('button',{name:'Send reply',exact:true}).click();await expect(page.getByRole('status')).toContainText('Reply saved');
@@ -32,4 +32,15 @@ test('invitation, sign-in, ticket reply, feedback, approval and logout',async({p
   expect(await page.evaluate(()=>Object.keys(localStorage))).toEqual([]);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(page.locator('#workspace')).toBeHidden();await expect(page.getByRole('status')).toContainText('Signed out');
+});
+
+test('Admin can inspect both client projects while client approval stays protected',async({page})=>{
+ const invitation=auth.invite('admin','admin@example.test');await auth.redeem(invitation.invitationToken,password);
+ await page.goto('/');await page.locator('#login').getByLabel('Email').fill('admin@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
+ const admin=page.locator('#admin-overview');await expect(admin).toBeVisible();await expect(admin).toContainText('Client: one');await expect(admin).toContainText('Client: two');
+ expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+ await admin.getByRole('article').filter({hasText:'Other private project'}).getByRole('button',{name:'Open project'}).click();await expect(page.locator('#projects')).toHaveValue('Other private project');
+ await admin.getByRole('article').filter({hasText:'Client project'}).getByRole('button',{name:'Open project'}).click();await expect(page.locator('#projects')).toHaveValue('Client project');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(admin).toBeHidden();await expect(admin).toBeEmpty();
 });

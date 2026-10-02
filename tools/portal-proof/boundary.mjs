@@ -1,5 +1,7 @@
 // Transport-independent proof. resolveSession must be a trusted server adapter.
 const schemas = {
+  'workspace-access': [],
+  'admin-overview': [],
   projects: [],
   tickets: ['projectId'],
   overview: ['projectId'],
@@ -9,7 +11,7 @@ const schemas = {
   feedback: ['projectId', 'milestoneId', 'versionId', 'body', 'operationId'],
   approve: ['projectId', 'milestoneId', 'versionId', 'operationId']
 };
-const reads = new Set(['projects', 'tickets', 'overview', 'read-ticket']);
+const reads = new Set(['workspace-access', 'admin-overview', 'projects', 'tickets', 'overview', 'read-ticket']);
 const response = (status, data) => ({status, headers: {'Cache-Control':'no-store'}, data});
 
 export function createBoundary({portal, resolveSession, allowedOrigin}) {
@@ -38,6 +40,8 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
       if (!session || typeof session.actorId !== 'string' || !session.actorId) return response(401, {error:'UNAUTHENTICATED'});
       const request = {...input, actorId:session.actorId};
       const operations = {
+        'workspace-access': () => portal.workspaceAccess(session.actorId),
+        'admin-overview': () => portal.adminOverview(session.actorId),
         projects: () => portal.projectsFor(session.actorId),
         tickets: () => portal.ticketsFor(session.actorId,input.projectId),
         overview: () => portal.projectOverview(session.actorId, input.projectId),

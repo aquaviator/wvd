@@ -85,6 +85,8 @@ export class FirestorePortal {
   }
   snapshot(){return this.#run('snapshot',[]);}
   projectsFor(...args){return this.#run('projectsFor',args);}
+  workspaceAccess(...args){return this.#run('workspaceAccess',args);}
+  adminOverview(...args){return this.#run('adminOverview',args);}
   ticketsFor(...args){return this.#run('ticketsFor',args);}
   authorise(...args){return this.#run('authorise',args);}
   projectOverview(...args){return this.#run('projectOverview',args);}
