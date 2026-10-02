@@ -1,8 +1,46 @@
 # WVD self-hosted software decision
 
 The founder's instruction on 2 October 2026 selects WVD-built software without
-required vendor accounts, service subscriptions or provider tie-in. This replaces
+additional backend vendor accounts, service subscriptions or provider tie-in. This replaces
 the proposed Supabase hosted route. No Supabase project was provisioned.
+
+## Hosting direction: existing Google infrastructure
+
+The founder subsequently instructed WVD to use the same Google infrastructure
+locations as Human V1 and PECP. Google is the selected infrastructure direction;
+do not introduce another hosting/backend provider by default. Reuse existing
+WVD-controlled Google ownership, access and infrastructure where suitable, while
+keeping WVD identities, data, deployment targets and permissions separate from
+Human V1 and PECP. This does not authorise writing into either product's database
+or changing its deployment. It does not authorise new billable resources.
+
+Repository evidence checked on 2 October 2026:
+
+- Human V1 Strength `.firebaserc` names Google/Firebase project `hv1-platform`.
+- Its `firebase.json` configures Firestore location `eur3`, Functions and Hosting.
+- Human V1 Workout Studio `.firebaserc` maps the `workout-studio` hosting target
+  in `hv1-platform` to site `hv1-workout-studio`.
+- Studio's hosting configuration references a Functions endpoint in
+  `europe-west1`; this is configuration evidence, not a live infrastructure audit.
+- PECP's current Product Constitution identifies Google AI Studio as a UI
+  development tool, while retaining customer-controlled production deployment.
+  A Google-hosted PECP deployment/project/region was not established by the
+  inspected repository and inventory. Do not equate AI Studio with hosting.
+
+The exact WVD Google project, runtime, persistent storage and billing capacity
+must be verified against the existing Google environment before online testing.
+Preserve portable application code and exports. Existing Firebase configuration
+does not prove there is a VM or persistent disk available for this Node/SQLite
+application. Cloud Run's ordinary container filesystem is ephemeral, so the
+current database must not be deployed there on container-local storage.
+
+Sources:
+- https://github.com/aquaviator/Hv1Strength/blob/main/firebase.json
+- https://github.com/aquaviator/humanv1-workout-studio/blob/main/firebase.json
+- https://github.com/aquaviator/pecp/blob/master/docs/PRODUCT_CONSTITUTION.md
+- https://cloud.google.com/run/docs/container-contract#file_system
+
+## Portable application
 
 The public site remains the existing Astro build. The portal runs as a Node
 application with local SQLite persistence and WVD-owned account/session handling.

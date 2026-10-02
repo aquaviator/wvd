@@ -32,6 +32,13 @@ Owner colleague management are still pending.
 
 ## Portable hosting
 
+The founder selected the existing Google infrastructure used across the WVD
+portfolio as the hosting direction. See `docs/self-hosted-architecture.md` for
+verified Human V1 configuration and outstanding WVD runtime/storage checks.
+Do not provision another provider or reuse Human V1/PECP application data. This
+runbook requires a persistent local disk; ordinary Cloud Run container storage
+is not suitable for these SQLite databases.
+
 Set `WVD_DATA_DIR` to a private directory on persistent **local** disk. Never put
 it inside a static web root, a git checkout, a shared network filesystem or an
 ephemeral container filesystem. The CLI sets a restrictive process umask and
