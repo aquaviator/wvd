@@ -3,3 +3,5 @@
 .site-nav{flex-wrap:wrap}.site-header .wrap{row-gap:1rem}input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #3d8bd9;outline-offset:3px}
 
 .grid>*,.two-col>*,.architecture>*{min-width:0}h1,h2,h3,.tag-list li,.prose{overflow-wrap:anywhere}
+
+.metric,.quote,.case-kicker{overflow-wrap:anywhere;max-width:100%}
