@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {run, validate, safePath, preflight} from '../factory.mjs';
+import {standardHash} from '../standard.mjs';
 const hash = s => createHash('sha256').update(s).digest('hex');
 async function fixture(t) {
   const root = await mkdtemp(join(tmpdir(), 'wvd-factory-'));
@@ -20,6 +21,9 @@ test('assembles version-bound sources, never awards DONE', async t => {
   const packet = JSON.parse(await readFile(receipt.tasks.context.output, 'utf8'));
   assert.equal(packet.sources[0].content, 'approved source');
   assert.equal(packet.sources[0].revision, 'v2');
+  assert.equal(packet.developmentProfile.standard.platform,'google');
+  assert.equal(packet.developmentProfile.standard.newServiceSubscriptionsAllowed,false);
+  assert.equal(packet.developmentProfile.standardHash,standardHash);
   assert.equal(receipt.verification, 'NOT_INDEPENDENTLY_VERIFIED');
 });
 test('rerun reuses unchanged output including downstream dependency', async t => {
@@ -70,4 +74,23 @@ test('concurrent runner refuses an existing lock', async t => {
   const f = await fixture(t); await run(f.manifest, f.root, f.state);
   await writeFile(join(f.state, f.manifest.projectId, 'run.lock'), 'other');
   await assert.rejects(run(f.manifest, f.root, f.state), {code: 'EEXIST'});
+});
+test('product target changes invalidate cached context',async t=>{
+  const f=await fixture(t);
+  const config=JSON.parse(await readFile(new URL('../product.example.json',import.meta.url),'utf8'));
+  config.productId=f.manifest.projectId;config.bindings.dataNamespace=f.manifest.projectId;
+  f.manifest.productConfig=config;
+  const first=await run(f.manifest,f.root,f.state);
+  config.bindings.googleProjectId='verified-development-project';
+  const second=await run(f.manifest,f.root,f.state);
+  assert.equal(second.tasks.context.reused,false);
+  assert.notEqual(first.tasks.context.binding,second.tasks.context.binding);
+  const packet=JSON.parse(await readFile(second.tasks.context.output,'utf8'));
+  assert.equal(packet.developmentProfile.productPlan.bindings.googleProjectId,'verified-development-project');
+  assert.equal(packet.developmentProfile.productPlan.readiness,'NOT_DEPLOYMENT_VERIFIED');
+});
+test('foreign product configuration cannot be attached to another project',async t=>{
+  const f=await fixture(t);
+  f.manifest.productConfig=JSON.parse(await readFile(new URL('../product.example.json',import.meta.url),'utf8'));
+  await assert.rejects(run(f.manifest,f.root,f.state),/Product\/project binding mismatch/);
 });

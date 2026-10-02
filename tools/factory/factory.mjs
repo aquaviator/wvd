@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto';
 import {mkdir, readFile, writeFile, rename, unlink, realpath} from 'node:fs/promises';
 import {resolve, relative, isAbsolute, join} from 'node:path';
+import {developmentStandard,standardHash,projectPlan} from './standard.mjs';
 
 export const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/;
@@ -8,6 +9,10 @@ const validId = value => typeof value === 'string' && identifier.test(value);
 export function validate(manifest) {
   if (!manifest || manifest.schemaVersion !== 1 || !validId(manifest.projectId)) throw Error('Invalid manifest/project ID');
   if (!Array.isArray(manifest.tasks) || !Array.isArray(manifest.sources)) throw Error('Tasks and sources required');
+  if (manifest.productConfig !== undefined) {
+    const plan=projectPlan(manifest.productConfig);
+    if(plan.productId!==manifest.projectId)throw Error('Product/project binding mismatch');
+  }
   const sources = new Set();
   for (const source of manifest.sources) {
     if (!validId(source.id) || sources.has(source.id) || !source.revision || !source.path || !/^[a-f0-9]{64}$/.test(source.sha256)) throw Error('Invalid source binding');
@@ -50,6 +55,8 @@ async function atomic(path, value) {
 }
 export async function run(manifest, workspace, stateRoot) {
   validate(manifest);
+  const developmentProfile={standard:developmentStandard(),standardHash,
+    productPlan:manifest.productConfig===undefined?null:projectPlan(manifest.productConfig)};
   const directory = join(stateRoot, manifest.projectId);
   await mkdir(directory, {recursive: true, mode: 0o700});
   const lock = join(directory, 'run.lock');
@@ -68,7 +75,7 @@ export async function run(manifest, workspace, stateRoot) {
       const task = manifest.tasks.find(t => pending.has(t.id) && t.dependencies.every(id => !pending.has(id)));
       if (!task) throw Error('Cannot resolve dependencies');
       pending.delete(task.id);
-      const binding = digest({task, sources: task.sourceIds.map(id => bindings.get(id)), dependencies: task.dependencies.map(id => ({binding: receipts[id].binding, status: receipts[id].status, outputHash: receipts[id].outputHash}))});
+      const binding = digest({developmentProfile,task, sources: task.sourceIds.map(id => bindings.get(id)), dependencies: task.dependencies.map(id => ({binding: receipts[id].binding, status: receipts[id].status, outputHash: receipts[id].outputHash}))});
       const blocked = [...task.blockers, ...task.dependencies.filter(id => receipts[id].status !== 'PREPARED').map(id => `dependency:${id}`)];
       if (blocked.length) receipts[task.id] = {binding, status: 'BLOCKED', reasons: blocked};
       else {
@@ -84,7 +91,7 @@ export async function run(manifest, workspace, stateRoot) {
             if (createHash('sha256').update(content).digest('hex') !== source.sha256) throw Error(`Source changed:${id}`);
             packet.push({id, revision: source.revision, sha256: source.sha256, content});
           }
-          const result = {projectId: manifest.projectId, taskId: task.id, binding, sources: packet};
+          const result = {projectId: manifest.projectId, taskId: task.id, binding, developmentProfile, sources: packet};
           const encoded = JSON.stringify(result, null, 2) + '\n';
           if (Buffer.byteLength(encoded) > task.maxBytes) throw Error('Context budget exceeded; select a smaller source slice');
           const output = join(directory, `${task.id}.context.json`);

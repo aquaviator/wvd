@@ -1,5 +1,14 @@
 # Shared factory bootstrap 0.1.0
 
+All task packets inherit the versioned [WVD development standard](../../docs/WVD-DEVELOPMENT-STANDARD.md):
+existing Google platform, no new service subscriptions and reuse before build.
+Run `node cli.mjs standard` to inspect the profile and revision-bound candidate
+catalogue, or `node cli.mjs project product.example.json` for a fictional project
+configuration check. New manifests can supply `productConfig`; its product ID
+must match the manifest. Explicit targets and reuse review evidence are required,
+and missing connection references stay unverified. These commands provision
+nothing. Existing context-only manifests also inherit the standard.
+
 Dependency-free Node 20+ infrastructure for any project, separate from the public
 website. Implements runtime preflight and bounded source/context task execution.
 This is a first implementation slice, not an autonomous agent service or a replacement

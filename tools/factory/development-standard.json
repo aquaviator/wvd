@@ -1,0 +1,29 @@
+{
+  "id": "WVD-DEVELOPMENT-STANDARD",
+  "version": "1.0.0",
+  "authority": "Founder instructions, 2 October 2026",
+  "platform": "google",
+  "newServiceSubscriptionsAllowed": false,
+  "newExternalSpendGBP": 0,
+  "reuseOrder": ["existing-product-code", "shared-wvd-module", "existing-google-service", "adapt-existing-module", "build-missing-capability"],
+  "requirements": [
+    "Inspect the reuse catalogue and current source before building a capability.",
+    "Reuse established Google ownership, service connections and configuration patterns.",
+    "Configure product/project targets explicitly; never copy another product's identity, data paths or credentials as defaults.",
+    "Authentication may be shared; authorisation and data access must remain product/project scoped.",
+    "Record why existing code cannot be reused before implementing a replacement.",
+    "Keep shared modules parameterised, versioned and covered by consumer contract tests.",
+    "Preserve each product's constitution and deployment requirements.",
+    "Verify existing permissions, billing capacity and storage/runtime compatibility before provisioning or deployment.",
+    "Do not introduce another service provider or subscription as an implementation shortcut.",
+    "Keep secrets outside code, templates and task packets; use credential references.",
+    "Keep public search/AI retrieval separate from private product/customer data.",
+    "Production deployment requires separate founder approval."
+  ],
+  "flavours": {
+    "public-website": {"baseline": "Existing WVD Astro/public content patterns", "googleCapabilities": ["hosting"], "reuseAssetIds": ["wvd-public-site", "hv1-hosting-config"]},
+    "web-application": {"baseline": "Existing Human V1 Firebase connection/auth patterns plus product-owned workflows", "googleCapabilities": ["hosting", "authentication", "database", "file-storage"], "reuseAssetIds": ["hv1-auth-client", "hv1-hosting-config", "hv1-access-rules", "wvd-portal-contracts"]},
+    "android-application": {"baseline": "Human V1 Kotlin/Compose/Room and Firebase integration patterns", "googleCapabilities": ["authentication", "database", "file-storage"], "reuseAssetIds": ["hv1-android", "hv1-access-rules"]},
+    "enterprise-platform": {"baseline": "PECP product constitution and portable provider/contract patterns", "googleCapabilities": ["development-infrastructure"], "reuseAssetIds": ["pecp-constitution", "wvd-factory"]}
+  }
+}

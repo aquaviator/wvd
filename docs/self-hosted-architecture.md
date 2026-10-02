@@ -1,5 +1,10 @@
 # WVD self-hosted software decision
 
+The shared [WVD development standard](WVD-DEVELOPMENT-STANDARD.md) now governs
+Google platform reuse and product/project configuration. This file preserves
+the decision history and local prototype details; local auth/SQLite is not a
+mandate to replace existing Google Auth/storage capabilities.
+
 The founder's instruction on 2 October 2026 selects WVD-built software without
 additional backend vendor accounts, service subscriptions or provider tie-in. This replaces
 the proposed Supabase hosted route. No Supabase project was provisioned.

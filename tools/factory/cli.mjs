@@ -3,9 +3,12 @@ import {readFile} from 'node:fs/promises';
 import {resolve, dirname} from 'node:path';
 import {preflight, run} from './factory.mjs';
 import {assess, createHandoff} from './handoff.mjs';
+import {developmentStandard,reuseCatalogue,projectPlan} from './standard.mjs';
 try {
   const [command, file, stateDirectory = '.factory/runs', extra] = process.argv.slice(2);
   if (command === 'preflight') console.log(JSON.stringify(await preflight(resolve('.factory/preflight')), null, 2));
+  else if (command === 'standard') console.log(JSON.stringify({standard:developmentStandard(),catalogue:reuseCatalogue()},null,2));
+  else if (command === 'project' && file) console.log(JSON.stringify(projectPlan(JSON.parse(await readFile(resolve(file),'utf8'))),null,2));
   else if (command === 'run' && file) {
     const path = resolve(file);
     const result = await run(JSON.parse(await readFile(path, 'utf8')), dirname(path), resolve(stateDirectory));
@@ -20,5 +23,5 @@ try {
     const result = assess(work, review, await readFile(extra));
     console.log(JSON.stringify(result, null, 2));
     if (result.status !== 'VERIFIED') process.exitCode = 2;
-  } else throw Error('Usage: preflight | run <manifest> [state] | handoff <context> <task> <directory> | assess <work> <review> <output>');
+  } else throw Error('Usage: standard | project <product-config> | preflight | run <manifest> [state] | handoff <context> <task> <directory> | assess <work> <review> <output>');
 } catch (error) { console.error(error.message); process.exitCode = 1; }
