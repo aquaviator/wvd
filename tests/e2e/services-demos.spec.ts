@@ -3,7 +3,7 @@ import {join} from 'node:path';
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-for (const route of ['/', '/services/', '/about/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/']) {
+for (const route of ['/', '/services/', '/about/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/', '/insights/ownership-and-handover/']) {
   test(`${route} new delivery pages are accessible and fit narrow screens`, async ({page},testInfo) => {
     await page.goto(route);
     await expect(page.getByRole('heading', {level:1})).toBeVisible();
