@@ -29,3 +29,35 @@ supply production application credentials or prove Meet creation, all conflict
 calendars, external-writer handling, or booking availability. Booking remains a
 separate integration slice. Provider choices, commercial/retention/licensing
 decisions and exact-release production GO remain outstanding for affected work.
+
+Extended proof: authorised project overview, exact-version feedback, ticket
+creation/read/replies and payload-free pending notification intents. Ticket type
+is question, fault or change request; priority, Care entitlement, transition
+policy and notification recipients are not inferred. Plain text remains plain
+text; a future UI must escape it. Seeded collections are trusted fixtures, not an
+import API. Production requires complete schema/integrity validation, bounded
+requests, durable uniqueness, approved retention and recipient policy.
+
+`availability.mjs` assesses a single 30-minute slot from supplied UTC instants,
+London working hours, 24-hour notice, England/Wales holiday coverage and busy
+intervals with 15-minute separation. Buffer-at-opening/closing and evidence age
+are explicit test-policy inputs; no founder decision is inferred. Complete
+conflict calendar evidence is required and missing/stale evidence denies a slot.
+Holiday fixtures are synthetic test inputs, not a maintained live holiday feed.
+An available result means available at the observation only: there is no
+reservation, external-writer protection, Calendar/Meet action or confirmation.
+
+`boundary.mjs` is a transport-independent adapter proof with an injected server
+session resolver, exact request schemas, a 32 KiB UTF-8 payload limit, explicit
+methods, same-origin writes, no-store responses and sanitised errors. Request
+payloads cannot select the acting identity. A real HTTP adapter must enforce
+the body limit while streaming (before allocating the whole string), decode GET
+parameters into this schema, and supply verified sessions. This proof supplies
+neither authentication nor persistence, rate limiting or public routes.
+
+On 2 October 2026 the founder authorised development test events on the WVD
+calendar. A labelled private, transparent 30-minute test was created via the WVD
+connection, read back with a successfully provisioned Google Meet link, then
+deleted successfully. No external attendees were supplied. This verifies the
+chat connector's create/read/Meet/delete path only. The website still needs its
+own scoped credentials and calendar adapter; no production booking is implied.

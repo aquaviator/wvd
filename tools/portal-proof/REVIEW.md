@@ -36,3 +36,18 @@ This review is transcribed by the controller from the separate reviewer report.
 Production, provider choice, commercial and privacy decisions remain open for
 their affected work. ChatGPT Calendar owner access is read evidence only, not
 an application OAuth credential or verified live booking workflow.
+
+## Continuation review — 2 October 2026
+
+Added progress, feedback, ticket/reply operations, availability assessment and a
+transport-independent request boundary. A separate session reviewer found two
+defects: missing calendar query coverage and non-Error adapter rejection escaping
+the sanitised response. Both were fixed and rechecked; the reviewer reported no
+remaining blocking defect within the documented proof scope. 73 portal checks,
+23 factory checks and 15 site checks pass. Validation and the 14-route Astro
+build pass using the previously documented direct-Node workaround.
+
+Calendar create/read/Meet/delete was also verified via the WVD chat connector
+with a temporary labelled test event. This does not supply deployed application
+credentials or prove a live website booking workflow. Authentication, durable
+storage and provider adapters remain outside this proof's implementation.
