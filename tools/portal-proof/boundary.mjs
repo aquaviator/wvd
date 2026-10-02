@@ -4,6 +4,7 @@ const schemas = {
   'admin-overview': [],
   'update-progress': ['projectId','stage','nextStep','expectedDigest','operationId'],
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
+  'create-milestone': ['projectId','milestoneId','versionId','title','body'],
   projects: [],
   tickets: ['projectId'],
   overview: ['projectId'],
@@ -46,6 +47,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         'admin-overview': () => portal.adminOverview(session.actorId),
         'update-progress': () => portal.updateProjectProgress(request),
         'publish-review': () => portal.publishReviewAsAdmin(request),
+        'create-milestone': () => portal.createMilestoneAsAdmin(request),
         projects: () => portal.projectsFor(session.actorId),
         tickets: () => portal.ticketsFor(session.actorId,input.projectId),
         overview: () => portal.projectOverview(session.actorId, input.projectId),
@@ -59,7 +61,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
       if (message === 'ACCESS_DENIED') return response(403, {error:'ACCESS_DENIED'});
-      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE'].includes(message)) return response(409, {error:message});
+      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT'].includes(message)) return response(409, {error:message});
       if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }

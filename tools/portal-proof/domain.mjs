@@ -95,6 +95,21 @@ export class PortalProof {
     return {created:true,identityId:uid,businessId,role,projectIds};
   }
   // Server-verified admin capability. Client membership cannot publish.
+  createMilestoneAsAdmin({actorId,projectId,milestoneId,versionId,title,body}) {
+    authorise(this.#state,actorId,projectId,'manage-reviews');
+    this.#text(milestoneId,128);
+    const existing=this.#state.milestones.find(x=>x.id===milestoneId);
+    if(existing){
+      if(existing.projectId!==projectId||existing.createdByActorId!==actorId||existing.reviews?.[0]?.versionId!==versionId)throw Error('MILESTONE_CONFLICT');
+      return {milestoneId,projectId,review:this.publishReview({projectId,milestoneId,versionId,title,body})};
+    }
+    if(this.#state.milestones.filter(x=>x.projectId===projectId).length>=200)throw Error('MILESTONE_CAPACITY');
+    const next=structuredClone(this.#state);
+    next.milestones.push({id:milestoneId,projectId,currentVersionId:versionId,status:'awaiting-client',createdByActorId:actorId,createdAt:this.#timestamp()});
+    const candidate=new PortalProof(next,this.#clock);
+    const review=candidate.publishReviewAsAdmin({actorId,projectId,milestoneId,versionId,title,body,expectedVersionId:versionId});
+    this.#state=candidate.snapshot();return {milestoneId,projectId,review};
+  }
   publishReviewAsAdmin({actorId,projectId,milestoneId,versionId,title,body,expectedVersionId}) {
     authorise(this.#state,actorId,projectId,'manage-reviews');
     this.#text(expectedVersionId,128);
@@ -140,7 +155,7 @@ export class PortalProof {
   authorise(actorId, projectId, action) { return structuredClone(authorise(this.#state, actorId, projectId, action)); }
   projectOverview(actorId, projectId) {
     const project = authorise(this.#state, actorId, projectId, 'view');
-    const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:clientReview(reviews?.find(x=>x.versionId===milestone.currentVersionId))} : {})}));
+    const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,createdByActorId,createdAt,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:clientReview(reviews?.find(x=>x.versionId===milestone.currentVersionId))} : {})}));
     return structuredClone({
       projectId, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
       progressDigest:progressDigest({projectId,stage:project.stage,nextStep:project.nextStep}),

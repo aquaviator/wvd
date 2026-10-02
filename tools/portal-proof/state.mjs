@@ -34,6 +34,7 @@ export function validatePortalState(state) {
   }
   for (const milestone of state.milestones) if (!projects.has(milestone.projectId)) corrupt();
   for(const milestone of state.milestones) {
+    if((milestone.createdByActorId===undefined)!==(milestone.createdAt===undefined)||(milestone.createdByActorId!==undefined&&(!identities.has(milestone.createdByActorId)||typeof milestone.createdAt!=='string'||!Number.isFinite(Date.parse(milestone.createdAt))||!milestone.reviews?.length)))corrupt();
     if(milestone.reviewRequired!==undefined && typeof milestone.reviewRequired!=='boolean')corrupt();
     if(milestone.reviews!==undefined) {
       if(!Array.isArray(milestone.reviews)||!milestone.reviewRequired)corrupt();

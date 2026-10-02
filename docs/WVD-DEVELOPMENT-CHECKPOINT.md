@@ -188,3 +188,12 @@ admins gain no client-approval permission. Trusted CLI publication remains
 separate and retains its existing revision/operator-context checks.
 This text-review workflow does not establish external artifact/preview binding,
 new-milestone creation, notification delivery or production release acceptance.
+
+Admin milestone creation also reuses the immutable-review publisher: a new
+milestone and its first review are committed together with server-derived creator
+and publisher attribution. Name/version keys provide exact retry behaviour;
+existing milestones cannot be overwritten or silently adopted. Input/clock or
+transaction failures leave neither a partial milestone nor a partial review.
+Client views omit internal creator identifiers, and every new milestone awaits
+Owner approval. Creation is capped at 200 milestones per proof project and creates
+no additional project/member grants or notification-delivery claim.
