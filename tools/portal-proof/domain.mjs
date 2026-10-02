@@ -2,14 +2,15 @@ import {reviewDigest} from './review.mjs';
 import {progressDigest} from './progress.mjs';
 // Provider-free executable model. This is not an authentication service or database.
 const denied = () => { throw new Error('ACCESS_DENIED'); };
-const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues', 'manage-progress']);
+const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues', 'manage-progress', 'manage-reviews']);
+const clientReview=review=>review?Object.fromEntries(['projectId','milestoneId','versionId','title','body','digest'].map(key=>[key,review[key]])):null;
 
 export function authorise(state, actorId, projectId, action) {
   if (!actions.has(action)) denied();
   const identity = state.identities.find(x => x.id === actorId && x.active);
   const project = state.projects.find(x => x.id === projectId);
   if (!identity || !project) denied();
-  if(action==='manage-progress'){if(identity.wvdAdmin===true)return project;denied();}
+  if(['manage-progress','manage-reviews'].includes(action)){if(identity.wvdAdmin===true)return project;denied();}
   // Administration is separate from client approval and colleague management.
   if (identity.wvdAdmin && ['view', 'feedback', 'ticket'].includes(action)) return project;
   const membership = state.memberships.find(x =>
@@ -93,7 +94,22 @@ export class PortalProof {
     this.#state=next;
     return {created:true,identityId:uid,businessId,role,projectIds};
   }
-  // Trusted publisher only; no client route. Version content is immutable.
+  // Server-verified admin capability. Client membership cannot publish.
+  publishReviewAsAdmin({actorId,projectId,milestoneId,versionId,title,body,expectedVersionId}) {
+    authorise(this.#state,actorId,projectId,'manage-reviews');
+    this.#text(expectedVersionId,128);
+    const milestone=this.#state.milestones.find(x=>x.id===milestoneId&&x.projectId===projectId);
+    if(!milestone)denied();
+    const request={projectId,milestoneId,versionId,title,body};
+    // The immutable version is its retry key. A retry never rolls back current.
+    if(milestone.reviews?.some(x=>x.versionId===versionId))return this.publishReview(request);
+    if(milestone.currentVersionId!==expectedVersionId)throw Error('VERSION_CONFLICT');
+    const publishedAt=this.#timestamp(),result=this.publishReview(request);
+    const stored=milestone.reviews.find(x=>x.versionId===versionId);
+    stored.publisherActorId=actorId;stored.publishedAt=publishedAt;
+    return {...result,publisherActorId:actorId,publishedAt};
+  }
+  // Privileged operator capability; the admin route uses the checked wrapper above.
   publishReview(request) {
     const fields=['projectId','milestoneId','versionId','title','body'];
     if(!request||typeof request!=='object'||Array.isArray(request)||Object.keys(request).length!==fields.length||!fields.every(key=>Object.hasOwn(request,key)))throw Error('INVALID_REVIEW');
@@ -124,13 +140,13 @@ export class PortalProof {
   authorise(actorId, projectId, action) { return structuredClone(authorise(this.#state, actorId, projectId, action)); }
   projectOverview(actorId, projectId) {
     const project = authorise(this.#state, actorId, projectId, 'view');
-    const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:reviews?.find(x=>x.versionId===milestone.currentVersionId)??null} : {})}));
+    const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:clientReview(reviews?.find(x=>x.versionId===milestone.currentVersionId))} : {})}));
     return structuredClone({
       projectId, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
       progressDigest:progressDigest({projectId,stage:project.stage,nextStep:project.nextStep}),
       progressHistory:(project.progressHistory??[]).map(({stage,nextStep,timestamp})=>({stage,nextStep,timestamp})),
       feedbackHistory:this.#state.feedback.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,body})=>({id,milestoneId,versionId,timestamp,body})),
-      approvalHistory:this.#state.receipts.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,reviewDigest})=>({id,milestoneId,versionId,timestamp,reviewDigest:reviewDigest??null,review:reviewDigest?this.#state.milestones.find(x=>x.id===milestoneId&&x.projectId===projectId)?.reviews?.find(x=>x.versionId===versionId&&x.digest===reviewDigest)??null:null})),
+      approvalHistory:this.#state.receipts.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,reviewDigest})=>({id,milestoneId,versionId,timestamp,reviewDigest:reviewDigest??null,review:reviewDigest?clientReview(this.#state.milestones.find(x=>x.id===milestoneId&&x.projectId===projectId)?.reviews?.find(x=>x.versionId===versionId&&x.digest===reviewDigest)):null})),
       completedMilestones: milestones.filter(x => x.status === 'approved'),
       awaitingClient: milestones.filter(x => x.status === 'awaiting-client')
     });

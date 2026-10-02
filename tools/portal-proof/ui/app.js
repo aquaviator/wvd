@@ -4,7 +4,7 @@ const el=id=>document.getElementById(id);
 let sessionToken=null,revision=0,adminAccess=false;
 const reviewTime=value=>new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(value))+' (UK time)';
 const status=message=>{el('status').textContent=message;};
-const messages={PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
+const messages={REVIEW_IMMUTABLE:'That version already has different review content. Use a new version identifier.',PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
 function signedOut(){sessionToken=null;adminAccess=false;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
 async function api(path,body,method='POST'){
   const headers={};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
@@ -50,6 +50,18 @@ async function project(){
     form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/update-progress',{projectId:id,stage:stage.value,nextStep:nextStep.value,expectedDigest:overview.progressDigest,operationId:crypto.randomUUID()});await administration();await project();status('Project progress saved.');});});box.append(form);
   }
   if(overview.progressHistory.length){const history=document.createElement('details');history.append(node('summary','Progress history'));for(const item of overview.progressHistory)history.append(node('p',`${reviewTime(item.timestamp)} — ${item.stage}`),node('p',item.nextStep));box.append(history);}
+  if(adminAccess){
+    for(const milestone of [...overview.completedMilestones,...overview.awaitingClient]){
+      const details=document.createElement('details');details.className='publish-review';details.append(node('summary',`Publish review for ${milestone.id}`));
+      const form=document.createElement('form');
+      const version=document.createElement('input');version.required=true;version.maxLength=128;
+      const title=document.createElement('input');title.required=true;title.maxLength=200;title.value=milestone.review?.title??'';
+      const body=document.createElement('textarea');body.required=true;body.maxLength=10000;body.value=milestone.review?.body??'';
+      for(const [text,input] of [['New review version',version],['Review title',title],['Review text',body]]){const label=node('label',text);label.append(input);form.append(label);}
+      form.append(node('p','Published versions cannot be edited. The client Owner must approve each new version.'),node('button','Publish review'));
+      form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/publish-review',{projectId:id,milestoneId:milestone.id,versionId:version.value,title:title.value,body:body.value,expectedVersionId:milestone.currentVersionId});await administration();await project();status('Review version published for client approval.');});});details.append(form);box.append(details);
+    }
+  }
   box.append(node('h3','Completed milestones'));for(const m of overview.completedMilestones)box.append(node('p',`${m.id} — approved`));
   box.append(node('h3','Approval history'));
   if(!overview.approvalHistory.length)box.append(node('p','No approvals recorded.'));

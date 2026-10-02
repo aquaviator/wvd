@@ -173,3 +173,18 @@ It focuses on actual repeated work, existing capabilities, exceptions, whole
 cost and bounded verification; it makes no quantified savings or AI capability
 claims. Guide screenshots use CSS pixel scale to keep the growing route set
 within the existing 5 MiB evidence cap, with no change to viewport/overflow checks.
+
+## Admin review publication
+
+The admin workspace can publish review text to an existing milestone using the
+existing immutable review/version implementation. The server checks active WVD
+admin capability and the currently read milestone version before a new write.
+Exact version/content retries return the stored version without rolling back
+current progress; changed text under an existing version is refused. Published
+versions retain server-derived publisher identity/time in durable storage and
+backups. Client projections retain exact review text/digest while omitting that
+internal publisher identifier. A new version requires fresh client approval;
+admins gain no client-approval permission. Trusted CLI publication remains
+separate and retains its existing revision/operator-context checks.
+This text-review workflow does not establish external artifact/preview binding,
+new-milestone creation, notification delivery or production release acceptance.

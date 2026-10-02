@@ -3,6 +3,7 @@ const schemas = {
   'workspace-access': [],
   'admin-overview': [],
   'update-progress': ['projectId','stage','nextStep','expectedDigest','operationId'],
+  'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
   projects: [],
   tickets: ['projectId'],
   overview: ['projectId'],
@@ -33,7 +34,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         !fields.every(key => Object.hasOwn(input, key) && typeof input[key] === 'string' && input[key].length > 0)) {
       return response(400, {error:'INVALID_REQUEST'});
     }
-    for (const key of fields.filter(key => !['body','subject','type','stage','nextStep'].includes(key))) {
+    for (const key of fields.filter(key => !['body','subject','type','stage','nextStep','title'].includes(key))) {
       if (input[key].length > 128) return response(400, {error:'INVALID_REQUEST'});
     }
     try {
@@ -44,6 +45,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         'workspace-access': () => portal.workspaceAccess(session.actorId),
         'admin-overview': () => portal.adminOverview(session.actorId),
         'update-progress': () => portal.updateProjectProgress(request),
+        'publish-review': () => portal.publishReviewAsAdmin(request),
         projects: () => portal.projectsFor(session.actorId),
         tickets: () => portal.ticketsFor(session.actorId,input.projectId),
         overview: () => portal.projectOverview(session.actorId, input.projectId),
@@ -57,7 +59,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
       if (message === 'ACCESS_DENIED') return response(403, {error:'ACCESS_DENIED'});
-      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT'].includes(message)) return response(409, {error:message});
+      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE'].includes(message)) return response(409, {error:message});
       if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }

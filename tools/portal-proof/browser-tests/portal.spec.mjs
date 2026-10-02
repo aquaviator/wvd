@@ -47,6 +47,8 @@ test('Admin can inspect both client projects while client approval stays protect
  await page.getByLabel('Project stage',{exact:true}).fill('Build');await page.getByLabel('Next project step',{exact:true}).fill('Review the synthetic preview');await page.getByRole('button',{name:'Save progress',exact:true}).click();await expect(page.getByRole('status')).toContainText('Project progress saved');await expect(page.locator('#overview')).toContainText('Stage: Build');
  await page.getByText('Progress history',{exact:true}).click();await expect(page.locator('#overview')).toContainText('Review the synthetic preview');
  await admin.getByRole('article').filter({hasText:'Client project'}).getByRole('button',{name:'Open project'}).click();await expect(page.locator('#projects')).toHaveValue('Client project');
+ await page.locator('.publish-review summary').click();await page.getByLabel('New review version',{exact:true}).fill('version-2');await page.getByLabel('Review title',{exact:true}).fill('Synthetic second review');await page.getByLabel('Review text',{exact:true}).fill('Check the revised heading.');await page.getByRole('button',{name:'Publish review',exact:true}).click();await expect(page.getByRole('status')).toContainText('Review version published');await expect(page.locator('#overview')).toContainText('Synthetic second review');
+ await page.getByRole('button',{name:'Approve this version',exact:true}).click();await expect(page.getByRole('status')).toContainText('does not have permission');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(admin).toBeHidden();await expect(admin).toBeEmpty();
 });
