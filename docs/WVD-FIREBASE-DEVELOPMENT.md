@@ -80,8 +80,8 @@ The provider must check the immutable owner/repository claims and exact ref/even
 a repository name alone is insufficient. Bind service-account impersonation only
 to that restricted identity. Google project number and actual provider resource
 IDs must be inspected before writing executable bindings. Roles here are a concrete
-proposal, not proof of granted access or an activated workflow. Founder confirmation
-is needed at the browser action that creates this security-sensitive access.
+approved scope, not proof of granted access or an activated workflow. The founder
+confirmation is recorded below; activation remains blocked.
 
 ## Approved access and blocked activation
 

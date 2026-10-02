@@ -2,9 +2,9 @@ import {createFirebaseBackend} from './firebase-backend.mjs';
 import {createApplication} from './app.mjs';
 // Synthetic emulator data only. This launcher has no live project option.
 const config={projectId:'demo-wvd-portal',productId:'wvd-demo',databaseId:'(default)',mode:'emulator'};
-const backend=createFirebaseBackend(config);
-let server;
+let backend,server;
 try {
+  backend=createFirebaseBackend(config);
   const uid='demo-owner',email='owner@example.test',password='Synthetic-demo-123!';
   await backend.portal.initialize({identities:[{id:uid,active:true}],projects:[{id:'Demo project',businessId:'demo-business',stage:'Design review',nextStep:'Review the synthetic milestone'}],memberships:[{actorId:uid,businessId:'demo-business',active:true,role:'Owner',projectIds:['Demo project']}],milestones:[{id:'Demo milestone',projectId:'Demo project',currentVersionId:'demo-v1',status:'awaiting-client'}]});
   try {
@@ -22,7 +22,7 @@ try {
   const stop=async()=>{if(stopping)return;stopping=true;server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await backend.close();};
   process.once('SIGINT',()=>void stop());process.once('SIGTERM',()=>void stop());
 } catch {
-  server?.closeAllConnections();server?.close();await backend.close();
+  server?.closeAllConnections();server?.close();if(backend)await backend.close();
   console.error('FIREBASE_DEMO_START_FAILED: verify isolated emulator hosts and available portal port.');
   process.exitCode=1;
 }

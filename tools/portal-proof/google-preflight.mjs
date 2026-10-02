@@ -9,7 +9,7 @@ export function runGcloud(args,{platform=process.platform,execute=execFileSync,e
   if(!Array.isArray(args)||args.some(value=>typeof value!=='string'||!/^[a-zA-Z0-9=()_-]+$/.test(value))) throw Error('INVALID_GCLOUD_ARGUMENT');
   const options={encoding:'utf8',stdio:['ignore','pipe','pipe'],timeout:60000,maxBuffer:1024*1024,windowsHide:true};
   if(platform!=='win32')return execute('gcloud',args,options);
-  const script=`$ErrorActionPreference = 'Stop'; $arguments = @(ConvertFrom-Json $env:WVD_GCLOUD_ARGUMENTS); $command = Get-Command gcloud -CommandType ExternalScript,Application -ErrorAction Stop; & $command.Source @arguments; if ($null -ne $LASTEXITCODE) { exit $LASTEXITCODE }`;
+  const script=`$ErrorActionPreference = 'Stop'; $arguments = ConvertFrom-Json $env:WVD_GCLOUD_ARGUMENTS; $command = Get-Command gcloud -CommandType ExternalScript,Application -ErrorAction Stop; & $command.Source @arguments; if ($null -ne $LASTEXITCODE) { exit $LASTEXITCODE }`;
   return execute('powershell.exe',['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(script,'utf16le').toString('base64')],{...options,env:{...env,WVD_GCLOUD_ARGUMENTS:JSON.stringify(args)}});
 }
 
