@@ -249,3 +249,11 @@ desired list, aggregate revision and operator/change references prevent stale or
 implicit privilege changes. Before/after project lists and audit commit together;
 no-op/rejected changes create no history. Client HTTP routes expose no operator
 access method. Owner invitations and an admin account UI remain unfinished.
+
+### Scoped access inspection
+
+Trusted Google operators can inspect one existing account/business membership
+with its aggregate revision from one document read. The projection omits other
+businesses and admin flags; it makes no claim about current Firebase Auth status.
+There is no public endpoint or permission mutation. Stale subsequent updates
+remain rejected, including after an intervening permission change.

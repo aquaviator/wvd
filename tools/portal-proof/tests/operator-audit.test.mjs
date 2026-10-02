@@ -59,3 +59,11 @@ test('Access-update capacity failure rolls back both permissions and audit',asyn
  const {MAX_STATE_BYTES}=await import('../firestore.mjs'),{PortalProof}=await import('../domain.mjs');const s=setup(),raw=seed();raw.identities=[{id:'o',active:true}];raw.memberships=[{actorId:'o',businessId:'b',role:'Owner',active:true,projectIds:['p']}];
  const state=new PortalProof(raw,()=> '2026-10-02T16:00:00Z').snapshot();state.projects[0].padding='';state.projects[0].padding='x'.repeat(MAX_STATE_BYTES-Buffer.byteLength(JSON.stringify(state))-100);await s.portal.initialize(state);const before=s.raw();await assert.rejects(()=>s.portal.updateAccess({...grant,projectIds:[]},0,context),/STATE_CAPACITY/);assert.deepEqual(s.raw(),before);
 });
+
+test('Access inspection binds grants to one document revision and returns only selected membership fields',async()=>{
+ const s=setup(),state=seed();state.projects.push({id:'other',businessId:'other'});state.identities=[{id:'o',active:true,wvdAdmin:true}];state.memberships=[{actorId:'o',businessId:'b',role:'Owner',active:true,projectIds:['p']},{actorId:'o',businessId:'other',role:'Member',active:true,projectIds:['other']}];await s.portal.initialize(state);
+ const before=s.raw(),read=await s.portal.inspectAccess({uid:'o',businessId:'b'});
+ assert.deepEqual(read,{uid:'o',businessId:'b',role:'Owner',identityActive:true,membershipActive:true,projectIds:['p'],revision:0});read.projectIds.push('other');assert.deepEqual(s.raw(),before);
+ await assert.rejects(()=>s.portal.inspectAccess({uid:'o',businessId:'b',includeAll:true}),/INVALID_ACCESS_GRANT/);await assert.rejects(()=>s.portal.inspectAccess({uid:'o',businessId:'missing'}),/ACCESS_MEMBERSHIP_REQUIRED/);
+ await s.portal.updateAccess({...grant,projectIds:[]},0,context);assert.equal((await s.portal.inspectAccess({uid:'o',businessId:'b'})).revision,1);await assert.rejects(()=>s.portal.updateAccess(grant,read.revision,context),/ACCESS_REVISION_CONFLICT/);
+});

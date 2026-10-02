@@ -4,15 +4,16 @@ import {createFirebaseProvisioner,createFirebaseAccessUpdater} from './firebase-
 const [command,bindingPath,grantPath,...extra]=process.argv.slice(2);
 let backend;
 try {
-  if(extra.length||!bindingPath||!['inspect','provision','update-access','publish-review'].includes(command)||(command==='inspect'&&grantPath)||(command!=='inspect'&&!grantPath))throw Error('INVALID_OPERATOR_ARGUMENTS');
+  if(extra.length||!bindingPath||!['inspect','inspect-access','provision','update-access','publish-review'].includes(command)||(command==='inspect'&&grantPath)||(command!=='inspect'&&!grantPath))throw Error('INVALID_OPERATOR_ARGUMENTS');
   const config=JSON.parse(readFileSync(bindingPath,'utf8'));
   let grant;
   if(grantPath) {
     grant=JSON.parse(readFileSync(grantPath,'utf8'));
-    if(!grant||typeof grant!=='object'||Array.isArray(grant)||Object.keys(grant).sort().join(',')!==(command==='publish-review'?'body,changeRef,expectedRevision,milestoneId,operatorRef,projectId,title,versionId':'businessId,changeRef,expectedRevision,operatorRef,projectIds,role,uid'))throw Error('INVALID_ACCESS_GRANT');
+    if(!grant||typeof grant!=='object'||Array.isArray(grant)||Object.keys(grant).sort().join(',')!==(command==='inspect-access'?'businessId,uid':command==='publish-review'?'body,changeRef,expectedRevision,milestoneId,operatorRef,projectId,title,versionId':'businessId,changeRef,expectedRevision,operatorRef,projectIds,role,uid'))throw Error('INVALID_ACCESS_GRANT');
   }
   backend=createFirebaseBackend(config);
   if(command==='inspect')console.log(JSON.stringify({projectId:config.projectId,productId:config.productId,revision:await backend.portal.accessRevision()}));
+  else if(command==='inspect-access')console.log(JSON.stringify({projectId:config.projectId,productId:config.productId,...await backend.portal.inspectAccess(grant)}));
   else {
     const {expectedRevision,operatorRef,changeRef,...request}=grant;
     const context={operatorRef,changeRef};

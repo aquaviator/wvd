@@ -1,3 +1,4 @@
+import {inspectAccess} from './access.mjs';
 import {operatorContext} from './operator-audit.mjs';
 import {PortalProof} from './domain.mjs';
 import {validatePortalState} from './state.mjs';
@@ -67,6 +68,10 @@ export class FirestorePortal {
   async backupSnapshot() {
     if(!this.#backupBinding)throw Error('BACKUP_BINDING_REQUIRED');
     const document=await this.#ref.get();return {...decode(document),binding:structuredClone(this.#backupBinding)};
+  }
+  async inspectAccess(request) {
+    const {state,revision}=decode(await this.#ref.get());
+    return {...inspectAccess(state,request),revision};
   }
   async accessRevision() {
     const document=await this.#ref.get();return decode(document).revision;

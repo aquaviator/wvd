@@ -289,3 +289,16 @@ references are audited together; a no-op adds no audit or revision. No operator
 method is exposed through a client HTTP route. This is not the Owner invitation
 workflow or a finished admin account UI, and references do not verify IAM identity.
 Use emulator fixtures until actual live target/access prerequisites are satisfied.
+
+For a scoped read before preparing a change, use:
+
+```sh
+node firebase-operator.mjs inspect-access <binding.json> <account-scope.json>
+```
+
+`account-scope.json` contains exactly `uid` and `businessId`. The result contains
+that membership's role, stored activation flags and project list, together with
+the revision read from the same Firestore document. It omits other memberships,
+admin flags and account credentials. This privileged read does not query current
+Firebase Auth status or create an audit record. A subsequent change still checks
+revision and required Auth state; save output only in an authorised private place.

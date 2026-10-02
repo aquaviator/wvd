@@ -111,7 +111,7 @@ confirmation delivery remain integration work. Holiday fixtures are synthetic.
 
 The executable development foundation is not production readiness. Outstanding
 work includes live browser authentication and server credentials, colleague and
-client management, external artifact/preview binding, support triage and
+client management, external artifact/preview binding,
 notification delivery, booking integration, hosting/TLS, rate limits, monitoring,
 retention, dependency remediation, production recovery and independent integrated
 release review. Passing emulators or a configuration template does not close
