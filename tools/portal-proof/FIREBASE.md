@@ -249,14 +249,14 @@ retention, authenticated provenance and live restore acceptance remain unfinishe
 
 ### Introductory-call candidate screening
 
-`booking.mjs` adapts the existing Salon demo's duration and overlap checks for
-the founder's introductory-call policy: 30 minutes, Monday–Friday 09:00–18:00
-Europe/London, 24-hour minimum notice and 15-minute gaps. It filters explicitly
-supplied UTC candidates; it does not select a slot-grid policy or invent slots.
-All explicitly required calendar snapshots and England/Wales holiday coverage
-must be present, bounded and valid. Errors or incomplete coverage fail closed;
-London daylight saving is handled by the existing Node Intl timezone support.
-The test holiday list is synthetic and is not a published bank-holiday calendar.
+`booking.mjs` batches the existing `availability.mjs` single-slot contract. It
+filters bounded, explicitly supplied UTC candidates without inventing a slot grid.
+The shared contract covers duration, UK working hours, notice, both conflict
+margins, exact queried calendar intervals, holiday coverage and evidence age.
+Buffer-at-opening/closing and maximum evidence age must be supplied explicitly
+by the caller; they are not new founder policy defaults. Strict holiday dates
+and bounded batch input fail closed. Synthetic evidence is not a published
+holiday calendar or authenticated provider response.
 
 This is a pure development check, not a live availability/booking endpoint.
 Caller-supplied coverage is not proof of current provider data. Live integration

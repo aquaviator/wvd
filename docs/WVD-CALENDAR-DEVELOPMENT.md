@@ -18,12 +18,20 @@ production booking acceptance.
 
 ## Verified synthetic code
 
-`tools/portal-proof/booking.mjs` screens explicitly supplied UTC candidates using
-30-minute duration, 24-hour notice, 15-minute gaps and Monday–Friday
-09:00–18:00 Europe/London. It adapts the Salon demo's duration/conflict logic and
-rejects missing or invalid calendar/holiday coverage. Tests cover seasonal clock
-changes, notice/working-day boundaries, both sides of the gap, invalid data and
-input immutability. No arbitrary appointment grid is promoted to founder policy.
+`tools/portal-proof/booking.mjs` now batches the established `availability.mjs`
+single-slot checks rather than maintaining another duration/conflict algorithm.
+It screens bounded, explicitly supplied minute-aligned UTC candidates. The shared
+contract checks 30-minute calls, 24-hour notice, 15-minute gaps, Monday–Friday
+09:00–18:00 Europe/London, exact queried calendar intervals and England/Wales
+holiday coverage. Snapshot age and buffer-at-opening/closing behaviour are
+explicit caller policy inputs; no founder choice is inferred for those details.
+Missing, errored, stale or future evidence never offers a slot.
+
+Tests bind batch results to the shared single-slot behaviour for both boundary
+policies, seasonal time changes, notice, conflicts and incomplete coverage.
+Strict holiday dates reject impossible, duplicate, reversed or out-of-coverage
+values. Test data is synthetic, not a published holiday calendar. Supplied
+evidence is still not proof of provider authenticity or slot reservation.
 
 ## Remaining live dependencies
 

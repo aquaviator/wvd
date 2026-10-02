@@ -12,7 +12,7 @@ test('England and Wales bank holiday excluded',()=>{const i=input();i.start='202
 test('Unavailable or incomplete calendar evidence fails closed',()=>{const i=input();i.evidence.calendars[1].status='failed';assert.equal(assessCallSlot(i).reason,'EVIDENCE_UNAVAILABLE');i.evidence.calendars.pop();assert.equal(assessCallSlot(i).reason,'EVIDENCE_UNAVAILABLE');});
 test('Calendar conflicts include a 15-minute gap on both sides',()=>{const i=input();i.evidence.calendars[1].busy=[{start:'2026-10-05T08:44:00Z',end:'2026-10-05T09:00:00Z'}];assert.equal(assessCallSlot(i).reason,'CALENDAR_CONFLICT');i.evidence.calendars[1].busy[0].start='2026-10-05T08:45:00Z';assert.equal(assessCallSlot(i).available,true);i.evidence.calendars[1].busy=[{start:'2026-10-05T07:00:00Z',end:'2026-10-05T07:46:00Z'}];assert.equal(assessCallSlot(i).reason,'CALENDAR_CONFLICT');i.evidence.calendars[1].busy[0].end='2026-10-05T07:45:00Z';assert.equal(assessCallSlot(i).available,true);});
 test('Stale or future evidence fails closed',()=>{const i=input();i.evidence.observedAt='2026-10-02T10:58:59Z';assert.equal(assessCallSlot(i).reason,'EVIDENCE_STALE');i.evidence.observedAt='2026-10-02T11:00:01Z';assert.equal(assessCallSlot(i).reason,'EVIDENCE_STALE');});
-test('Missing holiday coverage or wrong region fails closed',()=>{const i=input();i.evidence.coveredThrough='2026-09-30';assert.equal(assessCallSlot(i).reason,'HOLIDAY_COVERAGE_MISSING');i.evidence.bankHolidayRegion='scotland';assert.equal(assessCallSlot(i).reason,'EVIDENCE_UNAVAILABLE');});
+test('Missing holiday coverage or wrong region fails closed',()=>{const i=input();i.evidence.coveredThrough='2026-09-30';i.evidence.bankHolidays=[];assert.equal(assessCallSlot(i).reason,'HOLIDAY_COVERAGE_MISSING');i.evidence.bankHolidayRegion='scotland';assert.equal(assessCallSlot(i).reason,'EVIDENCE_UNAVAILABLE');});
 test('Ambiguous timestamps and invalid dates rejected',()=>{for(const start of ['2026-10-05T09:00:00','2026-02-30T09:00:00Z','invalid'])assert.throws(()=>assessCallSlot({...input(),start}),/INVALID_INSTANT/);});
 test('Policy must be explicitly supplied',()=>{const i=input();delete i.policy;assert.throws(()=>assessCallSlot(i),/INVALID_POLICY/);});
 test('Busy evidence must have a positive duration',()=>{const i=input();i.evidence.calendars[0].busy=[{start:i.start,end:i.start}];assert.equal(assessCallSlot(i).reason,'EVIDENCE_UNAVAILABLE');});
@@ -20,3 +20,10 @@ test('Busy evidence must have a positive duration',()=>{const i=input();i.eviden
 test('Seconds beyond closing are excluded',()=>{const i=input();i.start='2026-10-05T16:30:01Z';assert.equal(assessCallSlot(i).reason,'OUTSIDE_HOURS');});
 
 test('Empty busy evidence must cover slot and both conflict margins',()=>{for(const patch of [{coveredStart:undefined},{coveredEnd:undefined},{coveredStart:'2026-10-05T07:46:00Z'},{coveredEnd:'2026-10-05T08:44:00Z'}]){const i=input();Object.assign(i.evidence.calendars[1],patch);assert.equal(assessCallSlot(i).reason,'CALENDAR_COVERAGE_MISSING');}const i=input();Object.assign(i.evidence.calendars[1],{coveredStart:'2026-10-05T07:45:00Z',coveredEnd:'2026-10-05T08:45:00Z'});assert.equal(assessCallSlot(i).available,true);});
+
+test('Impossible, reversed, duplicate and out-of-coverage holiday dates fail closed',()=>{
+ for(const patch of [{coveredFrom:'2026-02-30'},{coveredThrough:'2026-02-30'},{coveredFrom:'2027-01-01',coveredThrough:'2026-12-31'},{bankHolidays:['2026-02-30']},{bankHolidays:['2026-12-25','2026-12-25']},{bankHolidays:['2027-01-01']}]){const i=input();Object.assign(i.evidence,patch);assert.equal(assessCallSlot(i).reason,'EVIDENCE_UNAVAILABLE');}
+});
+test('Malformed calendar IDs, rows and busy records fail closed',()=>{
+ for(const alter of [i=>i.evidence.calendars[0]=null,i=>i.evidence.calendars[0].id='',i=>i.evidence.requiredCalendarIds[0]=' ',i=>i.evidence.calendars[0].busy=[null]]){const i=input();alter(i);assert.equal(assessCallSlot(i).reason,'EVIDENCE_UNAVAILABLE');}
+});

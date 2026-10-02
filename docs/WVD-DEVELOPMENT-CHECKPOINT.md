@@ -147,3 +147,22 @@ History has a bounded 200-entry proof capacity; production retention/scaling
 acceptance remains open. Digests are integrity/conflict checks, not an external
 tamper-proof audit service. Existing grants, review-publication configuration and
 UI patterns were adapted rather than adding a new provider or workflow engine.
+
+Calendar reuse review found that the candidate-screening slice duplicated the
+earlier single-slot availability proof. The batch now delegates to that existing
+contract, adds bounded candidate input, and preserves explicit evidence freshness
+and opening/closing buffer policy. Strict holiday-date and malformed-calendar
+checks are shared by both consumers. No live call site depended on the replaced
+synthetic batch input shape. This supersedes the earlier Salon-adaptation note.
+
+Verified progress-editing revision:
+cc73826d3e7111b9b516ed6fba7c72066db64385. All four push CI jobs passed
+(run 37049577937), and the offline container passed
+https://github.com/aquaviator/wvd/actions/runs/37049577883. Downloaded results
+match that source commit, Node 22.23.3 and Playwright 1.62.1 with liveAccess=false.
+The synthetic admin screenshot was inspected: progress update/history and UK
+times display correctly, refreshed counts are visible, and support drafts are
+empty after account change. Ownership guide revision
+cfa495611600812e3ecd5716c3717ef328cbbc13 passed CI and its mobile screenshot
+was inspected. Shared Calendar checks now pass all 203 applicable local portal
+tests; native Windows-only coverage remains verified in CI.

@@ -1,6 +1,7 @@
 // Pure availability proof: callers supply complete, verified provider evidence.
 // It neither fetches calendars nor reserves slots or creates events.
 const minute = 60000;
+const date=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T00:00:00Z'))&&new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value;
 const zone = new Intl.DateTimeFormat('en-GB', {
   timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit',
   weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'
@@ -24,9 +25,10 @@ export function assessCallSlot({start, now, evidence, policy}) {
   if (!evidence || evidence.complete!==true || !Array.isArray(evidence.calendars) || evidence.calendars.length===0 || !Array.isArray(evidence.requiredCalendarIds) || evidence.requiredCalendarIds.length===0 || !Array.isArray(evidence.bankHolidays)) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
   const observed=instant(evidence.observedAt);
   if (observed>current || current-observed>policy.maxEvidenceAgeMs) return {available:false,reason:'EVIDENCE_STALE'};
-  const ids=evidence.calendars.map(x=>x.id);
-  if (new Set(ids).size!==ids.length || new Set(evidence.requiredCalendarIds).size!==evidence.requiredCalendarIds.length || evidence.requiredCalendarIds.some(id=>!ids.includes(id))) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
-  if (evidence.bankHolidayRegion!=='england-and-wales' || typeof evidence.coveredFrom!=='string' || typeof evidence.coveredThrough!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(evidence.coveredFrom) || !/^\d{4}-\d{2}-\d{2}$/.test(evidence.coveredThrough) || !evidence.bankHolidays.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x))) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
+  if(evidence.calendars.some(x=>!x||typeof x!=='object'||Array.isArray(x)))return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
+  const ids=evidence.calendars.map(x=>x.id),validId=id=>typeof id==='string'&&Boolean(id.trim())&&id.length<=256;
+  if (!ids.every(validId)||!evidence.requiredCalendarIds.every(validId)||new Set(ids).size!==ids.length || new Set(evidence.requiredCalendarIds).size!==evidence.requiredCalendarIds.length || evidence.requiredCalendarIds.some(id=>!ids.includes(id))) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
+  if (evidence.bankHolidayRegion!=='england-and-wales' || !date(evidence.coveredFrom)||!date(evidence.coveredThrough)||evidence.coveredFrom>evidence.coveredThrough||new Set(evidence.bankHolidays).size!==evidence.bankHolidays.length||!evidence.bankHolidays.every(x=>date(x)&&x>=evidence.coveredFrom&&x<=evidence.coveredThrough)) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
   const first=local(begin), last=local(end);
   if (first.date<evidence.coveredFrom || first.date>evidence.coveredThrough) return {available:false,reason:'HOLIDAY_COVERAGE_MISSING'};
   if (begin-current<24*60*minute) return {available:false,reason:'MINIMUM_NOTICE'};
@@ -41,6 +43,7 @@ export function assessCallSlot({start, now, evidence, policy}) {
     const coverageStart=instant(calendar.coveredStart),coverageEnd=instant(calendar.coveredEnd);
     if (coverageStart>begin-15*minute || coverageEnd<end+15*minute) return {available:false,reason:'CALENDAR_COVERAGE_MISSING'};
     for (const event of calendar.busy) {
+      if(!event||typeof event!=='object'||Array.isArray(event))return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
       const busyStart=instant(event.start),busyEnd=instant(event.end);
       if (busyEnd<=busyStart) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
       if (begin<busyEnd+15*minute && end+15*minute>busyStart) return {available:false,reason:'CALENDAR_CONFLICT'};
