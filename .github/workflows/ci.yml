@@ -44,3 +44,13 @@ jobs:
           PGHOST: localhost
           PGUSER: postgres
           PGDATABASE: portal_test
+  portal-google:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: tools/portal-proof/package-lock.json }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci --prefix tools/portal-proof
+      - run: npm --prefix tools/portal-proof run test:firebase
