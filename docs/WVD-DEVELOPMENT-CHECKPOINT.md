@@ -125,3 +125,9 @@ The ownership/handover buyer guide extends the approved B15 theme using the
 existing public layout. It asks readers to clarify account control, reusable
 software licences, exports and practical transfer responsibilities; it creates
 no additional contractual entitlement or claim of completed legal review.
+
+Admin screenshot review confirmed the grouped overview and UK history times.
+It also exposed unsent support form text surviving a forced sign-out. Sign-out
+now resets those drafts before another account can use the page. Browser checks
+cover forced and explicit sign-out; the admin overview has an explicit refresh
+control so its activity counts can be reloaded after other users' writes.

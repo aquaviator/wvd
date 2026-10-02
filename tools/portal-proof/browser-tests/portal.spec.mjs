@@ -31,13 +31,17 @@ test('invitation, sign-in, ticket reply, feedback, approval and logout',async({p
   await page.getByRole('button',{name:'Approve this version'}).click();await expect(page.getByRole('status')).toContainText('Milestone approved');await expect(page.getByText('First milestone — approved')).toBeVisible();
   expect(await page.evaluate(()=>Object.keys(localStorage))).toEqual([]);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(page.locator('#workspace')).toBeHidden();await expect(page.getByRole('status')).toContainText('Signed out');
+  await page.getByLabel('Subject').fill('Private unsent owner draft');await page.getByLabel('Details').fill('Private unsent owner details');
+  await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(page.getByLabel('Subject')).toHaveValue('');await expect(page.getByLabel('Details')).toHaveValue('');await expect(page.locator('#workspace')).toBeHidden();await expect(page.getByRole('status')).toContainText('Signed out');
 });
 
 test('Admin can inspect both client projects while client approval stays protected',async({page})=>{
  const invitation=auth.invite('admin','admin@example.test');await auth.redeem(invitation.invitationToken,password,'synthetic-browser-setup');
  await page.goto('/');await page.locator('#login').getByLabel('Email').fill('admin@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
  const admin=page.locator('#admin-overview');await expect(admin).toBeVisible();await expect(admin).toContainText('Client: one');await expect(admin).toContainText('Client: two');
+ await expect(page.getByLabel('Subject')).toHaveValue('');await expect(page.getByLabel('Details')).toHaveValue('');
+ portal.createTicket({actorId:'admin',projectId:'Other private project',type:'question',subject:'Synthetic admin question',body:'Synthetic refresh test.',operationId:'admin-refresh'});
+ await admin.getByRole('button',{name:'Refresh overview'}).click();await expect(admin.getByRole('article').filter({hasText:'Other private project'})).toContainText('1 support ticket');
  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
  await admin.getByRole('article').filter({hasText:'Other private project'}).getByRole('button',{name:'Open project'}).click();await expect(page.locator('#projects')).toHaveValue('Other private project');
  await admin.getByRole('article').filter({hasText:'Client project'}).getByRole('button',{name:'Open project'}).click();await expect(page.locator('#projects')).toHaveValue('Client project');

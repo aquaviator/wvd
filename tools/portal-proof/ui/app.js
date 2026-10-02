@@ -5,7 +5,7 @@ let sessionToken=null,revision=0;
 const reviewTime=value=>new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(value))+' (UK time)';
 const status=message=>{el('status').textContent=message;};
 const messages={UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
-function signedOut(){sessionToken=null;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;}
+function signedOut(){sessionToken=null;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
 async function api(path,body,method='POST'){
   const headers={};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
   const options={method,headers,credentials:'omit',cache:'no-store'};
@@ -24,10 +24,11 @@ async function administration(){
   const overview=await read('admin-overview',{});
   if(token!==sessionToken)return;
   box.append(node('h2','WVD administration'),node('p','Client and project overview. Select a project to read feedback and support conversations.'));
+  const refresh=node('button','Refresh overview');refresh.type='button';refresh.addEventListener('click',async()=>{refresh.disabled=true;try{await administration();}catch(error){status(error.message);}finally{refresh.disabled=false;}});box.append(refresh);
   for(const business of overview.businesses){
     const section=node('section','');section.append(node('h3',`Client: ${business.businessId}`));
     for(const item of business.projects){
-      const card=node('article','');card.append(node('h4',item.projectId),node('p',`Stage: ${item.stage??'Awaiting update'}`),node('p',`Next step: ${item.nextStep??'Awaiting update'}`),node('p',`${item.awaitingReview} awaiting review · ${item.feedbackCount} feedback records · ${item.ticketCount} support tickets`));
+      const card=node('article','');card.append(node('h4',item.projectId),node('p',`Stage: ${item.stage??'Awaiting update'}`),node('p',`Next step: ${item.nextStep??'Awaiting update'}`),node('p',`${item.awaitingReview} awaiting review · ${item.feedbackCount} feedback ${item.feedbackCount===1?'record':'records'} · ${item.ticketCount} support ${item.ticketCount===1?'ticket':'tickets'}`));
       const open=node('button','Open project');open.type='button';open.addEventListener('click',()=>{el('projects').value=item.projectId;project().catch(error=>status(error.message));});card.append(open);section.append(card);
     }
     box.append(section);

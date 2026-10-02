@@ -120,7 +120,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.getByLabel('Subject').fill('Synthetic question');await page.getByLabel('Details').fill('Synthetic details');await page.getByRole('button',{name:'Send ticket',exact:true}).click();
  await page.waitForFunction(()=>document.getElementById('status').textContent==='Please sign in again.');
  assert.equal(await page.locator('#workspace').isVisible(),false);
- assert.equal((await backend.portal.snapshot()).tickets.length,0);
+ assert.equal((await backend.portal.snapshot()).tickets.length,0);assert.equal(await page.getByLabel('Subject').inputValue(),'');assert.equal(await page.getByLabel('Details').inputValue(),'');
  await capture('disabled-user-signed-out');
  await auth.createUser({uid:adminUid,email:adminUid+'@example.test',emailVerified:true,password});
  await page.locator('#login').getByLabel('Email').fill(adminUid+'@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
