@@ -81,3 +81,35 @@ to that restricted identity. Google project number and actual provider resource
 IDs must be inspected before writing executable bindings. Roles here are a concrete
 proposal, not proof of granted access or an activated workflow. Founder confirmation
 is needed at the browser action that creates this security-sensitive access.
+
+## Approved access and blocked activation
+
+The founder approved the scoped keyless access above on 2 October 2026. Approval
+is recorded; it does not need repeating. No grant has been made: the Google Cloud
+IAM console also displayed `Site Unavailable` after one retry. This environment
+has neither `gcloud` nor Google Application Default Credentials.
+
+Google's deployment-pipeline federation setup guide lists enabled project billing
+as a prerequisite before enabling the required APIs:
+https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines
+The Firebase console currently reports Spark. Do not attach billing or upgrade
+on the strength of the access approval. No billing exception has been verified.
+
+From an already authenticated Google Cloud terminal, run this **read-only** check:
+
+```sh
+node tools/portal-proof/google-preflight.mjs tools/portal-proof/firebase.development.json
+```
+
+It reuses the strict Firebase binding validator and only describes the specified
+project and its billing status. It prints project identifiers and prerequisite
+status, never credentials. Exit 2 means billing is not enabled; exit 1 means the
+check could not verify its inputs or Google access. Exit 0 still does not prove
+IAM grants or application integration. Share only that non-secret result for the
+next connection step. The script cannot enable APIs, modify policies, attach
+billing, provision data or deploy. A federated workflow remains inactive until
+these prerequisites and the actual restricted provider can be verified.
+
+Reuse decision: keep the existing Firebase Admin adapter, strict configuration
+validator and emulator verification. No new auth framework or cloud provider was
+added. This missing read-only prerequisite check is isolated from provisioning.
