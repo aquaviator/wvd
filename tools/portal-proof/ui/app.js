@@ -1,11 +1,11 @@
 import {createAuthClient} from './auth-client.js';
 let authClient;
 const el=id=>document.getElementById(id);
-let sessionToken=null,revision=0,adminAccess=false;
+let sessionToken=null,revision=0,adminAccess=false,displayedProjectId=null;
 const reviewTime=value=>new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(value))+' (UK time)';
 const status=message=>{el('status').textContent=message;};
 const messages={PROJECT_CONFLICT:'That project name is already in use. Reload the client overview before creating another project.',MILESTONE_CONFLICT:'That milestone already exists. Reload the project and use its review workflow.',REVIEW_IMMUTABLE:'That version already has different review content. Use a new version identifier.',PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
-function signedOut(){sessionToken=null;adminAccess=false;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
+function signedOut(){sessionToken=null;adminAccess=false;displayedProjectId=null;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
 async function api(path,body,method='POST'){
   const headers={};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
   const options={method,headers,credentials:'omit',cache:'no-store'};
@@ -51,7 +51,7 @@ async function administration(){
   box.hidden=false;
 }
 async function project(){
-  const id=projectId(),generation=++revision;el('overview').replaceChildren();el('tickets').replaceChildren();if(!id)return;
+  const id=projectId(),generation=++revision;if(id!==displayedProjectId){el('ticket').reset();displayedProjectId=id;}el('overview').replaceChildren();el('tickets').replaceChildren();if(!id)return;
   const [overview,tickets]=await Promise.all([read('overview',{projectId:id}),read('tickets',{projectId:id})]);
   if(generation!==revision||!sessionToken)return;
   const box=el('overview');box.append(node('h2','Project progress'),node('p',`Stage: ${overview.stage??'Awaiting update'}`),node('p',`Next step: ${overview.nextStep??'Awaiting update'}`));

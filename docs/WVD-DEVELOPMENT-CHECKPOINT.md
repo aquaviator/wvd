@@ -217,3 +217,9 @@ appropriate trusted workflow. The UI says this explicitly and refreshes its
 project selector after creation. New client onboarding and project-grant
 management remain separate unmet requirements. Creation is capped at 200 proof
 projects per business; aggregate capacity/release limits still apply.
+
+Unsent support drafts are now reset when the selected project changes, including
+opening a newly created project. Refreshing the same project preserves a draft.
+Explicit logout and forced sign-out still clear it. Browser checks cover project
+and account transitions so one client's unsent text cannot carry into another
+client's ticket form. No draft is persisted to browser storage.
