@@ -99,3 +99,10 @@ from Salon duration/conflict checks. It covers UK daylight saving, notice, gaps,
 weekends and supplied holiday/calendar coverage. No live availability or booking
 endpoint exists; Calendar permissions, full conflict-calendar discovery, fresh
 holiday data, reservation concurrency and Meet/delivery remain integration work.
+
+Read-only WVD Calendar ownership and free/busy connector checks are now recorded
+in WVD-CALENDAR-DEVELOPMENT.md. App credentials, all conflict calendars, holiday
+freshness, Meet and reservation/delivery remain unverified. Final guide screenshot
+review found an unnecessary analytics prompt; the guide routes now use the
+existing analytics-disabled layout option until an actual integration is ready.
+No site-wide analytics behaviour or marketing provider was changed.
