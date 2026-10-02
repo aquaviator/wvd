@@ -4,7 +4,7 @@ The founder's instruction on 2 October 2026 selects WVD-built software without
 additional backend vendor accounts, service subscriptions or provider tie-in. This replaces
 the proposed Supabase hosted route. No Supabase project was provisioned.
 
-## Hosting direction: existing Google infrastructure
+## Platform direction: existing Google infrastructure
 
 The founder subsequently instructed WVD to use the same Google infrastructure
 locations as Human V1 and PECP. Google is the selected infrastructure direction;
@@ -13,6 +13,20 @@ WVD-controlled Google ownership, access and infrastructure where suitable, while
 keeping WVD identities, data, deployment targets and permissions separate from
 Human V1 and PECP. This does not authorise writing into either product's database
 or changing its deployment. It does not authorise new billable resources.
+
+The founder further clarified that Google is suitable for data management,
+authentication and storage, including data prepared for search and AI retrieval.
+The constraint is to avoid additional providers/subscriptions, not to rebuild
+existing Google platform capabilities unnecessarily. Assess Firebase Auth and
+Google database/file storage for the deployed portal using existing ownership
+and verified costs. Keep WVD business logic, permission/version contracts and
+export formats under WVD control. The local auth/SQLite implementation remains
+a tested development option, not a mandate to replace Firebase Auth.
+
+Public service/content data may support search and AI retrieval. Private client
+projects, tickets, credentials and approvals must remain outside public indexes
+and unauthorised AI retrieval. The particular search/AI services, data access and
+retention rules require design and verification; none is enabled by this record.
 
 Repository evidence checked on 2 October 2026:
 
