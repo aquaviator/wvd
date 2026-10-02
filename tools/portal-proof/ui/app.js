@@ -2,6 +2,7 @@ import {createAuthClient} from './auth-client.js';
 let authClient;
 const el=id=>document.getElementById(id);
 let sessionToken=null,revision=0;
+const reviewTime=value=>new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(value))+' (UK time)';
 const status=message=>{el('status').textContent=message;};
 const messages={UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
 function signedOut(){sessionToken=null;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();}
@@ -26,7 +27,7 @@ async function project(){
   if(!overview.approvalHistory.length)box.append(node('p','No approvals recorded.'));
   for(const receipt of overview.approvalHistory){
     const details=document.createElement('details');details.className='approval-record';
-    details.append(node('summary',`${receipt.milestoneId} — version ${receipt.versionId}`),node('p',`Approved: ${new Date(receipt.timestamp).toLocaleString()}`));
+    details.append(node('summary',`${receipt.milestoneId} — version ${receipt.versionId}`),node('p',`Approved: ${reviewTime(receipt.timestamp)}`));
     if(receipt.review)details.append(node('h4',receipt.review.title),node('p',receipt.review.body));
     else details.append(node('p','This legacy approval has no stored review text.'));
     box.append(details);
@@ -35,7 +36,7 @@ async function project(){
   if(!overview.feedbackHistory.length)box.append(node('p','No feedback recorded.'));
   for(const feedback of overview.feedbackHistory){
     const card=node('article','');card.className='feedback-record';
-    card.append(node('h4',`${feedback.milestoneId} — version ${feedback.versionId}`),node('p',`Saved: ${new Date(feedback.timestamp).toLocaleString()}`),node('p',feedback.body));box.append(card);
+    card.append(node('h4',`${feedback.milestoneId} — version ${feedback.versionId}`),node('p',`Saved: ${reviewTime(feedback.timestamp)}`),node('p',feedback.body));box.append(card);
   }
   box.append(node('h3','Awaiting your review'));if(!overview.awaitingClient.length)box.append(node('p','Nothing awaiting review.'));
   for(const m of overview.awaitingClient){

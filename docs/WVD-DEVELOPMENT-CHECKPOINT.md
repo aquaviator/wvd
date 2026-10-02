@@ -59,3 +59,37 @@ CI. The first history browser run found an ambiguous test selector; the next
 revision scopes that selector to the approval record. Inspect exact commit runs and
 bounded evidence before recording integration success. GitHub artifacts expire
 after one day; run results remain the durable verification reference.
+
+## Recovered brief bindings
+
+Read the actual authoritative Drive control records on 2 October 2026, rather
+than relying on placeholder links in the earlier handover:
+
+- WVD-PF009-Product-Blueprint-v0.1.1; observed modification
+  2026-10-01T14:15:59.315Z. The separate approval record establishes approval of
+  this baseline; its original candidate wording is historical.
+- WVD PF-009 Blueprint Approval Record v0.1.0; observed modification
+  2026-10-01T16:14:29.521Z.
+- WVD-WEB-AMENDMENT-v0.1.2; observed modification 2026-10-02T08:49:25.111Z.
+  Adds the client/admin portal, booking and the Hospitality/Salon scope.
+- WVD-PF010-WEBSITE-EXECUTION-v0.1.0; observed modification
+  2026-10-01T16:11:19.633Z.
+- WVD PF-024 Website Bounded Delivery Task Packs v0.1.0; observed modification
+  2026-10-01T16:14:47.666Z.
+
+Drive remains the business-document authority. Latest explicit founder directions
+supply development-push authority and the Google/reuse/no-new-subscriptions
+implementation direction. Historical preparation-only restrictions are not used
+to request repeated development permission. Release gates, unsupported public
+claims, external spend and independent-verification requirements remain distinct.
+No source record was rewritten or promoted to a new verification state.
+
+Buyer guides implement the B15 guidance themes and amended launch content as
+non-production content: a website brief checklist and Care versus development.
+They introduce no numerical promises or new entitlements. Portal history dates
+use explicit Europe/London formatting. Current 22-route build, content validation
+and 15 site unit tests passed locally; new route accessibility/mobile checks and
+portal browser evidence are verified by CI. Prior history/backup commit
+2ee4cd1ed79f6ba06d24f73bb35fbb0e26ff696c passed all four CI checks and container
+run https://github.com/aquaviator/wvd/actions/runs/37045427568; downloaded evidence
+was inspected and bound to that exact commit.
