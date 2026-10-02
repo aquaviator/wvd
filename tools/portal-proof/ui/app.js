@@ -1,4 +1,5 @@
-'use strict';
+import {createAuthClient} from './auth-client.js';
+let authClient;
 const el=id=>document.getElementById(id);
 let sessionToken=null,revision=0;
 const status=message=>{el('status').textContent=message;};
@@ -38,11 +39,22 @@ async function project(){
     }catch(error){status(error.message);open.disabled=false;}});card.append(open);el('tickets').append(card);
   }
 }
-el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await api('/api/auth/login',input);sessionToken=data.sessionToken;el('login').reset();const projects=await read('projects',{});el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':'No projects are assigned to your account.');await project();});});
-el('redeem').addEventListener('submit',event=>{event.preventDefault();busy(el('redeem'),async()=>{await api('/api/auth/redeem',Object.fromEntries(new FormData(el('redeem'))));el('redeem').reset();el('invite-panel').open=false;status('Password set. You can now sign in.');});});
-el('logout').addEventListener('click',async()=>{try{await api('/api/auth/logout',{});signedOut();status('Signed out.');}catch(error){status(error.message);}});
+el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();let projects;try{projects=await read('projects',{});}catch(error){signedOut();throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':'No projects are assigned to your account.');await project();});});
+el('redeem').addEventListener('submit',event=>{event.preventDefault();busy(el('redeem'),async()=>{await authClient.redeem(Object.fromEntries(new FormData(el('redeem'))));el('redeem').reset();el('invite-panel').open=false;status('Password set. You can now sign in.');});});
+el('logout').addEventListener('click',async()=>{try{await authClient.logout();signedOut();status('Signed out.');}catch(error){status(error.message);}});
 el('projects').addEventListener('change',()=>{project().catch(error=>status(error.message));});
 el('ticket').addEventListener('submit',event=>{event.preventDefault();busy(el('ticket'),async()=>{await api('/api/portal/ticket',{...Object.fromEntries(new FormData(el('ticket'))),projectId:projectId(),operationId:crypto.randomUUID()});el('ticket').reset();status('Ticket saved.');await project();});});
 // Tokens are held in memory only. An optional invitation fragment is removed
 // immediately so it cannot appear in subsequent page/referrer URLs.
 if(location.hash.startsWith('#invite=')){const code=location.hash.slice(8);history.replaceState(null,'',location.pathname);if(/^[A-Za-z0-9_-]{43}$/.test(code)){el('redeem').elements.invitationToken.value=code;el('invite-panel').open=true;}}
+
+try {
+  const config=await api('/auth-config.json',null,'GET');
+  authClient=createAuthClient(config,{request:api});
+  if(config.mode==='firebase-emulator'){
+    el('invite-panel').hidden=true;
+    el('account').querySelector('h1').textContent='Development project workspace';
+    status('Firebase emulator: synthetic development accounts only.');
+  }
+  el('login').querySelector('button').disabled=false;
+} catch { status('Sign-in is unavailable. Please try again later.'); }

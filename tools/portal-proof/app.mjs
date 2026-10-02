@@ -1,26 +1,37 @@
 import {createServer} from 'node:http';
 import {readFileSync} from 'node:fs';
+import {firebaseConfiguration} from './firebase-config.mjs';
 import {createPortalHandler} from './http.mjs';
 
 const assets = new Map([
   ['/', ['text/html; charset=utf-8',readFileSync(new URL('./ui/index.html',import.meta.url))]],
   ['/app.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/app.js',import.meta.url))]],
+  ['/auth-client.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/auth-client.js',import.meta.url))]],
   ['/style.css', ['text/css; charset=utf-8',readFileSync(new URL('./ui/style.css',import.meta.url))]]
 ]);
-export function createApplication({portal,auth,allowedOrigin}) {
+export function createApplication({portal,auth,allowedOrigin,firebaseEmulator}) {
   if (new URL(allowedOrigin).origin!==allowedOrigin) throw new Error('INVALID_CONFIGURATION');
+  let authConfig={mode:'local'},authConnect='';
+  if(firebaseEmulator!==undefined) {
+    const config=firebaseConfiguration(firebaseEmulator);
+    if(config.mode!=='emulator'||!/^http:\/\/(127\.0\.0\.1|localhost)(:[1-9][0-9]{0,4})?$/.test(allowedOrigin))throw Error('ISOLATED_EMULATORS_REQUIRED');
+    authConnect='http://'+process.env.FIREBASE_AUTH_EMULATOR_HOST;
+    authConfig={mode:'firebase-emulator',authOrigin:authConnect};
+  }
   const portalHandler=createPortalHandler({portal,allowedOrigin,resolveSession:raw=>auth.resolveSession(raw)});
   const server=createServer({maxHeaderSize:16384},async (request,response) => {
     const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',
-      'Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
+      'Referrer-Policy':'no-referrer','Content-Security-Policy':`default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' ${authConnect}; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`};
     const send=(status,data) => { response.writeHead(status,{...headers,'Content-Type':'application/json; charset=utf-8'}); response.end(JSON.stringify(data)); };
     try {
       if (typeof request.url!=='string' || request.url.length>4096) return send(400,{error:'INVALID_REQUEST'});
       const url=new URL(request.url,'http://localhost');
       if (url.pathname.startsWith('/api/portal/')) return portalHandler(request,response);
+      if(url.pathname==='/auth-config.json'&&!url.search&&request.method==='GET')return send(200,authConfig);
       if (assets.has(url.pathname) && !url.search && request.method==='GET') {
         const [type,body]=assets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(body);return;
       }
+      if(firebaseEmulator!==undefined&&url.pathname.startsWith('/api/auth/'))return send(404,{error:'NOT_FOUND'});
       const routes={'/api/auth/login':['email','password'],'/api/auth/redeem':['invitationToken','password'],'/api/auth/logout':[]};
       const fields=Object.hasOwn(routes,url.pathname)?routes[url.pathname]:null;
       if (!fields) return send(404,{error:'NOT_FOUND'});

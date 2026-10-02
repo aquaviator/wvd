@@ -6,6 +6,7 @@ not a production release or proof of a connected application runtime.
 | Binding | Verified value |
 | --- | --- |
 | Project | `wvd-development` (WVD Development) |
+| Project number | `6616382131`, founder verified with Google CLI on 2 October 2026 |
 | Console | https://console.firebase.google.com/project/wvd-development/overview |
 | Billing | Spark, console states no-cost $0/month |
 | Firestore | Standard edition, `(default)` database |
@@ -113,3 +114,11 @@ these prerequisites and the actual restricted provider can be verified.
 Reuse decision: keep the existing Firebase Admin adapter, strict configuration
 validator and emulator verification. No new auth framework or cloud provider was
 added. This missing read-only prerequisite check is isolated from provisioning.
+
+Founder-provided Google CLI output on 2 October 2026 verifies project lifecycle
+`ACTIVE`, project number `6616382131`, and `billingEnabled: false`. The local
+Windows SDK works; the original Node launcher did not resolve its PowerShell
+wrapper. The check now launches a fixed PowerShell command on Windows and passes
+validated arguments separately as JSON, without changing execution policy.
+Windows CI verifies the wrapper from a directory containing spaces. Local Google
+CLI sign-in remains distinct from application ADC and does not create IAM grants.
