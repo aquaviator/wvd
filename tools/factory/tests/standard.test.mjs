@@ -27,6 +27,10 @@ test('new project plans inherit unattended verification without granting preview
  assert.equal(plan.developmentVerification.liveCredentialsAllowed,false);
  assert.equal(plan.developmentVerification.productionDeploymentAllowed,false);
  assert.equal(plan.provisioning,false);
+ assert.equal(plan.developmentContinuation.afterVerifiedSlice,'continue-next-in-scope-item');
+ assert.equal(plan.developmentContinuation.productionApprovalRequired,true);
+ plan.developmentContinuation.productionApprovalRequired=false;
+ assert.equal(projectPlan(fixture()).developmentContinuation.productionApprovalRequired,true);
  plan.developmentVerification.liveCredentialsAllowed=true;
  assert.equal(projectPlan(fixture()).developmentVerification.liveCredentialsAllowed,false);
 });

@@ -2,6 +2,8 @@
 
 Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
 
+- Continue authorised development from the agreed brief and current backlog without waiting for another continue instruction. After each verified slice, select and implement the next in-scope item; progress updates and completed slices are not permission gates. Ask the founder only when missing information, access or a decision genuinely blocks the next action, and continue independent in-scope work while awaiting an answer. Do not invent requirements or broaden the brief. Stop when the brief is complete, the founder asks to stop, or no authorised work can proceed without founder input. Production deployment and new external spend still require separate approval.
+
 - Use the established Google/Firebase platform and existing service connections.
 - Do not add another provider or service subscription as a shortcut.
 - Inspect `tools/factory/reuse-catalogue.json` and the relevant existing source

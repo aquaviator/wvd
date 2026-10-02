@@ -1,4 +1,4 @@
-# WVD development standard 1.1.0
+# WVD development standard 1.2.0
 
 Authority: founder instructions on 2 October 2026. Applies to WVD development
 and new product/project onboarding. Existing product constitutions remain
@@ -101,3 +101,13 @@ A CI job is not an always-on interactive browser preview, and control of that
 job does not imply remote control of the founder's Windows machine. A shared
 interactive runtime must be separately connected and cost-verified before it is
 claimed available. Existing £0 spend and separate production approval remain.
+
+## Continuous development from the brief
+
+Founder instruction on 2 October 2026: Continue authorised development from the agreed brief and current backlog without waiting for another continue instruction. After each verified slice, select and implement the next in-scope item; progress updates and completed slices are not permission gates. Ask the founder only when missing information, access or a decision genuinely blocks the next action, and continue independent in-scope work while awaiting an answer. Do not invent requirements or broaden the brief. Stop when the brief is complete, the founder asks to stop, or no authorised work can proceed without founder input. Production deployment and new external spend still require separate approval.
+
+Use the agreed brief and latest founder corrections as scope authority. Consult
+existing project records and code to select the next unmet acceptance criterion.
+Keep a current checkpoint of completed work, verification and remaining work so
+execution can resume from the brief after a session interruption. Do not claim
+that a chat turn creates an always-running background worker.
