@@ -112,7 +112,7 @@ async function project(){
   for(const ticket of tickets){
     const card=node('article','');card.append(node('h3',ticket.subject),node('p',ticket.body));
     const careLabel=value=>({'needs-review':'Needs review','care-included':'Included in agreed Care','quote-required':'Separate quote required'})[value];
-    if(ticket.triage)card.append(node('h4','WVD assessment'),node('p',`Priority: ${ticket.triage.priority}`),node('p',`Care scope: ${careLabel(ticket.triage.careAssessment)}`),node('p',ticket.triage.note),node('p',`Assessed: ${reviewTime(ticket.triage.timestamp)}`));
+    if(ticket.triage){const note=node('p',ticket.triage.note);note.className='assessment-note';card.append(node('h4','WVD assessment'),node('p',`Priority: ${ticket.triage.priority}`),node('p',`Care scope: ${careLabel(ticket.triage.careAssessment)}`),note,node('p',`Assessed: ${reviewTime(ticket.triage.timestamp)}`));}
     else card.append(node('p','Awaiting WVD assessment.'));
     if(ticket.triageHistory.length){const history=document.createElement('details');history.append(node('summary','Assessment history'));for(const entry of ticket.triageHistory)history.append(node('p',`${reviewTime(entry.timestamp)} — ${entry.priority}; ${careLabel(entry.careAssessment)}`),node('p',entry.note));card.append(history);}
     if(adminAccess){
