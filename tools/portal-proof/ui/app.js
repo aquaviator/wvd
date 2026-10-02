@@ -39,10 +39,10 @@ async function administration(){
   }
   if(overview.businesses.length){
     const details=document.createElement('details');details.className='create-project';details.append(node('summary','Create a project for an existing client'));
-    const form=document.createElement('form'),client=document.createElement('select');client.required=true;
+    const form=document.createElement('form'),client=document.createElement('select');client.id='new-project-client';client.required=true;
     const placeholder=node('option','Choose an existing client');placeholder.value='';placeholder.disabled=true;placeholder.selected=true;client.append(placeholder);
     for(const business of overview.businesses){const option=node('option',business.businessId);option.value=business.businessId;client.append(option);}
-    const clientLabel=node('label','Client');clientLabel.append(client);form.append(clientLabel);
+    const clientLabel=node('label','Client');clientLabel.htmlFor=client.id;form.append(clientLabel,client);
     const fields={};for(const [key,text,maximum,tag] of [['projectId','New project name',128,'input'],['stage','Starting stage',200,'input'],['nextStep','First next step',2000,'textarea']]){const input=document.createElement(tag);input.required=true;input.maxLength=maximum;fields[key]=input;const label=node('label',text);label.append(input);form.append(label);}
     form.append(node('p','Client account access is assigned separately. Creating a project does not change existing account permissions.'),node('button','Create project'));
     form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{const created=await api('/api/portal/create-project',{businessId:client.value,...Object.fromEntries(Object.entries(fields).map(([key,input])=>[key,input.value]))});await administration();el('projects').value=created.projectId;await project();status('Project created. Client access is assigned separately.');});});details.append(form);box.append(details);
