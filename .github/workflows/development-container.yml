@@ -22,6 +22,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   portal-container:
+    # The development push already verifies this same-repository PR head.
+    if: github.event_name == 'push' || github.head_ref != 'development/shared-factory-bootstrap' || github.event.pull_request.head.repo.full_name != github.repository
     # Standard public-repository runner; no larger/paid runner or published image.
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -35,6 +37,7 @@ jobs:
           SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           mkdir -p evidence
+          sudo chown 0:0 evidence
           docker image inspect wvd-development-test --format '{{.Id}}' > evidence/image-id.txt
           docker run --rm --init --network none --shm-size 1g --cap-drop ALL --security-opt no-new-privileges --memory 4g --cpus 2 -e WVD_SOURCE_COMMIT="$SOURCE_COMMIT" -v "$PWD/evidence:/evidence" wvd-development-test
       - name: Record visible result

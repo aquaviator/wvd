@@ -3,6 +3,7 @@ import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 // The container runner never loads live bindings, ADC, SDK profiles or secrets.
 for(const key of ['GOOGLE_APPLICATION_CREDENTIALS','GOOGLE_CLOUD_PROJECT','GCLOUD_PROJECT','FIREBASE_TOKEN'])if(process.env[key])throw Error('LIVE_CREDENTIAL_ENVIRONMENT_FORBIDDEN');
 const evidence='/evidence';mkdirSync(evidence,{recursive:true});
+writeFileSync(evidence+'/runner-started.json',JSON.stringify({sourceCommit:process.env.WVD_SOURCE_COMMIT??'local',syntheticOnly:true}));
 const version=JSON.parse(readFileSync('node_modules/@playwright/test/package.json','utf8')).version;
 if(version!=='1.62.1')throw Error('PLAYWRIGHT_IMAGE_VERSION_MISMATCH');
 const results=[];
