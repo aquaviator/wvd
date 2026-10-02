@@ -37,8 +37,8 @@ jobs:
           SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           mkdir -p evidence
-          sudo chown 0:0 evidence
           docker image inspect wvd-development-test --format '{{.Id}}' > evidence/image-id.txt
+          sudo chown 0:0 evidence
           docker run --rm --init --network none --shm-size 1g --cap-drop ALL --security-opt no-new-privileges --memory 4g --cpus 2 -e WVD_SOURCE_COMMIT="$SOURCE_COMMIT" -v "$PWD/evidence:/evidence" wvd-development-test
       - name: Record visible result
         if: always()
