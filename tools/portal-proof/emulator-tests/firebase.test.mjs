@@ -34,6 +34,8 @@ test('real Google emulators: identity, product isolation, concurrent atomic writ
  await backend.portal.replaceVersion('m','v2');const before=await backend.portal.snapshot();await assert.rejects(()=>backend.portal.approve({...approval,operationId:'stale'}),/VERSION_CONFLICT/);assert.deepEqual(await backend.portal.snapshot(),before);
  await Promise.all(['a','b','c'].map(id=>backend.portal.createTicket(ticket(id))));
  const rehearsal=rehearsePortalBackup(await exportPortalBackup(backend.portal,config),config);assert.equal(rehearsal.verified,true);assert.equal(rehearsal.receipts,1);assert.equal(rehearsal.tickets,3);assert.equal(rehearsal.liveWrites,false);
+ const progressBefore=await backend.portal.projectOverview('admin','p');const progressInput={actorId:'admin',projectId:'p',stage:'Build',nextStep:'Review the preview',expectedDigest:progressBefore.progressDigest};
+ const progressResults=await Promise.allSettled(['progress-a','progress-b'].map(operationId=>backend.portal.updateProjectProgress({...progressInput,operationId})));assert.equal(progressResults.filter(x=>x.status==='fulfilled').length,1);assert.match(progressResults.find(x=>x.status==='rejected').reason.message,/PROGRESS_CONFLICT/);assert.equal((await backend.portal.projectOverview('owner','p')).progressHistory.length,1);
  const adminRevision=await backend.portal.accessRevision();assert.equal((await backend.portal.adminOverview('admin')).businesses.find(x=>x.businessId==='b').projects[0].ticketCount,3);assert.equal(await backend.portal.accessRevision(),adminRevision);await assert.rejects(()=>other.portal.adminOverview('admin'),/ACCESS_DENIED/);await assert.rejects(()=>backend.portal.adminOverview('member'),/ACCESS_DENIED/);
  const state=await backend.portal.snapshot();assert.equal(state.tickets.length,3);assert.equal(state.receipts.length,1);assert.equal(state.outbox.length,4);
  const reopened=createFirebaseBackend(config);t.after(()=>reopened.close());assert.deepEqual(await reopened.portal.snapshot(),state);
@@ -125,7 +127,9 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await auth.createUser({uid:adminUid,email:adminUid+'@example.test',emailVerified:true,password});
  await page.locator('#login').getByLabel('Email').fill(adminUid+'@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
  await page.locator('#admin-overview').getByText('Client: b',{exact:true}).waitFor();await page.locator('#admin-overview').getByText('Client: other',{exact:true}).waitFor();
- assert.equal(await page.locator('#projects option').count(),2);await capture('admin-client-overview');
+ assert.equal(await page.locator('#projects option').count(),2);
+ await page.getByLabel('Project stage',{exact:true}).fill('Client review');await page.getByLabel('Next project step',{exact:true}).fill('Review the next synthetic milestone');await page.getByRole('button',{name:'Save progress',exact:true}).click();await page.waitForFunction(()=>document.getElementById('status').textContent==='Project progress saved.');
+ await page.getByText('Progress history',{exact:true}).click();assert.equal((await backend.portal.projectOverview(adminUid,'p')).progressHistory.length,1);await capture('admin-client-overview');
  await page.getByRole('button',{name:'Sign out',exact:true}).click();assert.equal(await page.locator('#admin-overview').isVisible(),false);assert.equal(await page.locator('#admin-overview').textContent(),'');
  assert.deepEqual(errors,[]);
 });

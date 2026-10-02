@@ -1,5 +1,6 @@
 import {validateOperatorAudit} from './operator-audit.mjs';
 import {reviewDigest} from './review.mjs';
+import {progressDigest} from './progress.mjs';
 // Shared state integrity checks for local and Google persistence adapters.
 const collections = ['identities','projects','memberships','milestones','receipts','outbox','feedback','tickets','replies'];
 const string = value => typeof value === 'string' && value.length > 0;
@@ -64,6 +65,18 @@ export function validatePortalState(state) {
       records.set(record.id,{record,eventType}); operations.add(record.operationId);
     }
   }
+  const progressIds=new Set();
+  for(const project of state.projects) {
+    if(project.progressHistory===undefined)continue;
+    if(!Array.isArray(project.progressHistory)||project.progressHistory.length>200)corrupt();
+    let previous;
+    for(const entry of project.progressHistory) {
+      const fields=['actorId','businessId','digest','expectedDigest','id','kind','nextStep','operationId','projectId','stage','timestamp'];
+      if(!entry||typeof entry!=='object'||Array.isArray(entry)||Object.keys(entry).sort().join(',')!==fields.sort().join(',')||entry.kind!=='progress'||!string(entry.id)||records.has(entry.id)||progressIds.has(entry.id)||!string(entry.operationId)||entry.operationId.length>128||operations.has(entry.operationId)||!identities.has(entry.actorId)||entry.projectId!==project.id||entry.businessId!==project.businessId||!string(entry.stage)||!entry.stage.trim()||entry.stage.length>200||!string(entry.nextStep)||!entry.nextStep.trim()||entry.nextStep.length>2000||typeof entry.timestamp!=='string'||!Number.isFinite(Date.parse(entry.timestamp))||typeof entry.expectedDigest!=='string'||!/^[a-f0-9]{64}$/.test(entry.expectedDigest)||entry.digest!==progressDigest(entry)||(previous!==undefined&&entry.expectedDigest!==previous))corrupt();
+      previous=entry.digest;operations.add(entry.operationId);progressIds.add(entry.id);
+    }
+    if(previous!==undefined&&previous!==progressDigest({projectId:project.id,stage:project.stage,nextStep:project.nextStep}))corrupt();
+  }
   for (const intent of state.outbox) {
     const linked = records.get(intent.receiptId);
     if (!linked || intent.id !== intent.receiptId || intent.type !== linked.eventType) corrupt();
@@ -74,4 +87,3 @@ export function validatePortalState(state) {
   validateOperatorAudit(state);
   return state;
 }
-

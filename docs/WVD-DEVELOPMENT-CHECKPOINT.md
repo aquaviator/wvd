@@ -131,3 +131,19 @@ It also exposed unsent support form text surviving a forced sign-out. Sign-out
 now resets those drafts before another account can use the page. Browser checks
 cover forced and explicit sign-out; the admin overview has an explicit refresh
 control so its activity counts can be reloaded after other users' writes.
+
+## Admin progress updates
+
+Active WVD admins can update bounded stage/next-step text through the existing
+server boundary and shared persistence adapters. Each write retains actor,
+project/business, server time and exact text in project progress history. A
+SHA-256 binding to the previously read values prevents stale overwrites; operation
+IDs bind exact retries and cannot cross approval, feedback or ticket writes.
+These records remain part of the same aggregate transaction and scoped backup.
+Client views show progress history without internal actor/operation identifiers.
+Owner/Member accounts cannot write progress, and no milestone status or approval
+receipt is changed. Progress writes create no email promise or delivery intent.
+History has a bounded 200-entry proof capacity; production retention/scaling
+acceptance remains open. Digests are integrity/conflict checks, not an external
+tamper-proof audit service. Existing grants, review-publication configuration and
+UI patterns were adapted rather than adding a new provider or workflow engine.

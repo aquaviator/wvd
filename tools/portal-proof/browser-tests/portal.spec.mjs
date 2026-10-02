@@ -44,6 +44,8 @@ test('Admin can inspect both client projects while client approval stays protect
  await admin.getByRole('button',{name:'Refresh overview'}).click();await expect(admin.getByRole('article').filter({hasText:'Other private project'})).toContainText('1 support ticket');
  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
  await admin.getByRole('article').filter({hasText:'Other private project'}).getByRole('button',{name:'Open project'}).click();await expect(page.locator('#projects')).toHaveValue('Other private project');
+ await page.getByLabel('Project stage',{exact:true}).fill('Build');await page.getByLabel('Next project step',{exact:true}).fill('Review the synthetic preview');await page.getByRole('button',{name:'Save progress',exact:true}).click();await expect(page.getByRole('status')).toContainText('Project progress saved');await expect(page.locator('#overview')).toContainText('Stage: Build');
+ await page.getByText('Progress history',{exact:true}).click();await expect(page.locator('#overview')).toContainText('Review the synthetic preview');
  await admin.getByRole('article').filter({hasText:'Client project'}).getByRole('button',{name:'Open project'}).click();await expect(page.locator('#projects')).toHaveValue('Client project');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(admin).toBeHidden();await expect(admin).toBeEmpty();

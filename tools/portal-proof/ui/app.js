@@ -1,11 +1,11 @@
 import {createAuthClient} from './auth-client.js';
 let authClient;
 const el=id=>document.getElementById(id);
-let sessionToken=null,revision=0;
+let sessionToken=null,revision=0,adminAccess=false;
 const reviewTime=value=>new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(value))+' (UK time)';
 const status=message=>{el('status').textContent=message;};
-const messages={UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
-function signedOut(){sessionToken=null;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
+const messages={PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
+function signedOut(){sessionToken=null;adminAccess=false;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
 async function api(path,body,method='POST'){
   const headers={};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
   const options={method,headers,credentials:'omit',cache:'no-store'};
@@ -20,7 +20,8 @@ const read=(action,params)=>api(`/api/portal/${action}?${new URLSearchParams(par
 async function administration(){
   const token=sessionToken,box=el('admin-overview');box.replaceChildren();box.hidden=true;
   const access=await read('workspace-access',{});
-  if(!access.admin||token!==sessionToken)return;
+  if(token!==sessionToken)return;adminAccess=access.admin===true;
+  if(!adminAccess)return;
   const overview=await read('admin-overview',{});
   if(token!==sessionToken)return;
   box.append(node('h2','WVD administration'),node('p','Client and project overview. Select a project to read feedback and support conversations.'));
@@ -41,6 +42,14 @@ async function project(){
   const [overview,tickets]=await Promise.all([read('overview',{projectId:id}),read('tickets',{projectId:id})]);
   if(generation!==revision||!sessionToken)return;
   const box=el('overview');box.append(node('h2','Project progress'),node('p',`Stage: ${overview.stage??'Awaiting update'}`),node('p',`Next step: ${overview.nextStep??'Awaiting update'}`));
+  if(adminAccess){
+    const form=document.createElement('form');form.append(node('h3','Update project progress'));
+    const stage=document.createElement('input');stage.required=true;stage.maxLength=200;stage.value=overview.stage??'';
+    const nextStep=document.createElement('textarea');nextStep.required=true;nextStep.maxLength=2000;nextStep.value=overview.nextStep??'';
+    const stageLabel=node('label','Project stage'),nextLabel=node('label','Next project step');stageLabel.append(stage);nextLabel.append(nextStep);form.append(stageLabel,nextLabel,node('button','Save progress'));
+    form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/update-progress',{projectId:id,stage:stage.value,nextStep:nextStep.value,expectedDigest:overview.progressDigest,operationId:crypto.randomUUID()});await administration();await project();status('Project progress saved.');});});box.append(form);
+  }
+  if(overview.progressHistory.length){const history=document.createElement('details');history.append(node('summary','Progress history'));for(const item of overview.progressHistory)history.append(node('p',`${reviewTime(item.timestamp)} — ${item.stage}`),node('p',item.nextStep));box.append(history);}
   box.append(node('h3','Completed milestones'));for(const m of overview.completedMilestones)box.append(node('p',`${m.id} — approved`));
   box.append(node('h3','Approval history'));
   if(!overview.approvalHistory.length)box.append(node('p','No approvals recorded.'));

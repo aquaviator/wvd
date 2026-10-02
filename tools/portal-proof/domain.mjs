@@ -1,13 +1,15 @@
 import {reviewDigest} from './review.mjs';
+import {progressDigest} from './progress.mjs';
 // Provider-free executable model. This is not an authentication service or database.
 const denied = () => { throw new Error('ACCESS_DENIED'); };
-const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues']);
+const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues', 'manage-progress']);
 
 export function authorise(state, actorId, projectId, action) {
   if (!actions.has(action)) denied();
   const identity = state.identities.find(x => x.id === actorId && x.active);
   const project = state.projects.find(x => x.id === projectId);
   if (!identity || !project) denied();
+  if(action==='manage-progress'){if(identity.wvdAdmin===true)return project;denied();}
   // Administration is separate from client approval and colleague management.
   if (identity.wvdAdmin && ['view', 'feedback', 'ticket'].includes(action)) return project;
   const membership = state.memberships.find(x =>
@@ -42,6 +44,20 @@ export class PortalProof {
     const identity=this.#state.identities.find(x=>x.id===actorId&&x.active);
     if(!identity)denied();
     return {admin:identity.wvdAdmin===true};
+  }
+  updateProjectProgress({actorId,projectId,stage,nextStep,expectedDigest,operationId}) {
+    const project=authorise(this.#state,actorId,projectId,'manage-progress');
+    this.#text(stage,200);this.#text(nextStep,2000);
+    if(typeof expectedDigest!=='string'||!/^[a-f0-9]{64}$/.test(expectedDigest))throw Error('INVALID_PROGRESS');
+    const payload={kind:'progress',actorId,projectId,stage,nextStep,expectedDigest,operationId};
+    const retry=this.#retry(operationId,payload);if(retry)return retry;
+    if(progressDigest({projectId,stage:project.stage,nextStep:project.nextStep})!==expectedDigest)throw Error('PROGRESS_CONFLICT');
+    if((project.progressHistory?.length??0)>=200)throw Error('PROGRESS_CAPACITY');
+    const count=this.#state.projects.reduce((sum,x)=>sum+(x.progressHistory?.length??0),0);
+    const record={...payload,id:`progress-${count+1}`,businessId:project.businessId,timestamp:this.#timestamp(),digest:progressDigest({projectId,stage,nextStep})};
+    const next=structuredClone(this.#state),target=next.projects.find(x=>x.id===projectId);
+    target.stage=stage;target.nextStep=nextStep;target.progressHistory??=[];target.progressHistory.push(record);
+    this.#state=next;return structuredClone(record);
   }
   adminOverview(actorId) {
     if(!this.workspaceAccess(actorId).admin)denied();
@@ -111,6 +127,8 @@ export class PortalProof {
     const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:reviews?.find(x=>x.versionId===milestone.currentVersionId)??null} : {})}));
     return structuredClone({
       projectId, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
+      progressDigest:progressDigest({projectId,stage:project.stage,nextStep:project.nextStep}),
+      progressHistory:(project.progressHistory??[]).map(({stage,nextStep,timestamp})=>({stage,nextStep,timestamp})),
       feedbackHistory:this.#state.feedback.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,body})=>({id,milestoneId,versionId,timestamp,body})),
       approvalHistory:this.#state.receipts.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,reviewDigest})=>({id,milestoneId,versionId,timestamp,reviewDigest:reviewDigest??null,review:reviewDigest?this.#state.milestones.find(x=>x.id===milestoneId&&x.projectId===projectId)?.reviews?.find(x=>x.versionId===versionId&&x.digest===reviewDigest)??null:null})),
       completedMilestones: milestones.filter(x => x.status === 'approved'),
@@ -124,7 +142,7 @@ export class PortalProof {
   }
   #retry(operationId, payload) {
     if (typeof operationId !== 'string' || !operationId || operationId.length > 128) throw new Error('INVALID_OPERATION');
-    const existing = [...this.#state.receipts, ...this.#state.feedback, ...this.#state.tickets, ...this.#state.replies].find(x => x.operationId === operationId);
+    const existing = [...this.#state.receipts, ...this.#state.feedback, ...this.#state.tickets, ...this.#state.replies,...this.#state.projects.flatMap(x=>x.progressHistory??[])].find(x => x.operationId === operationId);
     if (!existing) return null;
     for (const [key, value] of Object.entries(payload)) if (existing[key] !== value) throw new Error('OPERATION_CONFLICT');
     return structuredClone(existing);
