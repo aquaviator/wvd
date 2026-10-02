@@ -1,3 +1,4 @@
+import {reviewDigest} from './review.mjs';
 // Shared state integrity checks for local and Google persistence adapters.
 const collections = ['identities','projects','memberships','milestones','receipts','outbox','feedback','tickets','replies'];
 const string = value => typeof value === 'string' && value.length > 0;
@@ -30,6 +31,17 @@ export function validatePortalState(state) {
     memberships.add(key);
   }
   for (const milestone of state.milestones) if (!projects.has(milestone.projectId)) corrupt();
+  for(const milestone of state.milestones) {
+    if(milestone.reviewRequired!==undefined && typeof milestone.reviewRequired!=='boolean')corrupt();
+    if(milestone.reviews!==undefined) {
+      if(!Array.isArray(milestone.reviews)||!milestone.reviewRequired)corrupt();
+      const versions=new Set();
+      for(const review of milestone.reviews) {
+        if(!review||review.projectId!==milestone.projectId||review.milestoneId!==milestone.id||!string(review.versionId)||review.versionId.length>128||!string(review.title)||!review.title.trim()||review.title.length>200||!string(review.body)||!review.body.trim()||review.body.length>10000||versions.has(review.versionId)||review.digest!==reviewDigest(review))corrupt();
+        versions.add(review.versionId);
+      }
+    }
+  }
   const records = new Map(), operations = new Set();
   const types = {receipts:['approval','milestone-approved'],feedback:['feedback','feedback-saved'],tickets:['ticket','ticket-created'],replies:['reply','ticket-replied']};
   for (const [name,[kind,eventType]] of Object.entries(types)) {
@@ -39,6 +51,10 @@ export function validatePortalState(state) {
       if (name === 'receipts' || name === 'feedback') {
         // Historical versions intentionally survive replacement of currentVersionId.
         if (!string(record.versionId) || milestones.get(record.milestoneId)?.projectId !== record.projectId) corrupt();
+      }
+      if(name==='receipts') {
+        const review=milestones.get(record.milestoneId)?.reviews?.find(x=>x.versionId===record.versionId);
+        if((review||record.reviewDigest!==undefined) && review?.digest!==record.reviewDigest)corrupt();
       }
       if (name === 'replies') {
         const ticket = tickets.get(record.ticketId);

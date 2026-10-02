@@ -15,7 +15,7 @@ const response = (status, data) => ({status, headers: {'Cache-Control':'no-store
 export function createBoundary({portal, resolveSession, allowedOrigin}) {
   if (typeof resolveSession !== 'function' || new URL(allowedOrigin).origin !== allowedOrigin) throw new Error('INVALID_CONFIGURATION');
   return async function handle({action, method, origin, rawBody, sessionToken}) {
-    const fields = Object.hasOwn(schemas, action) ? schemas[action] : null;
+    let fields = Object.hasOwn(schemas, action) ? schemas[action] : null;
     if (!fields) return response(404, {error:'NOT_FOUND'});
     if (method !== (reads.has(action) ? 'GET' : 'POST')) return response(405, {error:'METHOD_NOT_ALLOWED'});
     if (!reads.has(action) && origin !== allowedOrigin) return response(403, {error:'ORIGIN_DENIED'});
@@ -23,6 +23,8 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     if (Buffer.byteLength(rawBody, 'utf8') > 32768) return response(413, {error:'REQUEST_TOO_LARGE'});
     let input;
     try { input = JSON.parse(rawBody); } catch { return response(400, {error:'INVALID_REQUEST'}); }
+    if(action==='approve' && input && Object.hasOwn(input,'reviewDigest'))fields=[...fields,'reviewDigest'];
+    if(input?.reviewDigest!==undefined && !/^[a-f0-9]{64}$/.test(input.reviewDigest))return response(400,{error:'INVALID_REQUEST'});
     if (!input || Array.isArray(input) || typeof input !== 'object' ||
         Object.keys(input).length !== fields.length ||
         !fields.every(key => Object.hasOwn(input, key) && typeof input[key] === 'string' && input[key].length > 0)) {
@@ -49,7 +51,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
       if (message === 'ACCESS_DENIED') return response(403, {error:'ACCESS_DENIED'});
-      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT'].includes(message)) return response(409, {error:message});
+      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT'].includes(message)) return response(409, {error:message});
       if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }

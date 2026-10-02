@@ -52,6 +52,10 @@ export class FirestorePortal {
   async accessRevision() {
     const document=await this.#ref.get();return decode(document).revision;
   }
+  async publishReview(request,expectedRevision) {
+    if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
+    return this.#run('publishReview',[request],expectedRevision);
+  }
   async provisionAccess(request,expectedRevision) {
     if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
     return this.#run('provisionAccess',[request],expectedRevision);

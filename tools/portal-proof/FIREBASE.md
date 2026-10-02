@@ -154,3 +154,32 @@ release work.
 Founder verified the local demo startup, milestone approval and support tickets
 on Windows on 2 October 2026. This confirms the local emulator flow, not live
 Google sign-in, cloud persistence or production readiness.
+
+### Exact milestone review content
+
+Trusted operators can publish bounded plain-text review packages using:
+
+```sh
+node firebase-operator.mjs publish-review binding.json reviewed-milestone.json
+```
+
+The reviewed JSON contains exactly `expectedRevision`, `projectId`, `milestoneId`,
+`versionId`, `title` (up to 200 characters), and `body` (up to 10,000 characters).
+Use `inspect` first and review the target and current revision. Publication uses
+that revision inside the Firestore transaction; a concurrent change fails closed.
+There is no client publication endpoint. A version's text is immutable: changes
+need a new version ID and reset the milestone to awaiting review. Exact retries
+of publication do not reset an approval or restore an old version.
+
+The authorised project overview returns only the current review package. The UI
+renders plain text, and approval binds the server-computed SHA-256 digest of the
+project, milestone, version, title and body. Missing or mismatched content pauses
+approval. Receipts retain the digest and historical packages remain in the bounded
+aggregate. This binds approval to text; it does not prove the user read it, hash
+external deliverables, or authorise a production deployment. Existing legacy
+proof milestones without published text retain their old behaviour for compatibility
+and must acquire a new reviewed version before production acceptance.
+
+The synthetic Firebase demo and unattended container browser journey exercise
+this content-bound approval using emulator data only. The existing domain,
+persistence, authorisation and HTTP boundary are reused; no new service is added.

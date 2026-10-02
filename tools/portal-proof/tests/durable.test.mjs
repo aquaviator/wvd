@@ -57,3 +57,10 @@ test('trusted provisioned membership persists without widening existing or revok
  assert.throws(()=>portal.provisionAccess({...grant,role:'Owner'}),/ACCESS_ALREADY_PROVISIONED/);
  reopened.revokeMembership('new-user','b');assert.throws(()=>portal.provisionAccess(grant),/ACCESS_ALREADY_PROVISIONED/);
 });
+
+test('review content and exact approval digest survive durable reopen',t=>{
+ const s=setup(t),db=s.open(fixture());
+ const review=db.publishReview({projectId:'p',milestoneId:'m',versionId:'v',title:'Review',body:'Check the new heading.'});
+ const reopened=s.open();assert.equal(reopened.projectOverview('o','p').awaitingClient[0].review.digest,review.digest);
+ const saved=reopened.approve({...approval,reviewDigest:review.digest});assert.equal(s.open().snapshot().receipts[0].reviewDigest,saved.reviewDigest);
+});

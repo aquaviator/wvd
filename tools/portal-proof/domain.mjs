@@ -1,3 +1,4 @@
+import {reviewDigest} from './review.mjs';
 // Provider-free executable model. This is not an authentication service or database.
 const denied = () => { throw new Error('ACCESS_DENIED'); };
 const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues']);
@@ -58,6 +59,24 @@ export class PortalProof {
     this.#state=next;
     return {created:true,identityId:uid,businessId,role,projectIds};
   }
+  // Trusted publisher only; no client route. Version content is immutable.
+  publishReview(request) {
+    const fields=['projectId','milestoneId','versionId','title','body'];
+    if(!request||typeof request!=='object'||Array.isArray(request)||Object.keys(request).length!==fields.length||!fields.every(key=>Object.hasOwn(request,key)))throw Error('INVALID_REVIEW');
+    const {projectId,milestoneId,versionId,title,body}=request;
+    for(const value of [projectId,milestoneId,versionId])this.#text(value,128);
+    this.#text(title,200);this.#text(body,10000);
+    const milestone=this.#state.milestones.find(x=>x.id===milestoneId&&x.projectId===projectId);
+    if(!milestone)denied();
+    const review={projectId,milestoneId,versionId,title,body};review.digest=reviewDigest(review);
+    const existing=milestone.reviews?.find(x=>x.versionId===versionId);
+    if(existing){if(existing.digest!==review.digest)throw Error('REVIEW_IMMUTABLE');return structuredClone(existing);}
+    // A previously approved legacy version cannot acquire new review content.
+    if(this.#state.receipts.some(x=>x.milestoneId===milestoneId&&x.versionId===versionId))throw Error('REVIEW_IMMUTABLE');
+    milestone.reviews??=[];milestone.reviews.push(review);milestone.reviewRequired=true;
+    milestone.currentVersionId=versionId;milestone.status='awaiting-client';
+    return structuredClone(review);
+  }
   projectsFor(actorId) {
     return this.#state.projects.filter(project => {
       try { authorise(this.#state,actorId,project.id,'view'); return true; }
@@ -71,7 +90,7 @@ export class PortalProof {
   authorise(actorId, projectId, action) { return structuredClone(authorise(this.#state, actorId, projectId, action)); }
   projectOverview(actorId, projectId) {
     const project = authorise(this.#state, actorId, projectId, 'view');
-    const milestones = this.#state.milestones.filter(x => x.projectId === projectId);
+    const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:reviews?.find(x=>x.versionId===milestone.currentVersionId)??null} : {})}));
     return structuredClone({
       projectId, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
       completedMilestones: milestones.filter(x => x.status === 'approved'),
@@ -149,19 +168,23 @@ export class PortalProof {
     milestone.currentVersionId = versionId;
     milestone.status = 'awaiting-client';
   }
-  approve({ actorId, projectId, milestoneId, versionId, operationId }) {
+  approve({ actorId, projectId, milestoneId, versionId, operationId, reviewDigest: digest }) {
     // Recheck current membership even for a repeated request.
     const project = authorise(this.#state, actorId, projectId, 'approve');
-    const existing = this.#retry(operationId,{kind:'approval',actorId,projectId,milestoneId,versionId});
+    const binding=digest===undefined?{}:{reviewDigest:digest};
+    const existing = this.#retry(operationId,{kind:'approval',actorId,projectId,milestoneId,versionId,...binding});
+    if(existing && existing.reviewDigest!==digest)throw Error('OPERATION_CONFLICT');
     if (existing) return existing;
     const milestone = this.#state.milestones.find(x => x.id === milestoneId && x.projectId === projectId);
     if (!milestone) denied();
     if (typeof versionId !== 'string' || !versionId || milestone.currentVersionId !== versionId) throw new Error('VERSION_CONFLICT');
+    if(milestone.reviewRequired && (!digest || milestone.reviews?.find(x=>x.versionId===versionId)?.digest!==digest))throw Error('REVIEW_CONFLICT');
+    if(!milestone.reviewRequired && digest!==undefined)throw Error('REVIEW_CONFLICT');
     if (milestone.status !== 'awaiting-client') throw new Error('STATE_CONFLICT');
     const timestamp = this.#timestamp();
     const receipt = {
       id: `approval-${this.#state.receipts.length + 1}`, kind:'approval', operationId, actorId,
-      businessId: project.businessId, projectId, milestoneId, versionId, timestamp
+      businessId: project.businessId, projectId, milestoneId, versionId, timestamp, ...binding
     };
     // Synchronous copy-on-write commit models one transaction. A production
     // adapter must implement locking/constraints in the selected durable store.

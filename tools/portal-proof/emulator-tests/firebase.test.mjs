@@ -55,6 +55,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  t.after(()=>backend.close());
  const state=fixture();state.identities[0].id=uid;state.memberships[0].actorId=uid;
  await backend.portal.initialize(state);
+ const review=await backend.portal.publishReview({projectId:'p',milestoneId:'m',versionId:'v',title:'Synthetic design review',body:'Review the heading, navigation and contact form before approving this version.'},0);
  const app=initializeApp({projectId:config.projectId},'browser-fixtures-'+suffix),auth=getAuth(app);
  t.after(()=>deleteApp(app));
  await auth.createUser({uid,email,emailVerified:true,password});
@@ -86,6 +87,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.locator('#login').getByLabel('Email').fill(unprovisioned+'@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
  await page.getByRole('button',{name:'Approve this version'}).waitFor();
  await page.getByRole('button',{name:'Approve this version'}).click();await page.waitForFunction(()=>document.getElementById('status').textContent==='Your account does not have permission for this action.');
+ await page.getByText('Synthetic design review',{exact:true}).waitFor();
  assert.equal((await backend.portal.snapshot()).receipts.length,0);
  await capture('member-approval-denied');
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
@@ -96,6 +98,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.getByRole('button',{name:'Approve this version'}).click();
  await page.getByText('m — approved').waitFor();
  assert.equal((await backend.portal.snapshot()).receipts.length,1);
+ assert.equal((await backend.portal.snapshot()).receipts[0].reviewDigest,review.digest);
  await capture('owner-milestone-approved');
  assert.deepEqual(await page.evaluate(()=>[Object.keys(localStorage),Object.keys(sessionStorage)]),[[],[]]);
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
