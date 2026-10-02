@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {googlePreflight} from './google-preflight.mjs';
+import {googlePreflight} from '../google-preflight.mjs';
 const binding={projectId:'wvd-development',productId:'wvd',databaseId:'(default)',mode:'live'};
 function runner(project,billing,calls=[]) { return args=>{calls.push(args);return JSON.stringify(calls.length===1?project:billing);}; }
 const project={projectId:binding.projectId,projectNumber:'123456789',lifecycleState:'ACTIVE'};
