@@ -166,3 +166,10 @@ empty after account change. Ownership guide revision
 cfa495611600812e3ecd5716c3717ef328cbbc13 passed CI and its mobile screenshot
 was inspected. Shared Calendar checks now pass all 203 applicable local portal
 tests; native Windows-only coverage remains verified in CI.
+
+The justified-automation buyer guide completes the four B15 guidance themes
+(website scope, Care, ownership/handover and automation) using existing layouts.
+It focuses on actual repeated work, existing capabilities, exceptions, whole
+cost and bounded verification; it makes no quantified savings or AI capability
+claims. Guide screenshots use CSS pixel scale to keep the growing route set
+within the existing 5 MiB evidence cap, with no change to viewport/overflow checks.
