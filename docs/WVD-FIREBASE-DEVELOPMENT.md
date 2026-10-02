@@ -13,8 +13,8 @@ not a production release or proof of a connected application runtime.
 | Client rules | All reads and writes denied (`allow read, write: if false`) |
 | Web app nickname | WVD Portal Development |
 | WVD server namespace | `wvd_products/wvd/private/portal-state` |
-| Authentication | Initialized; no sign-in provider saved/enabled yet |
-| Google provider support identity | Only `leatfield@gmail.com` offered; founder decision pending |
+| Authentication | Initialized; Google sign-in enabled and verified in console |
+| Google provider support identity | `leatfield@gmail.com`, explicitly approved by founder |
 | Runtime credentials | Not connected; local Google Application Default Credentials absent |
 
 The project and database were created through the authorised Firebase console.
@@ -38,9 +38,9 @@ at zero. Existing PECP customer deployment requirements remain unchanged.
 
 ## Remaining connection work
 
-1. Choose the public support identity and save the Google Auth provider. Only
-   the personal account is currently offered. Adding another project member or
-   creating new privileged runtime access needs a concrete access review.
+1. Google sign-in is configured with public name `WVD Development`. Adding
+   another project member or creating privileged runtime access still needs a
+   concrete access review. Browser sign-in UI integration is unfinished.
 2. Connect an approved development runtime credential mechanism. Prefer short
    lived identity or workload identity over downloading a long-lived JSON key.
    Credential values belong in the approved secure mechanism, not this binding.
@@ -52,3 +52,32 @@ at zero. Existing PECP customer deployment requirements remain unchanged.
 Production deployment, DNS changes and production acceptance remain separately
 subject to founder approval. The bounded Firestore aggregate and unfinished
 operational requirements in `tools/portal-proof/FIREBASE.md` still apply.
+
+## Proposed keyless runtime access (not granted)
+
+Cloud Shell's embedded frame displayed `Site Unavailable` / `Unable to access
+this site`, including after one reload/retry in this browser. Its credentials
+were not established or transferred. Console sign-in and provider setup succeeded.
+
+The proposed next connection is GitHub OIDC through Google Workload Identity
+Federation, reusable by the authorised development pipeline:
+
+| Access element | Proposed restriction |
+| --- | --- |
+| Google project | `wvd-development` only |
+| Runtime service account | `wvd-portal-development@wvd-development.iam.gserviceaccount.com` |
+| Firestore role | `roles/datastore.user` for development reads/writes |
+| Auth role | `roles/firebaseauth.viewer` to verify user state and revoked tokens |
+| GitHub repository | `aquaviator/wvd`, immutable repository ID `1347788556` |
+| GitHub owner | immutable owner ID `78605956` |
+| Allowed ref | `refs/heads/development/shared-factory-bootstrap` |
+| Allowed event | Explicit development workflow dispatch or development branch push; no PR tokens |
+| Credentials | Short-lived federated credentials; no downloaded JSON key |
+| Exclusions | No Human V1 access, IAM administration, billing changes or deployment permissions |
+
+The provider must check the immutable owner/repository claims and exact ref/event;
+a repository name alone is insufficient. Bind service-account impersonation only
+to that restricted identity. Google project number and actual provider resource
+IDs must be inspected before writing executable bindings. Roles here are a concrete
+proposal, not proof of granted access or an activated workflow. Founder confirmation
+is needed at the browser action that creates this security-sensitive access.
