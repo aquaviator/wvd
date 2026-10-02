@@ -9,6 +9,7 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm --prefix tools/factory test
+      - run: npm --prefix tools/portal-proof test
       - run: npm run validate
       - run: npm test
       - run: npm run build
