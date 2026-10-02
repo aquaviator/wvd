@@ -237,3 +237,15 @@ are omitted from ticket projections, including ticket-creation retries. History
 is capped at 200 proof assessments per ticket and remains in scoped backups.
 No additional notification intent, recipient policy or external message is
 created; notification delivery and operational support policy remain open.
+
+## Trusted project-access updates
+
+The existing Google provisioner/CLI now supports an explicit project-list update
+for an existing business membership. Shared input validation and fresh Firebase
+user checks are reused. New grants require a verified enabled account; removal
+does not depend on a disabled/deleted Auth account being usable. Role, global
+admin flags, business binding and activation stay unchanged. A reviewed full
+desired list, aggregate revision and operator/change references prevent stale or
+implicit privilege changes. Before/after project lists and audit commit together;
+no-op/rejected changes create no history. Client HTTP routes expose no operator
+access method. Owner invitations and an admin account UI remain unfinished.

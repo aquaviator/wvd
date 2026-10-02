@@ -51,6 +51,7 @@ export class DurablePortal {
   close() { this.#db.close(); }
   publishReview(...args) { return this.#run('publishReview', args); }
   provisionAccess(...args) { return this.#run('provisionAccess', args); }
+  updateAccess(...args) { return this.#run('updateAccess', args); }
   snapshot() { return this.#run('snapshot', []); }
   projectsFor(...args) { return this.#run('projectsFor', args); }
   workspaceAccess(...args) { return this.#run('workspaceAccess', args); }

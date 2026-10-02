@@ -265,3 +265,27 @@ list, authoritative holiday data, snapshot freshness rules, final conflict
 recheck and a concurrency-safe reservation protocol. Google Meet creation,
 cancellation/rescheduling and confirmation delivery remain unfinished. No calendar
 IDs, credentials, live appointments or external messages are introduced here.
+
+### Assign or remove existing project access
+
+`update-access` reuses the checked operator binding, reviewed JSON, explicit
+revision and operator/change references of provisioning:
+
+```sh
+node firebase-operator.mjs inspect <binding.json>
+node firebase-operator.mjs update-access <binding.json> <reviewed-access-change.json>
+```
+
+The reviewed change has `uid`, `businessId`, the existing `role`, the complete
+desired `projectIds`, `expectedRevision`, `operatorRef` and `changeRef`. It changes
+only an existing business membership's project list; new identities, business
+roles, admin flags and activation are not created or changed. Empty project lists
+are permitted for removal. New grants require a fresh enabled, verified Google/
+password Firebase account; removal-only changes also work for disabled/deleted
+Auth users. Revoked product identities or memberships are never reactivated.
+
+Commit rejects a stale aggregate revision. Changed lists and before/after project
+references are audited together; a no-op adds no audit or revision. No operator
+method is exposed through a client HTTP route. This is not the Owner invitation
+workflow or a finished admin account UI, and references do not verify IAM identity.
+Use emulator fixtures until actual live target/access prerequisites are satisfied.

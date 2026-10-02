@@ -48,7 +48,7 @@ Every operation checks current active identity and project scope. Firebase
 verification supplies the UID; request/token role flags confer no permissions.
 Owner membership supplies client approval authority. Server-computed page
 capabilities control presentation, while writes independently recheck access.
-Colleague invitation/removal, client creation, project access assignment and operational support policy are still
+Colleague invitation/removal, client creation, an admin account UI and operational support policy are still
 unfinished workflows; a permission action in the domain is not a working UI.
 
 Approval receipts bind actor, business, project, milestone, exact immutable
@@ -83,7 +83,7 @@ retain history without inventing notification recipients.
 - `state.mjs` validates references, review digests, histories and operation
   uniqueness. The Firestore aggregate has a 512 KiB capacity; proof progress
   history and milestone creation are capped at 200 entries per project.
-- Trusted Google provisioning/publication requires explicit target bindings,
+- Trusted Google provisioning, project-list updates and publication require explicit target bindings,
   revisions and operator context. Admin routes use current verified portal
   identity. Stored attribution is not an external tamper-proof audit service.
 - `backup.mjs` verifies product/project/database/mode bindings and rehearses an

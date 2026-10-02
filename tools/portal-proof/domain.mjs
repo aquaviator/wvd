@@ -1,6 +1,7 @@
 import {reviewDigest} from './review.mjs';
 import {progressDigest} from './progress.mjs';
 import {careAssessments,ticketTriageDigest} from './triage.mjs';
+import {accessGrant} from './access.mjs';
 // Provider-free executable model. This is not an authentication service or database.
 const denied = () => { throw new Error('ACCESS_DENIED'); };
 const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues', 'manage-progress', 'manage-reviews', 'manage-support']);
@@ -92,11 +93,7 @@ export class PortalProof {
   }
   // Trusted operator capability only. Do not expose this through client routes.
   provisionAccess(request) {
-    const fields=['uid','businessId','role','projectIds'];
-    const text=value=>typeof value==='string'&&value.trim().length>0&&value.length<=128;
-    if(!request||typeof request!=='object'||Array.isArray(request)||Object.keys(request).length!==fields.length||!fields.every(key=>Object.hasOwn(request,key))||
-      !text(request.uid)||!text(request.businessId)||!['Owner','Member'].includes(request.role)||!Array.isArray(request.projectIds)||!request.projectIds.length||request.projectIds.length>50||request.projectIds.some(id=>!text(id))||new Set(request.projectIds).size!==request.projectIds.length)throw Error('INVALID_ACCESS_GRANT');
-    const {uid,businessId,role}=request,projectIds=[...request.projectIds].sort();
+    const {uid,businessId,role,projectIds}=accessGrant(request);
     if(projectIds.some(id=>this.#state.projects.find(project=>project.id===id)?.businessId!==businessId))throw Error('PROJECT_SCOPE_DENIED');
     const identity=this.#state.identities.find(item=>item.id===uid);
     if(identity&&!identity.active)throw Error('IDENTITY_DISABLED');
@@ -110,6 +107,20 @@ export class PortalProof {
     next.memberships.push({actorId:uid,businessId,role,projectIds,active:true,provisionedAt:timestamp});
     this.#state=next;
     return {created:true,identityId:uid,businessId,role,projectIds};
+  }
+  // Trusted operator only. Existing business role, activation and admin flags stay intact.
+  updateAccess(request) {
+    const {uid,businessId,role,projectIds}=accessGrant(request,{allowEmpty:true});
+    if(projectIds.some(id=>this.#state.projects.find(x=>x.id===id)?.businessId!==businessId))throw Error('PROJECT_SCOPE_DENIED');
+    const identity=this.#state.identities.find(x=>x.id===uid),membership=this.#state.memberships.find(x=>x.actorId===uid&&x.businessId===businessId);
+    if(!identity||!membership)throw Error('ACCESS_MEMBERSHIP_REQUIRED');
+    if(membership.role!==role)throw Error('ACCESS_ROLE_CONFLICT');
+    const previousProjectIds=[...membership.projectIds].sort(),added=projectIds.some(id=>!previousProjectIds.includes(id));
+    if(added&&!identity.active)throw Error('IDENTITY_DISABLED');
+    if(added&&!membership.active)throw Error('ACCESS_REVOKED');
+    const result={changed:JSON.stringify(previousProjectIds)!==JSON.stringify(projectIds),identityId:uid,businessId,role,projectIds,previousProjectIds};
+    if(result.changed){const next=structuredClone(this.#state);next.memberships.find(x=>x.actorId===uid&&x.businessId===businessId).projectIds=projectIds;this.#state=next;}
+    return structuredClone(result);
   }
   // Server-verified admin capability. Client membership cannot publish.
   createMilestoneAsAdmin({actorId,projectId,milestoneId,versionId,title,body}) {

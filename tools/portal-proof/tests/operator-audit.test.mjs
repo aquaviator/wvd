@@ -46,3 +46,16 @@ test('capacity failure rolls back both grant and audit',async()=>{
  state.projects[0].padding='x'.repeat(MAX_STATE_BYTES-Buffer.byteLength(JSON.stringify(state))-100);
  await s.portal.initialize(state);const before=s.raw();await assert.rejects(()=>s.portal.provisionAccess(grant,0,context),/STATE_CAPACITY/);assert.deepEqual(s.raw(),before);
 });
+
+test('Project-access updates commit before/after audit atomically and refuse role changes/stale revisions',async()=>{
+ const s=setup(),state=seed();state.projects.push({id:'q',businessId:'b'});await s.portal.initialize(state);await s.portal.provisionAccess(grant,0,context);
+ const updated=await s.portal.updateAccess({...grant,projectIds:['p','q']},1,context);assert.equal(updated.changed,true);const audit=(await s.portal.snapshot()).operatorAudit.at(-1);assert.equal(audit.action,'updateAccess');assert.deepEqual(audit.previousProjectIds,['p']);assert.deepEqual(audit.projectIds,['p','q']);assert.equal(audit.revision,2);
+ const before=s.raw();await assert.rejects(()=>s.portal.updateAccess({...grant,projectIds:[]},1,context),/ACCESS_REVISION_CONFLICT/);await assert.rejects(()=>s.portal.updateAccess({...grant,role:'Member',projectIds:[]},2,context),/ACCESS_ROLE_CONFLICT/);await s.portal.updateAccess({...grant,projectIds:['p','q']},2,context);assert.deepEqual(s.raw(),before);
+ await s.portal.updateAccess({...grant,projectIds:[]},2,context);assert.deepEqual((await s.portal.snapshot()).memberships[0].projectIds,[]);assert.deepEqual((await s.portal.snapshot()).operatorAudit.at(-1).previousProjectIds,['p','q']);
+ const valid=await s.portal.snapshot();for(const mutation of [x=>x.operatorAudit.at(-1).previousProjectIds=['foreign'],x=>x.operatorAudit.at(-1).role='Admin']){const bad=structuredClone(valid);mutation(bad);assert.throws(()=>validatePortalState(bad),/CORRUPT_PORTAL_STATE/);}
+});
+
+test('Access-update capacity failure rolls back both permissions and audit',async()=>{
+ const {MAX_STATE_BYTES}=await import('../firestore.mjs'),{PortalProof}=await import('../domain.mjs');const s=setup(),raw=seed();raw.identities=[{id:'o',active:true}];raw.memberships=[{actorId:'o',businessId:'b',role:'Owner',active:true,projectIds:['p']}];
+ const state=new PortalProof(raw,()=> '2026-10-02T16:00:00Z').snapshot();state.projects[0].padding='';state.projects[0].padding='x'.repeat(MAX_STATE_BYTES-Buffer.byteLength(JSON.stringify(state))-100);await s.portal.initialize(state);const before=s.raw();await assert.rejects(()=>s.portal.updateAccess({...grant,projectIds:[]},0,context),/STATE_CAPACITY/);assert.deepEqual(s.raw(),before);
+});

@@ -1,10 +1,10 @@
 import {readFileSync} from 'node:fs';
 import {createFirebaseBackend} from './firebase-backend.mjs';
-import {createFirebaseProvisioner} from './firebase-provisioning.mjs';
+import {createFirebaseProvisioner,createFirebaseAccessUpdater} from './firebase-provisioning.mjs';
 const [command,bindingPath,grantPath,...extra]=process.argv.slice(2);
 let backend;
 try {
-  if(extra.length||!bindingPath||!['inspect','provision','publish-review'].includes(command)||(command==='inspect'&&grantPath)||(command!=='inspect'&&!grantPath))throw Error('INVALID_OPERATOR_ARGUMENTS');
+  if(extra.length||!bindingPath||!['inspect','provision','update-access','publish-review'].includes(command)||(command==='inspect'&&grantPath)||(command!=='inspect'&&!grantPath))throw Error('INVALID_OPERATOR_ARGUMENTS');
   const config=JSON.parse(readFileSync(bindingPath,'utf8'));
   let grant;
   if(grantPath) {
@@ -16,10 +16,10 @@ try {
   else {
     const {expectedRevision,operatorRef,changeRef,...request}=grant;
     const context={operatorRef,changeRef};
-    const result=command==='publish-review'?await backend.portal.publishReview(request,expectedRevision,context):await createFirebaseProvisioner(backend)(request,expectedRevision,context);
-    console.log(JSON.stringify({projectId:config.projectId,productId:config.productId,...(command==='publish-review'?{digest:result.digest}:{created:result.created})}));
+    const result=command==='publish-review'?await backend.portal.publishReview(request,expectedRevision,context):await (command==='update-access'?createFirebaseAccessUpdater(backend):createFirebaseProvisioner(backend))(request,expectedRevision,context);
+    console.log(JSON.stringify({projectId:config.projectId,productId:config.productId,...(command==='publish-review'?{digest:result.digest}:command==='update-access'?{changed:result.changed}:{created:result.created})}));
   }
 } catch(error) {
-  const safe=new Set(['OPERATOR_CONTEXT_REQUIRED','INVALID_REVIEW','INVALID_TEXT','REVIEW_IMMUTABLE','ACCESS_DENIED','INVALID_OPERATOR_ARGUMENTS','INVALID_CONFIGURATION','ISOLATED_EMULATORS_REQUIRED','EMULATOR_ENVIRONMENT_FORBIDDEN','INVALID_ACCESS_GRANT','ACCESS_REVISION_REQUIRED','ACCESS_REVISION_CONFLICT','PROJECT_SCOPE_DENIED','IDENTITY_DISABLED','ACCESS_ALREADY_PROVISIONED','VERIFIED_FIREBASE_USER_REQUIRED','FIREBASE_USER_REQUIRED','IDENTITY_SERVICE_UNAVAILABLE','CORRUPT_PORTAL_STATE','STATE_CAPACITY','REVISION_EXHAUSTED']);
+  const safe=new Set(['OPERATOR_CONTEXT_REQUIRED','INVALID_REVIEW','INVALID_TEXT','REVIEW_IMMUTABLE','ACCESS_DENIED','INVALID_OPERATOR_ARGUMENTS','INVALID_CONFIGURATION','ISOLATED_EMULATORS_REQUIRED','EMULATOR_ENVIRONMENT_FORBIDDEN','INVALID_ACCESS_GRANT','ACCESS_REVISION_REQUIRED','ACCESS_REVISION_CONFLICT','PROJECT_SCOPE_DENIED','IDENTITY_DISABLED','ACCESS_ALREADY_PROVISIONED','ACCESS_MEMBERSHIP_REQUIRED','ACCESS_ROLE_CONFLICT','ACCESS_REVOKED','VERIFIED_FIREBASE_USER_REQUIRED','FIREBASE_USER_REQUIRED','IDENTITY_SERVICE_UNAVAILABLE','CORRUPT_PORTAL_STATE','STATE_CAPACITY','REVISION_EXHAUSTED']);
   console.error(safe.has(error.message)?error.message:'OPERATOR_OPERATION_FAILED');process.exitCode=1;
 } finally {if(backend)await backend.close();}

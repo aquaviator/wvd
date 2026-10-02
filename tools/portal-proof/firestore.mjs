@@ -54,7 +54,7 @@ export class FirestorePortal {
       if(encode(next)!==before) {
         if(revision>=Number.MAX_SAFE_INTEGER)throw Error('REVISION_EXHAUSTED');
         if(audit) {
-          const target=method==='provisionAccess'?{uid:result.identityId,businessId:result.businessId,role:result.role,projectIds:result.projectIds}:{projectId:result.projectId,milestoneId:result.milestoneId,versionId:result.versionId,digest:result.digest};
+          const target=['provisionAccess','updateAccess'].includes(method)?{uid:result.identityId,businessId:result.businessId,role:result.role,projectIds:result.projectIds,...(method==='updateAccess'?{previousProjectIds:result.previousProjectIds}:{})}:{projectId:result.projectId,milestoneId:result.milestoneId,versionId:result.versionId,digest:result.digest};
           next.operatorAudit??=[];
           next.operatorAudit.push({id:`operator-${revision+1}`,revision:revision+1,action:method,...audit,timestamp,...target});
         }
@@ -78,6 +78,10 @@ export class FirestorePortal {
   async provisionAccess(request,expectedRevision,context) {
     if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
     return this.#run('provisionAccess',[structuredClone(request)],expectedRevision,operatorContext(context));
+  }
+  async updateAccess(request,expectedRevision,context) {
+    if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
+    return this.#run('updateAccess',[structuredClone(request)],expectedRevision,operatorContext(context));
   }
   async activeIdentity(uid) {
     if(typeof uid!=='string'||!uid||uid.length>128)return false;
