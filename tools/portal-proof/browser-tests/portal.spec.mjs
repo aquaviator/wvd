@@ -35,7 +35,7 @@ test('invitation, sign-in, ticket reply, feedback, approval and logout',async({p
 });
 
 test('Admin can inspect both client projects while client approval stays protected',async({page})=>{
- const invitation=auth.invite('admin','admin@example.test');await auth.redeem(invitation.invitationToken,password);
+ const invitation=auth.invite('admin','admin@example.test');await auth.redeem(invitation.invitationToken,password,'synthetic-browser-setup');
  await page.goto('/');await page.locator('#login').getByLabel('Email').fill('admin@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
  const admin=page.locator('#admin-overview');await expect(admin).toBeVisible();await expect(admin).toContainText('Client: one');await expect(admin).toContainText('Client: two');
  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
