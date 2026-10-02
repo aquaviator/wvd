@@ -1,3 +1,4 @@
+import {validateOperatorAudit} from './operator-audit.mjs';
 import {reviewDigest} from './review.mjs';
 // Shared state integrity checks for local and Google persistence adapters.
 const collections = ['identities','projects','memberships','milestones','receipts','outbox','feedback','tickets','replies'];
@@ -70,6 +71,7 @@ export function validatePortalState(state) {
   // This proof persists one pending intent with every domain write; no dispatcher
   // removes intents, so a missing link indicates an incomplete/tampered aggregate.
   if (state.outbox.length !== records.size) corrupt();
+  validateOperatorAudit(state);
   return state;
 }
 

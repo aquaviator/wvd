@@ -55,7 +55,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  t.after(()=>backend.close());
  const state=fixture();state.identities[0].id=uid;state.memberships[0].actorId=uid;
  await backend.portal.initialize(state);
- const review=await backend.portal.publishReview({projectId:'p',milestoneId:'m',versionId:'v',title:'Synthetic design review',body:'Review the heading, navigation and contact form before approving this version.'},0);
+ const review=await backend.portal.publishReview({projectId:'p',milestoneId:'m',versionId:'v',title:'Synthetic design review',body:'Review the heading, navigation and contact form before approving this version.'},0,{operatorRef:'synthetic-test',changeRef:'browser-review'});
  const app=initializeApp({projectId:config.projectId},'browser-fixtures-'+suffix),auth=getAuth(app);
  t.after(()=>deleteApp(app));
  await auth.createUser({uid,email,emailVerified:true,password});
@@ -76,7 +76,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.waitForFunction(()=>document.getElementById('status').textContent==='Please sign in again.');
  assert.equal(await page.locator('#workspace').isVisible(),false);
  const {createFirebaseProvisioner}=await import('../firebase-provisioning.mjs');
- const provision=createFirebaseProvisioner(backend),revision=await backend.portal.accessRevision(),beforeGrant=await backend.portal.snapshot();
+ const rawProvision=createFirebaseProvisioner(backend),provision=(request,revision)=>rawProvision(request,revision,{operatorRef:'synthetic-test',changeRef:'browser-grant'}),revision=await backend.portal.accessRevision(),beforeGrant=await backend.portal.snapshot();
  await assert.rejects(()=>provision({uid:unprovisioned,businessId:'b',role:'Member',projectIds:['other']},revision),/PROJECT_SCOPE_DENIED/);
  assert.deepEqual(await backend.portal.snapshot(),beforeGrant);
  const grant={uid:unprovisioned,businessId:'b',role:'Member',projectIds:['p']};
@@ -99,6 +99,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.getByText('m — approved').waitFor();
  assert.equal((await backend.portal.snapshot()).receipts.length,1);
  assert.equal((await backend.portal.snapshot()).receipts[0].reviewDigest,review.digest);
+ const audit=(await backend.portal.snapshot()).operatorAudit;assert.equal(audit.length,2);assert.deepEqual(audit.map(x=>x.action),['publishReview','provisionAccess']);
  await capture('owner-milestone-approved');
  assert.deepEqual(await page.evaluate(()=>[Object.keys(localStorage),Object.keys(sessionStorage)]),[[],[]]);
  await page.getByRole('button',{name:'Sign out',exact:true}).click();

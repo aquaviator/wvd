@@ -183,3 +183,29 @@ and must acquire a new reviewed version before production acceptance.
 The synthetic Firebase demo and unattended container browser journey exercise
 this content-bound approval using emulator data only. The existing domain,
 persistence, authorisation and HTTP boundary are reused; no new service is added.
+
+### Operator attribution and transactional history
+
+Reviewed grant and review-publication JSON files now also require `operatorRef`
+and `changeRef` (non-empty strings, each at most 128 characters). These must be
+non-secret references to the operator and reviewed change. Both privileged
+Firestore methods require this context; the synthetic demo supplies explicitly
+synthetic references. There is no default live operator identity.
+
+Every successful state-changing grant/publication appends an `operatorAudit`
+entry in the same transaction: action, supplied references, server timestamp,
+resulting aggregate revision and scoped target identifiers. Review entries retain
+the digest rather than text; grants retain the target UID and granted scope.
+Transaction retries create one entry. No-op retries, denied requests, stale
+revisions and capacity failures create no entries. State validation rejects
+malformed history and impossible revisions. Existing aggregates without history
+remain readable; earlier operations are not retroactively attributed.
+
+Attribution references are supplied by the privileged caller, not authenticated
+Google principal claims. IAM remains the access authority. This application
+history is not a tamper-proof external audit log: a privileged database writer
+can alter or delete data. IAM-principal correlation, independent log retention
+and production audit acceptance remain launch work. The history shares the
+512 KiB aggregate capacity and is never silently pruned. It has no public route
+and is omitted from customer project overviews. This slice reuses the existing
+transaction/state validation rather than provisioning another logging service.

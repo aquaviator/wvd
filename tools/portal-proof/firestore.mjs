@@ -1,3 +1,4 @@
+import {operatorContext} from './operator-audit.mjs';
 import {PortalProof} from './domain.mjs';
 import {validatePortalState} from './state.mjs';
 
@@ -13,7 +14,9 @@ function decode(document) {
     if(!document.exists)throw Error();
     const data=document.data();
     if(data.schemaVersion!==1||!Number.isSafeInteger(data.revision)||data.revision<0||typeof data.stateJson!=='string'||Buffer.byteLength(data.stateJson)>MAX_STATE_BYTES)throw Error();
-    return {state:validatePortalState(JSON.parse(data.stateJson)),revision:data.revision};
+    const state=validatePortalState(JSON.parse(data.stateJson));
+    if(state.operatorAudit?.some(entry=>entry.revision>data.revision))throw Error();
+    return {state,revision:data.revision};
   } catch {throw Error('CORRUPT_PORTAL_STATE');}
 }
 // Bounded per-product aggregate adapter. Reuses the domain and integrity checks.
@@ -29,22 +32,32 @@ export class FirestorePortal {
   // Trusted provisioning API only; never exposed as a client route. Firebase UIDs
   // must be supplied as identity IDs. Existing product data is never overwritten.
   async initialize(state) {
-    const normalized=new PortalProof(state,this.#clock).snapshot(),stateJson=encode(normalized);
+    const normalized=new PortalProof(state,this.#clock).snapshot();
+    if(normalized.operatorAudit?.length)throw Error('CORRUPT_PORTAL_STATE');
+    const stateJson=encode(normalized);
     return this.#db.runTransaction(async transaction=>{
       const document=await transaction.get(this.#ref);
       if(document.exists){decode(document);return {created:false};}
       transaction.create(this.#ref,{schemaVersion:1,revision:0,stateJson});return {created:true};
     });
   }
-  async #run(method,args,expectedRevision) {
+  async #run(method,args,expectedRevision,audit) {
     // A retry of the same transaction uses the same captured server time.
     const timestamp=this.#clock();
     return this.#db.runTransaction(async transaction=>{
       const document=await transaction.get(this.#ref),{state,revision}=decode(document);
       if(expectedRevision!==undefined&&revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
       const model=new PortalProof(state,()=>timestamp),before=encode(model.snapshot());
-      const result=model[method](...args),after=encode(model.snapshot());
-      if(after!==before){if(revision>=Number.MAX_SAFE_INTEGER)throw Error('REVISION_EXHAUSTED');transaction.update(this.#ref,{stateJson:after,revision:revision+1});}
+      const result=model[method](...args),next=model.snapshot();
+      if(encode(next)!==before) {
+        if(revision>=Number.MAX_SAFE_INTEGER)throw Error('REVISION_EXHAUSTED');
+        if(audit) {
+          const target=method==='provisionAccess'?{uid:result.identityId,businessId:result.businessId,role:result.role,projectIds:result.projectIds}:{projectId:result.projectId,milestoneId:result.milestoneId,versionId:result.versionId,digest:result.digest};
+          next.operatorAudit??=[];
+          next.operatorAudit.push({id:`operator-${revision+1}`,revision:revision+1,action:method,...audit,timestamp,...target});
+        }
+        transaction.update(this.#ref,{stateJson:encode(next),revision:revision+1});
+      }
       return result;
     },{maxAttempts:5});
   }
@@ -52,13 +65,13 @@ export class FirestorePortal {
   async accessRevision() {
     const document=await this.#ref.get();return decode(document).revision;
   }
-  async publishReview(request,expectedRevision) {
+  async publishReview(request,expectedRevision,context) {
     if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
-    return this.#run('publishReview',[request],expectedRevision);
+    return this.#run('publishReview',[structuredClone(request)],expectedRevision,operatorContext(context));
   }
-  async provisionAccess(request,expectedRevision) {
+  async provisionAccess(request,expectedRevision,context) {
     if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
-    return this.#run('provisionAccess',[request],expectedRevision);
+    return this.#run('provisionAccess',[structuredClone(request)],expectedRevision,operatorContext(context));
   }
   async activeIdentity(uid) {
     if(typeof uid!=='string'||!uid||uid.length>128)return false;
