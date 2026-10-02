@@ -28,6 +28,13 @@ eligible. A project lock prevents concurrent state writers; after a crash, inspe
 the recorded PID before manually removing a stale lock. Failed context tasks can be
 rerun after their missing input is corrected; no model calls or semantic retries occur.
 
+`handoff.mjs` creates immutable worker/verifier packets from exact context bytes.
+Its assessment checks task/context/output hashes, distinct creator/reviewer IDs,
+complete criterion evidence and absence of blockers. Tests use labelled synthetic
+reviews; no independent live review is claimed. Identity authenticity and semantic
+evidence sufficiency require the connected trusted provider/reviewer. A passing
+assessment does not itself dispatch an agent, merge code or authorise release.
+
 Private source text and context packets must stay outside Git. No raw credentials
 belong in a source snapshot. Credential vault injection, agent/model dispatch,
 independent verification, provisioning and production release are not implemented
