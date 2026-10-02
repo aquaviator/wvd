@@ -25,6 +25,8 @@ exact tested release. Preserve product/customer isolation.
   versions and persistence reopen; legacy approvals explicitly lack review text.
 - Synthetic emulator sign-in and disposable offline container verification with
   commit-bound screenshots, video and results; native Windows checks retained.
+- Versioned scope-bound aggregate backup verification and isolated SQLite disk
+  restore rehearsal; live Google restore and retention remain unfinished.
 - Standard/factory inheritance of continuous development from the agreed brief.
 
 ## Remaining development and release acceptance
@@ -52,8 +54,8 @@ credentials, enable billing or mutate another product to bypass them.
 Prior operator-history slice: 299352a6f061d6080e519617d9a4ce7b8959243a,
 container run https://github.com/aquaviator/wvd/actions/runs/37033807179.
 Continuous-development rule: 1b914c95a765cb2eec10671002ef8c9139917ca3,
-all applicable CI runs passed. Current client history changes: 174 portal checks
-passed locally, with native Windows verification and real emulator browser
-verification performed by the push-triggered CI. Inspect exact commit runs and
+all applicable CI runs passed. Client history and backup rehearsal changes are verified by the push-triggered
+CI. The first history browser run found an ambiguous test selector; the next
+revision scopes that selector to the approval record. Inspect exact commit runs and
 bounded evidence before recording integration success. GitHub artifacts expire
 after one day; run results remain the durable verification reference.

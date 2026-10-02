@@ -227,3 +227,22 @@ replacement, and the UI refreshes it after submission. These project-shared
 comments omit actor UIDs and operation IDs; they are not private messages.
 Revoked membership blocks access to both histories on the next request. Domain,
 durable-reopen and real emulator browser checks cover the review history loop.
+
+### Isolated backup rehearsal
+
+`backup.mjs` exports a bounded versioned envelope containing explicit
+project/product/database/mode bindings, source revision, export time and validated
+portal state. Trusted Firestore export reads state and revision from one document
+snapshot. The checksum detects changed bytes; it is not a signature or proof of
+backup authenticity. Verification also checks state relationships, immutable
+review digests and audit revisions, and rejects scope mismatches.
+
+`rehearsePortalBackup` verifies an envelope, restores it to a fresh internal
+SQLite directory, closes/reopens it and compares the complete state, then removes
+the temporary directory. There is no supplied target path, overwrite switch,
+public route or live restore operation. Automated tests use synthetic data only;
+the real Firestore emulator test rehearses a snapshot with approvals, feedback
+and tickets. This proves aggregate data portability into the existing local
+adapter, not restoration of Firebase Auth accounts, storage files, IAM, Firestore
+indexes/rules or a production Google disaster recovery procedure. Backup security,
+retention, authenticated provenance and live restore acceptance remain unfinished.

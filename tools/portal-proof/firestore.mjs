@@ -23,9 +23,11 @@ function decode(document) {
 // Firestore transactions commit domain data and outbox intent atomically. No
 // network side effects occur in callbacks, which Firestore may rerun on conflict.
 export class FirestorePortal {
-  #db; #ref; #clock;
-  constructor({db,productId,clock=()=>new Date().toISOString()}) {
+  #db; #ref; #clock; #backupBinding;
+  constructor({db,productId,backupBinding,clock=()=>new Date().toISOString()}) {
     if(typeof db?.doc!=='function'||typeof db?.runTransaction!=='function'||!product(productId)||typeof clock!=='function')throw Error('INVALID_CONFIGURATION');
+    if(backupBinding&&backupBinding.productId!==productId)throw Error('INVALID_CONFIGURATION');
+    this.#backupBinding=backupBinding?structuredClone(backupBinding):undefined;
     this.#db=db;this.#clock=clock;
     this.#ref=db.doc(`wvd_products/${productId}/private/portal-state`);
   }
@@ -62,6 +64,10 @@ export class FirestorePortal {
     },{maxAttempts:5});
   }
   // Privileged operator read; no public HTTP route.
+  async backupSnapshot() {
+    if(!this.#backupBinding)throw Error('BACKUP_BINDING_REQUIRED');
+    const document=await this.#ref.get();return {...decode(document),binding:structuredClone(this.#backupBinding)};
+  }
   async accessRevision() {
     const document=await this.#ref.get();return decode(document).revision;
   }

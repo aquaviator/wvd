@@ -1,3 +1,4 @@
+import {exportPortalBackup,rehearsePortalBackup} from '../backup.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -32,6 +33,7 @@ test('real Google emulators: identity, product isolation, concurrent atomic writ
  assert.equal(approved.status,200);const saved=await approved.json();assert.deepEqual(await backend.portal.approve(approval),saved);
  await backend.portal.replaceVersion('m','v2');const before=await backend.portal.snapshot();await assert.rejects(()=>backend.portal.approve({...approval,operationId:'stale'}),/VERSION_CONFLICT/);assert.deepEqual(await backend.portal.snapshot(),before);
  await Promise.all(['a','b','c'].map(id=>backend.portal.createTicket(ticket(id))));
+ const rehearsal=rehearsePortalBackup(await exportPortalBackup(backend.portal,config),config);assert.equal(rehearsal.verified,true);assert.equal(rehearsal.receipts,1);assert.equal(rehearsal.tickets,3);assert.equal(rehearsal.liveWrites,false);
  const state=await backend.portal.snapshot();assert.equal(state.tickets.length,3);assert.equal(state.receipts.length,1);assert.equal(state.outbox.length,4);
  const reopened=createFirebaseBackend(config);t.after(()=>reopened.close());assert.deepEqual(await reopened.portal.snapshot(),state);
  await reopened.portal.replaceVersion('m','v3');
@@ -104,7 +106,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.locator('.feedback-record').getByText('Synthetic feedback: the navigation is ready.',{exact:true}).waitFor();
  assert.equal((await backend.portal.snapshot()).receipts[0].reviewDigest,review.digest);
  const audit=(await backend.portal.snapshot()).operatorAudit;assert.equal(audit.length,2);assert.deepEqual(audit.map(x=>x.action),['publishReview','provisionAccess']);
- await page.getByText('m — version v',{exact:true}).click();
+ await page.locator('.approval-record summary').click();
  await page.locator('.approval-record').getByText('Synthetic design review',{exact:true}).waitFor();
  assert.equal(await page.locator('.approval-record').getByText('Review the heading, navigation and contact form before approving this version.',{exact:true}).count(),1);
  await capture('owner-milestone-approved');

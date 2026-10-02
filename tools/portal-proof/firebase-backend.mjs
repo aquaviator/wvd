@@ -10,7 +10,7 @@ export function createFirebaseBackend(config) {
   const options={projectId:checked.projectId};
   if(checked.mode==='live')options.credential=applicationDefault();
   const app=initializeApp(options,`wvd-${randomUUID()}`),db=getFirestore(app,checked.databaseId),auth=getAuth(app);
-  const portal=new FirestorePortal({db,productId:checked.productId});
+  const portal=new FirestorePortal({db,productId:checked.productId,backupBinding:checked});
   const resolveSession=createFirebaseSessionResolver({auth,portal});
   return {portal,auth,resolveSession,close:async()=>{await db.terminate();await deleteApp(app);}};
 }
