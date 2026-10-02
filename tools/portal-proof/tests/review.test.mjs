@@ -42,3 +42,25 @@ test('HTTP approval accepts only the exact digest and rejects identity injection
  assert.equal((await send({...request,reviewDigest:review.digest,actorId:'x'})).status,400);
  assert.equal((await send({...request,reviewDigest:review.digest})).data.reviewDigest,review.digest);
 });
+
+test('approval history retains exact reviewed text after a replacement and omits private operator data',()=>{
+ const m=model(),first=m.publishReview(content);m.approve({...approval,reviewDigest:first.digest});
+ m.publishReview({...content,versionId:'v2',body:'New review text'});
+ const view=m.projectOverview('o','p');assert.equal(view.awaitingClient[0].review.body,'New review text');
+ assert.equal(view.approvalHistory[0].review.body,content.body);assert.equal(view.approvalHistory[0].reviewDigest,first.digest);
+ assert.deepEqual(Object.keys(view.approvalHistory[0]).sort(),['id','milestoneId','review','reviewDigest','timestamp','versionId']);
+ assert.throws(()=>m.projectOverview('x','p'),/ACCESS_DENIED/);
+ view.approvalHistory[0].review.body='Injected';assert.equal(m.projectOverview('o','p').approvalHistory[0].review.body,content.body);
+});
+test('legacy approvals have explicitly unavailable review content',()=>{
+ const m=model();m.approve(approval);const history=m.projectOverview('o','p').approvalHistory;
+ assert.equal(history[0].review,null);assert.equal(history[0].reviewDigest,null);assert.equal(history[0].versionId,'v');
+});
+
+test('saved review feedback remains version-bound and readable after approval and replacement',()=>{
+ const m=model(),review=m.publishReview(content);m.submitFeedback({...approval,operationId:'f',body:'Check the heading.'});m.approve({...approval,reviewDigest:review.digest});m.publishReview({...content,versionId:'v2'});
+ const view=m.projectOverview('o','p');assert.equal(view.feedbackHistory[0].versionId,'v');assert.equal(view.feedbackHistory[0].body,'Check the heading.');
+ assert.deepEqual(Object.keys(view.feedbackHistory[0]).sort(),['body','id','milestoneId','timestamp','versionId']);
+ view.feedbackHistory[0].body='Injected';assert.equal(m.projectOverview('o','p').feedbackHistory[0].body,'Check the heading.');
+ m.revokeMembership('o','b');assert.throws(()=>m.projectOverview('o','p'),/ACCESS_DENIED/);
+});

@@ -64,3 +64,10 @@ test('review content and exact approval digest survive durable reopen',t=>{
  const reopened=s.open();assert.equal(reopened.projectOverview('o','p').awaitingClient[0].review.digest,review.digest);
  const saved=reopened.approve({...approval,reviewDigest:review.digest});assert.equal(s.open().snapshot().receipts[0].reviewDigest,saved.reviewDigest);
 });
+
+test('client overview histories survive a durable reopen',t=>{
+ const s=setup(t),db=s.open(fixture());
+ const review=db.publishReview({projectId:'p',milestoneId:'m',versionId:'v',title:'Review',body:'Historical review text.'});
+ db.submitFeedback({...approval,body:'Historical feedback.',operationId:'feedback'});db.approve({...approval,reviewDigest:review.digest});db.publishReview({projectId:'p',milestoneId:'m',versionId:'v2',title:'New review',body:'New content.'});
+ const view=s.open().projectOverview('o','p');assert.equal(view.approvalHistory[0].review.body,'Historical review text.');assert.equal(view.feedbackHistory[0].body,'Historical feedback.');assert.equal(view.awaitingClient[0].review.body,'New content.');
+});

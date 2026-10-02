@@ -93,6 +93,8 @@ export class PortalProof {
     const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:reviews?.find(x=>x.versionId===milestone.currentVersionId)??null} : {})}));
     return structuredClone({
       projectId, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
+      feedbackHistory:this.#state.feedback.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,body})=>({id,milestoneId,versionId,timestamp,body})),
+      approvalHistory:this.#state.receipts.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,reviewDigest})=>({id,milestoneId,versionId,timestamp,reviewDigest:reviewDigest??null,review:reviewDigest?this.#state.milestones.find(x=>x.id===milestoneId&&x.projectId===projectId)?.reviews?.find(x=>x.versionId===versionId&&x.digest===reviewDigest)??null:null})),
       completedMilestones: milestones.filter(x => x.status === 'approved'),
       awaitingClient: milestones.filter(x => x.status === 'awaiting-client')
     });

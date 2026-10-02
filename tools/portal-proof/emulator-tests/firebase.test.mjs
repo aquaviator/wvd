@@ -90,6 +90,9 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.getByText('Synthetic design review',{exact:true}).waitFor();
  assert.equal((await backend.portal.snapshot()).receipts.length,0);
  await capture('member-approval-denied');
+ await page.getByLabel('Feedback',{exact:true}).fill('Synthetic feedback: the navigation is ready.');
+ await page.getByRole('button',{name:'Send feedback',exact:true}).click();
+ await page.locator('.feedback-record').getByText('Synthetic feedback: the navigation is ready.',{exact:true}).waitFor();
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  await page.locator('#login').getByLabel('Email').fill(email);await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
  await page.getByRole('button',{name:'Approve this version'}).waitFor();
@@ -98,8 +101,12 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.getByRole('button',{name:'Approve this version'}).click();
  await page.getByText('m — approved').waitFor();
  assert.equal((await backend.portal.snapshot()).receipts.length,1);
+ await page.locator('.feedback-record').getByText('Synthetic feedback: the navigation is ready.',{exact:true}).waitFor();
  assert.equal((await backend.portal.snapshot()).receipts[0].reviewDigest,review.digest);
  const audit=(await backend.portal.snapshot()).operatorAudit;assert.equal(audit.length,2);assert.deepEqual(audit.map(x=>x.action),['publishReview','provisionAccess']);
+ await page.getByText('m — version v',{exact:true}).click();
+ await page.locator('.approval-record').getByText('Synthetic design review',{exact:true}).waitFor();
+ assert.equal(await page.locator('.approval-record').getByText('Review the heading, navigation and contact form before approving this version.',{exact:true}).count(),1);
  await capture('owner-milestone-approved');
  assert.deepEqual(await page.evaluate(()=>[Object.keys(localStorage),Object.keys(sessionStorage)]),[[],[]]);
  await page.getByRole('button',{name:'Sign out',exact:true}).click();

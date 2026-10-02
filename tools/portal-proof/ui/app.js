@@ -22,6 +22,21 @@ async function project(){
   if(generation!==revision||!sessionToken)return;
   const box=el('overview');box.append(node('h2','Project progress'),node('p',`Stage: ${overview.stage??'Awaiting update'}`),node('p',`Next step: ${overview.nextStep??'Awaiting update'}`));
   box.append(node('h3','Completed milestones'));for(const m of overview.completedMilestones)box.append(node('p',`${m.id} — approved`));
+  box.append(node('h3','Approval history'));
+  if(!overview.approvalHistory.length)box.append(node('p','No approvals recorded.'));
+  for(const receipt of overview.approvalHistory){
+    const details=document.createElement('details');details.className='approval-record';
+    details.append(node('summary',`${receipt.milestoneId} — version ${receipt.versionId}`),node('p',`Approved: ${new Date(receipt.timestamp).toLocaleString()}`));
+    if(receipt.review)details.append(node('h4',receipt.review.title),node('p',receipt.review.body));
+    else details.append(node('p','This legacy approval has no stored review text.'));
+    box.append(details);
+  }
+  box.append(node('h3','Review feedback'));
+  if(!overview.feedbackHistory.length)box.append(node('p','No feedback recorded.'));
+  for(const feedback of overview.feedbackHistory){
+    const card=node('article','');card.className='feedback-record';
+    card.append(node('h4',`${feedback.milestoneId} — version ${feedback.versionId}`),node('p',`Saved: ${new Date(feedback.timestamp).toLocaleString()}`),node('p',feedback.body));box.append(card);
+  }
   box.append(node('h3','Awaiting your review'));if(!overview.awaitingClient.length)box.append(node('p','Nothing awaiting review.'));
   for(const m of overview.awaitingClient){
     const card=node('article','');card.append(node('h3',m.id),node('p',`Review version: ${m.currentVersionId}`));
@@ -31,7 +46,7 @@ async function project(){
     approval.addEventListener('click',async()=>{approval.disabled=true;try{await api('/api/portal/approve',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,...(m.review?{reviewDigest:m.review.digest}:{}),operationId:crypto.randomUUID()});status('Milestone approved.');await project();}catch(error){status(error.message);}finally{approval.disabled=false;}});
     card.append(approval,node('p','Only the client Owner can approve.'));
     const form=document.createElement('form'),label=node('label','Feedback'),body=document.createElement('textarea');body.required=true;body.maxLength=10000;label.append(body);form.append(label,node('button','Send feedback'));
-    form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/feedback',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,body:body.value,operationId:crypto.randomUUID()});body.value='';status('Feedback saved.');});});card.append(form);box.append(card);
+    form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/feedback',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,body:body.value,operationId:crypto.randomUUID()});body.value='';await project();status('Feedback saved.');});});card.append(form);box.append(card);
   }
   for(const ticket of tickets){
     const card=node('article','');card.append(node('h3',ticket.subject),node('p',ticket.body));

@@ -209,3 +209,21 @@ and production audit acceptance remain launch work. The history shares the
 512 KiB aggregate capacity and is never silently pruned. It has no public route
 and is omitted from customer project overviews. This slice reuses the existing
 transaction/state validation rather than provisioning another logging service.
+
+### Client approval history
+
+The authorised project overview now includes a minimal approval history with
+milestone/version, server approval time, bound digest and the exact historical
+review text. Publishing a new version does not change prior entries. The browser
+shows these as expandable records, including after re-sign-in; legacy approvals
+explicitly say that no review text was stored. Actor UIDs, operation IDs and
+operator history are omitted from this customer projection. Existing project
+membership checks apply to the complete response. The screen reuses the current
+overview boundary and receipts rather than adding a new database or service.
+
+The same authorised overview also returns saved feedback with its original
+milestone/version and timestamp. Feedback remains visible after approval or
+replacement, and the UI refreshes it after submission. These project-shared
+comments omit actor UIDs and operation IDs; they are not private messages.
+Revoked membership blocks access to both histories on the next request. Domain,
+durable-reopen and real emulator browser checks cover the review history loop.
