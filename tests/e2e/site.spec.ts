@@ -39,7 +39,7 @@ test('portfolio pages have no horizontal overflow at release viewports', async (
       await page.setViewportSize(viewport);
       await page.goto(route);
       const sizes = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
-      expect(sizes.scroll).toBeLessThanOrEqual(sizes.client);
+      expect(sizes.scroll, `${route} at ${viewport.width}px`).toBeLessThanOrEqual(sizes.client);
     }
   }
 });
@@ -134,6 +134,6 @@ test('product media has no horizontal overflow across release viewports', async 
     await page.setViewportSize(viewport);
     await page.goto('/products/property/uk-landlord-mtd-ledger/');
     const sizes = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
-    expect(sizes.scroll).toBeLessThanOrEqual(sizes.client);
+    expect(sizes.scroll, `${route} at ${viewport.width}px`).toBeLessThanOrEqual(sizes.client);
   }
 });
