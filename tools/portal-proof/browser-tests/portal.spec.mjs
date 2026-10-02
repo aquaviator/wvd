@@ -21,7 +21,7 @@ test('invitation, sign-in, ticket reply, feedback, approval and logout',async({p
   await page.getByLabel('New password').fill(password);await page.getByRole('button',{name:'Set password',exact:true}).click();
   await expect(page.getByRole('status')).toContainText('Password set');
   await page.locator('#login').getByLabel('Email').fill('owner@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login').getByRole('button').click();
-  await expect(page.getByText('Stage: Design review')).toBeVisible();await expect(page.getByRole('option')).toHaveCount(1);
+  await expect(page.getByText('Stage: Design review')).toBeVisible();await expect(page.locator('#projects').getByRole('option')).toHaveCount(1);
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
   await expect(page.locator('#workspace')).not.toContainText('Other private project');
   await page.getByLabel('Subject').fill('<img src=x onerror=alert(1)>');await page.getByLabel('Details').fill('Could you explain the next step?');await page.getByRole('button',{name:'Send ticket',exact:true}).click();
