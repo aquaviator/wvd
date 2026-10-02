@@ -69,6 +69,7 @@ export function validatePortalState(state) {
   }
   const progressIds=new Set();
   for(const project of state.projects) {
+    if((project.createdByActorId===undefined)!==(project.createdAt===undefined)||(project.createdByActorId!==undefined&&(!identities.has(project.createdByActorId)||typeof project.createdAt!=='string'||!Number.isFinite(Date.parse(project.createdAt))||!project.progressHistory?.length||project.progressHistory[0].actorId!==project.createdByActorId)))corrupt();
     if(project.progressHistory===undefined)continue;
     if(!Array.isArray(project.progressHistory)||project.progressHistory.length>200)corrupt();
     let previous;

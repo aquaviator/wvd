@@ -203,3 +203,17 @@ Member/admin browser tests check disabled controls rather than presenting an
 unauthorised click as a normal workflow. Domain/HTTP tests retain direct denial
 coverage, and every approval still rechecks current identity and membership,
 including retries. Page capability is presentation data, not write authority.
+
+## Project creation for existing clients
+
+Active WVD admins can create a project under an explicitly selected existing
+client reference. Creation adapts the progress-history transaction to retain
+creator, server time, initial stage and next step; resource-bound retry keys
+prevent duplicate projects, changed retries and silent adoption of seeded rows.
+Creation and initial progress are atomic. No account, membership or project grant
+is added or widened, and no new client/business reference is guessed. Client
+accounts therefore cannot see a new project until access is assigned through an
+appropriate trusted workflow. The UI says this explicitly and refreshes its
+project selector after creation. New client onboarding and project-grant
+management remain separate unmet requirements. Creation is capped at 200 proof
+projects per business; aggregate capacity/release limits still apply.

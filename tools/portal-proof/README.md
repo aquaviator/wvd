@@ -41,12 +41,13 @@ are described in [SELF-HOSTING.md](SELF-HOSTING.md).
 | Update project stage and next step | Denied | Denied | Allowed |
 | Publish immutable review text to an existing milestone | Denied | Denied | Allowed |
 | Create a milestone with its first review | Denied | Denied | Allowed |
+| Create a project for an existing client | Denied | Denied | Allowed; client grants stay unchanged |
 
 Every operation checks current active identity and project scope. Firebase
 verification supplies the UID; request/token role flags confer no permissions.
 Owner membership supplies client approval authority. Server-computed page
 capabilities control presentation, while writes independently recheck access.
-Colleague invitation/removal, client/project creation and ticket triage are still
+Colleague invitation/removal, client creation, project access assignment and ticket triage are still
 unfinished workflows; a permission action in the domain is not a working UI.
 
 Approval receipts bind actor, business, project, milestone, exact immutable

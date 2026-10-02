@@ -90,6 +90,7 @@ export class FirestorePortal {
   updateProjectProgress(...args){return this.#run('updateProjectProgress',args);}
   publishReviewAsAdmin(...args){return this.#run('publishReviewAsAdmin',args);}
   createMilestoneAsAdmin(...args){return this.#run('createMilestoneAsAdmin',args);}
+  createProjectAsAdmin(...args){return this.#run('createProjectAsAdmin',args);}
   ticketsFor(...args){return this.#run('ticketsFor',args);}
   authorise(...args){return this.#run('authorise',args);}
   projectOverview(...args){return this.#run('projectOverview',args);}

@@ -46,6 +46,21 @@ export class PortalProof {
     if(!identity)denied();
     return {admin:identity.wvdAdmin===true};
   }
+  createProjectAsAdmin({actorId,businessId,projectId,stage,nextStep}) {
+    if(!this.workspaceAccess(actorId).admin)denied();
+    this.#text(businessId,128);this.#text(projectId,128);
+    if(!this.#state.projects.some(x=>x.businessId===businessId))throw Error('BUSINESS_SCOPE_DENIED');
+    const existing=this.#state.projects.find(x=>x.id===projectId);
+    if(existing&&(existing.businessId!==businessId||existing.createdByActorId!==actorId))throw Error('PROJECT_CONFLICT');
+    const expectedDigest=progressDigest({projectId,stage:null,nextStep:null});
+    const operationId='create-project-'+progressDigest({projectId,stage:businessId,nextStep:actorId});
+    if(existing)return {projectId,businessId,initialProgress:this.updateProjectProgress({actorId,projectId,stage,nextStep,expectedDigest,operationId})};
+    if(this.#state.projects.filter(x=>x.businessId===businessId).length>=200)throw Error('PROJECT_CAPACITY');
+    const next=structuredClone(this.#state);
+    next.projects.push({id:projectId,businessId,createdByActorId:actorId,createdAt:this.#timestamp()});
+    const candidate=new PortalProof(next,this.#clock),initialProgress=candidate.updateProjectProgress({actorId,projectId,stage,nextStep,expectedDigest,operationId});
+    this.#state=candidate.snapshot();return {projectId,businessId,initialProgress};
+  }
   updateProjectProgress({actorId,projectId,stage,nextStep,expectedDigest,operationId}) {
     const project=authorise(this.#state,actorId,projectId,'manage-progress');
     this.#text(stage,200);this.#text(nextStep,2000);

@@ -5,6 +5,7 @@ const schemas = {
   'update-progress': ['projectId','stage','nextStep','expectedDigest','operationId'],
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
   'create-milestone': ['projectId','milestoneId','versionId','title','body'],
+  'create-project': ['businessId','projectId','stage','nextStep'],
   projects: [],
   tickets: ['projectId'],
   overview: ['projectId'],
@@ -48,6 +49,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         'update-progress': () => portal.updateProjectProgress(request),
         'publish-review': () => portal.publishReviewAsAdmin(request),
         'create-milestone': () => portal.createMilestoneAsAdmin(request),
+        'create-project': () => portal.createProjectAsAdmin(request),
         projects: () => portal.projectsFor(session.actorId),
         tickets: () => portal.ticketsFor(session.actorId,input.projectId),
         overview: () => portal.projectOverview(session.actorId, input.projectId),
@@ -60,8 +62,8 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
       return response(200, await operations[action]());
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
-      if (message === 'ACCESS_DENIED') return response(403, {error:'ACCESS_DENIED'});
-      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT'].includes(message)) return response(409, {error:message});
+      if (['ACCESS_DENIED','BUSINESS_SCOPE_DENIED'].includes(message)) return response(403, {error:'ACCESS_DENIED'});
+      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT'].includes(message)) return response(409, {error:message});
       if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }
