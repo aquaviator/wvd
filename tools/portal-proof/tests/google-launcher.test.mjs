@@ -26,7 +26,8 @@ test('actual Windows PowerShell SDK wrapper: path with spaces, exit codes, full 
  try {
   writeFileSync(join(dir,'gcloud.ps1'),`if ($args[0] -eq 'projects') { '{"projectId":"wvd-development","projectNumber":"6616382131","lifecycleState":"ACTIVE"}' } elseif ($args[0] -eq 'billing') { '{"projectId":"wvd-development","billingEnabled":false}' } else { exit 7 }`);
   const env={...process.env,PATH:dir+delimiter+process.env.PATH};
-  const result=googlePreflight({projectId:'wvd-development',productId:'wvd',databaseId:'(default)',mode:'live'},args=>runGcloud(args,{env}));
+  const outputs=[];
+  const result=googlePreflight({projectId:'wvd-development',productId:'wvd',databaseId:'(default)',mode:'live'},args=>{const output=runGcloud(args,{env});outputs.push(JSON.parse(output));if(args[0]==='billing')assert.deepEqual(outputs.at(-1),{projectId:'wvd-development',billingEnabled:false});return output;});
   assert.equal(result.status,'BILLING_PREREQUISITE_UNMET');assert.equal(result.projectNumber,'6616382131');
   assert.throws(()=>runGcloud(['unsupported'],{env}),error=>error.status===7);
  } finally {rmSync(dir,{recursive:true,force:true});}
