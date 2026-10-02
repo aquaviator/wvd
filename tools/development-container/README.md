@@ -60,3 +60,9 @@ interactive preview. It does not give the assistant remote access to the
 founder's Windows Docker engine. A shared interactive runtime would need an
 explicit connection and cost verification before it can be used. The existing
 local Firebase demo remains available for hands-on review when desired.
+
+The existing public-site CI runner also saves mobile/desktop buyer-guide PNGs
+as `public-guide-evidence-<run-id>`, capped at 5 MiB with one-day retention.
+Those pages are checked by the existing accessibility/mobile tests. This is
+public-site runner evidence, not a claim that the site suite runs in the portal
+container; the portal container continues to provide its own screenshots/video.

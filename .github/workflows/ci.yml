@@ -15,6 +15,24 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
+        env:
+          WVD_PUBLIC_EVIDENCE_DIR: public-evidence
+      - name: Check public evidence size
+        id: public-evidence-limit
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p public-evidence
+          bytes=$(du -sb public-evidence | cut -f1)
+          test "$bytes" -le 5242880
+      - name: Save synthetic public page evidence
+        if: always() && steps.public-evidence-limit.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-guide-evidence-${{ github.run_id }}
+          path: public-evidence/*.png
+          if-no-files-found: warn
+          retention-days: 1
       - run: npx playwright test --config tools/portal-proof/playwright.config.mjs
   portal-database:
     runs-on: ubuntu-latest

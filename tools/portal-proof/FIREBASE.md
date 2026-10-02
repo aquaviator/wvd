@@ -246,3 +246,22 @@ and tickets. This proves aggregate data portability into the existing local
 adapter, not restoration of Firebase Auth accounts, storage files, IAM, Firestore
 indexes/rules or a production Google disaster recovery procedure. Backup security,
 retention, authenticated provenance and live restore acceptance remain unfinished.
+
+### Introductory-call candidate screening
+
+`booking.mjs` adapts the existing Salon demo's duration and overlap checks for
+the founder's introductory-call policy: 30 minutes, Monday–Friday 09:00–18:00
+Europe/London, 24-hour minimum notice and 15-minute gaps. It filters explicitly
+supplied UTC candidates; it does not select a slot-grid policy or invent slots.
+All explicitly required calendar snapshots and England/Wales holiday coverage
+must be present, bounded and valid. Errors or incomplete coverage fail closed;
+London daylight saving is handled by the existing Node Intl timezone support.
+The test holiday list is synthetic and is not a published bank-holiday calendar.
+
+This is a pure development check, not a live availability/booking endpoint.
+Caller-supplied coverage is not proof of current provider data. Live integration
+still needs authenticated Calendar access, an approved complete conflict-calendar
+list, authoritative holiday data, snapshot freshness rules, final conflict
+recheck and a concurrency-safe reservation protocol. Google Meet creation,
+cancellation/rescheduling and confirmation delivery remain unfinished. No calendar
+IDs, credentials, live appointments or external messages are introduced here.

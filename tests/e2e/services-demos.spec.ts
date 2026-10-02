@@ -1,13 +1,21 @@
+import {mkdirSync} from 'node:fs';
+import {join} from 'node:path';
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 for (const route of ['/', '/services/', '/about/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/']) {
-  test(`${route} new delivery pages are accessible and fit narrow screens`, async ({page}) => {
+  test(`${route} new delivery pages are accessible and fit narrow screens`, async ({page},testInfo) => {
     await page.goto(route);
     await expect(page.getByRole('heading', {level:1})).toBeVisible();
     expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+    const originalViewport=page.viewportSize();
     await page.setViewportSize({width:320,height:700});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    if(route.startsWith('/insights/')&&process.env.WVD_PUBLIC_EVIDENCE_DIR){
+      if(originalViewport)await page.setViewportSize(originalViewport);
+      const directory=process.env.WVD_PUBLIC_EVIDENCE_DIR;mkdirSync(directory,{recursive:true});
+      await page.screenshot({path:join(directory,`guide-${testInfo.project.name}-${route.split('/').filter(Boolean).join('-')}.png`),fullPage:true});
+    }
   });
 }
 test('Hospitality enquiry stays simulated with no service calls or browser storage', async ({page})=>{

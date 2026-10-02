@@ -93,3 +93,9 @@ portal browser evidence are verified by CI. Prior history/backup commit
 2ee4cd1ed79f6ba06d24f73bb35fbb0e26ff696c passed all four CI checks and container
 run https://github.com/aquaviator/wvd/actions/runs/37045427568; downloaded evidence
 was inspected and bound to that exact commit.
+
+Introductory-call policy screening now has a pure synthetic test slice, adapted
+from Salon duration/conflict checks. It covers UK daylight saving, notice, gaps,
+weekends and supplied holiday/calendar coverage. No live availability or booking
+endpoint exists; Calendar permissions, full conflict-calendar discovery, fresh
+holiday data, reservation concurrency and Meet/delivery remain integration work.
