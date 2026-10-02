@@ -108,3 +108,49 @@ fixes a `demo-` project, binds the portal to loopback, initializes synthetic dat
 without overwriting existing state, and cannot select `wvd-development`. No Google
 CLI login, billing account or live runtime credential is required. Do not enter
 real account credentials or customer data. Emulator data is disposable.
+
+## Trusted account provisioning
+
+`firebase-operator.mjs` is a privileged terminal tool, not a web route. It reuses
+`createFirebaseBackend`, the existing domain and the strict product binding. It
+only links an existing, enabled Firebase UID with a verified email and a Google
+or password provider. It does not create Firebase users, send invitations,
+change credentials, set custom claims or create WVD administrators.
+
+Before applying a grant, inspect the existing aggregate revision:
+
+```sh
+node tools/portal-proof/firebase-operator.mjs inspect /path/to/explicit-binding.json
+node tools/portal-proof/firebase-operator.mjs provision /path/to/explicit-binding.json /path/to/reviewed-grant.json
+```
+
+Example reviewed grant (synthetic identifiers; supply actual verified values):
+
+```json
+{"uid":"synthetic-firebase-uid","businessId":"demo-business","role":"Member","projectIds":["Demo project"],"expectedRevision":0}
+```
+
+The operator must review the exact UID, role, business and project list. Use only
+an authorised operator environment with the explicit intended product binding;
+never execute these grants from an untrusted client. Live mode needs approved
+Google credentials/access and is not activated by this implementation. The local
+Firebase CLI login is not an application runtime credential. Normal member
+runtime credentials must not be exposed as an operator capability. IAM holders
+with aggregate write access are trusted operators: this bounded proof does not
+claim fine-grained separation of their server-side IAM roles.
+
+Firestore applies the grant atomically only if its current aggregate revision
+matches `expectedRevision`. A project from another business, stale revision,
+inactive identity, revoked membership, changed role, widened project list or
+extra privilege field fails without a write. An identical existing active grant
+at the current revision is a no-op. Newly provisioned identities are non-admin;
+only the specified projects are visible, and Members cannot approve milestones.
+Existing role changes and reactivation need a separately reviewed workflow and
+are deliberately unsupported by this additive tool. No public colleague-management
+endpoint or invitation delivery is claimed. This is still a bounded development
+proof; a production operator audit trail and normalized membership model remain
+release work.
+
+Founder verified the local demo startup, milestone approval and support tickets
+on Windows on 2 October 2026. This confirms the local emulator flow, not live
+Google sign-in, cloud persistence or production readiness.

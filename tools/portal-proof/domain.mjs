@@ -37,6 +37,27 @@ export class PortalProof {
     this.#state.replies ??= [];
   }
   snapshot() { return structuredClone(this.#state); }
+  // Trusted operator capability only. Do not expose this through client routes.
+  provisionAccess(request) {
+    const fields=['uid','businessId','role','projectIds'];
+    const text=value=>typeof value==='string'&&value.trim().length>0&&value.length<=128;
+    if(!request||typeof request!=='object'||Array.isArray(request)||Object.keys(request).length!==fields.length||!fields.every(key=>Object.hasOwn(request,key))||
+      !text(request.uid)||!text(request.businessId)||!['Owner','Member'].includes(request.role)||!Array.isArray(request.projectIds)||!request.projectIds.length||request.projectIds.length>50||request.projectIds.some(id=>!text(id))||new Set(request.projectIds).size!==request.projectIds.length)throw Error('INVALID_ACCESS_GRANT');
+    const {uid,businessId,role}=request,projectIds=[...request.projectIds].sort();
+    if(projectIds.some(id=>this.#state.projects.find(project=>project.id===id)?.businessId!==businessId))throw Error('PROJECT_SCOPE_DENIED');
+    const identity=this.#state.identities.find(item=>item.id===uid);
+    if(identity&&!identity.active)throw Error('IDENTITY_DISABLED');
+    const existing=this.#state.memberships.find(item=>item.actorId===uid&&item.businessId===businessId);
+    if(existing) {
+      if(!existing.active||existing.role!==role||JSON.stringify([...existing.projectIds].sort())!==JSON.stringify(projectIds))throw Error('ACCESS_ALREADY_PROVISIONED');
+      return {created:false,identityId:uid,businessId,role,projectIds};
+    }
+    const timestamp=this.#timestamp(),next=structuredClone(this.#state);
+    if(!identity)next.identities.push({id:uid,active:true});
+    next.memberships.push({actorId:uid,businessId,role,projectIds,active:true,provisionedAt:timestamp});
+    this.#state=next;
+    return {created:true,identityId:uid,businessId,role,projectIds};
+  }
   projectsFor(actorId) {
     return this.#state.projects.filter(project => {
       try { authorise(this.#state,actorId,project.id,'view'); return true; }

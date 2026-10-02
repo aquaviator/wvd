@@ -36,16 +36,25 @@ export class FirestorePortal {
       transaction.create(this.#ref,{schemaVersion:1,revision:0,stateJson});return {created:true};
     });
   }
-  async #run(method,args) {
+  async #run(method,args,expectedRevision) {
     // A retry of the same transaction uses the same captured server time.
     const timestamp=this.#clock();
     return this.#db.runTransaction(async transaction=>{
       const document=await transaction.get(this.#ref),{state,revision}=decode(document);
+      if(expectedRevision!==undefined&&revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
       const model=new PortalProof(state,()=>timestamp),before=encode(model.snapshot());
       const result=model[method](...args),after=encode(model.snapshot());
       if(after!==before){if(revision>=Number.MAX_SAFE_INTEGER)throw Error('REVISION_EXHAUSTED');transaction.update(this.#ref,{stateJson:after,revision:revision+1});}
       return result;
     },{maxAttempts:5});
+  }
+  // Privileged operator read; no public HTTP route.
+  async accessRevision() {
+    const document=await this.#ref.get();return decode(document).revision;
+  }
+  async provisionAccess(request,expectedRevision) {
+    if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
+    return this.#run('provisionAccess',[request],expectedRevision);
   }
   async activeIdentity(uid) {
     if(typeof uid!=='string'||!uid||uid.length>128)return false;

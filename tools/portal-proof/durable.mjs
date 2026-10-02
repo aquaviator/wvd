@@ -49,6 +49,7 @@ export class DurablePortal {
     } catch (error) { this.#db.exec('ROLLBACK'); throw error; }
   }
   close() { this.#db.close(); }
+  provisionAccess(...args) { return this.#run('provisionAccess', args); }
   snapshot() { return this.#run('snapshot', []); }
   projectsFor(...args) { return this.#run('projectsFor', args); }
   ticketsFor(...args) { return this.#run('ticketsFor', args); }

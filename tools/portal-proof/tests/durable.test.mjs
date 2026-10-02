@@ -47,3 +47,13 @@ for(const [description,mutate] of Object.entries(corruptions)) test(`persisted t
   assert.throws(()=>db.readTicket('o','p',saved.id),/CORRUPT_PORTAL_STATE/);
   assert.throws(()=>s.open(),/CORRUPT_PORTAL_STATE/);
 });
+test('trusted provisioned membership persists without widening existing or revoked access',t=>{
+ const s=setup(t),portal=s.open(fixture());
+ const grant={uid:'new-user',businessId:'b',role:'Member',projectIds:['p']};
+ assert.equal(portal.provisionAccess(grant).created,true);
+ const reopened=s.open();assert.deepEqual(reopened.projectsFor('new-user').map(p=>p.id),['p']);
+ assert.throws(()=>reopened.approve({...approval,actorId:'new-user'}),/ACCESS_DENIED/);
+ const before=row(s.path);assert.equal(reopened.provisionAccess(grant).created,false);assert.deepEqual(row(s.path),before);
+ assert.throws(()=>portal.provisionAccess({...grant,role:'Owner'}),/ACCESS_ALREADY_PROVISIONED/);
+ reopened.revokeMembership('new-user','b');assert.throws(()=>portal.provisionAccess(grant),/ACCESS_ALREADY_PROVISIONED/);
+});
