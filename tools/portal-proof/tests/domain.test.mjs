@@ -67,3 +67,5 @@ test('Workspace access derives admin capability only from current active server 
  assert.throws(()=>m.workspaceAccess('disabled'),/ACCESS_DENIED/);
  const state=fixture();state.identities.find(x=>x.id==='admin').active=false;assert.throws(()=>new PortalProof(state,()=> '').adminOverview('admin'),/ACCESS_DENIED/);
 });
+
+test('Overview approval capability matches active granted Owner permission, independently of admin visibility',()=>{const m=model();assert.equal(m.projectOverview('owner','p1').canApprove,true);assert.equal(m.projectOverview('member','p1').canApprove,false);assert.equal(m.projectOverview('admin','p1').canApprove,false);m.revokeMembership('owner','b1');assert.throws(()=>m.projectOverview('owner','p1'),/ACCESS_DENIED/);});

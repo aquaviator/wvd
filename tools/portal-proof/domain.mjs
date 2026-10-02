@@ -155,9 +155,10 @@ export class PortalProof {
   authorise(actorId, projectId, action) { return structuredClone(authorise(this.#state, actorId, projectId, action)); }
   projectOverview(actorId, projectId) {
     const project = authorise(this.#state, actorId, projectId, 'view');
+    let canApprove=false;try{authorise(this.#state,actorId,projectId,'approve');canApprove=true;}catch{}
     const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,createdByActorId,createdAt,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:clientReview(reviews?.find(x=>x.versionId===milestone.currentVersionId))} : {})}));
     return structuredClone({
-      projectId, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
+      projectId, canApprove, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
       progressDigest:progressDigest({projectId,stage:project.stage,nextStep:project.nextStep}),
       progressHistory:(project.progressHistory??[]).map(({stage,nextStep,timestamp})=>({stage,nextStep,timestamp})),
       feedbackHistory:this.#state.feedback.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,body})=>({id,milestoneId,versionId,timestamp,body})),

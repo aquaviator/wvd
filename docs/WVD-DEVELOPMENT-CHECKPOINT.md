@@ -197,3 +197,9 @@ transaction failures leave neither a partial milestone nor a partial review.
 Client views omit internal creator identifiers, and every new milestone awaits
 Owner approval. Creation is capped at 200 milestones per proof project and creates
 no additional project/member grants or notification-delivery claim.
+
+Approval controls now use a server-computed per-project Owner capability. The
+Member/admin browser tests check disabled controls rather than presenting an
+unauthorised click as a normal workflow. Domain/HTTP tests retain direct denial
+coverage, and every approval still rechecks current identity and membership,
+including retries. Page capability is presentation data, not write authority.

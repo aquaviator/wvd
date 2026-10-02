@@ -1,84 +1,114 @@
-# WVD portal domain proof
+# WVD portal development foundation
 
-The founder selected WVD-built self-hosted software without required vendor
-subscriptions on 2 October 2026. The local authenticated application now has
-an executable entry point: see [SELF-HOSTING.md](SELF-HOSTING.md). Earlier proof
-notes below describe the original model and do not negate the implemented local
-auth/HTTP/SQLite path. Production acceptance and unfinished integrations remain
-explicit in that runbook. Supabase is an archived candidate, not a dependency.
+Build from the approved WVD brief using the existing Google/Firebase platform.
+Reuse the shared domain, storage adapters and service connections; do not add a
+provider or subscription as a shortcut. Local authentication and SQLite are
+explicit development options, not replacements for the selected Google platform.
+Supabase/Postgres material is an archived candidate, not the selected runtime.
+Development pushes are authorised. Production deployment and new external spend
+still need separate founder approval.
 
-Provider-free executable preparation for WVD-WEB-T08 slice 0, based on the
-owner amendment v0.1.2, A1 review and independently reviewed T01/T02/T03 drafts.
-The owner's instruction to continue development authorises this reversible
-proof; it does not accept the provisional ADR or close affected live-build
-dependencies. No public content, pricing, analytics or external service is changed.
+## Run and inspect
 
-Run `npm --prefix tools/portal-proof test` using Node 22.16 or later.
+Use Node 22.16 or later:
 
-The model demonstrates active identity, business membership and project grants;
-Owner-only approval; exact milestone version checks; membership revocation;
-request retry binding; immutable approval history; and approval/outbox intent
-committed together. Synthetic fixtures contain no customer data. Notification
-intent contains no ticket content, email address or selected recipient policy.
+```sh
+npm ci --prefix tools/portal-proof
+npm --prefix tools/portal-proof test
+npm --prefix tools/portal-proof run dev:firebase
+```
 
-This is an in-memory model, not a deployed portal or security certification.
-Actor IDs and state come from a trusted test adapter; production must resolve
-identity from a verified server session. `revokeMembership` and `replaceVersion`
-are trusted fixture operations, not public endpoints. Synchronous copy-on-write
-models a transaction only in one process. Durable database constraints,
-multi-process concurrency, receipt IDs, audit storage, authentication, invitation
-expiry/recovery, private previews, mail recipients and delivery require selected
-providers and independent integrated tests. Do not serve this model as an API.
+The Firebase demo requires Java 21 on PATH and runs isolated Auth/Firestore
+emulators under `demo-wvd-portal`, with the browser on loopback port 4703. Use only
+the synthetic account documented in [FIREBASE.md](FIREBASE.md). It has no live
+mode or fallback credentials. Tokens stay in browser memory and sign-out clears
+private views and unsent support drafts.
 
-Calendar connection check: the WVD account and supplied secondary calendar have
-been read successfully with owner access in ChatGPT. That connection does not
-supply production application credentials or prove Meet creation, all conflict
-calendars, external-writer handling, or booking availability. Booking remains a
-separate integration slice. Provider choices, commercial/retention/licensing
-decisions and exact-release production GO remain outstanding for affected work.
+Prefer the unattended [development container](../development-container/README.md)
+for reproducible unit, real-emulator and browser verification without the founder's
+laptop. Inspect source-bound results, image identity and synthetic screenshots.
+Native Windows checks remain separate. The local disk/auth proof and its limits
+are described in [SELF-HOSTING.md](SELF-HOSTING.md).
 
-Extended proof: authorised project overview, exact-version feedback, ticket
-creation/read/replies and payload-free pending notification intents. Ticket type
-is question, fault or change request; priority, Care entitlement, transition
-policy and notification recipients are not inferred. Plain text remains plain
-text; a future UI must escape it. Seeded collections are trusted fixtures, not an
-import API. Production requires complete schema/integrity validation, bounded
-requests, durable uniqueness, approved retention and recipient policy.
+## Current workflows and access
 
-`availability.mjs` assesses a single 30-minute slot from supplied UTC instants,
-London working hours, 24-hour notice, England/Wales holiday coverage and busy
-intervals with 15-minute separation. Buffer-at-opening/closing and evidence age
-are explicit test-policy inputs; no founder decision is inferred. Complete
-conflict calendar evidence is required and missing/stale evidence denies a slot.
-Holiday fixtures are synthetic test inputs, not a maintained live holiday feed.
-An available result means available at the observation only: there is no
-reservation, external-writer protection, Calendar/Meet action or confirmation.
+| Workflow | Client Owner | Client Member | WVD admin role |
+| --- | --- | --- | --- |
+| View progress, review text and histories | Granted projects | Granted projects | All WVD projects |
+| Save feedback, create/read/reply to support tickets | Granted projects | Granted projects | All WVD projects |
+| Approve an exact review version | Granted projects | Denied | No approval permission from admin status |
+| View grouped client/project activity | Denied | Denied | Allowed |
+| Update project stage and next step | Denied | Denied | Allowed |
+| Publish immutable review text to an existing milestone | Denied | Denied | Allowed |
+| Create a milestone with its first review | Denied | Denied | Allowed |
 
-`boundary.mjs` is a transport-independent adapter proof with an injected server
-session resolver, exact request schemas, a 32 KiB UTF-8 payload limit, explicit
-methods, same-origin writes, no-store responses and sanitised errors. Request
-payloads cannot select the acting identity. A real HTTP adapter must enforce
-the body limit while streaming (before allocating the whole string), decode GET
-parameters into this schema, and supply verified sessions. This proof supplies
-neither authentication nor persistence, rate limiting or public routes.
+Every operation checks current active identity and project scope. Firebase
+verification supplies the UID; request/token role flags confer no permissions.
+Owner membership supplies client approval authority. Server-computed page
+capabilities control presentation, while writes independently recheck access.
+Colleague invitation/removal, client/project creation and ticket triage are still
+unfinished workflows; a permission action in the domain is not a working UI.
 
-On 2 October 2026 the founder authorised development test events on the WVD
-calendar. A labelled private, transparent 30-minute test was created via the WVD
-connection, read back with a successfully provisioned Google Meet link, then
-deleted successfully. No external attendees were supplied. This verifies the
-chat connector's create/read/Meet/delete path only. The website still needs its
-own scoped credentials and calendar adapter; no production booking is implied.
+Approval receipts bind actor, business, project, milestone, exact immutable
+version/digest and server time. Review and feedback histories survive later
+versions and persistence reopen. Legacy approvals explicitly lack review text.
+A new version awaits fresh Owner approval; publishing does not approve for the
+client. Progress edits retain scoped actor/time/text history and reject stale
+value digests. Creation commits a milestone and its first review together, and
+exact retries cannot overwrite existing rows or roll back a newer version.
+Internal publisher/creator and operation identifiers stay out of client review
+projections. UI content is rendered as plain text.
 
-`durable.mjs` adds an explicit SQLite seed, per-operation transactions and fresh
-reads across connections. State and notification intents commit together;
-failures roll back. The aggregate JSON store is a bounded local adapter and is
-not the selected hosted production database. Filesystem permissions, backups,
-retention, encryption and full imported-data validation remain separate work.
+Ticket types are question, fault and change request. Priority, Care entitlement,
+transition rules and notification recipients are not inferred. Approval,
+feedback, ticket and reply writes atomically retain payload-free notification
+intent; there is no dispatcher or delivery promise. Progress/publication writes
+retain history without inventing notification recipients.
 
-`http.mjs` and `server.mjs` expose the domain through explicit Node server
-construction. Bearer tokens are resolved only by the supplied server adapter;
-there is no default identity or development-auth bypass. The transport enforces
-streamed body bounds, exact schemas, write origins, no-store responses and
-sanitised errors. Loopback tests use synthetic identities on an isolated socket
-and temporary database. Hosting must provide TLS, real token verification,
-rate limits and production configuration; this code starts no public service.
+## Reused implementation and bounds
+
+- `domain.mjs` holds provider-free rules; raw actor IDs are trusted-adapter inputs,
+  not an authentication mechanism.
+- `boundary.mjs`, `http.mjs` and `server.mjs` require an injected verified session
+  resolver, exact schemas, same-origin writes, streamed 32 KiB request bounds,
+  no-store responses and sanitised errors. No default identity or bypass exists.
+- `durable.mjs` reloads validated state in SQLite transactions across connections.
+  `firestore.mjs` uses bounded aggregate transactions with no external effects
+  inside retryable callbacks. Failure leaves neither partial data nor intent.
+- `state.mjs` validates references, review digests, histories and operation
+  uniqueness. The Firestore aggregate has a 512 KiB capacity; proof progress
+  history and milestone creation are capped at 200 entries per project.
+- Trusted Google provisioning/publication requires explicit target bindings,
+  revisions and operator context. Admin routes use current verified portal
+  identity. Stored attribution is not an external tamper-proof audit service.
+- `backup.mjs` verifies product/project/database/mode bindings and rehearses an
+  aggregate restore in a fresh disposable SQLite database. It does not restore
+  Firebase Auth, files, IAM, indexes/rules or the whole Google deployment.
+
+## Booking evidence
+
+`availability.mjs` assesses a single 30-minute call; `booking.mjs` batches that
+same contract. Inputs supply complete conflict calendars, exact queried UTC
+coverage, England/Wales holidays and an observation time. Notice, UK working
+hours, both 15-minute conflict margins and evidence freshness are checked.
+Opening/closing buffer treatment and maximum evidence age remain explicit
+caller policy. Candidates are supplied, not generated by an invented slot grid.
+
+Current read-only Calendar checks are recorded in
+[WVD-CALENDAR-DEVELOPMENT.md](../../docs/WVD-CALENDAR-DEVELOPMENT.md). The earlier
+README recorded a connector create/read/Meet/delete rehearsal with no external
+attendees; connector access does not supply app credentials. Neither check proves
+live app booking, a complete conflict-calendar set or a reservation. Calendar/
+Meet credentials, final recheck, concurrency, cancellation/rescheduling and
+confirmation delivery remain integration work. Holiday fixtures are synthetic.
+
+## Production acceptance remains open
+
+The executable development foundation is not production readiness. Outstanding
+work includes live browser authentication and server credentials, colleague and
+client management, external artifact/preview binding, support triage and
+notification delivery, booking integration, hosting/TLS, rate limits, monitoring,
+retention, dependency remediation, production recovery and independent integrated
+release review. Passing emulators or a configuration template does not close
+those gates. Continue independent authorised development from the brief; ask the
+founder only for genuinely missing information, access or decisions.

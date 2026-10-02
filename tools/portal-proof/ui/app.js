@@ -89,7 +89,7 @@ async function project(){
   for(const m of overview.awaitingClient){
     const card=node('article','');card.append(node('h3',m.id),node('p',`Review version: ${m.currentVersionId}`));
     if(m.review){card.append(node('h4',m.review.title),node('p',m.review.body));}
-    const approval=node('button','Approve this version');approval.type='button';approval.disabled=Boolean(m.reviewRequired&&!m.review);
+    const approval=node('button','Approve this version');approval.type='button';approval.disabled=!overview.canApprove||Boolean(m.reviewRequired&&!m.review);
     if(m.reviewRequired&&!m.review)card.append(node('p','Review content is unavailable. Approval is paused.'));
     approval.addEventListener('click',async()=>{approval.disabled=true;try{await api('/api/portal/approve',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,...(m.review?{reviewDigest:m.review.digest}:{}),operationId:crypto.randomUUID()});status('Milestone approved.');await project();}catch(error){status(error.message);}finally{approval.disabled=false;}});
     card.append(approval,node('p','Only the client Owner can approve.'));
