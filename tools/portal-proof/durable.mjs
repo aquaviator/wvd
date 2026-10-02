@@ -106,6 +106,8 @@ export class DurablePortal {
   }
   close() { this.#db.close(); }
   snapshot() { return this.#run('snapshot', []); }
+  projectsFor(...args) { return this.#run('projectsFor', args); }
+  ticketsFor(...args) { return this.#run('ticketsFor', args); }
   authorise(...args) { return this.#run('authorise', args); }
   projectOverview(...args) { return this.#run('projectOverview', args); }
   approve(...args) { return this.#run('approve', args); }

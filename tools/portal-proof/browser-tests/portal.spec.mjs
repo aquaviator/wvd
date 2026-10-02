@@ -1,0 +1,32 @@
+import {test,expect} from '@playwright/test';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createApplication} from '../app.mjs';
+import {LocalAuth} from '../auth.mjs';
+import {DurablePortal} from '../durable.mjs';
+let auth,portal,server,dir,invitation;
+const origin='http://127.0.0.1:4702',password='A long private browser test password';
+test.beforeAll(async()=>{
+  dir=mkdtempSync(join(tmpdir(),'wvd-browser-'));auth=new LocalAuth(join(dir,'auth.sqlite'));
+  portal=new DurablePortal(join(dir,'portal.sqlite'),{identities:[{id:'owner',active:true},{id:'other',active:true}],projects:[{id:'Client project',businessId:'one',stage:'Design review',nextStep:'Review the first milestone'},{id:'Other private project',businessId:'two'}],memberships:[{actorId:'owner',businessId:'one',active:true,role:'Owner',projectIds:['Client project']},{actorId:'other',businessId:'two',active:true,role:'Owner',projectIds:['Other private project']}],milestones:[{id:'First milestone',projectId:'Client project',currentVersionId:'version-1',status:'awaiting-client'}]});
+  invitation=auth.invite('owner','owner@example.test');server=createApplication({portal,auth,allowedOrigin:origin});await new Promise(resolve=>server.listen(4702,'127.0.0.1',resolve));
+});
+test.afterAll(async()=>{server?.closeIdleConnections();if(server)await new Promise(resolve=>server.close(resolve));auth?.close();portal?.close();if(dir)rmSync(dir,{recursive:true,force:true});});
+test('invitation, sign-in, ticket reply, feedback, approval and logout',async({page})=>{
+  await page.goto(`/#invite=${invitation.invitationToken}`);
+  await expect(page).toHaveURL(origin+'/');
+  await page.getByLabel('New password').fill(password);await page.getByRole('button',{name:'Set password',exact:true}).click();
+  await expect(page.getByRole('status')).toContainText('Password set');
+  await page.locator('#login').getByLabel('Email').fill('owner@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login').getByRole('button').click();
+  await expect(page.getByText('Stage: Design review')).toBeVisible();await expect(page.getByRole('option')).toHaveCount(1);
+  await expect(page.locator('#workspace')).not.toContainText('Other private project');
+  await page.getByLabel('Subject').fill('<img src=x onerror=alert(1)>');await page.getByLabel('Details').fill('Could you explain the next step?');await page.getByRole('button',{name:'Send ticket',exact:true}).click();
+  await expect(page.getByRole('status')).toContainText('Ticket saved');await expect(page.getByRole('heading',{name:'<img src=x onerror=alert(1)>'})).toBeVisible();await expect(page.locator('#tickets img')).toHaveCount(0);
+  await page.getByRole('button',{name:'Read conversation'}).click();await page.getByLabel('Your reply').fill('Thank you.');await page.getByRole('button',{name:'Send reply',exact:true}).click();await expect(page.getByRole('status')).toContainText('Reply saved');
+  await page.getByLabel('Feedback',{exact:true}).fill('Ready for the next stage.');await page.getByRole('button',{name:'Send feedback',exact:true}).click();await expect(page.getByRole('status')).toContainText('Feedback saved');
+  await page.getByRole('button',{name:'Approve this version'}).click();await expect(page.getByRole('status')).toContainText('Milestone approved');await expect(page.getByText('First milestone — approved')).toBeVisible();
+  expect(await page.evaluate(()=>Object.keys(localStorage))).toEqual([]);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.getByRole('button',{name:'Sign out',exact:true}).click();await expect(page.locator('#workspace')).toBeHidden();await expect(page.getByRole('status')).toContainText('Signed out');
+});

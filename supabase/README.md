@@ -1,5 +1,9 @@
 # Portal database candidate
 
+**Archived candidate:** the founder selected self-hosted WVD software without
+required service subscriptions on 2 October 2026. Supabase is not required and
+no hosted project has been provisioned. See `docs/self-hosted-architecture.md`.
+
 The initial migration supplies profiles, business memberships, project grants,
 milestones, immutable version approvals, bound operation receipts and an atomic
 notification outbox. Authenticated reads use RLS; clients cannot write tables
@@ -7,7 +11,7 @@ directly. Approval derives its actor from `auth.uid()` and rechecks active Owner
 membership and a project grant. Trusted provisioning is separate from client
 operations. No live project has been created or changed.
 
-The recommended hosted route is Supabase Auth/Postgres with the existing
+The former proposed hosted route was Supabase Auth/Postgres with the existing
 Cloudflare public site. The Node/SQLite adapter in `tools/portal-proof` remains a
 portable local integration proof and is not a production database selection.
 The hosted migration is tested against disposable PostgreSQL 16 in GitHub CI

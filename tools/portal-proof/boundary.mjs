@@ -1,5 +1,7 @@
 // Transport-independent proof. resolveSession must be a trusted server adapter.
 const schemas = {
+  projects: [],
+  tickets: ['projectId'],
   overview: ['projectId'],
   ticket: ['projectId', 'type', 'subject', 'body', 'operationId'],
   'read-ticket': ['projectId', 'ticketId'],
@@ -7,7 +9,7 @@ const schemas = {
   feedback: ['projectId', 'milestoneId', 'versionId', 'body', 'operationId'],
   approve: ['projectId', 'milestoneId', 'versionId', 'operationId']
 };
-const reads = new Set(['overview', 'read-ticket']);
+const reads = new Set(['projects', 'tickets', 'overview', 'read-ticket']);
 const response = (status, data) => ({status, headers: {'Cache-Control':'no-store'}, data});
 
 export function createBoundary({portal, resolveSession, allowedOrigin}) {
@@ -34,6 +36,8 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
       if (!session || typeof session.actorId !== 'string' || !session.actorId) return response(401, {error:'UNAUTHENTICATED'});
       const request = {...input, actorId:session.actorId};
       const operations = {
+        projects: () => portal.projectsFor(session.actorId),
+        tickets: () => portal.ticketsFor(session.actorId,input.projectId),
         overview: () => portal.projectOverview(session.actorId, input.projectId),
         'read-ticket': () => portal.readTicket(session.actorId, input.projectId, input.ticketId),
         ticket: () => portal.createTicket(request),

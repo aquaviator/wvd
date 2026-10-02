@@ -1,5 +1,12 @@
 # WVD portal domain proof
 
+The founder selected WVD-built self-hosted software without required vendor
+subscriptions on 2 October 2026. The local authenticated application now has
+an executable entry point: see [SELF-HOSTING.md](SELF-HOSTING.md). Earlier proof
+notes below describe the original model and do not negate the implemented local
+auth/HTTP/SQLite path. Production acceptance and unfinished integrations remain
+explicit in that runbook. Supabase is an archived candidate, not a dependency.
+
 Provider-free executable preparation for WVD-WEB-T08 slice 0, based on the
 owner amendment v0.1.2, A1 review and independently reviewed T01/T02/T03 drafts.
 The owner's instruction to continue development authorises this reversible

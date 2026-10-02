@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Wear Valley Digital — Client portal</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body><header><a href="/">Wear Valley Digital</a><span>Client portal</span><button id="logout" hidden>Sign out</button></header>
+<main><p id="status" role="status" aria-live="polite"></p>
+<section id="account"><h1>Your project, in one place</h1><p>Sign in to view progress, review milestones and contact WVD.</p>
+<form id="login"><h2>Sign in</h2><label>Email<input name="email" type="email" autocomplete="username" required maxlength="254"></label><label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="1024"></label><button>Sign in</button></form>
+<details id="invite-panel"><summary>Set up or recover your account</summary><p>Use the invitation provided by WVD. Choose a password of at least 15 characters.</p><form id="redeem"><label>Invitation code<input name="invitationToken" autocomplete="off" required maxlength="43"></label><label>New password<input name="password" type="password" autocomplete="new-password" required minlength="15" maxlength="1024"></label><button>Set password</button></form></details>
+<p>Accounts are invitation-only. Contact your WVD project contact if you need access or password recovery.</p></section>
+<section id="workspace" hidden><h1>Your projects</h1><label>Choose a project<select id="projects"></select></label><div id="overview"></div>
+<section><h2>Support tickets</h2><p>Ask a question, report a fault or request a change. WVD will confirm scope and priority.</p><form id="ticket"><label>Type<select name="type"><option value="question">Question</option><option value="fault">Fault</option><option value="change-request">Change request</option></select></label><label>Subject<input name="subject" required maxlength="200"></label><label>Details<textarea name="body" required maxlength="10000"></textarea></label><button>Send ticket</button></form><div id="tickets"></div></section></section>
+</main><footer>Wear Valley Digital • Private client workspace</footer></body></html>

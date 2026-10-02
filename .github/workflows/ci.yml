@@ -15,6 +15,7 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
+      - run: npx playwright test --config tools/portal-proof/playwright.config.mjs
   portal-database:
     runs-on: ubuntu-latest
     services:

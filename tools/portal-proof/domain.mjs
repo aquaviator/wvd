@@ -37,6 +37,16 @@ export class PortalProof {
     this.#state.replies ??= [];
   }
   snapshot() { return structuredClone(this.#state); }
+  projectsFor(actorId) {
+    return this.#state.projects.filter(project => {
+      try { authorise(this.#state,actorId,project.id,'view'); return true; }
+      catch { return false; }
+    }).map(({id,stage,nextStep}) => ({id,stage:stage ?? null,nextStep:nextStep ?? null}));
+  }
+  ticketsFor(actorId, projectId) {
+    authorise(this.#state,actorId,projectId,'ticket');
+    return structuredClone(this.#state.tickets.filter(x => x.projectId===projectId));
+  }
   authorise(actorId, projectId, action) { return structuredClone(authorise(this.#state, actorId, projectId, action)); }
   projectOverview(actorId, projectId) {
     const project = authorise(this.#state, actorId, projectId, 'view');
