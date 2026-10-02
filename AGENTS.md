@@ -18,3 +18,10 @@ Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
 - Development commits/pushes to the authorised development branch are permitted.
   Production deployment still needs separate founder approval. New external
   spend remains £0 without separate authority.
+
+- Use the unattended container verification process in
+  `tools/development-container/README.md` for supported development checks.
+  Inspect the run and synthetic evidence, fix failures and repeat before handover.
+  Founder-local pulls are optional review, not the default verification gate.
+  Keep required native platform checks; do not claim a CI job is an interactive
+  preview or remote control of the founder's computer.

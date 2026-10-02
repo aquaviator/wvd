@@ -19,3 +19,14 @@ for(const [name,change] of [
   ['duplicate candidate',x=>x.reuseDecisions.push(x.reuseDecisions[0])]
 ])test(`rejects ${name}`,()=>{const config=fixture();change(config);assert.throws(()=>projectPlan(config));});
 test('returned plans and catalogues cannot change future defaults',()=>{const config=fixture(),plan=projectPlan(config);plan.bindings.dataNamespace='tampered';assert.equal(config.bindings.dataNamespace,'example-product');const standard=developmentStandard();standard.platform='tampered';assert.equal(developmentStandard().platform,'google');const catalogue=reuseCatalogue();catalogue.assets.pop();assert.notEqual(catalogue.assets.length,reuseCatalogue().assets.length);});
+
+test('new project plans inherit unattended verification without granting preview or deployment',()=>{
+ const plan=projectPlan(fixture());
+ assert.equal(plan.developmentVerification.preferredEnvironment,'disposable-container');
+ assert.equal(plan.developmentVerification.execution,'unattended-existing-CI');
+ assert.equal(plan.developmentVerification.liveCredentialsAllowed,false);
+ assert.equal(plan.developmentVerification.productionDeploymentAllowed,false);
+ assert.equal(plan.provisioning,false);
+ plan.developmentVerification.liveCredentialsAllowed=true;
+ assert.equal(projectPlan(fixture()).developmentVerification.liveCredentialsAllowed,false);
+});

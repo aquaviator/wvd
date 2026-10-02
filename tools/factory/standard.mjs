@@ -26,7 +26,7 @@ export function projectPlan(config) {
   const flavour=standard.flavours[config.flavour];
   if(flavour.reuseAssetIds.some(assetId=>!seen.has(assetId)))throw Error('Assess all baseline reuse candidates for this flavour');
   const missing=['googleProjectId',...(flavour.googleCapabilities.includes('hosting')?['hostingTarget']:[]),'credentialRef'].filter(key=>!bindings[key]);
-  return {schemaVersion:1,productId:config.productId,flavour:config.flavour,standardId:standard.id,standardVersion:standard.version,standardHash,
+  return {schemaVersion:1,productId:config.productId,flavour:config.flavour,standardId:standard.id,standardVersion:standard.version,standardHash,developmentVerification:structuredClone(standard.developmentVerification),
     platform:'google',newServiceSubscriptionsAllowed:false,newExternalSpendGBP:0,
     bindings:structuredClone(bindings),reuseDecisions:structuredClone(config.reuseDecisions),
     discovery:missing.map(key=>`Verify existing Google ${key}`),

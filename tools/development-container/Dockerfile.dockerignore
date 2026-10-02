@@ -1,0 +1,17 @@
+**
+!package.json
+!package-lock.json
+!tools/
+!tools/portal-proof/
+!tools/portal-proof/**
+!tools/development-container/
+!tools/development-container/**
+**/node_modules
+**/test-results
+**/playwright-report
+**/.firebase
+**/*-debug.log
+**/.env*
+**/*.sqlite*
+**/*credentials*
+**/*service-account*

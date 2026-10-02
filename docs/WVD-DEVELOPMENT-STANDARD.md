@@ -1,4 +1,4 @@
-# WVD development standard 1.0.0
+# WVD development standard 1.1.0
 
 Authority: founder instructions on 2 October 2026. Applies to WVD development
 and new product/project onboarding. Existing product constitutions remain
@@ -80,3 +80,24 @@ technology/provider or a new subscription requires an explicit founder decision,
 not a worker preference. Production release still requires separate approval.
 The factory checks structure and hashes, not the truth of human fit assessments
 or Google access. Review must verify the recorded evidence before release.
+
+## Unattended development verification
+
+Founder instruction on 2 October 2026: bake agent-controlled, visible testing
+into the development process. Prefer reproducible disposable containers in the
+existing CI connection. Development workers push authorised branch changes, read
+results, fix failures and repeat without requiring founder-local pulls as the
+default gate. Record the tested source commit and image identity; show results
+and bounded synthetic browser evidence before handover. Keep native Windows or
+Android checks on an appropriate runner when a Linux container cannot verify them.
+
+The first consumer is the WVD Firebase portal container described in
+`tools/development-container/README.md`. It reuses existing tests and runs offline
+with synthetic emulator data. Containerisation is verification infrastructure,
+not a replacement hosting or authentication provider. No live credentials, host
+Docker socket, customer data or production deployment permissions enter tests.
+
+A CI job is not an always-on interactive browser preview, and control of that
+job does not imply remote control of the founder's Windows machine. A shared
+interactive runtime must be separately connected and cost-verified before it is
+claimed available. Existing £0 spend and separate production approval remain.

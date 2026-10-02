@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
+import {mkdirSync} from 'node:fs';
+import {join} from 'node:path';
 import {initializeApp,deleteApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
@@ -61,8 +63,12 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await new Promise(resolve=>server.listen(4703,'127.0.0.1',resolve));
  t.after(async()=>{server.closeIdleConnections();await new Promise(resolve=>server.close(resolve));});
  assert.equal((await fetch(origin+'/api/auth/login',{method:'POST'})).status,404);
- const browser=await chromium.launch();t.after(()=>browser.close());
- const page=await browser.newPage({viewport:{width:390,height:844}});
+ const evidence=process.env.WVD_TEST_EVIDENCE_DIR;
+ if(evidence)mkdirSync(evidence,{recursive:true});
+ const browser=await chromium.launch(),context=await browser.newContext({viewport:{width:390,height:844},...(evidence?{recordVideo:{dir:evidence,size:{width:390,height:844}}}:{})});
+ t.after(async()=>{await context.close();await browser.close();});
+ const page=await context.newPage();
+ const capture=async name=>{if(evidence)await page.screenshot({path:join(evidence,name+'.png'),fullPage:true});};
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto(origin);
  await page.locator('#login').getByLabel('Email').fill(unprovisioned+'@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
@@ -81,6 +87,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.getByRole('button',{name:'Approve this version'}).waitFor();
  await page.getByRole('button',{name:'Approve this version'}).click();await page.waitForFunction(()=>document.getElementById('status').textContent==='Your account does not have permission for this action.');
  assert.equal((await backend.portal.snapshot()).receipts.length,0);
+ await capture('member-approval-denied');
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  await page.locator('#login').getByLabel('Email').fill(email);await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
  await page.getByRole('button',{name:'Approve this version'}).waitFor();
@@ -89,6 +96,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.getByRole('button',{name:'Approve this version'}).click();
  await page.getByText('m — approved').waitFor();
  assert.equal((await backend.portal.snapshot()).receipts.length,1);
+ await capture('owner-milestone-approved');
  assert.deepEqual(await page.evaluate(()=>[Object.keys(localStorage),Object.keys(sessionStorage)]),[[],[]]);
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  assert.equal(await page.locator('#workspace').isVisible(),false);
@@ -99,5 +107,6 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  await page.waitForFunction(()=>document.getElementById('status').textContent==='Please sign in again.');
  assert.equal(await page.locator('#workspace').isVisible(),false);
  assert.equal((await backend.portal.snapshot()).tickets.length,0);
+ await capture('disabled-user-signed-out');
  assert.deepEqual(errors,[]);
 });

@@ -1,11 +1,17 @@
 {
   "id": "WVD-DEVELOPMENT-STANDARD",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "authority": "Founder instructions, 2 October 2026",
   "platform": "google",
   "newServiceSubscriptionsAllowed": false,
   "newExternalSpendGBP": 0,
-  "reuseOrder": ["existing-product-code", "shared-wvd-module", "existing-google-service", "adapt-existing-module", "build-missing-capability"],
+  "reuseOrder": [
+    "existing-product-code",
+    "shared-wvd-module",
+    "existing-google-service",
+    "adapt-existing-module",
+    "build-missing-capability"
+  ],
   "requirements": [
     "Inspect the reuse catalogue and current source before building a capability.",
     "Reuse established Google ownership, service connections and configuration patterns.",
@@ -18,12 +24,69 @@
     "Do not introduce another service provider or subscription as an implementation shortcut.",
     "Keep secrets outside code, templates and task packets; use credential references.",
     "Keep public search/AI retrieval separate from private product/customer data.",
+    "Run reproducible isolated development tests unattended where supported; retain bounded synthetic visual evidence and report verified results before handover. Do not require founder-local pulls as the default verification gate.",
     "Production deployment requires separate founder approval."
   ],
   "flavours": {
-    "public-website": {"baseline": "Existing WVD Astro/public content patterns", "googleCapabilities": ["hosting"], "reuseAssetIds": ["wvd-public-site", "hv1-hosting-config"]},
-    "web-application": {"baseline": "Existing Human V1 Firebase connection/auth patterns plus product-owned workflows", "googleCapabilities": ["hosting", "authentication", "database", "file-storage"], "reuseAssetIds": ["hv1-auth-client", "hv1-hosting-config", "hv1-access-rules", "wvd-portal-contracts"]},
-    "android-application": {"baseline": "Human V1 Kotlin/Compose/Room and Firebase integration patterns", "googleCapabilities": ["authentication", "database", "file-storage"], "reuseAssetIds": ["hv1-android", "hv1-access-rules"]},
-    "enterprise-platform": {"baseline": "PECP product constitution and portable provider/contract patterns", "googleCapabilities": ["development-infrastructure"], "reuseAssetIds": ["pecp-constitution", "wvd-factory"]}
+    "public-website": {
+      "baseline": "Existing WVD Astro/public content patterns",
+      "googleCapabilities": [
+        "hosting"
+      ],
+      "reuseAssetIds": [
+        "wvd-public-site",
+        "hv1-hosting-config"
+      ]
+    },
+    "web-application": {
+      "baseline": "Existing Human V1 Firebase connection/auth patterns plus product-owned workflows",
+      "googleCapabilities": [
+        "hosting",
+        "authentication",
+        "database",
+        "file-storage"
+      ],
+      "reuseAssetIds": [
+        "hv1-auth-client",
+        "hv1-hosting-config",
+        "hv1-access-rules",
+        "wvd-portal-contracts"
+      ]
+    },
+    "android-application": {
+      "baseline": "Human V1 Kotlin/Compose/Room and Firebase integration patterns",
+      "googleCapabilities": [
+        "authentication",
+        "database",
+        "file-storage"
+      ],
+      "reuseAssetIds": [
+        "hv1-android",
+        "hv1-access-rules"
+      ]
+    },
+    "enterprise-platform": {
+      "baseline": "PECP product constitution and portable provider/contract patterns",
+      "googleCapabilities": [
+        "development-infrastructure"
+      ],
+      "reuseAssetIds": [
+        "pecp-constitution",
+        "wvd-factory"
+      ]
+    }
+  },
+  "developmentVerification": {
+    "preferredEnvironment": "disposable-container",
+    "execution": "unattended-existing-CI",
+    "evidence": [
+      "commit-bound-results",
+      "synthetic-screenshots",
+      "synthetic-browser-video"
+    ],
+    "liveCredentialsAllowed": false,
+    "productionDeploymentAllowed": false,
+    "interactivePreview": "requires-explicit-approved-runtime",
+    "nativeChecks": "keep-platform-specific-checks-outside-container"
   }
 }
