@@ -223,3 +223,17 @@ opening a newly created project. Refreshing the same project preserves a draft.
 Explicit logout and forced sign-out still clear it. Browser checks cover project
 and account transitions so one client's unsent text cannot carry into another
 client's ticket form. No draft is persisted to browser storage.
+
+## Manual WVD support assessment
+
+Active WVD admins can record bounded priority text, a Care assessment (needs
+review, included in agreed Care, or separate quote required), and a client-visible
+explanation on an existing scoped ticket. Ticket type never selects entitlement
+or a deadline. The operator uses the client's agreed scope; no priority tiers,
+prices or SLA are invented. Exact retry keys, stale-value digests and transaction
+rollback preserve current assessment plus actor/time/history. Clients can read
+assessment/history but cannot write it; new private actor/operation identifiers
+are omitted from ticket projections, including ticket-creation retries. History
+is capped at 200 proof assessments per ticket and remains in scoped backups.
+No additional notification intent, recipient policy or external message is
+created; notification delivery and operational support policy remain open.

@@ -1,6 +1,7 @@
 import {validateOperatorAudit} from './operator-audit.mjs';
 import {reviewDigest} from './review.mjs';
 import {progressDigest} from './progress.mjs';
+import {careAssessments,ticketTriageDigest} from './triage.mjs';
 // Shared state integrity checks for local and Google persistence adapters.
 const collections = ['identities','projects','memberships','milestones','receipts','outbox','feedback','tickets','replies'];
 const string = value => typeof value === 'string' && value.length > 0;
@@ -79,6 +80,19 @@ export function validatePortalState(state) {
       previous=entry.digest;operations.add(entry.operationId);progressIds.add(entry.id);
     }
     if(previous!==undefined&&previous!==progressDigest({projectId:project.id,stage:project.stage,nextStep:project.nextStep}))corrupt();
+  }
+  const triageIds=new Set();
+  for(const ticket of state.tickets) {
+    if(ticket.triage===undefined&&ticket.triageHistory===undefined)continue;
+    if(!ticket.triage||typeof ticket.triage!=='object'||Array.isArray(ticket.triage)||Object.keys(ticket.triage).sort().join(',')!=='careAssessment,digest,note,priority,timestamp'||!Array.isArray(ticket.triageHistory)||!ticket.triageHistory.length||ticket.triageHistory.length>200)corrupt();
+    let previous=ticketTriageDigest({projectId:ticket.projectId,ticketId:ticket.id});
+    for(const entry of ticket.triageHistory) {
+      const fields=['actorId','businessId','careAssessment','digest','expectedDigest','id','kind','note','operationId','priority','projectId','ticketId','timestamp'];
+      if(!entry||typeof entry!=='object'||Array.isArray(entry)||Object.keys(entry).sort().join(',')!==fields.sort().join(',')||entry.kind!=='triage'||!string(entry.id)||records.has(entry.id)||progressIds.has(entry.id)||triageIds.has(entry.id)||!string(entry.operationId)||entry.operationId.length>128||operations.has(entry.operationId)||!identities.has(entry.actorId)||entry.projectId!==ticket.projectId||entry.businessId!==ticket.businessId||entry.ticketId!==ticket.id||!string(entry.priority)||!entry.priority.trim()||entry.priority.length>100||!string(entry.note)||!entry.note.trim()||entry.note.length>2000||!careAssessments.includes(entry.careAssessment)||typeof entry.timestamp!=='string'||!Number.isFinite(Date.parse(entry.timestamp))||entry.expectedDigest!==previous||entry.digest!==ticketTriageDigest({projectId:entry.projectId,ticketId:entry.ticketId,triage:entry}))corrupt();
+      previous=entry.digest;operations.add(entry.operationId);triageIds.add(entry.id);
+    }
+    const last=ticket.triageHistory.at(-1);
+    if(['priority','careAssessment','note','timestamp','digest'].some(key=>ticket.triage[key]!==last[key]))corrupt();
   }
   for (const intent of state.outbox) {
     const linked = records.get(intent.receiptId);

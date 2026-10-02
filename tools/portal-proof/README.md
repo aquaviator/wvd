@@ -42,12 +42,13 @@ are described in [SELF-HOSTING.md](SELF-HOSTING.md).
 | Publish immutable review text to an existing milestone | Denied | Denied | Allowed |
 | Create a milestone with its first review | Denied | Denied | Allowed |
 | Create a project for an existing client | Denied | Denied | Allowed; client grants stay unchanged |
+| Assess ticket priority and agreed Care scope | Denied | Denied | Allowed; assessment is retained for clients |
 
 Every operation checks current active identity and project scope. Firebase
 verification supplies the UID; request/token role flags confer no permissions.
 Owner membership supplies client approval authority. Server-computed page
 capabilities control presentation, while writes independently recheck access.
-Colleague invitation/removal, client creation, project access assignment and ticket triage are still
+Colleague invitation/removal, client creation, project access assignment and operational support policy are still
 unfinished workflows; a permission action in the domain is not a working UI.
 
 Approval receipts bind actor, business, project, milestone, exact immutable
@@ -60,8 +61,11 @@ exact retries cannot overwrite existing rows or roll back a newer version.
 Internal publisher/creator and operation identifiers stay out of client review
 projections. UI content is rendered as plain text.
 
-Ticket types are question, fault and change request. Priority, Care entitlement,
-transition rules and notification recipients are not inferred. Approval,
+Ticket types are question, fault and change request. WVD admins manually record
+priority, agreed Care assessment and a client-visible explanation. Stale edits
+are refused and assessment history is retained; ticket type does not infer
+entitlement, prices or a response deadline. Transition rules and notification
+recipients remain separate policy. Approval,
 feedback, ticket and reply writes atomically retain payload-free notification
 intent; there is no dispatcher or delivery promise. Progress/publication writes
 retain history without inventing notification recipients.

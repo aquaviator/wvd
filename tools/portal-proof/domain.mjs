@@ -1,16 +1,18 @@
 import {reviewDigest} from './review.mjs';
 import {progressDigest} from './progress.mjs';
+import {careAssessments,ticketTriageDigest} from './triage.mjs';
 // Provider-free executable model. This is not an authentication service or database.
 const denied = () => { throw new Error('ACCESS_DENIED'); };
-const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues', 'manage-progress', 'manage-reviews']);
+const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues', 'manage-progress', 'manage-reviews', 'manage-support']);
 const clientReview=review=>review?Object.fromEntries(['projectId','milestoneId','versionId','title','body','digest'].map(key=>[key,review[key]])):null;
+const clientTicket=ticket=>{const {triageHistory,...record}=ticket;return {...record,triageDigest:ticketTriageDigest({projectId:ticket.projectId,ticketId:ticket.id,triage:ticket.triage}),triageHistory:(triageHistory??[]).map(({priority,careAssessment,note,timestamp})=>({priority,careAssessment,note,timestamp}))};};
 
 export function authorise(state, actorId, projectId, action) {
   if (!actions.has(action)) denied();
   const identity = state.identities.find(x => x.id === actorId && x.active);
   const project = state.projects.find(x => x.id === projectId);
   if (!identity || !project) denied();
-  if(['manage-progress','manage-reviews'].includes(action)){if(identity.wvdAdmin===true)return project;denied();}
+  if(['manage-progress','manage-reviews','manage-support'].includes(action)){if(identity.wvdAdmin===true)return project;denied();}
   // Administration is separate from client approval and colleague management.
   if (identity.wvdAdmin && ['view', 'feedback', 'ticket'].includes(action)) return project;
   const membership = state.memberships.find(x =>
@@ -165,7 +167,7 @@ export class PortalProof {
   }
   ticketsFor(actorId, projectId) {
     authorise(this.#state,actorId,projectId,'ticket');
-    return structuredClone(this.#state.tickets.filter(x => x.projectId===projectId));
+    return structuredClone(this.#state.tickets.filter(x => x.projectId===projectId).map(clientTicket));
   }
   authorise(actorId, projectId, action) { return structuredClone(authorise(this.#state, actorId, projectId, action)); }
   projectOverview(actorId, projectId) {
@@ -189,7 +191,7 @@ export class PortalProof {
   }
   #retry(operationId, payload) {
     if (typeof operationId !== 'string' || !operationId || operationId.length > 128) throw new Error('INVALID_OPERATION');
-    const existing = [...this.#state.receipts, ...this.#state.feedback, ...this.#state.tickets, ...this.#state.replies,...this.#state.projects.flatMap(x=>x.progressHistory??[])].find(x => x.operationId === operationId);
+    const existing = [...this.#state.receipts, ...this.#state.feedback, ...this.#state.tickets, ...this.#state.replies,...this.#state.projects.flatMap(x=>x.progressHistory??[]),...this.#state.tickets.flatMap(x=>x.triageHistory??[])].find(x => x.operationId === operationId);
     if (!existing) return null;
     for (const [key, value] of Object.entries(payload)) if (existing[key] !== value) throw new Error('OPERATION_CONFLICT');
     return structuredClone(existing);
@@ -225,13 +227,13 @@ export class PortalProof {
     this.#text(subject, 200); this.#text(body, 10000);
     const payload = {kind:'ticket',actorId,projectId,type,subject,body,operationId};
     const retry = this.#retry(operationId, payload);
-    return retry ?? this.#save('tickets', {...payload,businessId:project.businessId}, 'ticket-created');
+    return clientTicket(retry ?? this.#save('tickets', {...payload,businessId:project.businessId}, 'ticket-created'));
   }
   readTicket(actorId, projectId, ticketId) {
     authorise(this.#state, actorId, projectId, 'ticket');
     const ticket = this.#state.tickets.find(x => x.id === ticketId && x.projectId === projectId);
     if (!ticket) denied();
-    return structuredClone({ticket, replies:this.#state.replies.filter(x =>
+    return structuredClone({ticket:clientTicket(ticket), replies:this.#state.replies.filter(x =>
       x.ticketId === ticketId && x.projectId === projectId && x.businessId === ticket.businessId)});
   }
   replyToTicket({actorId,projectId,ticketId,body,operationId}) {
@@ -240,6 +242,21 @@ export class PortalProof {
     const payload = {kind:'reply',actorId,projectId,ticketId,body,operationId};
     const retry = this.#retry(operationId,payload);
     return retry ?? this.#save('replies',{...payload,businessId:ticket.businessId},'ticket-replied');
+  }
+  triageTicket({actorId,projectId,ticketId,priority,careAssessment,note,expectedDigest,operationId}) {
+    const project=authorise(this.#state,actorId,projectId,'manage-support');
+    const ticket=this.#state.tickets.find(x=>x.id===ticketId&&x.projectId===projectId);if(!ticket)denied();
+    this.#text(priority,100);this.#text(note,2000);
+    if(!careAssessments.includes(careAssessment)||typeof expectedDigest!=='string'||!/^[a-f0-9]{64}$/.test(expectedDigest))throw Error('INVALID_TRIAGE');
+    const payload={kind:'triage',actorId,projectId,ticketId,priority,careAssessment,note,expectedDigest,operationId};
+    const retry=this.#retry(operationId,payload);if(retry)return retry;
+    if(ticketTriageDigest({projectId,ticketId,triage:ticket.triage})!==expectedDigest)throw Error('TRIAGE_CONFLICT');
+    if((ticket.triageHistory?.length??0)>=200)throw Error('TRIAGE_CAPACITY');
+    const timestamp=this.#timestamp(),digest=ticketTriageDigest({projectId,ticketId,triage:payload});
+    const count=this.#state.tickets.reduce((sum,x)=>sum+(x.triageHistory?.length??0),0),record={...payload,id:`triage-${count+1}`,businessId:project.businessId,timestamp,digest};
+    const next=structuredClone(this.#state),target=next.tickets.find(x=>x.id===ticketId);
+    target.triage={priority,careAssessment,note,timestamp,digest};target.triageHistory??=[];target.triageHistory.push(record);
+    this.#state=next;return structuredClone(record);
   }
   revokeMembership(actorId, businessId) {
     // Trusted test-adapter operation, not an exposed admin or client endpoint.

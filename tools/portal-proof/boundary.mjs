@@ -6,6 +6,7 @@ const schemas = {
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
   'create-milestone': ['projectId','milestoneId','versionId','title','body'],
   'create-project': ['businessId','projectId','stage','nextStep'],
+  'triage-ticket': ['projectId','ticketId','priority','careAssessment','note','expectedDigest','operationId'],
   projects: [],
   tickets: ['projectId'],
   overview: ['projectId'],
@@ -36,7 +37,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         !fields.every(key => Object.hasOwn(input, key) && typeof input[key] === 'string' && input[key].length > 0)) {
       return response(400, {error:'INVALID_REQUEST'});
     }
-    for (const key of fields.filter(key => !['body','subject','type','stage','nextStep','title'].includes(key))) {
+    for (const key of fields.filter(key => !['body','subject','type','stage','nextStep','title','note'].includes(key))) {
       if (input[key].length > 128) return response(400, {error:'INVALID_REQUEST'});
     }
     try {
@@ -50,6 +51,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         'publish-review': () => portal.publishReviewAsAdmin(request),
         'create-milestone': () => portal.createMilestoneAsAdmin(request),
         'create-project': () => portal.createProjectAsAdmin(request),
+        'triage-ticket': () => portal.triageTicket(request),
         projects: () => portal.projectsFor(session.actorId),
         tickets: () => portal.ticketsFor(session.actorId,input.projectId),
         overview: () => portal.projectOverview(session.actorId, input.projectId),
@@ -63,8 +65,8 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
       if (['ACCESS_DENIED','BUSINESS_SCOPE_DENIED'].includes(message)) return response(403, {error:'ACCESS_DENIED'});
-      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT'].includes(message)) return response(409, {error:message});
-      if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS'].includes(message)) return response(400, {error:message});
+      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT','TRIAGE_CONFLICT'].includes(message)) return response(409, {error:message});
+      if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS','INVALID_TRIAGE'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }
   };
