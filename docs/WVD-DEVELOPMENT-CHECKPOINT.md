@@ -489,6 +489,9 @@ metadata is copied, publication rechecks current admin authority and immutable
 version retries/stale-version protection reuse the existing domain/storage path.
 The browser test now publishes a registered reference through the admin form,
 then switches to the Owner to view and approve its verified synthetic content.
-Local suite: 352 passed, one Windows-only skip. CI/container verification remains
-pending. The catalogue is explicit development configuration, not a live Google
+Local suite: 352 passed, one Windows-only skip. Source
+`df5452f36878bcfd91d5ec3061b4cb1b4cd3c406` passed all four CI jobs and
+offline container run 37126362514 after correcting the selector accessible name.
+Additional browser coverage checks Member preview with approval denied and source
+content changing between Owner viewing and approval; verification is pending. The catalogue is explicit development configuration, not a live Google
 source discovery service or proof of retained artifact access.
