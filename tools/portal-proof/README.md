@@ -98,6 +98,11 @@ retain history without inventing notification recipients.
 - `backup.mjs` verifies product/project/database/mode bindings and rehearses an
   aggregate restore in a fresh disposable SQLite database. It does not restore
   Firebase Auth, files, IAM, indexes/rules or the whole Google deployment.
+- `firestore-rehearsal.mjs` checks the same backup in a disposable Firestore
+  emulator namespace, preserving the original storage revision and audit history.
+  It requires a demo project and loopback emulator hosts, creates a fresh target
+  without overwrite, reopens through the existing adapter and deletes the test
+  document before closing. It has no public route or live restore option.
 
 ## Booking evidence
 

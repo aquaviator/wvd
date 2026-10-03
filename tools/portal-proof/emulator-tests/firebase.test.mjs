@@ -1,4 +1,5 @@
 import {exportPortalBackup,rehearsePortalBackup} from '../backup.mjs';
+import {rehearseFirestoreBackup} from '../firestore-rehearsal.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -54,6 +55,14 @@ test('real Google emulators: identity, product isolation, concurrent atomic writ
  await auth.createUser({uid:'member',email:'member@example.test',emailVerified:true,password:'Emulator-only-123!'});const {createFirebaseAccessUpdater}=await import('../firebase-provisioning.mjs'),updateAccess=createFirebaseAccessUpdater(backend),accessRevision=await backend.portal.accessRevision(),change={uid:'member',businessId:'b',role:'Member',projectIds:['p','admin-created-project']},operatorContext={operatorRef:'synthetic-test',changeRef:'project-access'};
  await assert.rejects(()=>updateAccess({...change,projectIds:['p','other']},accessRevision,operatorContext),/PROJECT_SCOPE_DENIED/);assert.equal((await updateAccess(change,accessRevision,operatorContext)).changed,true);assert.equal((await backend.portal.projectOverview('member','admin-created-project')).canApprove,false);await assert.rejects(()=>updateAccess({...change,projectIds:[]},accessRevision,operatorContext),/ACCESS_REVISION_CONFLICT/);const currentAccessRevision=await backend.portal.accessRevision();assert.equal((await updateAccess(change,currentAccessRevision,operatorContext)).changed,false);assert.equal(await backend.portal.accessRevision(),currentAccessRevision);
  const assessmentTicket=(await backend.portal.ticketsFor('admin','p'))[0],assessments=await Promise.allSettled(['assessment-a','assessment-b'].map(operationId=>backend.portal.triageTicket({actorId:'admin',projectId:'p',ticketId:assessmentTicket.id,priority:'Normal',careAssessment:'needs-review',note:'Synthetic scope check.',expectedDigest:assessmentTicket.triageDigest,operationId})));assert.equal(assessments.filter(x=>x.status==='fulfilled').length,1);assert.match(assessments.find(x=>x.status==='rejected').reason.message,/TRIAGE_CONFLICT/);assert.equal((await backend.portal.readTicket('member','p',assessmentTicket.id)).ticket.triageHistory[0].actorId,undefined);assert.equal(rehearsePortalBackup(await exportPortalBackup(backend.portal,config),config).verified,true);
+ const recoveryBefore=await backend.portal.backupSnapshot(),productsBefore=(await db.collection('wvd_products').listDocuments()).map(ref=>ref.id).sort();
+ const recoveryRaw=await exportPortalBackup(backend.portal,config),recovery=await rehearseFirestoreBackup(recoveryRaw,config);
+ assert.deepEqual(recovery,rehearsePortalBackup(recoveryRaw,config));assert.ok(recovery.operatorEntries>0);
+ assert.deepEqual(await backend.portal.backupSnapshot(),recoveryBefore);
+ // Firestore retains missing parent document references for subcollections, so
+ // inspect the actual private state documents rather than parent placeholders.
+ const rehearsalRefs=(await db.collection('wvd_products').listDocuments()).filter(ref=>ref.id.startsWith('restore-')&&!productsBefore.includes(ref.id));
+ for(const ref of rehearsalRefs)assert.equal((await ref.collection('private').doc('portal-state').get()).exists,false);
  const url=`http://${process.env.FIRESTORE_EMULATOR_HOST}/v1/projects/${config.projectId}/databases/(default)/documents/wvd_products/${config.productId}/private/portal-state`;
  for(const headers of [{},{authorization:`Bearer ${idToken}`}]){assert.equal((await fetch(url,{headers})).status,403);assert.equal((await fetch(url,{method:'PATCH',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({fields:{schemaVersion:{integerValue:'1'}}})})).status,403);}
  const tooLarge=createFirebaseBackend({...config,productId:config.productId+'-large'});t.after(()=>tooLarge.close());

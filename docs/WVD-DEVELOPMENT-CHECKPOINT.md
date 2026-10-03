@@ -421,3 +421,18 @@ only eligible slots plus both conflict margins. Final notice/freshness checks
 still run after provider latency. No alternative slot algorithm or schedule
 grid was added. Synthetic tests cover no-read rejection, narrowed queries and
 loss of eligibility across the minimum-notice boundary during a slow read.
+
+### Firestore emulator recovery rehearsal — 3 October 2026
+
+Resumed from remote source `c84c939`. Reused the scoped backup verifier and
+Firestore adapter to restore an aggregate into a random disposable emulator
+namespace. The rehearsal preserves source revision, immutable reviews, receipts,
+feedback, tickets, invitations and operator history, then reads through the
+existing adapter and checks exact state equality. Create-only writes prevent
+overwrite; cleanup removes the restored document. Demo-project and loopback
+checks run before SDK loading, and there is no live restore or HTTP route.
+The emulator test compares SQLite and Firestore results, verifies source state
+and revision remain unchanged and checks cleanup. Local portal suite: 333 passed,
+one native Windows skip. Emulator/container verification is pending on CI;
+this workspace has Java 17 rather than the required Java 21. This does not
+establish recovery of Auth, files, IAM, rules or a production deployment.
