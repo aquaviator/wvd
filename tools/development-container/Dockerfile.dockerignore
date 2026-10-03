@@ -1,4 +1,8 @@
 **
+!src/
+!src/assets/
+!src/assets/brand/
+!src/assets/brand/horizontal-logo.png
 !package.json
 !package-lock.json
 !tools/
