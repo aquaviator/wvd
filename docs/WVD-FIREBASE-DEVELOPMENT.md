@@ -122,3 +122,13 @@ wrapper. The check now launches a fixed PowerShell command on Windows and passes
 validated arguments separately as JSON, without changing execution policy.
 Windows CI verifies the wrapper from a directory containing spaces. Local Google
 CLI sign-in remains distinct from application ADC and does not create IAM grants.
+
+## Automated Workspace access preparation — 3 October 2026
+
+Founder reports billing is now active. This supersedes the earlier disabled-billing
+report as user-provided context; live Google readback is still required.
+`tools/google-development-access/README.md` records the prepared keyless workflow,
+scoped bootstrap and Drive/Calendar preflight. Reuses the proposed service account;
+no new identity, IAM/API grant, Drive/Calendar ACL or live authentication is claimed.
+The setup never attaches billing or creates a long-lived key. Synthetic tests run
+with the existing portal suite/container; live credentials are excluded from them.

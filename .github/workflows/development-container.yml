@@ -4,6 +4,8 @@ on:
     branches: [development/shared-factory-bootstrap]
     paths:
       - 'tools/portal-proof/**'
+      - 'tools/google-development-access/**'
+      - '.dockerignore'
       - 'src/assets/brand/horizontal-logo.png'
       - 'tools/development-container/**'
       - 'package.json'
@@ -12,6 +14,8 @@ on:
   pull_request:
     paths:
       - 'tools/portal-proof/**'
+      - 'tools/google-development-access/**'
+      - '.dockerignore'
       - 'src/assets/brand/horizontal-logo.png'
       - 'tools/development-container/**'
       - 'package.json'

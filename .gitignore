@@ -17,3 +17,6 @@ Thumbs.db
 # Local Firebase emulator output
 .firebase/
 *-debug.log
+
+# Never include federated workflow credentials in source or artifacts.
+gha-creds-*.json
