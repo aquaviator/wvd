@@ -1,3 +1,4 @@
+import {reviewDeliverable,verifiedDeliverableProof} from './deliverable.mjs';
 import {memberInvitation} from './invitation.mjs';
 import {invitationPolicy} from './invitation-state.mjs';
 import {matchesOpaqueToken} from './opaque-token.mjs';
@@ -10,7 +11,7 @@ import {adminAccessRequest} from './admin-access.mjs';
 // Provider-free executable model. This is not an authentication service or database.
 const denied = () => { throw new Error('ACCESS_DENIED'); };
 const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues', 'manage-progress', 'manage-reviews', 'manage-support']);
-const clientReview=review=>review?Object.fromEntries(['projectId','milestoneId','versionId','title','body','digest'].map(key=>[key,review[key]])):null;
+const clientReview=review=>review?Object.fromEntries(['projectId','milestoneId','versionId','title','body','digest',...(review.deliverable===undefined?[]:['deliverable'])].map(key=>[key,review[key]])):null;
 const clientTicket=ticket=>{const {triageHistory,...record}=ticket;return {...record,triageDigest:ticketTriageDigest({projectId:ticket.projectId,ticketId:ticket.id,triage:ticket.triage}),triageHistory:(triageHistory??[]).map(({priority,careAssessment,note,timestamp})=>({priority,careAssessment,note,timestamp}))};};
 
 export function authorise(state, actorId, projectId, action) {
@@ -31,8 +32,9 @@ export function authorise(state, actorId, projectId, action) {
 
 export class PortalProof {
   #state;
-  #clock; #invitationPolicy;
-  constructor(state, clock, policy) {
+  #clock; #invitationPolicy; #deliverableScope;
+  constructor(state, clock, policy,deliverableScope={}) {
+    this.#deliverableScope=deliverableScope;
     this.#invitationPolicy=policy===undefined?undefined:invitationPolicy(policy);
     this.#state = structuredClone(state);
     this.#clock = clock;
@@ -211,27 +213,27 @@ export class PortalProof {
     return structuredClone(result);
   }
   // Server-verified admin capability. Client membership cannot publish.
-  createMilestoneAsAdmin({actorId,projectId,milestoneId,versionId,title,body}) {
+  createMilestoneAsAdmin({actorId,projectId,milestoneId,versionId,title,body,deliverable}) {
     authorise(this.#state,actorId,projectId,'manage-reviews');
     this.#text(milestoneId,128);
     const existing=this.#state.milestones.find(x=>x.id===milestoneId);
     if(existing){
       if(existing.projectId!==projectId||existing.createdByActorId!==actorId||existing.reviews?.[0]?.versionId!==versionId)throw Error('MILESTONE_CONFLICT');
-      return {milestoneId,projectId,review:this.publishReview({projectId,milestoneId,versionId,title,body})};
+      return {milestoneId,projectId,review:this.publishReview({projectId,milestoneId,versionId,title,body,...(deliverable===undefined?{}:{deliverable})})};
     }
     if(this.#state.milestones.filter(x=>x.projectId===projectId).length>=200)throw Error('MILESTONE_CAPACITY');
     const next=structuredClone(this.#state);
     next.milestones.push({id:milestoneId,projectId,currentVersionId:versionId,status:'awaiting-client',createdByActorId:actorId,createdAt:this.#timestamp()});
     const candidate=new PortalProof(next,this.#clock);
-    const review=candidate.publishReviewAsAdmin({actorId,projectId,milestoneId,versionId,title,body,expectedVersionId:versionId});
+    const review=candidate.publishReviewAsAdmin({actorId,projectId,milestoneId,versionId,title,body,...(deliverable===undefined?{}:{deliverable}),expectedVersionId:versionId});
     this.#state=candidate.snapshot();return {milestoneId,projectId,review};
   }
-  publishReviewAsAdmin({actorId,projectId,milestoneId,versionId,title,body,expectedVersionId}) {
+  publishReviewAsAdmin({actorId,projectId,milestoneId,versionId,title,body,deliverable,expectedVersionId}) {
     authorise(this.#state,actorId,projectId,'manage-reviews');
     this.#text(expectedVersionId,128);
     const milestone=this.#state.milestones.find(x=>x.id===milestoneId&&x.projectId===projectId);
     if(!milestone)denied();
-    const request={projectId,milestoneId,versionId,title,body};
+    const request={projectId,milestoneId,versionId,title,body,...(deliverable===undefined?{}:{deliverable})};
     // The immutable version is its retry key. A retry never rolls back current.
     if(milestone.reviews?.some(x=>x.versionId===versionId))return this.publishReview(request);
     if(milestone.currentVersionId!==expectedVersionId)throw Error('VERSION_CONFLICT');
@@ -242,14 +244,14 @@ export class PortalProof {
   }
   // Privileged operator capability; the admin route uses the checked wrapper above.
   publishReview(request) {
-    const fields=['projectId','milestoneId','versionId','title','body'];
+    const fields=['projectId','milestoneId','versionId','title','body',...(request&&Object.hasOwn(request,'deliverable')?['deliverable']:[])];
     if(!request||typeof request!=='object'||Array.isArray(request)||Object.keys(request).length!==fields.length||!fields.every(key=>Object.hasOwn(request,key)))throw Error('INVALID_REVIEW');
     const {projectId,milestoneId,versionId,title,body}=request;
     for(const value of [projectId,milestoneId,versionId])this.#text(value,128);
     this.#text(title,200);this.#text(body,10000);
     const milestone=this.#state.milestones.find(x=>x.id===milestoneId&&x.projectId===projectId);
     if(!milestone)denied();
-    const review={projectId,milestoneId,versionId,title,body};review.digest=reviewDigest(review);
+    const review={projectId,milestoneId,versionId,title,body,...(request.deliverable===undefined?{}:{deliverable:reviewDeliverable(request.deliverable)})};review.digest=reviewDigest(review);
     const existing=milestone.reviews?.find(x=>x.versionId===versionId);
     if(existing){if(existing.digest!==review.digest)throw Error('REVIEW_IMMUTABLE');return structuredClone(existing);}
     // A previously approved legacy version cannot acquire new review content.
@@ -258,6 +260,8 @@ export class PortalProof {
     milestone.currentVersionId=versionId;milestone.status='awaiting-client';
     return structuredClone(review);
   }
+  // Internal instance capability; never included in client projections.
+  deliverableScope(){return this.#deliverableScope;}
   projectsFor(actorId) {
     return this.#state.projects.filter(project => {
       try { authorise(this.#state,actorId,project.id,'view'); return true; }
@@ -370,7 +374,7 @@ export class PortalProof {
     milestone.currentVersionId = versionId;
     milestone.status = 'awaiting-client';
   }
-  approve({ actorId, projectId, milestoneId, versionId, operationId, reviewDigest: digest }) {
+  approve({ actorId, projectId, milestoneId, versionId, operationId, reviewDigest: digest },deliverableProof) {
     // Recheck current membership even for a repeated request.
     const project = authorise(this.#state, actorId, projectId, 'approve');
     const binding=digest===undefined?{}:{reviewDigest:digest};
@@ -382,6 +386,8 @@ export class PortalProof {
     if (typeof versionId !== 'string' || !versionId || milestone.currentVersionId !== versionId) throw new Error('VERSION_CONFLICT');
     if(milestone.reviewRequired && (!digest || milestone.reviews?.find(x=>x.versionId===versionId)?.digest!==digest))throw Error('REVIEW_CONFLICT');
     if(!milestone.reviewRequired && digest!==undefined)throw Error('REVIEW_CONFLICT');
+    const deliverable=milestone.reviews?.find(x=>x.versionId===versionId)?.deliverable;
+    if(deliverable&&!verifiedDeliverableProof(deliverableProof,{actorId,projectId,milestoneId,versionId,reviewDigest:digest,deliverable,scope:this.#deliverableScope}))throw Error('DELIVERABLE_UNAVAILABLE');
     if (milestone.status !== 'awaiting-client') throw new Error('STATE_CONFLICT');
     const timestamp = this.#timestamp();
     const receipt = {

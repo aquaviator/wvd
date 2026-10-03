@@ -104,6 +104,35 @@ retain history without inventing notification recipients.
   without overwrite, reopens through the existing adapter and deletes the test
   document before closing. It has no public route or live restore option.
 
+## Deliverable-bound review development
+
+Privileged review publication can attach one explicit deliverable manifest:
+label, opaque source ID, exact source version, media type and SHA-256 of bytes.
+`review.mjs` includes its canonical fields in the review digest. Text-only
+fingerprints stay compatible. Current views and approval history retain the
+manifest; clients cannot attach one through the existing publication HTTP schema.
+
+`deliverable.mjs` retrieves a pinned version through a separately supplied trusted
+source adapter. Project access is checked before and after retrieval. Source ID,
+version, media type, size and content digest must match. Capacity, provider
+timeout and proof lifetime are mandatory configuration. Timed-out reads keep
+their admission slot until the provider settles; the adapter must honour abort,
+bound its own download and enforce its project/source catalogue.
+
+Verified reads produce an in-process capability bound to actor, adapter instance,
+project, milestone, review version and manifest. Transactional approval rejects
+forged, expired, modified and cross-adapter proofs. Provider reads occur outside
+retryable database callbacks. Exact approval retries reuse the saved receipt
+without a provider dependency.
+
+The optional development HTTP/browser composition displays UTF-8 text snapshots
+using text content, then re-verifies the source before approval. It adds no active
+HTML or external links. Without a source reader, approval of referenced content
+stays paused. Other manifest media types are metadata only in this browser slice.
+The browser source is synthetic and the application option requires isolated
+Firebase emulators. No live Google file adapter, production endpoint, artifact
+retention policy or binary preview is established by these tests.
+
 ## Booking evidence
 
 `availability.mjs` assesses a single 30-minute call; `booking.mjs` batches that

@@ -10,7 +10,7 @@ import {validatePortalState as validate} from './state.mjs';
 // fixture administration. Not a hosted backend, identity provider, distributed
 // store or notification dispatcher. Caller owns filesystem permissions/backups.
 export class DurablePortal {
-  #db; #clock; #invitationPolicy;
+  #db; #clock; #invitationPolicy; #deliverableScope={};
   constructor(path, state, clock = () => new Date().toISOString(),policy) {
     this.#invitationPolicy=policy===undefined?undefined:invitationPolicy(policy);
     this.#clock = clock;
@@ -40,7 +40,7 @@ export class DurablePortal {
     this.#db.exec('BEGIN IMMEDIATE');
     try {
       const row = this.#db.prepare('SELECT revision, state_json FROM portal_state WHERE id = 1').get();
-      const proof = new PortalProof(this.#decode(row), this.#clock,this.#invitationPolicy);
+      const proof = new PortalProof(this.#decode(row), this.#clock,this.#invitationPolicy,this.#deliverableScope);
       if(method==='updateAccessAsAdmin'&&!proof.workspaceAccess(args[0].actorId).admin)throw Error('ACCESS_DENIED');
       if(method==='updateColleagueAccess')proof.colleagueAccessGrant(args[0]);
       if(expectedRevision!==undefined&&row.revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
@@ -64,6 +64,7 @@ export class DurablePortal {
   updateColleagueAccess(request) { const input=colleagueAccessRequest(request);return this.#run('updateColleagueAccess',[input],input.expectedRevision); }
   updateAccessAsAdmin(request) { const input=adminAccessRequest(request);return this.#run('updateAccessAsAdmin',[input],input.expectedRevision); }
   updateAccess(...args) { return this.#run('updateAccess', args); }
+  deliverableScope(){return this.#deliverableScope;}
   snapshot() { return this.#run('snapshot', []); }
   projectsFor(...args) { return this.#run('projectsFor', args); }
   workspaceAccess(...args) { return this.#run('workspaceAccess', args); }

@@ -1,10 +1,10 @@
 import {createAuthClient} from './auth-client.js';
-let authClient,invitationsEnabled=false,pendingMemberInvite=null;
+let authClient,invitationsEnabled=false,deliverablesEnabled=false,pendingMemberInvite=null;
 const el=id=>document.getElementById(id);
 let sessionToken=null,revision=0,adminAccess=false,displayedProjectId=null;
 const reviewTime=value=>new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(value))+' (UK time)';
 const status=message=>{el('status').textContent=message;};
-const messages={INVITATION_DENIED:'This invitation cannot be accepted. Check the invited email or ask the Owner for a new invitation.',INVITATION_CONFLICT:'This invitation has changed. Ask the Owner for a new invitation.',CLIENT_CONFLICT:'That client already exists. Refresh the overview and add projects to the existing client.',ACCESS_REVISION_CONFLICT:'Account access has changed. Refresh the account list before saving.',ACCESS_ROLE_CONFLICT:'The account role has changed. Refresh the account list before saving.',TRIAGE_CONFLICT:'The ticket assessment has changed. Reload the project before saving.',PROJECT_CONFLICT:'That project name is already in use. Reload the client overview before creating another project.',MILESTONE_CONFLICT:'That milestone already exists. Reload the project and use its review workflow.',REVIEW_IMMUTABLE:'That version already has different review content. Use a new version identifier.',PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
+const messages={DELIVERABLE_UNAVAILABLE:'The referenced preview is not available for this review.',DELIVERABLE_CONTENT_CONFLICT:'The referenced file differs from the reviewed version. Ask WVD to publish a new review.',INVITATION_DENIED:'This invitation cannot be accepted. Check the invited email or ask the Owner for a new invitation.',INVITATION_CONFLICT:'This invitation has changed. Ask the Owner for a new invitation.',CLIENT_CONFLICT:'That client already exists. Refresh the overview and add projects to the existing client.',ACCESS_REVISION_CONFLICT:'Account access has changed. Refresh the account list before saving.',ACCESS_ROLE_CONFLICT:'The account role has changed. Refresh the account list before saving.',TRIAGE_CONFLICT:'The ticket assessment has changed. Reload the project before saving.',PROJECT_CONFLICT:'That project name is already in use. Reload the client overview before creating another project.',MILESTONE_CONFLICT:'That milestone already exists. Reload the project and use its review workflow.',REVIEW_IMMUTABLE:'That version already has different review content. Use a new version identifier.',PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
 function signedOut(){sessionToken=null;adminAccess=false;displayedProjectId=null;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
 async function api(path,body,method='POST'){
   const headers={};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
@@ -14,6 +14,19 @@ async function api(path,body,method='POST'){
   if(!response.ok){if(response.status===401&&path.startsWith('/api/portal/'))signedOut();throw new Error(messages[data.error]??'The request could not be completed.');}return data;
 }
 function node(tag,text){const result=document.createElement(tag);result.textContent=text;return result;}
+function deliverableReference(container,review,onViewed){
+  if(!review?.deliverable)return;const item=review.deliverable;
+  container.append(node('p',`Deliverable: ${item.label}`),node('p',`Deliverable version: ${item.sourceVersion}`));
+  if(!deliverablesEnabled||item.mediaType!=='text/plain'){container.append(node('p','Preview access is not connected for this deliverable.'));return;}
+  const button=node('button','View referenced deliverable'),snapshot=node('pre','');button.type='button';snapshot.className='deliverable-snapshot';snapshot.hidden=true;const generation=revision;
+  button.addEventListener('click',async()=>{button.disabled=true;try{
+    const data=await api('/api/portal/deliverable',{projectId:review.projectId,milestoneId:review.milestoneId,versionId:review.versionId,reviewDigest:review.digest});
+    if(generation!==revision||!sessionToken||!container.isConnected)return;
+    if(data.reviewDigest!==review.digest||typeof data.contentText!=='string')throw Error('The referenced content could not be verified.');
+    snapshot.textContent=data.contentText;snapshot.hidden=false;onViewed?.();
+  }catch(error){status(error.message);}finally{button.disabled=false;}});
+  container.append(button,snapshot);
+}
 async function busy(form,fn){status('');const button=form.querySelector('button');button.disabled=true;try{await fn();}catch(error){status(error.message);}finally{button.disabled=false;}}
 const projectId=()=>el('projects').value;
 const read=(action,params)=>api(`/api/portal/${action}?${new URLSearchParams(params)}`,null,'GET');
@@ -136,7 +149,7 @@ async function project(){
   for(const receipt of overview.approvalHistory){
     const details=document.createElement('details');details.className='approval-record';
     details.append(node('summary',`${receipt.milestoneId} — version ${receipt.versionId}`),node('p',`Approved: ${reviewTime(receipt.timestamp)}`));
-    if(receipt.review)details.append(node('h4',receipt.review.title),node('p',receipt.review.body));
+    if(receipt.review){details.append(node('h4',receipt.review.title),node('p',receipt.review.body));deliverableReference(details,receipt.review);}
     else details.append(node('p','This legacy approval has no stored review text.'));
     box.append(details);
   }
@@ -150,7 +163,8 @@ async function project(){
   for(const m of overview.awaitingClient){
     const card=node('article','');card.append(node('h3',m.id),node('p',`Review version: ${m.currentVersionId}`));
     if(m.review){card.append(node('h4',m.review.title),node('p',m.review.body));}
-    const approval=node('button','Approve this version');approval.type='button';approval.disabled=!overview.canApprove||Boolean(m.reviewRequired&&!m.review);
+    const approval=node('button','Approve this version');approval.type='button';approval.disabled=!overview.canApprove||Boolean(m.reviewRequired&&!m.review)||Boolean(m.review?.deliverable);
+    if(m.review?.deliverable){const notice=node('p','Approval is paused until the referenced preview can be reviewed.');card.append(notice);deliverableReference(card,m.review,()=>{notice.textContent='Referenced content verified for this review version.';approval.disabled=!overview.canApprove;});}
     if(m.reviewRequired&&!m.review)card.append(node('p','Review content is unavailable. Approval is paused.'));
     approval.addEventListener('click',async()=>{approval.disabled=true;try{await api('/api/portal/approve',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,...(m.review?{reviewDigest:m.review.digest}:{}),operationId:crypto.randomUUID()});status('Milestone approved.');await project();}catch(error){status(error.message);}finally{approval.disabled=false;}});
     card.append(approval,node('p','Only the client Owner can approve.'));
@@ -206,7 +220,7 @@ if(location.hash.startsWith('#invite=')){const code=location.hash.slice(8);histo
 
 try {
   const config=await api('/auth-config.json',null,'GET');
-  const {invitationsEnabled:enabled,...authConfig}=config;invitationsEnabled=enabled===true;
+  const {invitationsEnabled:enabled,deliverablesEnabled:previews,...authConfig}=config;invitationsEnabled=enabled===true;deliverablesEnabled=previews===true;
   authClient=createAuthClient(authConfig,{request:api});
   if(config.mode==='firebase-emulator'){
     el('invite-panel').hidden=true;

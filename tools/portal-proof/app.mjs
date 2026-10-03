@@ -11,7 +11,7 @@ const assets = new Map([
   ['/auth-client.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/auth-client.js',import.meta.url))]],
   ['/style.css', ['text/css; charset=utf-8',readFileSync(new URL('./ui/style.css',import.meta.url))]]
 ]);
-export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,invitations,callAvailability}) {
+export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,invitations,callAvailability,deliverableReader}) {
   if (new URL(allowedOrigin).origin!==allowedOrigin) throw new Error('INVALID_CONFIGURATION');
   let authConfig={mode:'local'},authConnect='';
   if(firebaseEmulator!==undefined) {
@@ -22,10 +22,12 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
   }
   if(invitations!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
   if(callAvailability!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
+  if(deliverableReader!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
+  if(deliverableReader!==undefined)authConfig.deliverablesEnabled=true;
   const callHandler=callAvailability===undefined?null:createCallAvailabilityHandler({...callAvailability,allowedOrigin});
   const invitationHandler=invitations===undefined?null:createInvitationHandler({invitations,allowedOrigin});
   if(invitationHandler)authConfig.invitationsEnabled=true;
-  const portalHandler=createPortalHandler({portal,allowedOrigin,resolveSession:raw=>auth.resolveSession(raw)});
+  const portalHandler=createPortalHandler({portal,allowedOrigin,resolveSession:raw=>auth.resolveSession(raw),deliverableReader});
   const server=createServer({maxHeaderSize:16384},async (request,response) => {
     const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',
       'Referrer-Policy':'no-referrer','Content-Security-Policy':`default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' ${authConnect}; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`};

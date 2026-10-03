@@ -9,6 +9,7 @@ const schemas = {
   'update-progress': ['projectId','stage','nextStep','expectedDigest','operationId'],
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
   'create-milestone': ['projectId','milestoneId','versionId','title','body'],
+  deliverable: ['projectId','milestoneId','versionId','reviewDigest'],
   'create-project': ['businessId','projectId','stage','nextStep'],
   'create-client': ['businessId','projectId','stage','nextStep'],
   'triage-ticket': ['projectId','ticketId','priority','careAssessment','note','expectedDigest','operationId'],
@@ -24,8 +25,16 @@ const schemas = {
 const reads = new Set(['workspace-access', 'admin-overview', 'admin-accounts', 'colleagues', 'projects', 'tickets', 'overview', 'read-ticket']);
 const response = (status, data) => ({status, headers: {'Cache-Control':'no-store'}, data});
 
-export function createBoundary({portal, resolveSession, allowedOrigin}) {
+export function createBoundary({portal, resolveSession, allowedOrigin,deliverableReader}) {
   if (typeof resolveSession !== 'function' || new URL(allowedOrigin).origin !== allowedOrigin) throw new Error('INVALID_CONFIGURATION');
+  if(deliverableReader!==undefined&&typeof deliverableReader!=='function')throw Error('INVALID_CONFIGURATION');
+  const readDeliverable=async(actorId,input)=>{
+    if(!deliverableReader)throw Error('DELIVERABLE_UNAVAILABLE');
+    const proof=await deliverableReader(actorId,{projectId:input.projectId,milestoneId:input.milestoneId,versionId:input.versionId,reviewDigest:input.reviewDigest});
+    if(proof.manifest.mediaType!=='text/plain')throw Error('DELIVERABLE_UNAVAILABLE');
+    let contentText;try{contentText=new TextDecoder('utf-8',{fatal:true}).decode(proof.bytes);}catch{throw Error('DELIVERABLE_CONTENT_CONFLICT');}
+    return {proof,contentText};
+  };
   return async function handle({action, method, origin, rawBody, sessionToken}) {
     let fields = Object.hasOwn(schemas, action) ? schemas[action] : null;
     if (!fields) return response(404, {error:'NOT_FOUND'});
@@ -50,6 +59,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
       if (!session || typeof session.actorId !== 'string' || !session.actorId) return response(401, {error:'UNAUTHENTICATED'});
       const request = {...input, actorId:session.actorId};
       const operations = {
+        deliverable: async()=>{const {proof,contentText}=await readDeliverable(session.actorId,input);return {label:proof.manifest.label,sourceVersion:proof.manifest.sourceVersion,reviewDigest:proof.reviewDigest,contentText};},
         'workspace-access': () => portal.workspaceAccess(session.actorId),
         'admin-overview': () => portal.adminOverview(session.actorId),
         'admin-accounts': () => portal.adminAccounts(session.actorId,input.businessId),
@@ -69,7 +79,14 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         ticket: () => portal.createTicket(request),
         reply: () => portal.replyToTicket(request),
         feedback: () => portal.submitFeedback(request),
-        approve: () => portal.approve(request)
+        approve: async()=>{
+          // Exact retries and ordinary text approvals need no provider read.
+          // The transactional domain raises this gate only for a new approval
+          // that requires a deliverable capability, without changing state.
+          try{return await portal.approve(request);}catch(error){if(error?.message!=='DELIVERABLE_UNAVAILABLE')throw error;}
+          const {proof}=await readDeliverable(session.actorId,input);
+          return portal.approve(request,proof);
+        }
       };
       const result=await operations[action]();
       if(action==='update-colleague-access')return response(200,{changed:result.changed,accountId:input.uid,projectId:input.projectId,hasProjectAccess:input.grant});
@@ -77,7 +94,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
       if (['ACCESS_DENIED','BUSINESS_SCOPE_DENIED','PROJECT_SCOPE_DENIED','IDENTITY_DISABLED','ACCESS_REVOKED','ACCESS_MEMBERSHIP_REQUIRED','VERIFIED_FIREBASE_USER_REQUIRED','FIREBASE_USER_REQUIRED'].includes(message)) return response(403, {error:'ACCESS_DENIED'});
-      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT','CLIENT_CONFLICT','TRIAGE_CONFLICT','ACCESS_REVISION_CONFLICT','ACCESS_ROLE_CONFLICT'].includes(message)) return response(409, {error:message});
+      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT','CLIENT_CONFLICT','TRIAGE_CONFLICT','ACCESS_REVISION_CONFLICT','ACCESS_ROLE_CONFLICT','DELIVERABLE_UNAVAILABLE','DELIVERABLE_CONTENT_CONFLICT'].includes(message)) return response(409, {error:message});
       if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS','INVALID_TRIAGE','INVALID_ACCESS_GRANT','ACCESS_REVISION_REQUIRED'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }

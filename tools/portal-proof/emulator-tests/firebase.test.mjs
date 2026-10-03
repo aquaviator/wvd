@@ -1,8 +1,9 @@
+import {createReviewDeliverableReader} from '../deliverable.mjs';
 import {exportPortalBackup,rehearsePortalBackup} from '../backup.mjs';
 import {rehearseFirestoreBackup} from '../firestore-rehearsal.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
 import {mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {initializeApp,deleteApp} from 'firebase-admin/app';
@@ -85,7 +86,9 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  t.after(()=>deleteApp(app));
  await auth.createUser({uid,email,emailVerified:true,password});
  const unprovisioned='unprovisioned-'+suffix;await auth.createUser({uid:unprovisioned,email:unprovisioned+'@example.test',emailVerified:true,password});
- const origin='http://127.0.0.1:4703',server=createApplication({portal:backend.portal,auth:{resolveSession:backend.resolveSession},allowedOrigin:origin,firebaseEmulator:browserConfig,invitations:backend.invitations});
+ const sourceBytes=Buffer.from('Synthetic pinned design snapshot.\n<script>window.previewExecuted=true</script>');let sourceReads=0;
+ const browserDeliverableReader=createReviewDeliverableReader({portal:backend.portal,source:{readVersion:async input=>{sourceReads++;assert.equal(input.projectId,'p');assert.equal(input.sourceId,'synthetic-design');assert.equal(input.sourceVersion,'revision-1');return {sourceId:input.sourceId,sourceVersion:input.sourceVersion,mediaType:'text/plain',bytes:sourceBytes};}},maxBytes:1000,timeoutMs:1000,maxConcurrentReads:1,proofMaxAgeMs:5000});
+ const origin='http://127.0.0.1:4703',server=createApplication({portal:backend.portal,auth:{resolveSession:backend.resolveSession},allowedOrigin:origin,firebaseEmulator:browserConfig,invitations:backend.invitations,deliverableReader:browserDeliverableReader});
  await new Promise(resolve=>server.listen(4703,'127.0.0.1',resolve));
  t.after(async()=>{server.closeIdleConnections();await new Promise(resolve=>server.close(resolve));});
  assert.equal((await fetch(origin+'/api/auth/login',{method:'POST'})).status,404);
@@ -178,5 +181,20 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
 
  await page.getByRole('button',{name:'Sign out',exact:true}).click();assert.equal(await page.locator('#admin-overview').isVisible(),false);assert.equal(await page.locator('#admin-overview').textContent(),'');
  await page.locator('#login').getByLabel('Email').fill(unprovisioned+'@example.test');await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();await page.getByText('Synthetic revised review',{exact:true}).waitFor();assert.equal(await page.locator('#projects option').count(),2);assert.equal(await page.locator('#projects option').filter({hasText:'other'}).count(),0);assert.equal(await page.locator('#admin-overview').isVisible(),false);assert.equal(await page.getByRole('button',{name:'Approve this version',exact:true}).count(),2);for(const button of await page.getByRole('button',{name:'Approve this version',exact:true}).all())assert.equal(await button.isDisabled(),true);assert.equal(await page.locator('.triage-ticket').count(),0);await page.locator('#tickets .assessment-note').waitFor();assert.equal(await page.locator('#tickets .assessment-note').textContent(),'The synthetic change needs a separate quote.');assert.equal(await page.locator('.colleague-access').count(),0);await capture('client-after-admin-changes');
+ // Pinned deliverable publication stays paused until source retrieval is
+ // actually composed into the browser/API; metadata alone cannot approve it.
+ const deliverableBytes=sourceBytes,deliverable={label:'Synthetic pinned design',sourceId:'synthetic-design',sourceVersion:'revision-1',contentSha256:createHash('sha256').update(deliverableBytes).digest('hex'),mediaType:'text/plain'};
+ const deliverableReview=await backend.portal.publishReviewAsAdmin({actorId:adminUid,projectId:'p',milestoneId:'m',versionId:'v3',expectedVersionId:'v2',title:'Pinned design review',body:'Review this exact design snapshot.',deliverable});
+ await page.getByRole('button',{name:'Sign out',exact:true}).click();await auth.updateUser(uid,{disabled:false});
+ await page.locator('#login').getByLabel('Email').fill(email);await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();
+ await page.getByText('Deliverable: Synthetic pinned design',{exact:true}).waitFor();const deliverableCard=page.locator('#overview article').filter({has:page.getByRole('heading',{name:'Pinned design review',exact:true})});
+ assert.equal(await deliverableCard.getByRole('button',{name:'Approve this version',exact:true}).isDisabled(),true);await deliverableCard.getByText('Approval is paused until the referenced preview can be reviewed.',{exact:true}).waitFor();assert.equal(await deliverableCard.locator('a').count(),0);
+ const readDeliverable=createReviewDeliverableReader({portal:backend.portal,source:{readVersion:async input=>({sourceId:input.sourceId,sourceVersion:input.sourceVersion,mediaType:'text/plain',bytes:deliverableBytes})},maxBytes:1000,timeoutMs:1000,maxConcurrentReads:1,proofMaxAgeMs:1000});
+ assert.deepEqual((await readDeliverable(uid,{projectId:'p',milestoneId:'m',versionId:'v3',reviewDigest:deliverableReview.digest})).bytes,deliverableBytes);
+ const beforeApproval=await backend.portal.snapshot();await assert.rejects(()=>backend.portal.approve({actorId:uid,projectId:'p',milestoneId:'m',versionId:'v3',operationId:'preview-not-connected',reviewDigest:deliverableReview.digest}),/DELIVERABLE_UNAVAILABLE/);assert.deepEqual(await backend.portal.snapshot(),beforeApproval);
+ await capture('owner-deliverable-paused','#overview');
+ await deliverableCard.getByRole('button',{name:'View referenced deliverable',exact:true}).click();await deliverableCard.getByText('Referenced content verified for this review version.',{exact:true}).waitFor();assert.equal(await deliverableCard.locator('.deliverable-snapshot').textContent(),sourceBytes.toString());assert.equal(await page.evaluate(()=>window.previewExecuted),undefined);assert.equal(await deliverableCard.getByRole('button',{name:'Approve this version',exact:true}).isDisabled(),false);await capture('owner-deliverable-verified','#overview');
+ await deliverableCard.getByRole('button',{name:'Approve this version',exact:true}).click();await page.getByText('m — approved',{exact:true}).waitFor();assert.equal((await backend.portal.snapshot()).receipts.length,beforeApproval.receipts.length+1);assert.equal(sourceReads,2);
+
  assert.deepEqual(errors,[]);
 });

@@ -27,7 +27,7 @@ function decode(document) {
 // Firestore transactions commit domain data and outbox intent atomically. No
 // network side effects occur in callbacks, which Firestore may rerun on conflict.
 export class FirestorePortal {
-  #db; #ref; #clock; #backupBinding; #invitationPolicy;
+  #db; #ref; #clock; #backupBinding; #invitationPolicy; #deliverableScope={};
   constructor({db,productId,backupBinding,clock=()=>new Date().toISOString(),invitationPolicy:policy}) {
     if(typeof db?.doc!=='function'||typeof db?.runTransaction!=='function'||!product(productId)||typeof clock!=='function')throw Error('INVALID_CONFIGURATION');
     if(backupBinding&&backupBinding.productId!==productId)throw Error('INVALID_CONFIGURATION');
@@ -53,7 +53,7 @@ export class FirestorePortal {
     const timestamp=this.#clock();
     return this.#db.runTransaction(async transaction=>{
       const document=await transaction.get(this.#ref),{state,revision}=decode(document);
-      const model=new PortalProof(state,()=>timestamp,this.#invitationPolicy),before=encode(model.snapshot());
+      const model=new PortalProof(state,()=>timestamp,this.#invitationPolicy,this.#deliverableScope),before=encode(model.snapshot());
       if(method==='updateAccessAsAdmin'&&!model.workspaceAccess(args[0].actorId).admin)throw Error('ACCESS_DENIED');
       if(method==='updateColleagueAccess')model.colleagueAccessGrant(args[0]);
       if(expectedRevision!==undefined&&revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
@@ -105,6 +105,7 @@ export class FirestorePortal {
     if(typeof uid!=='string'||!uid||uid.length>128)return false;
     const state=await this.snapshot();return state.identities.some(x=>x.id===uid&&x.active);
   }
+  deliverableScope(){return this.#deliverableScope;}
   snapshot(){return this.#run('snapshot',[]);}
   projectsFor(...args){return this.#run('projectsFor',args);}
   workspaceAccess(...args){return this.#run('workspaceAccess',args);}

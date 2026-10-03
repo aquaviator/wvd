@@ -450,4 +450,28 @@ NUL, other ASCII controls and DEL are rejected before invitation mutation or
 notification account lookup. Recomputed invitation digests do not legitimise an
 unsafe address in stored state. The helper does not verify address ownership or
 authorise delivery. Local portal suite: 336 passed, one Windows-only skip.
-Native/emulator/container checks remain pending for this follow-up.
+Source `db54b13e4ed7255ec859b9226d58f2758751c487` passed all four CI jobs
+and container run 37124181657. The downloaded report matches the exact source;
+the synthetic invitation-history screenshot was inspected.
+
+### Pinned deliverable review development — 3 October 2026
+
+Reused immutable review fingerprints, client projections, transactional approval,
+shared persistence and the HTTP/session boundary from source `db54b13e`.
+Operator publication can bind an explicit source/version/byte-digest manifest.
+Existing text-only reviews retain their exact fingerprints. Trusted source reads
+validate pinned metadata and bounded bytes, recheck access, and mint short-lived
+in-process proofs scoped to actor and adapter instance. Approval checks the proof
+inside the transaction; raw JSON flags or proofs from another adapter cannot
+authorise it. Exact receipt retries do not depend on provider availability.
+
+The optional isolated-emulator browser composition shows verified UTF-8 text via
+text content and re-verifies bytes before approval. Other file types and missing
+source readers stay paused. HTTP clients cannot publish arbitrary source manifests.
+Unit checks cover corruption, digest/version changes, revocation, provider timeout,
+capacity, expired/forged/cross-adapter proof and SQLite reopen. Emulator/browser
+coverage adds the Firestore approval flow and literal script text without execution.
+Live Google source binding, binary previews, artifact retention and production
+integration remain open. The local portal suite passed 347 checks with one native Windows skip.
+CI/native and unattended container verification remain pending;
+no credentials, live files or new services were provisioned.

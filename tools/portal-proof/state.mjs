@@ -1,3 +1,4 @@
+import {reviewDeliverable} from './deliverable.mjs';
 import {validateInvitations} from './invitation-state.mjs';
 import {validateOperatorAudit} from './operator-audit.mjs';
 import {reviewDigest} from './review.mjs';
@@ -42,6 +43,7 @@ export function validatePortalState(state) {
       if(!Array.isArray(milestone.reviews)||!milestone.reviewRequired)corrupt();
       const versions=new Set();
       for(const review of milestone.reviews) {
+        if(review?.deliverable!==undefined){try{reviewDeliverable(review.deliverable);}catch{corrupt();}}
         if((review.publisherActorId===undefined)!==(review.publishedAt===undefined)||(review.publisherActorId!==undefined&&(!identities.has(review.publisherActorId)||typeof review.publishedAt!=='string'||!Number.isFinite(Date.parse(review.publishedAt)))))corrupt();
         if(!review||review.projectId!==milestone.projectId||review.milestoneId!==milestone.id||!string(review.versionId)||review.versionId.length>128||!string(review.title)||!review.title.trim()||review.title.length>200||!string(review.body)||!review.body.trim()||review.body.length>10000||versions.has(review.versionId)||review.digest!==reviewDigest(review))corrupt();
         versions.add(review.versionId);

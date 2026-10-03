@@ -7,3 +7,5 @@
 .colleague-access h4{overflow-wrap:anywhere}
 
 .invitation-actions{display:flex;flex-direction:column;align-items:flex-start;gap:.75rem}.invitation-actions p{margin:.5rem 0;overflow-wrap:anywhere}#firebase-registration form>button{display:block;margin-top:.75rem}
+
+.deliverable-snapshot { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 24rem; overflow: auto; padding: 1rem; border: 1px solid #cbd5d5; }
