@@ -1,6 +1,7 @@
 // Adapted from Human V1's FirebaseAuthRepository: Firebase sign-in alone is
 // insufficient; a current trusted product identity must also be provisioned.
 // The Firebase Admin SDK verifies issuer/audience/signature/expiry and revocation.
+import {validFirebaseEmail,verifiedFirebaseAccount} from './firebase-user.mjs';
 const invalid = new Set(['auth/argument-error','auth/invalid-id-token','auth/id-token-expired',
   'auth/id-token-revoked','auth/user-disabled','auth/user-not-found']);
 function tokenVerifier(auth) {
@@ -30,10 +31,10 @@ export function createFirebaseInvitationIdentityResolver({auth}) {
   if(typeof auth?.getUser!=='function')throw Error('INVALID_CONFIGURATION');
   const verify=tokenVerifier(auth);
   return async raw=>{
-    const decoded=await verify(raw);if(!decoded||typeof decoded.email!=='string'||!decoded.email||decoded.email.length>320)return null;
+    const decoded=await verify(raw);if(!decoded||!validFirebaseEmail(decoded.email))return null;
     let user;
     try{user=await auth.getUser(decoded.uid);}catch(error){if(invalid.has(error?.code))return null;throw Error('IDENTITY_SERVICE_UNAVAILABLE');}
-    if(user?.uid!==decoded.uid||user.disabled||user.emailVerified!==true||user.email!==decoded.email||!user.providerData?.some(x=>['google.com','password'].includes(x.providerId)))return null;
+    if(!verifiedFirebaseAccount(user,decoded.uid)||user.email!==decoded.email)return null;
     return {actorId:decoded.uid,email:user.email};
   };
 }

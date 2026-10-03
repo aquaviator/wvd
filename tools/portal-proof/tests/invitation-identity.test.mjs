@@ -16,3 +16,13 @@ test('Invalid or revoked identity fails closed and provider outages expose no pr
  for(const code of ['auth/id-token-revoked','auth/user-disabled','auth/user-not-found'])assert.equal(await createFirebaseInvitationIdentityResolver({auth:{verifyIdToken:async()=>decoded(),getUser:async()=>{throw {code};}}})('signed-token'),null);
  await assert.rejects(()=>createFirebaseInvitationIdentityResolver({auth:{verifyIdToken:async()=>decoded(),getUser:async()=>{throw Error('private SDK detail');}}})('signed-token'),/^Error: IDENTITY_SERVICE_UNAVAILABLE$/);
 });
+test('Malformed account providers deny invitation proof without throwing; invalid token emails skip account lookup',async()=>{
+ for(const providerData of [{},'password',[null],undefined]){
+  const resolve=createFirebaseInvitationIdentityResolver({auth:{verifyIdToken:async()=>decoded(),getUser:async()=>({...user(),providerData})}});
+  assert.equal(await resolve('signed-token'),null);
+ }
+ for(const email of ['new.example.test','two@@example.test','new\u0000@example.test',' new@example.test']){
+  const resolve=createFirebaseInvitationIdentityResolver({auth:{verifyIdToken:async()=>({...decoded(),email}),getUser:async()=>assert.fail('invalid email must not reach account lookup')}});
+  assert.equal(await resolve('signed-token'),null);
+ }
+});

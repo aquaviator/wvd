@@ -24,7 +24,7 @@ test('verified Firebase UID is checked before grant and revision is explicit',as
  const provision=createFirebaseProvisioner({auth:{getUser:async uid=>{assert.equal(uid,'new');return user;}},portal:{provisionAccess:async(request,revision)=>{assert.deepEqual(request,grant);assert.equal(revision,7);writes++;return {created:true};}}});
  await assert.rejects(()=>provision(grant),/ACCESS_REVISION_REQUIRED/);assert.equal(writes,0);
  assert.deepEqual(await provision(grant,7),{created:true});assert.equal(writes,1);
- for(const mutation of [{disabled:true},{emailVerified:false},{uid:'foreign'},{providerData:[{providerId:'anonymous'}]}]) {
+ for(const mutation of [{disabled:true},{emailVerified:false},{uid:'foreign'},{providerData:[{providerId:'anonymous'}]},{providerData:{}},{providerData:[null]},{email:'missing-at.example.test'},{email:'two@@example.test'},{email:'new\u0000@example.test'}]) {
   const p=createFirebaseProvisioner({auth:{getUser:async()=>({...user,...mutation})},portal:{provisionAccess:()=>assert.fail('must not write')}});await assert.rejects(()=>p(grant,7),/VERIFIED_FIREBASE_USER_REQUIRED/);
  }
 });

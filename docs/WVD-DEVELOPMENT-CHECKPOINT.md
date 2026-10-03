@@ -370,3 +370,16 @@ automatic data deletion. Real emulator coverage races two redemptions and verifi
 one membership; fake transaction retries/capacity rollback test atomic consumption.
 HTTP/UI registration, email verification/delivery, abuse/retention binding and
 broader Owner delegation remain unfinished. No actual emails or live users created.
+
+### Resumed account-proof validation — 3 October 2026
+
+Resumed from source `2d22a18ac49d082f93243b82f6eaeeb97a1eb4a6`.
+Adapted the existing Firebase account checks into a shared shape validator for
+provisioning and invitation identity proof. Malformed provider lists now deny
+proof rather than raising an unsanitised type error. Email checks reject malformed
+addresses, whitespace and control characters before grants or notification
+recipient preparation. Matching token/current-account email remains required;
+the helper confers no product access. Regression coverage proves no grant write,
+no invalid-token account lookup, and suppression without consuming an outbox intent.
+Local portal suite: 321 passed, zero failed, one Windows-only skip on Linux.
+CI/native and unattended container verification remain pending for this change.

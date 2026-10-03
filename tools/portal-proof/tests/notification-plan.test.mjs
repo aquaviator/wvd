@@ -23,3 +23,11 @@ test('disabled/deleted/unverified Auth accounts are suppressed and outages abort
 test('recipient limits and product mismatch abort before Auth reads; scope changes during lookup refuse stale preparation',async()=>{
  const portal=fixture(),created=ticket(portal);let reads=0;const prepare=createFirebaseNotificationPreparation({portal,productId:policy.productId,auth:{getUser:async uid=>{reads++;portal.revokeMembership(uid,'b');return {uid,email:uid+'@example.test',emailVerified:true,providerData:[{providerId:'password'}]};}}});await assert.rejects(()=>prepare(created.id,policy),/NOTIFICATION_CAPACITY_REQUIRED/);await assert.rejects(()=>prepare(created.id,{...policy,productId:'foreign-product'},{maxClientRecipients:10}),/NOTIFICATION_PRODUCT_MISMATCH/);await assert.rejects(()=>prepare(created.id,{...policy,clientAudience:'project-members'},{maxClientRecipients:1}),/NOTIFICATION_CAPACITY/);assert.equal(reads,0);await assert.rejects(()=>prepare(created.id,policy,{maxClientRecipients:10}),/NOTIFICATION_PLAN_CHANGED/);assert.equal(portal.snapshot().outbox[0].status,'pending');
 });
+test('malformed Firebase accounts are suppressed without returning an unsafe email or consuming the intent',async()=>{
+ for(const patch of [{providerData:{}},{providerData:[null]},{email:'missing-at.example.test'},{email:'owner\u0000@example.test'}]){
+  const portal=fixture(),created=ticket(portal),before=portal.snapshot();
+  const prepare=createFirebaseNotificationPreparation({portal,productId:policy.productId,auth:{getUser:async uid=>({uid,email:'owner@example.test',emailVerified:true,providerData:[{providerId:'password'}],...patch})}});
+  const result=await prepare(created.id,policy,{maxClientRecipients:10});
+  assert.deepEqual(result.clientRecipients,[]);assert.deepEqual(result.suppressedClientActorIds,['owner']);assert.deepEqual(portal.snapshot(),before);
+ }
+});
