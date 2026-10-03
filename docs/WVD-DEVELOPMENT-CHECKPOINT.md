@@ -544,7 +544,12 @@ uses navy/blue styling and provides a keyboard skip link to the main workspace.
 Disabled actions use a not-allowed cursor. No external fonts or asset services
 were added. The offline image copies the same asset and its workflow tracks logo
 changes. Existing desktop/mobile browser coverage now checks image decoding and
-keyboard navigation before the account journey. CI and visual verification pending.
+keyboard navigation before the account journey. Source
+`88c14a63b56587ae47cdd90c836c21802511c315` passed all four CI jobs and
+offline container run 37129110542. The container asset allowlist was corrected
+after its first build rejected the logo. Downloaded results match the source;
+the mobile signed-out screen was visually inspected. Evidence stayed below the
+existing 5 MiB cap. The public-site palette is unchanged.
 
 Live Google access remains unactivated. Google's deployment-pipeline federation
 guide lists enabled project billing as a prerequisite, while IAM pricing describes
