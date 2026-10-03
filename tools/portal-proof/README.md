@@ -38,6 +38,7 @@ are described in [SELF-HOSTING.md](SELF-HOSTING.md).
 | Save feedback, create/read/reply to support tickets | Granted projects | Granted projects | All WVD projects |
 | Approve an exact review version | Granted projects | Denied | No approval permission from admin status |
 | View grouped client/project activity | Denied | Denied | Allowed |
+| Inspect client accounts and change existing project grants | Denied | Denied | Allowed; roles and activation remain unchanged |
 | Update project stage and next step | Denied | Denied | Allowed |
 | Publish immutable review text to an existing milestone | Denied | Denied | Allowed |
 | Create a milestone with its first review | Denied | Denied | Allowed |
