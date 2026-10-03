@@ -535,3 +535,19 @@ offline container run 37128147143: 365 portal tests passed, with one native
 Windows skip in Linux. The native Windows job also passed. Downloaded results
 matched the commit and the PNG preview screenshot was inspected. See
 WVD-GOOGLE-DELIVERABLE-DEVELOPMENT.md for exact remaining live bindings.
+
+## Portal brand and keyboard access — 3 October 2026
+
+Reused the unchanged `src/assets/brand/horizontal-logo.png` already used by the
+public site. The portal now serves that exact asset through a fixed static route,
+uses navy/blue styling and provides a keyboard skip link to the main workspace.
+Disabled actions use a not-allowed cursor. No external fonts or asset services
+were added. The offline image copies the same asset and its workflow tracks logo
+changes. Existing desktop/mobile browser coverage now checks image decoding and
+keyboard navigation before the account journey. CI and visual verification pending.
+
+Live Google access remains unactivated. Google's deployment-pipeline federation
+guide lists enabled project billing as a prerequisite, while IAM pricing describes
+Workload Identity Federation itself as no additional cost. The development project
+was last verified on Spark with billing disabled; no billing change is authorised.
+Continue independent development without claiming an app credential connection.

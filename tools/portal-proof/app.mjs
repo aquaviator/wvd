@@ -6,6 +6,7 @@ import {createInvitationHandler} from './invitation-http.mjs';
 import {createCallAvailabilityHandler} from './call-http.mjs';
 
 const assets = new Map([
+  ['/brand-logo.png', ['image/png',readFileSync(new URL('../../src/assets/brand/horizontal-logo.png',import.meta.url))]],
   ['/', ['text/html; charset=utf-8',readFileSync(new URL('./ui/index.html',import.meta.url))]],
   ['/app.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/app.js',import.meta.url))]],
   ['/auth-client.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/auth-client.js',import.meta.url))]],
@@ -31,7 +32,7 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
   const portalHandler=createPortalHandler({portal,allowedOrigin,resolveSession:raw=>auth.resolveSession(raw),deliverableReader,deliverableCatalogue});
   const server=createServer({maxHeaderSize:16384},async (request,response) => {
     const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',
-      'Referrer-Policy':'no-referrer','Content-Security-Policy':`default-src 'none'; script-src 'self'; style-src 'self'; img-src data:; connect-src 'self' ${authConnect}; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`};
+      'Referrer-Policy':'no-referrer','Content-Security-Policy':`default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' ${authConnect}; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`};
     const send=(status,data) => { response.writeHead(status,{...headers,'Content-Type':'application/json; charset=utf-8'}); response.end(JSON.stringify(data)); };
     try {
       if (typeof request.url!=='string' || request.url.length>4096) return send(400,{error:'INVALID_REQUEST'});

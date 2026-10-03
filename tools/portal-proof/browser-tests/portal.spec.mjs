@@ -17,6 +17,12 @@ test.afterAll(async()=>{server?.closeIdleConnections();if(server)await new Promi
 test('invitation, sign-in, ticket reply, feedback, approval and logout',async({page})=>{
   await page.goto(`/#invite=${invitation.invitationToken}`);
   await expect(page).toHaveURL(origin+'/');
+  await expect(page.getByRole('img',{name:'Wear Valley Digital',exact:true})).toBeVisible();
+  expect(await page.locator('.brand img').evaluate(image=>image.complete&&image.naturalWidth>0)).toBe(true);
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link',{name:'Skip to main content'})).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#main-content')).toBeFocused();
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
   await page.getByLabel('New password').fill(password);await page.getByRole('button',{name:'Set password',exact:true}).click();
   await expect(page.getByRole('status')).toContainText('Password set');

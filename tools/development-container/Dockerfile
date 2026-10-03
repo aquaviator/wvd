@@ -9,6 +9,7 @@ COPY package.json package-lock.json ./
 COPY tools/portal-proof/package.json tools/portal-proof/package-lock.json ./tools/portal-proof/
 RUN npm ci --ignore-scripts && npm ci --prefix tools/portal-proof --ignore-scripts
 COPY tools/portal-proof/ ./tools/portal-proof/
+COPY src/assets/brand/horizontal-logo.png ./src/assets/brand/horizontal-logo.png
 COPY tools/development-container/run-tests.mjs ./tools/development-container/run-tests.mjs
 # Browser and emulator downloads are build-time only. Test runs have no network.
 RUN ./tools/portal-proof/node_modules/.bin/firebase setup:emulators:firestore

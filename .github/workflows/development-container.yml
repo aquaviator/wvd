@@ -4,6 +4,7 @@ on:
     branches: [development/shared-factory-bootstrap]
     paths:
       - 'tools/portal-proof/**'
+      - 'src/assets/brand/horizontal-logo.png'
       - 'tools/development-container/**'
       - 'package.json'
       - 'package-lock.json'
@@ -11,6 +12,7 @@ on:
   pull_request:
     paths:
       - 'tools/portal-proof/**'
+      - 'src/assets/brand/horizontal-logo.png'
       - 'tools/development-container/**'
       - 'package.json'
       - 'package-lock.json'
