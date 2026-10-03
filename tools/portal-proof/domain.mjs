@@ -50,18 +50,22 @@ export class PortalProof {
     if(!identity)denied();
     return {admin:identity.wvdAdmin===true};
   }
-  createProjectAsAdmin({actorId,businessId,projectId,stage,nextStep}) {
+  createClientAsAdmin(request) { return this.#createProjectAsAdmin(request,true); }
+  createProjectAsAdmin(request) { return this.#createProjectAsAdmin(request,false); }
+  #createProjectAsAdmin({actorId,businessId,projectId,stage,nextStep},newClient) {
     if(!this.workspaceAccess(actorId).admin)denied();
     this.#text(businessId,128);this.#text(projectId,128);
-    if(!this.#state.projects.some(x=>x.businessId===businessId))throw Error('BUSINESS_SCOPE_DENIED');
-    const existing=this.#state.projects.find(x=>x.id===projectId);
+    const known=this.#state.projects.some(x=>x.businessId===businessId),existing=this.#state.projects.find(x=>x.id===projectId);
+    if(!newClient&&!known)throw Error('BUSINESS_SCOPE_DENIED');
+    if(newClient&&known&&!(existing?.businessId===businessId&&existing.createdForNewClient===true&&existing.createdByActorId===actorId))throw Error('CLIENT_CONFLICT');
+    if(newClient&&!known&&new Set(this.#state.projects.map(x=>x.businessId)).size>=200)throw Error('CLIENT_CAPACITY');
     if(existing&&(existing.businessId!==businessId||existing.createdByActorId!==actorId))throw Error('PROJECT_CONFLICT');
     const expectedDigest=progressDigest({projectId,stage:null,nextStep:null});
     const operationId='create-project-'+progressDigest({projectId,stage:businessId,nextStep:actorId});
     if(existing)return {projectId,businessId,initialProgress:this.updateProjectProgress({actorId,projectId,stage,nextStep,expectedDigest,operationId})};
     if(this.#state.projects.filter(x=>x.businessId===businessId).length>=200)throw Error('PROJECT_CAPACITY');
     const next=structuredClone(this.#state);
-    next.projects.push({id:projectId,businessId,createdByActorId:actorId,createdAt:this.#timestamp()});
+    next.projects.push({id:projectId,businessId,createdByActorId:actorId,createdAt:this.#timestamp(),...(newClient?{createdForNewClient:true}:{})});
     const candidate=new PortalProof(next,this.#clock),initialProgress=candidate.updateProjectProgress({actorId,projectId,stage,nextStep,expectedDigest,operationId});
     this.#state=candidate.snapshot();return {projectId,businessId,initialProgress};
   }

@@ -43,6 +43,7 @@ are described in [SELF-HOSTING.md](SELF-HOSTING.md).
 | Publish immutable review text to an existing milestone | Denied | Denied | Allowed |
 | Create a milestone with its first review | Denied | Denied | Allowed |
 | Create a project for an existing client | Denied | Denied | Allowed; client grants stay unchanged |
+| Create a new client and first project | Denied | Denied | Allowed; no account permissions are created |
 | Assess ticket priority and agreed Care scope | Denied | Denied | Allowed; assessment is retained for clients |
 
 Every operation checks current active identity and project scope. Firebase
@@ -112,7 +113,7 @@ confirmation delivery remain integration work. Holiday fixtures are synthetic.
 
 The executable development foundation is not production readiness. Outstanding
 work includes live browser authentication and server credentials, colleague invitation and
-client onboarding, external artifact/preview binding,
+verified account onboarding, external artifact/preview binding,
 notification delivery, booking integration, hosting/TLS, rate limits, monitoring,
 retention, dependency remediation, production recovery and independent integrated
 release review. Passing emulators or a configuration template does not close

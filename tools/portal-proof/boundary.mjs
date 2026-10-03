@@ -8,6 +8,7 @@ const schemas = {
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
   'create-milestone': ['projectId','milestoneId','versionId','title','body'],
   'create-project': ['businessId','projectId','stage','nextStep'],
+  'create-client': ['businessId','projectId','stage','nextStep'],
   'triage-ticket': ['projectId','ticketId','priority','careAssessment','note','expectedDigest','operationId'],
   projects: [],
   tickets: ['projectId'],
@@ -55,6 +56,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         'publish-review': () => portal.publishReviewAsAdmin(request),
         'create-milestone': () => portal.createMilestoneAsAdmin(request),
         'create-project': () => portal.createProjectAsAdmin(request),
+        'create-client': () => portal.createClientAsAdmin(request),
         'triage-ticket': () => portal.triageTicket(request),
         projects: () => portal.projectsFor(session.actorId),
         tickets: () => portal.ticketsFor(session.actorId,input.projectId),
@@ -69,7 +71,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
       if (['ACCESS_DENIED','BUSINESS_SCOPE_DENIED','PROJECT_SCOPE_DENIED','IDENTITY_DISABLED','ACCESS_REVOKED','ACCESS_MEMBERSHIP_REQUIRED','VERIFIED_FIREBASE_USER_REQUIRED','FIREBASE_USER_REQUIRED'].includes(message)) return response(403, {error:'ACCESS_DENIED'});
-      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT','TRIAGE_CONFLICT','ACCESS_REVISION_CONFLICT','ACCESS_ROLE_CONFLICT'].includes(message)) return response(409, {error:message});
+      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT','CLIENT_CONFLICT','TRIAGE_CONFLICT','ACCESS_REVISION_CONFLICT','ACCESS_ROLE_CONFLICT'].includes(message)) return response(409, {error:message});
       if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS','INVALID_TRIAGE','INVALID_ACCESS_GRANT','ACCESS_REVISION_REQUIRED'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }

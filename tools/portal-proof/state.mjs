@@ -68,8 +68,9 @@ export function validatePortalState(state) {
       records.set(record.id,{record,eventType}); operations.add(record.operationId);
     }
   }
-  const progressIds=new Set();
+  const progressIds=new Set(),newClients=new Set();
   for(const project of state.projects) {
+    if(project.createdForNewClient!==undefined){if(project.createdForNewClient!==true||project.createdByActorId===undefined||newClients.has(project.businessId))corrupt();newClients.add(project.businessId);}
     if((project.createdByActorId===undefined)!==(project.createdAt===undefined)||(project.createdByActorId!==undefined&&(!identities.has(project.createdByActorId)||typeof project.createdAt!=='string'||!Number.isFinite(Date.parse(project.createdAt))||!project.progressHistory?.length||project.progressHistory[0].actorId!==project.createdByActorId)))corrupt();
     if(project.progressHistory===undefined)continue;
     if(!Array.isArray(project.progressHistory)||project.progressHistory.length>200)corrupt();

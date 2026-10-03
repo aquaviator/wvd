@@ -67,6 +67,7 @@ export class DurablePortal {
   updateProjectProgress(...args) { return this.#run('updateProjectProgress', args); }
   publishReviewAsAdmin(...args) { return this.#run('publishReviewAsAdmin', args); }
   createMilestoneAsAdmin(...args) { return this.#run('createMilestoneAsAdmin', args); }
+  createClientAsAdmin(...args) { return this.#run('createClientAsAdmin', args); }
   createProjectAsAdmin(...args) { return this.#run('createProjectAsAdmin', args); }
   triageTicket(...args) { return this.#run('triageTicket', args); }
   ticketsFor(...args) { return this.#run('ticketsFor', args); }

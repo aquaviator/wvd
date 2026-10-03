@@ -321,3 +321,16 @@ and records previous/new projects atomically. A no-op adds no audit or revision.
 The local development adapter reuses domain/audit checks but does not establish
 Firebase Auth verification. There is no role change, new client/account creation
 or Owner invitation workflow here. Legacy trusted operator commands remain private.
+
+### New client records
+
+An active WVD admin can create a new client namespace and its first project from
+the administration overview. The workflow reuses project creation/progress and
+records the creator and server time. A client cannot adopt another business or
+reuse an existing project ID. Exact retries keep later progress; changed payloads
+are rejected. Client namespaces are capped at 200 in this aggregate proof, with
+the existing 512 KiB Firestore limit still enforced.
+
+Creating the client does not create Firebase users, business memberships, project
+grants or notifications. The new client's account list is empty until an explicit
+verified provisioning step. Invitation delivery and live onboarding remain open.

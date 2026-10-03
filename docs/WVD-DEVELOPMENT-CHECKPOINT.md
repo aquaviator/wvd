@@ -283,3 +283,20 @@ grants require a fresh verified enabled Firebase target; removal-only updates
 remain possible for disabled/deleted Auth accounts. Browser verification assigns
 a newly created project to a Member and then checks visibility after client login
 without approval capability. Owner invitations and client onboarding remain open.
+
+### New client and first project — 3 October 2026
+
+Active WVD admins can create an unused client namespace with its first project.
+This adapts the existing project/progress workflow at local base b3659c7; no new
+business database, provider or account-creation default is introduced. The first
+project records a validated unique new-client marker, creator and server time.
+Duplicate client/project adoption is rejected; resource-bound retries retain later
+progress. The aggregate proof caps client namespaces at 200 and retains the
+512 KiB Firestore bound. Creating a client grants no account permissions and makes
+no external notification. Local tests and real-emulator/browser coverage exercise
+new-client isolation; account invitations remain independent unfinished work.
+
+Previous admin account/editor source 97371d6 passed all four CI jobs and the offline
+container (runs 37112653481/37112653484). Account accessibility/isolation coverage
+also passed at the following source, in runs 37112847077/37112847025. Reviewed
+synthetic account controls and source-bound container evidence; no live access used.
