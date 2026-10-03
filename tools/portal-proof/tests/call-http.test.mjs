@@ -28,6 +28,10 @@ test('bounded admission rejects overlapping lookups and releases capacity after 
   let release;const waiting=new Promise(resolve=>{release=resolve;});let calls=0;const handler=configure({screen:async()=>{calls++;if(calls===1){await waiting;throw Error('private credential');}return {slots:[slot],provisional:true};}});
   const first=invoke(handler);await new Promise(resolve=>setImmediate(resolve));assert.equal((await invoke(handler)).status,503);assert.equal(calls,1);release();assert.deepEqual((await first).body,{error:'SERVICE_UNAVAILABLE'});assert.equal((await invoke(handler)).status,200);assert.equal(calls,2);
 });
+test('upstream errors with HTTP metadata cannot disclose private provider messages',async()=>{
+  const handler=configure({screen:async()=>{throw Object.assign(Error('Private calendar mailbox'),{httpStatus:400});}});
+  const result=await invoke(handler);assert.equal(result.status,503);assert.deepEqual(result.body,{error:'SERVICE_UNAVAILABLE'});
+});
 test('server holiday binding survives caller and adapter mutation; output projects only valid public slots',async()=>{
   const mutable=structuredClone(holidays);let calls=0;const handler=configure({holidayEvidence:mutable,screen:async input=>{assert.deepEqual(input.holidayEvidence.bankHolidays,[]);input.holidayEvidence.bankHolidays.push('2026-10-02');calls++;return {slots:[{...slot,calendarId:'private',reason:'private'}],provisional:true,private:'secret'};}});mutable.bankHolidays.push('2026-10-02');
   for(let i=0;i<2;i++)assert.deepEqual((await invoke(handler)).body,{slots:[slot],provisional:true});assert.equal(calls,2);
@@ -37,3 +41,14 @@ test('origin, holidays and capacity must be explicitly bound',()=>{
   for(const patch of [{allowedOrigin:'http://public.example'},{allowedOrigin:'https://example.test/path'},{holidayEvidence:{...holidays,bankHolidayRegion:'scotland'}},{maxConcurrentRequests:undefined},{maxConcurrentRequests:0},{screen:undefined}])assert.throws(()=>configure(patch),/INVALID_CONFIGURATION/);
 });
 test('development application cannot expose the optional call adapter outside isolated emulator mode',()=>assert.throws(()=>createApplication({allowedOrigin:origin,callAvailability:{}}),/ISOLATED_EMULATORS_REQUIRED/));
+test('real development HTTP endpoint is public while portal routes still require authentication',async t=>{
+  const saved={auth:process.env.FIREBASE_AUTH_EMULATOR_HOST,firestore:process.env.FIRESTORE_EMULATOR_HOST};
+  process.env.FIREBASE_AUTH_EMULATOR_HOST='127.0.0.1:9099';process.env.FIRESTORE_EMULATOR_HOST='127.0.0.1:8080';
+  const allowedOrigin='http://localhost';let server;
+  t.after(async()=>{if(server){server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}for(const [key,value]of [['FIREBASE_AUTH_EMULATOR_HOST',saved.auth],['FIRESTORE_EMULATOR_HOST',saved.firestore]]){if(value===undefined)delete process.env[key];else process.env[key]=value;}});
+  server=createApplication({portal:{},auth:{resolveSession:async()=>null},allowedOrigin,firebaseEmulator:{projectId:'demo-wvd-call',productId:'wvd-call',databaseId:'(default)',mode:'emulator'},callAvailability:{screen:async()=>({slots:[slot],provisional:true}),holidayEvidence:holidays,maxConcurrentRequests:1}});
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${server.address().port}`;
+  const response=await fetch(base+'/api/calls/availability',{method:'POST',headers:{Origin:allowedOrigin,'Content-Type':'application/json'},body:JSON.stringify({starts:[start]})});assert.equal(response.status,200);assert.deepEqual(await response.json(),{slots:[slot],provisional:true});
+  assert.equal((await fetch(base+'/api/portal/projects')).status,401);
+  assert.equal((await fetch(base+'/api/calls/availability',{method:'POST',headers:{Origin:'http://foreign.example','Content-Type':'application/json'},body:JSON.stringify({starts:[start]})})).status,403);
+});

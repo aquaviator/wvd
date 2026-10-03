@@ -1,5 +1,21 @@
 # Portal dependency review — 2 October 2026
 
+## Refresh — 3 October 2026
+
+A fresh non-forced, package-lock-only audit dry run reports eleven dependency
+chain findings: seven high and four moderate. It proposes no compatible package
+changes. The additional `braces`/`chokidar` findings trace to
+[GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), reviewed
+on 2 October. The advisory lists braces through 3.0.3 with no patched version.
+This is the Firebase CLI development dependency chain; the runtime-only audit
+still reports two moderate entries and no high or critical findings. Dependency
+constraints and supported upstream patches remain release work. No lockfile
+changes, override, CLI downgrade or warning suppression were applied.
+
+The earlier nine-finding review below is retained as dated evidence, not the
+current all-dependencies count. Unattended emulators continue to use synthetic
+inputs and an offline container; that isolation is not a dependency fix.
+
 The founder's Windows install and a fresh local `npm audit --json` both report
 nine findings: five high and four moderate. These are not nine independent bugs;
 several are dependency-chain effects of three underlying advisories.

@@ -396,3 +396,10 @@ requires explicit isolated emulator configuration to expose it. No live endpoint
 Calendar write, credential, registration or booking confirmation was added.
 Actual authorised Google binding, complete conflict calendar set, holiday
 coverage/freshness policy and reservation/confirmation remain unfinished.
+
+The first availability source `5a4f913a2a6277421a7da5b4f5e1400107018965`
+passed all four native CI jobs and the development container. Follow-up coverage
+exercises the real HTTP application without a session, confirms private portal
+authentication remains enforced, and sanitises upstream errors carrying HTTP
+metadata. The dependency review was refreshed without modifying package pins;
+the current development-toolchain findings remain unresolved release work.

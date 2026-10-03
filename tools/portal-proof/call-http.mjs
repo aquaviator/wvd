@@ -37,7 +37,8 @@ export function createCallAvailabilityHandler({screen,allowedOrigin,holidayEvide
       }finally{active--;}
     }catch(error){
       if(response.headersSent){response.destroy();return;}
-      if([400,413,415].includes(error?.httpStatus))return send(error.httpStatus,{error:error.message});
+      const transportErrors={INVALID_REQUEST:400,REQUEST_TOO_LARGE:413,UNSUPPORTED_MEDIA_TYPE:415};
+      if(Object.hasOwn(transportErrors,error?.message)&&transportErrors[error.message]===error?.httpStatus)return send(error.httpStatus,{error:error.message});
       if(error?.message==='INVALID_BOOKING_INPUT')return send(400,{error:'INVALID_REQUEST'});
       return send(503,{error:'SERVICE_UNAVAILABLE'});
     }
