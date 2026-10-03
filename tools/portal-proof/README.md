@@ -40,6 +40,7 @@ are described in [SELF-HOSTING.md](SELF-HOSTING.md).
 | View grouped client/project activity | Denied | Denied | Allowed |
 | Inspect client accounts and change existing project grants | Denied | Denied | Allowed; roles and activation remain unchanged |
 | Change an existing Member’s access to a selected project | Granted projects only | Denied | Requires separate client Owner membership |
+| Issue, inspect and revoke own Member invitations in the emulator | Granted projects only | Denied | Requires separate client Owner membership |
 | Update project stage and next step | Denied | Denied | Allowed |
 | Publish immutable review text to an existing milestone | Denied | Denied | Allowed |
 | Create a milestone with its first review | Denied | Denied | Allowed |
@@ -51,8 +52,13 @@ Every operation checks current active identity and project scope. Firebase
 verification supplies the UID; request/token role flags confer no permissions.
 Owner membership supplies client approval authority. Server-computed page
 capabilities control presentation, while writes independently recheck access.
-Colleague invitation/removal, client creation, an admin account UI and operational support policy are still
-unfinished workflows; a permission action in the domain is not a working UI.
+Client creation, account inspection, existing project grant editing and scoped
+Member invitations have working emulator interfaces. Invitation acceptance uses
+a separate verified Firebase identity proof before product provisioning; normal
+portal requests still require active product membership. Synthetic registration
+and email verification grant no project permissions by themselves. Production
+onboarding, invitation delivery, business-wide colleague removal, broader Owner
+delegation and operational support policy remain unfinished.
 
 Approval receipts bind actor, business, project, milestone, exact immutable
 version/digest and server time. Review and feedback histories survive later
@@ -120,3 +126,9 @@ retention, dependency remediation, production recovery and independent integrate
 release review. Passing emulators or a configuration template does not close
 those gates. Continue independent authorised development from the brief; ask the
 founder only for genuinely missing information, access or decisions.
+
+The optional `invitation-http.mjs` adapter is enabled only in the isolated emulator
+application. It uses the shared bounded JSON reader with an 8 KiB request limit.
+Invitation lists show the issuing Owner’s own records for a currently authorised
+project, never raw tokens, token digests, other grant lists or recipient UIDs.
+Pending invitation revocation rechecks all included project permissions.
