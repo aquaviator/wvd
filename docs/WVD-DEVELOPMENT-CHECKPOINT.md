@@ -300,3 +300,17 @@ Previous admin account/editor source 97371d6 passed all four CI jobs and the off
 container (runs 37112653481/37112653484). Account accessibility/isolation coverage
 also passed at the following source, in runs 37112847077/37112847025. Reviewed
 synthetic account controls and source-bound container evidence; no live access used.
+
+### Member invitation preflight — 3 October 2026
+
+The next invitation slice reuses current `manage-colleagues` authorisation at local
+base b034be6. The provider-free contract binds a Member recipient, explicit project
+list and canonical expiry with a digest. Every selected project must belong to
+that business and already be granted to the active Owner. WVD admin status alone
+cannot confer client Owner delegation. Maximum invitation lifetime is required
+caller policy, not an invented company default. Broader Owner delegation remains
+unresolved; this bounded Member path does not claim it was approved.
+
+This preflight does not issue a token, persist an invitation, send an email,
+register a user or grant access. Verified-email redemption, one-time tokens,
+revocation, persistence and delivery are the following integration work.
