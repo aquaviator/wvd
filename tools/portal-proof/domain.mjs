@@ -143,6 +143,13 @@ export class PortalProof {
     const next=structuredClone(this.#state);next.invitations??=[];next.invitations.push(record);this.#state=next;
     return {created:true,invitation:structuredClone(record)};
   }
+  memberInvitationsFor(actorId,projectId) {
+    const project=authorise(this.#state,actorId,projectId,'manage-colleagues'),now=Date.parse(this.#timestamp());
+    return structuredClone({projectId,invitations:(this.#state.invitations??[]).filter(x=>x.actorId===actorId&&x.businessId===project.businessId&&x.projectIds.includes(projectId)).map(record=>{
+      let canRevoke=record.status==='pending';if(canRevoke)try{for(const id of record.projectIds)authorise(this.#state,actorId,id,'manage-colleagues');}catch{canRevoke=false;}
+      return {invitationId:record.id,email:record.email,createdAt:record.createdAt,expiresAt:record.expiresAt,status:record.status,expired:record.status==='pending'&&Date.parse(record.expiresAt)<=now,canRevoke};
+    })});
+  }
   memberInvitationRecord(token) {
     const record=this.#state.invitations?.find(x=>matchesOpaqueToken(token,x.tokenHash));
     if(!record)throw Error('INVALID_INVITATION');return structuredClone(record);
