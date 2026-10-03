@@ -260,7 +260,8 @@ holiday calendar or authenticated provider response.
 
 `google-calendar-evidence.mjs` adapts an explicitly supplied Google API client's
 `freebusy.query` response into the existing evidence contract. It requires the
-complete calendar list, clock, maximum query window and valid E&W holiday data
+complete calendar list, clock, maximum query window, explicit request timeout
+and valid E&W holiday data
 with a source reference. Calendar errors, missing entries, group expansions,
 malformed intervals, narrowed query coverage and outages produce unavailable
 evidence. Supported RFC3339 offsets are normalised to UTC milliseconds; greater
@@ -269,6 +270,14 @@ Observation age starts before the query, so a delayed response is not made fresh
 Only free/busy intervals are projected, with no event titles or error details.
 The parser reuses the shared holiday validator and availability rules. The API
 shape was checked against Google's [Freebusy query reference](https://developers.google.com/workspace/calendar/api/v3/reference/freebusy/query).
+
+`call-screening.mjs` composes this reader with candidate screening. The query
+window covers every supplied 30-minute candidate and both 15-minute margins;
+there is no invented slot grid. Age and notice are checked after the provider
+read. Explicit policy bindings and candidate inputs are copied before awaiting
+responses. Output is provisional slot data only, with no calendar identifiers or
+private provider evidence. Requests have an explicit timeout and no SDK HTTP
+retry; empty/malformed candidate lists cause no Calendar query.
 
 This has synthetic provider-response coverage, not a live availability/booking endpoint.
 Caller-supplied coverage is not proof of current provider data. Live integration
