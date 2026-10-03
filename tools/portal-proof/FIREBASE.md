@@ -258,7 +258,19 @@ by the caller; they are not new founder policy defaults. Strict holiday dates
 and bounded batch input fail closed. Synthetic evidence is not a published
 holiday calendar or authenticated provider response.
 
-This is a pure development check, not a live availability/booking endpoint.
+`google-calendar-evidence.mjs` adapts an explicitly supplied Google API client's
+`freebusy.query` response into the existing evidence contract. It requires the
+complete calendar list, clock, maximum query window and valid E&W holiday data
+with a source reference. Calendar errors, missing entries, group expansions,
+malformed intervals, narrowed query coverage and outages produce unavailable
+evidence. Supported RFC3339 offsets are normalised to UTC milliseconds; greater
+fractional precision is rejected rather than rounded into false availability.
+Observation age starts before the query, so a delayed response is not made fresh.
+Only free/busy intervals are projected, with no event titles or error details.
+The parser reuses the shared holiday validator and availability rules. The API
+shape was checked against Google's [Freebusy query reference](https://developers.google.com/workspace/calendar/api/v3/reference/freebusy/query).
+
+This has synthetic provider-response coverage, not a live availability/booking endpoint.
 Caller-supplied coverage is not proof of current provider data. Live integration
 still needs authenticated Calendar access, an approved complete conflict-calendar
 list, authoritative holiday data, snapshot freshness rules, final conflict

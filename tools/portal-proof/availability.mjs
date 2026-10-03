@@ -18,6 +18,10 @@ const local = ms => {
   return {date:`${p.year}-${p.month}-${p.day}`,weekday:p.weekday,minutes:Number(p.hour)*60+Number(p.minute)+(ms%60000)/60000};
 };
 
+export function validBankHolidayEvidence(evidence) {
+  return Boolean(evidence&&evidence.bankHolidayRegion==='england-and-wales'&&date(evidence.coveredFrom)&&date(evidence.coveredThrough)&&evidence.coveredFrom<=evidence.coveredThrough&&Array.isArray(evidence.bankHolidays)&&new Set(evidence.bankHolidays).size===evidence.bankHolidays.length&&evidence.bankHolidays.every(x=>date(x)&&x>=evidence.coveredFrom&&x<=evidence.coveredThrough));
+}
+
 export function assessCallSlot({start, now, evidence, policy}) {
   const begin=instant(start), current=instant(now), end=begin+30*minute;
   // Ambiguous founder buffer policy is an explicit input, never a hidden default.
@@ -28,7 +32,7 @@ export function assessCallSlot({start, now, evidence, policy}) {
   if(evidence.calendars.some(x=>!x||typeof x!=='object'||Array.isArray(x)))return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
   const ids=evidence.calendars.map(x=>x.id),validId=id=>typeof id==='string'&&Boolean(id.trim())&&id.length<=256;
   if (!ids.every(validId)||!evidence.requiredCalendarIds.every(validId)||new Set(ids).size!==ids.length || new Set(evidence.requiredCalendarIds).size!==evidence.requiredCalendarIds.length || evidence.requiredCalendarIds.some(id=>!ids.includes(id))) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
-  if (evidence.bankHolidayRegion!=='england-and-wales' || !date(evidence.coveredFrom)||!date(evidence.coveredThrough)||evidence.coveredFrom>evidence.coveredThrough||new Set(evidence.bankHolidays).size!==evidence.bankHolidays.length||!evidence.bankHolidays.every(x=>date(x)&&x>=evidence.coveredFrom&&x<=evidence.coveredThrough)) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
+  if (!validBankHolidayEvidence(evidence)) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
   const first=local(begin), last=local(end);
   if (first.date<evidence.coveredFrom || first.date>evidence.coveredThrough) return {available:false,reason:'HOLIDAY_COVERAGE_MISSING'};
   if (begin-current<24*60*minute) return {available:false,reason:'MINIMUM_NOTICE'};
