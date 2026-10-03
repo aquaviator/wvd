@@ -16,9 +16,19 @@ exact tested release. Preserve product/customer isolation.
 ## Implemented development foundation
 
 - Public services/about pages and synthetic hospitality/salon demonstrations.
+- Four practical guides and a public enquiry draft with required contact/need
+  fields, optional timing/budget/website, explicit review and no automatic send.
 - Scoped project views, Owner-only version approval, feedback, tickets and replies.
 - Shared domain with local SQLite and bounded transactional Firestore adapters.
 - Firebase server token checks and trusted revision-checked access provisioning.
+- Admin client/project creation, progress/milestone/review management, scoped
+  account/grant changes and manual ticket triage with atomic audit references.
+- Owner controls for existing Member project grants, one-time Member invitations,
+  private invitation history/revocation, and emulator registration/verification.
+- Product-bound notification planning and fresh Firebase recipient preparation,
+  preserving pending intents; message delivery is not implemented.
+- Shared call rules, bounded Google free/busy evidence adaptation and optional
+  provisional HTTP availability with timing preflight and explicit read capacity.
 - Immutable review text and approval digest binding, with transactional operator
   attribution references (not verified IAM-principal attribution).
 - Client histories preserve approved review text and saved feedback across new
@@ -33,7 +43,8 @@ exact tested release. Preserve product/customer isolation.
 
 Continue from unmet brief criteria, inspecting existing source before building.
 Remaining work includes live Google browser authentication/server runtime access,
-production persistence and migration acceptance, colleague/admin workflows,
+production persistence and migration acceptance, live invitation/onboarding
+delivery and broader Owner delegation policy,
 external deliverable/version binding, notification delivery, Calendar/Meet
 integration, hosting/TLS, monitoring, retention and backup/restore rehearsal.
 Dependency remediation and independent integrated release review remain open.
@@ -403,3 +414,10 @@ exercises the real HTTP application without a session, confirms private portal
 authentication remains enforced, and sanitises upstream errors carrying HTTP
 metadata. The dependency review was refreshed without modifying package pins;
 the current development-toolchain findings remain unresolved release work.
+
+Timing preflight now reuses the final availability assessor's shared timing
+function. Ineligible candidates make no Calendar query; mixed requests query
+only eligible slots plus both conflict margins. Final notice/freshness checks
+still run after provider latency. No alternative slot algorithm or schedule
+grid was added. Synthetic tests cover no-read rejection, narrowed queries and
+loss of eligibility across the minimum-notice boundary during a slow read.

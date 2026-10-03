@@ -128,6 +128,12 @@ They never imply a reservation. The development application enables this adapter
 only when explicitly supplied in isolated Firebase emulator mode. No live
 Calendar credentials, public site endpoint or holiday source is configured.
 
+Screening uses the same timing rules for a cheap preflight before Calendar reads.
+Past/short-notice, weekend, outside-hours, supplied holiday and uncovered dates
+are removed before computing the query window. It repeats these timing checks
+after the provider returns, so request delay cannot extend the notice boundary.
+This reduces unnecessary reads; it is not a rate limiter or a reservation.
+
 The executable development foundation is not production readiness. Outstanding
 work includes live browser authentication and server credentials, colleague invitation and
 verified account onboarding, external artifact/preview binding,

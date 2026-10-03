@@ -22,6 +22,26 @@ export function validBankHolidayEvidence(evidence) {
   return Boolean(evidence&&evidence.bankHolidayRegion==='england-and-wales'&&date(evidence.coveredFrom)&&date(evidence.coveredThrough)&&evidence.coveredFrom<=evidence.coveredThrough&&Array.isArray(evidence.bankHolidays)&&new Set(evidence.bankHolidays).size===evidence.bankHolidays.length&&evidence.bankHolidays.every(x=>date(x)&&x>=evidence.coveredFrom&&x<=evidence.coveredThrough));
 }
 
+function timing(begin,current,evidence,policy) {
+  const end=begin+30*minute,first=local(begin),last=local(end);
+  if(first.date<evidence.coveredFrom||first.date>evidence.coveredThrough)return {available:false,reason:'HOLIDAY_COVERAGE_MISSING'};
+  if(begin-current<24*60*minute)return {available:false,reason:'MINIMUM_NOTICE'};
+  if(['Sat','Sun'].includes(first.weekday))return {available:false,reason:'OUTSIDE_HOURS'};
+  const edge=policy.bufferBoundary==='inside-hours'?15:0;
+  if(first.date!==last.date||first.minutes<9*60+edge||last.minutes>18*60-edge)return {available:false,reason:'OUTSIDE_HOURS'};
+  if(evidence.bankHolidays.includes(first.date))return {available:false,reason:'BANK_HOLIDAY'};
+  return {available:true};
+}
+// Cheap preflight only. Eligibility never establishes calendar availability.
+// The final assessor invokes the same rules again after the provider read.
+export function assessCallTiming({start,now,holidayEvidence,policy}) {
+  const begin=instant(start),current=instant(now);
+  if(!policy||!['inside-hours','between-events'].includes(policy.bufferBoundary)||!Number.isFinite(policy.maxEvidenceAgeMs)||policy.maxEvidenceAgeMs<0)throw Error('INVALID_POLICY');
+  if(!validBankHolidayEvidence(holidayEvidence))return {eligible:false,reason:'EVIDENCE_UNAVAILABLE'};
+  const result=timing(begin,current,holidayEvidence,policy);
+  return {eligible:result.available,...(result.reason?{reason:result.reason}:{})};
+}
+
 export function assessCallSlot({start, now, evidence, policy}) {
   const begin=instant(start), current=instant(now), end=begin+30*minute;
   // Ambiguous founder buffer policy is an explicit input, never a hidden default.
@@ -33,13 +53,7 @@ export function assessCallSlot({start, now, evidence, policy}) {
   const ids=evidence.calendars.map(x=>x.id),validId=id=>typeof id==='string'&&Boolean(id.trim())&&id.length<=256;
   if (!ids.every(validId)||!evidence.requiredCalendarIds.every(validId)||new Set(ids).size!==ids.length || new Set(evidence.requiredCalendarIds).size!==evidence.requiredCalendarIds.length || evidence.requiredCalendarIds.some(id=>!ids.includes(id))) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
   if (!validBankHolidayEvidence(evidence)) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
-  const first=local(begin), last=local(end);
-  if (first.date<evidence.coveredFrom || first.date>evidence.coveredThrough) return {available:false,reason:'HOLIDAY_COVERAGE_MISSING'};
-  if (begin-current<24*60*minute) return {available:false,reason:'MINIMUM_NOTICE'};
-  if (['Sat','Sun'].includes(first.weekday)) return {available:false,reason:'OUTSIDE_HOURS'};
-  const edge=policy.bufferBoundary==='inside-hours'?15:0;
-  if (first.date!==last.date || first.minutes<9*60+edge || last.minutes>18*60-edge) return {available:false,reason:'OUTSIDE_HOURS'};
-  if (evidence.bankHolidays.includes(first.date)) return {available:false,reason:'BANK_HOLIDAY'};
+  const eligibility=timing(begin,current,evidence,policy);if(!eligibility.available)return eligibility;
   for (const calendar of evidence.calendars) {
     if (calendar.status!=='ok' || !Array.isArray(calendar.busy)) return {available:false,reason:'EVIDENCE_UNAVAILABLE'};
     // Empty busy results are useful only for the exact interval actually queried.
