@@ -302,3 +302,22 @@ the revision read from the same Firestore document. It omits other memberships,
 admin flags and account credentials. This privileged read does not query current
 Firebase Auth status or create an audit record. A subsequent change still checks
 revision and required Auth state; save output only in an authorised private place.
+
+### Admin project-access editing
+
+The WVD administration overview now loads accounts for a selected existing client
+and offers project checkboxes. It uses the same project-list contract as the
+trusted operator updater, preserving the existing role, product identity status,
+membership activation and WVD admin flags. Clearing all projects removes grants;
+it does not delete or reactivate the account. A disabled/revoked membership can
+lose access, but cannot receive new grants.
+
+The selected Google backend performs the existing fresh Firebase Admin SDK user
+check before added grants, outside transaction callbacks. Current admin capability
+is checked before the Auth read and again during the commit. The account list and
+revision come from one aggregate read; changes after that read cause a conflict
+and require refresh. Audit attribution uses the server-verified portal actor ID
+and records previous/new projects atomically. A no-op adds no audit or revision.
+The local development adapter reuses domain/audit checks but does not establish
+Firebase Auth verification. There is no role change, new client/account creation
+or Owner invitation workflow here. Legacy trusted operator commands remain private.

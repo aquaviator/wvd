@@ -2,6 +2,7 @@ import {reviewDigest} from './review.mjs';
 import {progressDigest} from './progress.mjs';
 import {careAssessments,ticketTriageDigest} from './triage.mjs';
 import {accessGrant} from './access.mjs';
+import {adminAccessRequest} from './admin-access.mjs';
 // Provider-free executable model. This is not an authentication service or database.
 const denied = () => { throw new Error('ACCESS_DENIED'); };
 const actions = new Set(['view', 'feedback', 'ticket', 'approve', 'manage-colleagues', 'manage-progress', 'manage-reviews', 'manage-support']);
@@ -117,6 +118,11 @@ export class PortalProof {
     next.memberships.push({actorId:uid,businessId,role,projectIds,active:true,provisionedAt:timestamp});
     this.#state=next;
     return {created:true,identityId:uid,businessId,role,projectIds};
+  }
+  updateAccessAsAdmin(request) {
+    const {actorId,expectedRevision,...grant}=adminAccessRequest(request);
+    if(!this.workspaceAccess(actorId).admin)denied();
+    return this.updateAccess(grant);
   }
   // Trusted operator only. Existing business role, activation and admin flags stay intact.
   updateAccess(request) {

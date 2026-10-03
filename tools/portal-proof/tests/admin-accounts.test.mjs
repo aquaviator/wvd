@@ -23,5 +23,5 @@ test('Account read uses verified actor, exact GET schema and no-store responses'
  for(const [patch,status] of [[{sessionToken:'owner'},403],[{sessionToken:null},401],[{method:'POST'},405],[{rawBody:JSON.stringify({businessId:'b',actorId:'admin'})},400],[{rawBody:JSON.stringify({businessId:'missing'})},403]])assert.equal((await handle({...request,...patch})).status,status);
 });
 test('Durable account inspection retains scope and creates no revision or data change',()=>{
- const portal=new DurablePortal(':memory:',state(),clock);try{const before=portal.snapshot();assert.deepEqual(portal.adminAccounts('admin','b'),new PortalProof(before,clock).adminAccounts('admin','b'));assert.deepEqual(portal.snapshot(),before);}finally{portal.close();}
+ const portal=new DurablePortal(':memory:',state(),clock);try{const before=portal.snapshot();assert.deepEqual(portal.adminAccounts('admin','b'),{...new PortalProof(before,clock).adminAccounts('admin','b'),revision:0});assert.deepEqual(portal.snapshot(),before);}finally{portal.close();}
 });

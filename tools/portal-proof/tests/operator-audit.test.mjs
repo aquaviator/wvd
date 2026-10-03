@@ -71,3 +71,13 @@ test('Access inspection binds grants to one document revision and returns only s
 test('Firestore admin account read checks current capability and leaves aggregate unchanged',async()=>{
  const s=setup(),state=seed();state.identities=[{id:'admin',active:true,wvdAdmin:true}];await s.portal.initialize(state);await s.portal.provisionAccess(grant,0,context);const before=s.raw();assert.equal((await s.portal.adminAccounts('admin','b')).accounts[0].accountId,'o');assert.deepEqual(s.raw(),before);await assert.rejects(()=>s.portal.adminAccounts('o','b'),/ACCESS_DENIED/);
 });
+
+test('Firestore admin access updates recheck capability and atomically audit despite transaction retries',async()=>{
+ const s=setup(),state=seed();state.projects.push({id:'q',businessId:'b'});state.identities=[{id:'admin',active:true,wvdAdmin:true}];await s.portal.initialize(state);await s.portal.provisionAccess(grant,0,context);
+ const request={actorId:'admin',...grant,projectIds:['p','q'],expectedRevision:1};await s.portal.updateAccessAsAdmin(request);const after=s.raw(),saved=await s.portal.snapshot();assert.equal(saved.operatorAudit.length,2);assert.equal(saved.operatorAudit.at(-1).operatorRef,'admin');assert.deepEqual(saved.operatorAudit.at(-1).previousProjectIds,['p']);assert.equal((await s.portal.adminAccounts('admin','b')).revision,2);
+ await assert.rejects(()=>s.portal.updateAccessAsAdmin(request),/ACCESS_REVISION_CONFLICT/);await assert.rejects(()=>s.portal.updateAccessAsAdmin({...request,actorId:'o'}),/ACCESS_DENIED/);assert.deepEqual(s.raw(),after);
+});
+
+test('Admin access capacity failure preserves permissions and audit together',async()=>{
+ const {MAX_STATE_BYTES}=await import('../firestore.mjs'),{PortalProof}=await import('../domain.mjs');const s=setup(),raw=seed();raw.identities=[{id:'admin',active:true,wvdAdmin:true},{id:'o',active:true}];raw.memberships=[{actorId:'o',businessId:'b',role:'Owner',active:true,projectIds:['p']}];const state=new PortalProof(raw,()=> '2026-10-03T10:00:00Z').snapshot();state.projects[0].padding='';state.projects[0].padding='x'.repeat(MAX_STATE_BYTES-Buffer.byteLength(JSON.stringify(state))-100);await s.portal.initialize(state);const before=s.raw();await assert.rejects(()=>s.portal.updateAccessAsAdmin({actorId:'admin',...grant,projectIds:[],expectedRevision:0}),/STATE_CAPACITY/);assert.deepEqual(s.raw(),before);
+});

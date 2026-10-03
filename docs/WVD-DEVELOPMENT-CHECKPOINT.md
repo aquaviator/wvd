@@ -269,3 +269,17 @@ Owner/Member requests and disabled admins are denied; no-store reads do not
 mutate aggregate state. UI clears account data with the existing sign-out flow
 and ignores results after sign-out or overview replacement. Current Firebase
 Auth status, invitations and access editing remain separate work.
+
+### Admin project-access editing — 3 October 2026
+
+The account overview now supports explicit project assignment/removal for existing
+client memberships. Reused `accessGrant`, `updateAccess` and Firebase SDK verification
+from local base 963f96d; no new account/provider/subscription flow is introduced.
+SQLite and Firestore bind the displayed revision to the account read and commit
+permission updates plus before/after audit atomically. Attribution is the current
+server session actor; client-supplied actor/operator fields are rejected. Revoked
+admins, stale revisions, role changes and cross-client grants are denied. Added
+grants require a fresh verified enabled Firebase target; removal-only updates
+remain possible for disabled/deleted Auth accounts. Browser verification assigns
+a newly created project to a Member and then checks visibility after client login
+without approval capability. Owner invitations and client onboarding remain open.

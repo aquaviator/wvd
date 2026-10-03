@@ -1,3 +1,4 @@
+import {adminAccessRequest} from './admin-access.mjs';
 import {accessGrant} from './access.mjs';
 // Trusted operator APIs, never attached to a client HTTP route. They use the
 // explicitly bound Auth/Firestore instances of the selected Google backend.
@@ -33,5 +34,18 @@ export function createFirebaseAccessUpdater({auth,portal}) {
     // Removal-only changes work even when Auth has disabled/deleted the account.
     // Commit rechecks the exact aggregate revision and existing role/scope.
     return portal.updateAccess(grant,expectedRevision,context);
+  };
+}
+
+// Firebase SDK work stays outside retryable database transactions. The adapter
+// checks current admin capability again when committing the audited mutation.
+export function createFirebaseAdminAccessUpdater({auth,portal}) {
+  if(typeof auth?.getUser!=='function'||typeof portal?.updateAccessAsAdmin!=='function'||typeof portal?.workspaceAccess!=='function'||typeof portal?.snapshot!=='function')throw Error('INVALID_CONFIGURATION');
+  const commit=portal.updateAccessAsAdmin.bind(portal);
+  return async request=>{
+    const {actorId,expectedRevision,...grant}=adminAccessRequest(request);
+    if(!(await portal.workspaceAccess(actorId)).admin)throw Error('ACCESS_DENIED');
+    const update=createFirebaseAccessUpdater({auth,portal:{snapshot:()=>portal.snapshot(),updateAccess:(checked,revision)=>commit({actorId,expectedRevision:revision,...checked})}});
+    return update(grant,expectedRevision);
   };
 }

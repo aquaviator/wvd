@@ -3,6 +3,7 @@ const schemas = {
   'workspace-access': [],
   'admin-overview': [],
   'admin-accounts': ['businessId'],
+  'admin-update-access': ['uid','businessId','role','projectIds','expectedRevision'],
   'update-progress': ['projectId','stage','nextStep','expectedDigest','operationId'],
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
   'create-milestone': ['projectId','milestoneId','versionId','title','body'],
@@ -35,10 +36,10 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     if(input?.reviewDigest!==undefined && !/^[a-f0-9]{64}$/.test(input.reviewDigest))return response(400,{error:'INVALID_REQUEST'});
     if (!input || Array.isArray(input) || typeof input !== 'object' ||
         Object.keys(input).length !== fields.length ||
-        !fields.every(key => Object.hasOwn(input, key) && typeof input[key] === 'string' && input[key].length > 0)) {
+        !fields.every(key => Object.hasOwn(input,key)&&(action==='admin-update-access'&&key==='projectIds'?Array.isArray(input[key])&&input[key].length<=50&&input[key].every(id=>typeof id==='string'&&id.length>0&&id.length<=128):action==='admin-update-access'&&key==='expectedRevision'?Number.isSafeInteger(input[key])&&input[key]>=0:typeof input[key]==='string'&&input[key].length>0))) {
       return response(400, {error:'INVALID_REQUEST'});
     }
-    for (const key of fields.filter(key => !['body','subject','type','stage','nextStep','title','note'].includes(key))) {
+    for (const key of fields.filter(key => !['body','subject','type','stage','nextStep','title','note','projectIds','expectedRevision'].includes(key))) {
       if (input[key].length > 128) return response(400, {error:'INVALID_REQUEST'});
     }
     try {
@@ -49,6 +50,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         'workspace-access': () => portal.workspaceAccess(session.actorId),
         'admin-overview': () => portal.adminOverview(session.actorId),
         'admin-accounts': () => portal.adminAccounts(session.actorId,input.businessId),
+        'admin-update-access': () => portal.updateAccessAsAdmin(request),
         'update-progress': () => portal.updateProjectProgress(request),
         'publish-review': () => portal.publishReviewAsAdmin(request),
         'create-milestone': () => portal.createMilestoneAsAdmin(request),
@@ -66,9 +68,9 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
       return response(200, await operations[action]());
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
-      if (['ACCESS_DENIED','BUSINESS_SCOPE_DENIED'].includes(message)) return response(403, {error:'ACCESS_DENIED'});
-      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT','TRIAGE_CONFLICT'].includes(message)) return response(409, {error:message});
-      if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS','INVALID_TRIAGE'].includes(message)) return response(400, {error:message});
+      if (['ACCESS_DENIED','BUSINESS_SCOPE_DENIED','PROJECT_SCOPE_DENIED','IDENTITY_DISABLED','ACCESS_REVOKED','ACCESS_MEMBERSHIP_REQUIRED','VERIFIED_FIREBASE_USER_REQUIRED','FIREBASE_USER_REQUIRED'].includes(message)) return response(403, {error:'ACCESS_DENIED'});
+      if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT','TRIAGE_CONFLICT','ACCESS_REVISION_CONFLICT','ACCESS_ROLE_CONFLICT'].includes(message)) return response(409, {error:message});
+      if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS','INVALID_TRIAGE','INVALID_ACCESS_GRANT','ACCESS_REVISION_REQUIRED'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }
   };

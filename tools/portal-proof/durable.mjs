@@ -1,3 +1,4 @@
+import {adminAccessAudit,adminAccessRequest} from './admin-access.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { PortalProof } from './domain.mjs';
 
@@ -32,25 +33,31 @@ export class DurablePortal {
     try { return validate(JSON.parse(row.state_json)); }
     catch { throw new Error('CORRUPT_PORTAL_STATE'); }
   }
-  #run(method, args) {
+  #run(method, args, expectedRevision) {
     this.#db.exec('BEGIN IMMEDIATE');
     try {
       const row = this.#db.prepare('SELECT revision, state_json FROM portal_state WHERE id = 1').get();
       const proof = new PortalProof(this.#decode(row), this.#clock);
+      if(method==='updateAccessAsAdmin'&&!proof.workspaceAccess(args[0].actorId).admin)throw Error('ACCESS_DENIED');
+      if(expectedRevision!==undefined&&row.revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
       const before = JSON.stringify(proof.snapshot());
       const result = proof[method](...args);
-      const after = JSON.stringify(validate(proof.snapshot()));
+      const next=proof.snapshot();
+      if(method==='updateAccessAsAdmin'&&JSON.stringify(next)!==before){next.operatorAudit??=[];next.operatorAudit.push(adminAccessAudit(result,args[0].actorId,row.revision+1,this.#clock()));}
+      const after = JSON.stringify(validate(next));
       if (after !== before) {
         if (row.revision >= Number.MAX_SAFE_INTEGER) throw new Error('REVISION_EXHAUSTED');
         this.#db.prepare('UPDATE portal_state SET revision = ?, state_json = ? WHERE id = 1').run(row.revision + 1, after);
       }
       this.#db.exec('COMMIT');
+      if(method==='adminAccounts')result.revision=row.revision;
       return result;
     } catch (error) { this.#db.exec('ROLLBACK'); throw error; }
   }
   close() { this.#db.close(); }
   publishReview(...args) { return this.#run('publishReview', args); }
   provisionAccess(...args) { return this.#run('provisionAccess', args); }
+  updateAccessAsAdmin(request) { const input=adminAccessRequest(request);return this.#run('updateAccessAsAdmin',[input],input.expectedRevision); }
   updateAccess(...args) { return this.#run('updateAccess', args); }
   snapshot() { return this.#run('snapshot', []); }
   projectsFor(...args) { return this.#run('projectsFor', args); }

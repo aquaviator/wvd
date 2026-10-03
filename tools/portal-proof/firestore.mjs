@@ -1,3 +1,4 @@
+import {adminAccessAudit,adminAccessRequest} from './admin-access.mjs';
 import {inspectAccess} from './access.mjs';
 import {operatorContext} from './operator-audit.mjs';
 import {PortalProof} from './domain.mjs';
@@ -49,11 +50,13 @@ export class FirestorePortal {
     const timestamp=this.#clock();
     return this.#db.runTransaction(async transaction=>{
       const document=await transaction.get(this.#ref),{state,revision}=decode(document);
-      if(expectedRevision!==undefined&&revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
       const model=new PortalProof(state,()=>timestamp),before=encode(model.snapshot());
+      if(method==='updateAccessAsAdmin'&&!model.workspaceAccess(args[0].actorId).admin)throw Error('ACCESS_DENIED');
+      if(expectedRevision!==undefined&&revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
       const result=model[method](...args),next=model.snapshot();
       if(encode(next)!==before) {
         if(revision>=Number.MAX_SAFE_INTEGER)throw Error('REVISION_EXHAUSTED');
+        if(method==='updateAccessAsAdmin'){next.operatorAudit??=[];next.operatorAudit.push(adminAccessAudit(result,args[0].actorId,revision+1,timestamp));}
         if(audit) {
           const target=['provisionAccess','updateAccess'].includes(method)?{uid:result.identityId,businessId:result.businessId,role:result.role,projectIds:result.projectIds,...(method==='updateAccess'?{previousProjectIds:result.previousProjectIds}:{})}:{projectId:result.projectId,milestoneId:result.milestoneId,versionId:result.versionId,digest:result.digest};
           next.operatorAudit??=[];
@@ -61,6 +64,7 @@ export class FirestorePortal {
         }
         transaction.update(this.#ref,{stateJson:encode(next),revision:revision+1});
       }
+      if(method==='adminAccounts')result.revision=revision;
       return result;
     },{maxAttempts:5});
   }
@@ -83,6 +87,10 @@ export class FirestorePortal {
   async provisionAccess(request,expectedRevision,context) {
     if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
     return this.#run('provisionAccess',[structuredClone(request)],expectedRevision,operatorContext(context));
+  }
+  async updateAccessAsAdmin(request) {
+    const input=adminAccessRequest(request);
+    return this.#run('updateAccessAsAdmin',[input],input.expectedRevision);
   }
   async updateAccess(request,expectedRevision,context) {
     if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
