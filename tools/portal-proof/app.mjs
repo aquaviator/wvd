@@ -21,6 +21,7 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
   }
   if(invitations!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
   const invitationHandler=invitations===undefined?null:createInvitationHandler({invitations,allowedOrigin});
+  if(invitationHandler)authConfig.invitationsEnabled=true;
   const portalHandler=createPortalHandler({portal,allowedOrigin,resolveSession:raw=>auth.resolveSession(raw)});
   const server=createServer({maxHeaderSize:16384},async (request,response) => {
     const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',

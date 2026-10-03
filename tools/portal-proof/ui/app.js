@@ -1,10 +1,10 @@
 import {createAuthClient} from './auth-client.js';
-let authClient;
+let authClient,invitationsEnabled=false,pendingMemberInvite=null;
 const el=id=>document.getElementById(id);
 let sessionToken=null,revision=0,adminAccess=false,displayedProjectId=null;
 const reviewTime=value=>new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(value))+' (UK time)';
 const status=message=>{el('status').textContent=message;};
-const messages={CLIENT_CONFLICT:'That client already exists. Refresh the overview and add projects to the existing client.',ACCESS_REVISION_CONFLICT:'Account access has changed. Refresh the account list before saving.',ACCESS_ROLE_CONFLICT:'The account role has changed. Refresh the account list before saving.',TRIAGE_CONFLICT:'The ticket assessment has changed. Reload the project before saving.',PROJECT_CONFLICT:'That project name is already in use. Reload the client overview before creating another project.',MILESTONE_CONFLICT:'That milestone already exists. Reload the project and use its review workflow.',REVIEW_IMMUTABLE:'That version already has different review content. Use a new version identifier.',PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
+const messages={INVITATION_DENIED:'This invitation cannot be accepted. Check the invited email or ask the Owner for a new invitation.',INVITATION_CONFLICT:'This invitation has changed. Ask the Owner for a new invitation.',CLIENT_CONFLICT:'That client already exists. Refresh the overview and add projects to the existing client.',ACCESS_REVISION_CONFLICT:'Account access has changed. Refresh the account list before saving.',ACCESS_ROLE_CONFLICT:'The account role has changed. Refresh the account list before saving.',TRIAGE_CONFLICT:'The ticket assessment has changed. Reload the project before saving.',PROJECT_CONFLICT:'That project name is already in use. Reload the client overview before creating another project.',MILESTONE_CONFLICT:'That milestone already exists. Reload the project and use its review workflow.',REVIEW_IMMUTABLE:'That version already has different review content. Use a new version identifier.',PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
 function signedOut(){sessionToken=null;adminAccess=false;displayedProjectId=null;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
 async function api(path,body,method='POST'){
   const headers={};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
@@ -94,7 +94,18 @@ async function project(){
       if(!account.identityActive||!account.membershipActive)card.append(node('p','Portal access is disabled or revoked. New grants are unavailable.'));
       form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/update-colleague-access',{projectId:id,uid:account.accountId,grant:!account.hasProjectAccess,expectedRevision:colleagues.revision});if(generation!==revision||!sessionToken)return;await project();status('Colleague project access saved.');});});card.append(form);details.append(card);
     }
-    if(!colleagues.accounts.length)details.append(node('p','No Member accounts are recorded for this client. Invitation handling is not yet available.'));box.append(details);
+    if(!colleagues.accounts.length)details.append(node('p','No Member accounts are recorded for this client.'));
+    if(invitationsEnabled){
+      const form=document.createElement('form');form.className='member-invitation';form.append(node('h3','Invite a Member to this project'));
+      const email=document.createElement('input');email.type='email';email.required=true;email.maxLength=320;
+      const expiry=document.createElement('input');expiry.type='datetime-local';expiry.required=true;
+      for(const [text,input]of [['Member email',email],['Invitation expiry (your local time)',expiry]]){const label=node('label',text);label.append(input);form.append(label);}
+      form.append(node('p','The recipient must sign in with a verified Firebase account matching this email. This grants Member access to this project. No email is sent.'),node('button','Create Member invitation'));
+      const resultBox=node('div','');form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{resultBox.replaceChildren();const result=await api('/api/invitations/create',{businessId:colleagues.businessId,email:email.value,projectIds:[id],expiresAt:new Date(expiry.value).toISOString(),operationId:crypto.randomUUID()});if(generation!==revision||!sessionToken||!details.isConnected)return;resultBox.append(node('p',`Invitation expires ${reviewTime(result.expiresAt)}.`));
+        if(result.token){const link=location.origin+'/#member-invite='+result.token;const copy=node('button','Copy invitation link');copy.type='button';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(link);status('Invitation link copied. Share it with the invited colleague.');}catch{status('Clipboard access is unavailable. Revoke this invitation and try again in a supported browser.');}});resultBox.append(copy);}
+        const revoke=node('button','Revoke this invitation');revoke.type='button';revoke.addEventListener('click',async()=>{revoke.disabled=true;try{await api('/api/invitations/revoke',{invitationId:result.invitationId});resultBox.replaceChildren(node('p','Invitation revoked.'));status('Invitation revoked.');}catch(error){status(error.message);revoke.disabled=false;}});resultBox.append(revoke);status('Member invitation created. Copy the link now; it is not retained after leaving this view.');
+      });});details.append(form,resultBox);
+    }box.append(details);
   }
   if(overview.progressHistory.length){const history=document.createElement('details');history.append(node('summary','Progress history'));for(const item of overview.progressHistory)history.append(node('p',`${reviewTime(item.timestamp)} — ${item.stage}`),node('p',item.nextStep));box.append(history);}
   if(adminAccess){
@@ -166,22 +177,24 @@ async function project(){
     }catch(error){status(error.message);open.disabled=false;}});card.append(open);el('tickets').append(card);
   }
 }
-el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();let projects;try{projects=await read('projects',{});}catch(error){signedOut();throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':'No projects are assigned to your account.');await administration();await project();});});
+el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();let projects;try{if(pendingMemberInvite){if(!invitationsEnabled)throw Error('Invitation acceptance is unavailable.');await api('/api/invitations/redeem',{token:pendingMemberInvite});pendingMemberInvite=null;}projects=await read('projects',{});}catch(error){signedOut();throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':'No projects are assigned to your account.');await administration();await project();});});
 el('redeem').addEventListener('submit',event=>{event.preventDefault();busy(el('redeem'),async()=>{await authClient.redeem(Object.fromEntries(new FormData(el('redeem'))));el('redeem').reset();el('invite-panel').open=false;status('Password set. You can now sign in.');});});
 el('logout').addEventListener('click',async()=>{try{await authClient.logout();signedOut();status('Signed out.');}catch(error){status(error.message);}});
 el('projects').addEventListener('change',()=>{project().catch(error=>status(error.message));});
 el('ticket').addEventListener('submit',event=>{event.preventDefault();busy(el('ticket'),async()=>{await api('/api/portal/ticket',{...Object.fromEntries(new FormData(el('ticket'))),projectId:projectId(),operationId:crypto.randomUUID()});el('ticket').reset();status('Ticket saved.');await project();});});
 // Tokens are held in memory only. An optional invitation fragment is removed
 // immediately so it cannot appear in subsequent page/referrer URLs.
+if(location.hash.startsWith('#member-invite=')){const code=location.hash.slice(15);history.replaceState(null,'',location.pathname);if(/^[A-Za-z0-9_-]{43}$/.test(code))pendingMemberInvite=code;}
 if(location.hash.startsWith('#invite=')){const code=location.hash.slice(8);history.replaceState(null,'',location.pathname);if(/^[A-Za-z0-9_-]{43}$/.test(code)){el('redeem').elements.invitationToken.value=code;el('invite-panel').open=true;}}
 
 try {
   const config=await api('/auth-config.json',null,'GET');
-  authClient=createAuthClient(config,{request:api});
+  const {invitationsEnabled:enabled,...authConfig}=config;invitationsEnabled=enabled===true;
+  authClient=createAuthClient(authConfig,{request:api});
   if(config.mode==='firebase-emulator'){
     el('invite-panel').hidden=true;
     el('account').querySelector('h1').textContent='Development project workspace';
-    status('Firebase emulator: synthetic development accounts only.');
+    status(pendingMemberInvite?'Sign in with the verified email account named in your Member invitation.':'Firebase emulator: synthetic development accounts only.');
   }
   el('login').querySelector('button').disabled=false;
 } catch { status('Sign-in is unavailable. Please try again later.'); }

@@ -65,7 +65,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  const {chromium}=await import('@playwright/test');
  const {createApplication}=await import('../app.mjs');
  const suffix=randomUUID(),uid='browser-'+suffix,email=uid+'@example.test',password='Synthetic-browser-123!';
- const browserConfig={...config,productId:'browser-'+suffix},backend=createFirebaseBackend(browserConfig);
+ const browserConfig={...config,productId:'browser-'+suffix},backend=createFirebaseBackend(browserConfig,{invitationPolicy:{ref:'synthetic-browser-hour',maxLifetimeMs:3600000}});
  t.after(()=>backend.close());
  const state=fixture();state.identities[0].id=uid;state.memberships[0].actorId=uid;const adminUid='admin-'+suffix;state.identities.find(x=>x.id==='admin').id=adminUid;
  await backend.portal.initialize(state);
@@ -74,7 +74,7 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  t.after(()=>deleteApp(app));
  await auth.createUser({uid,email,emailVerified:true,password});
  const unprovisioned='unprovisioned-'+suffix;await auth.createUser({uid:unprovisioned,email:unprovisioned+'@example.test',emailVerified:true,password});
- const origin='http://127.0.0.1:4703',server=createApplication({portal:backend.portal,auth:{resolveSession:backend.resolveSession},allowedOrigin:origin,firebaseEmulator:browserConfig});
+ const origin='http://127.0.0.1:4703',server=createApplication({portal:backend.portal,auth:{resolveSession:backend.resolveSession},allowedOrigin:origin,firebaseEmulator:browserConfig,invitations:backend.invitations});
  await new Promise(resolve=>server.listen(4703,'127.0.0.1',resolve));
  t.after(async()=>{server.closeIdleConnections();await new Promise(resolve=>server.close(resolve));});
  assert.equal((await fetch(origin+'/api/auth/login',{method:'POST'})).status,404);
@@ -124,6 +124,14 @@ test('real browser Firebase emulator sign-in, trusted provisioning, approval and
  assert.equal(await page.locator('.approval-record').getByText('Review the heading, navigation and contact form before approving this version.',{exact:true}).count(),1);
  await capture('owner-milestone-approved');
  await page.locator('.colleague-access summary').click();const colleague=page.locator('.colleague-access article').filter({has:page.getByRole('heading',{name:'Member account: member',exact:true})});await colleague.getByRole('button',{name:'Remove this project',exact:true}).click();await page.waitForFunction(()=>document.getElementById('status').textContent==='Colleague project access saved.');assert.equal((await backend.portal.snapshot()).memberships.find(x=>x.actorId==='member'&&x.businessId==='b').projectIds.includes('p'),false);assert.equal((await backend.portal.snapshot()).operatorAudit.at(-1).operatorRef,uid);await page.locator('.colleague-access summary').click();await colleague.getByRole('button',{name:'Grant this project',exact:true}).click();await page.waitForFunction(()=>document.getElementById('status').textContent==='Colleague project access saved.');assert.equal((await backend.portal.snapshot()).memberships.find(x=>x.actorId==='member'&&x.businessId==='b').projectIds.includes('p'),true);await page.locator('.colleague-access summary').click();await capture('owner-colleague-access-saved','.colleague-access');
+ const invitedUid='invited-browser-'+suffix,invitedEmail=invitedUid+'@example.test';await auth.createUser({uid:invitedUid,email:invitedEmail,emailVerified:true,password});
+ const invitationForm=page.locator('.member-invitation');await invitationForm.getByLabel('Member email').fill(invitedEmail);
+ const expiry=new Date(Date.now()+15*60000),localExpiry=new Date(expiry.getTime()-expiry.getTimezoneOffset()*60000).toISOString().slice(0,16);await invitationForm.getByLabel('Invitation expiry (your local time)',{exact:true}).fill(localExpiry);
+ const invitationResponse=page.waitForResponse(r=>r.url()===origin+'/api/invitations/create'&&r.request().method()==='POST');await invitationForm.getByRole('button',{name:'Create Member invitation',exact:true}).click();const invitation=await (await invitationResponse).json();assert.match(invitation.token,/^[A-Za-z0-9_-]{43}$/);
+ await page.getByRole('button',{name:'Copy invitation link',exact:true}).waitFor();assert.equal((await page.locator('body').innerText()).includes(invitation.token),false);await capture('owner-member-invitation','.colleague-access');
+ await page.getByRole('button',{name:'Sign out',exact:true}).click();await page.goto(origin+'/#member-invite='+invitation.token);await page.waitForFunction(()=>location.hash==='');assert.equal((await page.locator('body').innerText()).includes(invitation.token),false);
+ await page.locator('#login').getByLabel('Email').fill(invitedEmail);await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();await page.getByText('m — approved').waitFor();assert.equal(await page.locator('.colleague-access').count(),0);assert.equal((await backend.portal.snapshot()).memberships.find(x=>x.actorId===invitedUid).role,'Member');assert.equal((await backend.portal.snapshot()).invitations.find(x=>x.id===invitation.invitationId).status,'redeemed');await capture('invited-member-project');
+ await page.getByRole('button',{name:'Sign out',exact:true}).click();await page.locator('#login').getByLabel('Email').fill(email);await page.locator('#login').getByLabel('Password',{exact:true}).fill(password);await page.locator('#login button').click();await page.getByText('m — approved').waitFor();
  assert.deepEqual(await page.evaluate(()=>[Object.keys(localStorage),Object.keys(sessionStorage)]),[[],[]]);
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  assert.equal(await page.locator('#workspace').isVisible(),false);

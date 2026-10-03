@@ -390,7 +390,11 @@ An optional HTTP adapter exposes create, redeem and revoke operations only when
 explicitly supplied to the isolated emulator application. It enforces bearer
 authentication, exact input schemas, same-origin POST requests, an 8 KiB body
 limit and no-store responses. Tokens in query strings and caller-supplied actors
-are rejected. The browser registration flow and email delivery are not connected. They create no Firebase Auth users and send no
+are rejected. The emulator demo provides Owner link creation/revocation and invitation
+acceptance during sign-in for an existing verified Firebase account. The link is
+held in memory, copied only on request, and removed from the incoming URL
+fragment immediately. No raw token is rendered or persisted in browser storage.
+New Auth account registration and email delivery are not connected. They create no Firebase Auth users and send no
 messages. Invitation policy, registration/email verification, abuse controls,
 retention and delivery still need binding before live onboarding. Normal portal
 requests continue to require the active product identity and project permissions.
