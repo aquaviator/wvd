@@ -314,3 +314,17 @@ unresolved; this bounded Member path does not claim it was approved.
 This preflight does not issue a token, persist an invitation, send an email,
 register a user or grant access. Verified-email redemption, one-time tokens,
 revocation, persistence and delivery are the following integration work.
+
+### Owner Member-project access — 3 October 2026
+
+Reused current `manage-colleagues`, verified Firebase access updating and the
+shared transactional audit projection at local base fa1872f. An active Owner with
+an explicit selected-project grant may change that project's access for an existing
+Member in the same business. Other projects/memberships, roles and activation are
+preserved. The scoped read/success response omits other project names and audit
+lists; unsupported internal helpers have no HTTP route. Added grants require a
+fresh verified target. Authority is rechecked after SDK lookup and during commit;
+removal-only changes do not depend on target Auth availability. The browser slice
+removes/restores a synthetic Member grant and checks Member controls remain absent.
+This does not create an account, change another Owner, revoke business-wide access
+or complete invitation issuance/delivery. Broader Owner delegation remains open.

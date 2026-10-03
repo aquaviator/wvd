@@ -1,3 +1,4 @@
+import {colleagueAccessRequest} from './colleague-access.mjs';
 import {adminAccessAudit,adminAccessRequest} from './admin-access.mjs';
 import {inspectAccess} from './access.mjs';
 import {operatorContext} from './operator-audit.mjs';
@@ -52,11 +53,12 @@ export class FirestorePortal {
       const document=await transaction.get(this.#ref),{state,revision}=decode(document);
       const model=new PortalProof(state,()=>timestamp),before=encode(model.snapshot());
       if(method==='updateAccessAsAdmin'&&!model.workspaceAccess(args[0].actorId).admin)throw Error('ACCESS_DENIED');
+      if(method==='updateColleagueAccess')model.colleagueAccessGrant(args[0]);
       if(expectedRevision!==undefined&&revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
       const result=model[method](...args),next=model.snapshot();
       if(encode(next)!==before) {
         if(revision>=Number.MAX_SAFE_INTEGER)throw Error('REVISION_EXHAUSTED');
-        if(method==='updateAccessAsAdmin'){next.operatorAudit??=[];next.operatorAudit.push(adminAccessAudit(result,args[0].actorId,revision+1,timestamp));}
+        if(['updateAccessAsAdmin','updateColleagueAccess'].includes(method)){next.operatorAudit??=[];next.operatorAudit.push(adminAccessAudit(result,args[0].actorId,revision+1,timestamp,method==='updateColleagueAccess'?'owner-project-access':'portal-project-access'));}
         if(audit) {
           const target=['provisionAccess','updateAccess'].includes(method)?{uid:result.identityId,businessId:result.businessId,role:result.role,projectIds:result.projectIds,...(method==='updateAccess'?{previousProjectIds:result.previousProjectIds}:{})}:{projectId:result.projectId,milestoneId:result.milestoneId,versionId:result.versionId,digest:result.digest};
           next.operatorAudit??=[];
@@ -64,7 +66,7 @@ export class FirestorePortal {
         }
         transaction.update(this.#ref,{stateJson:encode(next),revision:revision+1});
       }
-      if(method==='adminAccounts')result.revision=revision;
+      if(['adminAccounts','colleaguesFor'].includes(method))result.revision=revision;
       return result;
     },{maxAttempts:5});
   }
@@ -88,6 +90,7 @@ export class FirestorePortal {
     if(!Number.isSafeInteger(expectedRevision)||expectedRevision<0)throw Error('ACCESS_REVISION_REQUIRED');
     return this.#run('provisionAccess',[structuredClone(request)],expectedRevision,operatorContext(context));
   }
+  async updateColleagueAccess(request) { const input=colleagueAccessRequest(request);return this.#run('updateColleagueAccess',[input],input.expectedRevision); }
   async updateAccessAsAdmin(request) {
     const input=adminAccessRequest(request);
     return this.#run('updateAccessAsAdmin',[input],input.expectedRevision);
@@ -104,6 +107,8 @@ export class FirestorePortal {
   projectsFor(...args){return this.#run('projectsFor',args);}
   workspaceAccess(...args){return this.#run('workspaceAccess',args);}
   adminOverview(...args){return this.#run('adminOverview',args);}
+  colleaguesFor(...args) { return this.#run('colleaguesFor', args); }
+  colleagueAccessGrant(...args) { return this.#run('colleagueAccessGrant', args); }
   adminAccounts(...args) { return this.#run('adminAccounts', args); }
   updateProjectProgress(...args){return this.#run('updateProjectProgress',args);}
   publishReviewAsAdmin(...args){return this.#run('publishReviewAsAdmin',args);}

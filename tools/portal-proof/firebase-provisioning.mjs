@@ -1,3 +1,4 @@
+import {colleagueAccessRequest} from './colleague-access.mjs';
 import {adminAccessRequest} from './admin-access.mjs';
 import {accessGrant} from './access.mjs';
 // Trusted operator APIs, never attached to a client HTTP route. They use the
@@ -47,5 +48,15 @@ export function createFirebaseAdminAccessUpdater({auth,portal}) {
     if(!(await portal.workspaceAccess(actorId)).admin)throw Error('ACCESS_DENIED');
     const update=createFirebaseAccessUpdater({auth,portal:{snapshot:()=>portal.snapshot(),updateAccess:(checked,revision)=>commit({actorId,expectedRevision:revision,...checked})}});
     return update(grant,expectedRevision);
+  };
+}
+
+export function createFirebaseColleagueAccessUpdater({auth,portal}) {
+  if(typeof auth?.getUser!=='function'||typeof portal?.updateColleagueAccess!=='function'||typeof portal?.colleagueAccessGrant!=='function'||typeof portal?.snapshot!=='function')throw Error('INVALID_CONFIGURATION');
+  const commit=portal.updateColleagueAccess.bind(portal);
+  return async request=>{
+    const input=colleagueAccessRequest(request),grant=await portal.colleagueAccessGrant(input);
+    const update=createFirebaseAccessUpdater({auth,portal:{snapshot:()=>portal.snapshot(),updateAccess:()=>commit(input)}});
+    return update(grant,input.expectedRevision);
   };
 }

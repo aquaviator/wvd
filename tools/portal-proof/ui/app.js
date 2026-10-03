@@ -76,6 +76,7 @@ async function administration(){
 async function project(){
   const id=projectId(),generation=++revision;if(id!==displayedProjectId){el('ticket').reset();displayedProjectId=id;}el('overview').replaceChildren();el('tickets').replaceChildren();if(!id)return;
   const [overview,tickets]=await Promise.all([read('overview',{projectId:id}),read('tickets',{projectId:id})]);
+  const colleagues=overview.canManageColleagues?await read('colleagues',{projectId:id}):null;
   if(generation!==revision||!sessionToken)return;
   const box=el('overview');box.append(node('h2','Project progress'),node('p',`Stage: ${overview.stage??'Awaiting update'}`),node('p',`Next step: ${overview.nextStep??'Awaiting update'}`));
   if(adminAccess){
@@ -84,6 +85,16 @@ async function project(){
     const nextStep=document.createElement('textarea');nextStep.required=true;nextStep.maxLength=2000;nextStep.value=overview.nextStep??'';
     const stageLabel=node('label','Project stage'),nextLabel=node('label','Next project step');stageLabel.append(stage);nextLabel.append(nextStep);form.append(stageLabel,nextLabel,node('button','Save progress'));
     form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/update-progress',{projectId:id,stage:stage.value,nextStep:nextStep.value,expectedDigest:overview.progressDigest,operationId:crypto.randomUUID()});await administration();await project();status('Project progress saved.');});});box.append(form);
+  }
+  if(colleagues){
+    const details=document.createElement('details');details.className='colleague-access';details.append(node('summary','Manage Member access to this project'),node('p','Existing Member accounts for this client. These controls change access to this project only; business roles and activation stay the same. Stored portal status does not check current Firebase sign-in status.'));
+    const refresh=node('button','Refresh colleague access');refresh.type='button';refresh.addEventListener('click',()=>project().catch(error=>status(error.message)));details.append(refresh);
+    for(const account of colleagues.accounts){const card=node('article','');card.append(node('h4',`Member account: ${account.accountId}`),node('p',`This project: ${account.hasProjectAccess?'Assigned':'Not assigned'}`));
+      const form=document.createElement('form'),button=node('button',account.hasProjectAccess?'Remove this project':'Grant this project');button.disabled=!account.hasProjectAccess&&(!account.identityActive||!account.membershipActive);form.append(button);
+      if(!account.identityActive||!account.membershipActive)card.append(node('p','Portal access is disabled or revoked. New grants are unavailable.'));
+      form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/update-colleague-access',{projectId:id,uid:account.accountId,grant:!account.hasProjectAccess,expectedRevision:colleagues.revision});if(generation!==revision||!sessionToken)return;await project();status('Colleague project access saved.');});});card.append(form);details.append(card);
+    }
+    if(!colleagues.accounts.length)details.append(node('p','No Member accounts are recorded for this client. Invitation handling is not yet available.'));box.append(details);
   }
   if(overview.progressHistory.length){const history=document.createElement('details');history.append(node('summary','Progress history'));for(const item of overview.progressHistory)history.append(node('p',`${reviewTime(item.timestamp)} — ${item.stage}`),node('p',item.nextStep));box.append(history);}
   if(adminAccess){

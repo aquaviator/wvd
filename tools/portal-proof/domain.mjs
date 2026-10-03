@@ -1,3 +1,4 @@
+import {colleagueAccessRequest} from './colleague-access.mjs';
 import {reviewDigest} from './review.mjs';
 import {progressDigest} from './progress.mjs';
 import {careAssessments,ticketTriageDigest} from './triage.mjs';
@@ -123,6 +124,19 @@ export class PortalProof {
     this.#state=next;
     return {created:true,identityId:uid,businessId,role,projectIds};
   }
+  colleaguesFor(actorId,projectId) {
+    const project=authorise(this.#state,actorId,projectId,'manage-colleagues');
+    return {projectId,businessId:project.businessId,accounts:this.#state.memberships.filter(x=>x.businessId===project.businessId&&x.role==='Member').map(x=>({accountId:x.actorId,identityActive:this.#state.identities.find(i=>i.id===x.actorId)?.active===true,membershipActive:x.active,hasProjectAccess:x.projectIds.includes(projectId)}))};
+  }
+  colleagueAccessGrant(request) {
+    const {actorId,projectId,uid,grant}=colleagueAccessRequest(request),project=authorise(this.#state,actorId,projectId,'manage-colleagues');
+    const member=this.#state.memberships.find(x=>x.actorId===uid&&x.businessId===project.businessId);
+    if(!member)throw Error('ACCESS_MEMBERSHIP_REQUIRED');
+    if(member.role!=='Member')throw Error('ACCESS_ROLE_CONFLICT');
+    const projectIds=grant?[...new Set([...member.projectIds,projectId])]:member.projectIds.filter(x=>x!==projectId);
+    return {uid,businessId:project.businessId,role:'Member',projectIds};
+  }
+  updateColleagueAccess(request) { return this.updateAccess(this.colleagueAccessGrant(request)); }
   updateAccessAsAdmin(request) {
     const {actorId,expectedRevision,...grant}=adminAccessRequest(request);
     if(!this.workspaceAccess(actorId).admin)denied();
@@ -204,9 +218,10 @@ export class PortalProof {
   projectOverview(actorId, projectId) {
     const project = authorise(this.#state, actorId, projectId, 'view');
     let canApprove=false;try{authorise(this.#state,actorId,projectId,'approve');canApprove=true;}catch{}
+    let canManageColleagues=false;try{authorise(this.#state,actorId,projectId,'manage-colleagues');canManageColleagues=true;}catch{}
     const milestones = this.#state.milestones.filter(x => x.projectId === projectId).map(({reviews,createdByActorId,createdAt,...milestone}) => ({...milestone,...(milestone.reviewRequired ? {review:clientReview(reviews?.find(x=>x.versionId===milestone.currentVersionId))} : {})}));
     return structuredClone({
-      projectId, canApprove, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
+      projectId, canApprove, canManageColleagues, stage: project.stage ?? null, nextStep: project.nextStep ?? null,
       progressDigest:progressDigest({projectId,stage:project.stage,nextStep:project.nextStep}),
       progressHistory:(project.progressHistory??[]).map(({stage,nextStep,timestamp})=>({stage,nextStep,timestamp})),
       feedbackHistory:this.#state.feedback.filter(x=>x.projectId===projectId).map(({id,milestoneId,versionId,timestamp,body})=>({id,milestoneId,versionId,timestamp,body})),

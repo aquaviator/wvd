@@ -1,3 +1,4 @@
+import {colleagueAccessRequest} from './colleague-access.mjs';
 import {adminAccessAudit,adminAccessRequest} from './admin-access.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { PortalProof } from './domain.mjs';
@@ -39,30 +40,34 @@ export class DurablePortal {
       const row = this.#db.prepare('SELECT revision, state_json FROM portal_state WHERE id = 1').get();
       const proof = new PortalProof(this.#decode(row), this.#clock);
       if(method==='updateAccessAsAdmin'&&!proof.workspaceAccess(args[0].actorId).admin)throw Error('ACCESS_DENIED');
+      if(method==='updateColleagueAccess')proof.colleagueAccessGrant(args[0]);
       if(expectedRevision!==undefined&&row.revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
       const before = JSON.stringify(proof.snapshot());
       const result = proof[method](...args);
       const next=proof.snapshot();
-      if(method==='updateAccessAsAdmin'&&JSON.stringify(next)!==before){next.operatorAudit??=[];next.operatorAudit.push(adminAccessAudit(result,args[0].actorId,row.revision+1,this.#clock()));}
+      if(['updateAccessAsAdmin','updateColleagueAccess'].includes(method)&&JSON.stringify(next)!==before){next.operatorAudit??=[];next.operatorAudit.push(adminAccessAudit(result,args[0].actorId,row.revision+1,this.#clock(),method==='updateColleagueAccess'?'owner-project-access':'portal-project-access'));}
       const after = JSON.stringify(validate(next));
       if (after !== before) {
         if (row.revision >= Number.MAX_SAFE_INTEGER) throw new Error('REVISION_EXHAUSTED');
         this.#db.prepare('UPDATE portal_state SET revision = ?, state_json = ? WHERE id = 1').run(row.revision + 1, after);
       }
       this.#db.exec('COMMIT');
-      if(method==='adminAccounts')result.revision=row.revision;
+      if(['adminAccounts','colleaguesFor'].includes(method))result.revision=row.revision;
       return result;
     } catch (error) { this.#db.exec('ROLLBACK'); throw error; }
   }
   close() { this.#db.close(); }
   publishReview(...args) { return this.#run('publishReview', args); }
   provisionAccess(...args) { return this.#run('provisionAccess', args); }
+  updateColleagueAccess(request) { const input=colleagueAccessRequest(request);return this.#run('updateColleagueAccess',[input],input.expectedRevision); }
   updateAccessAsAdmin(request) { const input=adminAccessRequest(request);return this.#run('updateAccessAsAdmin',[input],input.expectedRevision); }
   updateAccess(...args) { return this.#run('updateAccess', args); }
   snapshot() { return this.#run('snapshot', []); }
   projectsFor(...args) { return this.#run('projectsFor', args); }
   workspaceAccess(...args) { return this.#run('workspaceAccess', args); }
   adminOverview(...args) { return this.#run('adminOverview', args); }
+  colleaguesFor(...args) { return this.#run('colleaguesFor', args); }
+  colleagueAccessGrant(...args) { return this.#run('colleagueAccessGrant', args); }
   adminAccounts(...args) { return this.#run('adminAccounts', args); }
   updateProjectProgress(...args) { return this.#run('updateProjectProgress', args); }
   publishReviewAsAdmin(...args) { return this.#run('publishReviewAsAdmin', args); }

@@ -334,3 +334,19 @@ the existing 512 KiB Firestore limit still enforced.
 Creating the client does not create Firebase users, business memberships, project
 grants or notifications. The new client's account list is empty until an explicit
 verified provisioning step. Invitation delivery and live onboarding remain open.
+
+### Owner controls for existing Members
+
+A client Owner can inspect Member accounts in their own business and grant/remove
+access to the selected project, provided the Owner currently has that project.
+Other project grants and business memberships stay intact. The client projection
+contains only the selected-project flag; other project names and full audit lists
+are not returned. Current roles, activation and WVD admin flags are preserved.
+Owners cannot change other Owners or create accounts through this workflow.
+
+The account read includes its aggregate revision. A stale write requires refresh;
+a permission change and audit commit together. The selected Google backend reuses
+fresh verified target checks for added grants, outside retryable transactions,
+and rechecks Owner authority at commit. Removal-only changes also work when the
+target Auth account is disabled/deleted. This is project-level Member management,
+not business-wide account revocation or the completed invitation delivery flow.

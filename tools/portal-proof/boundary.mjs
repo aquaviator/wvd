@@ -3,6 +3,8 @@ const schemas = {
   'workspace-access': [],
   'admin-overview': [],
   'admin-accounts': ['businessId'],
+  colleagues: ['projectId'],
+  'update-colleague-access': ['projectId','uid','grant','expectedRevision'],
   'admin-update-access': ['uid','businessId','role','projectIds','expectedRevision'],
   'update-progress': ['projectId','stage','nextStep','expectedDigest','operationId'],
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
@@ -19,7 +21,7 @@ const schemas = {
   feedback: ['projectId', 'milestoneId', 'versionId', 'body', 'operationId'],
   approve: ['projectId', 'milestoneId', 'versionId', 'operationId']
 };
-const reads = new Set(['workspace-access', 'admin-overview', 'admin-accounts', 'projects', 'tickets', 'overview', 'read-ticket']);
+const reads = new Set(['workspace-access', 'admin-overview', 'admin-accounts', 'colleagues', 'projects', 'tickets', 'overview', 'read-ticket']);
 const response = (status, data) => ({status, headers: {'Cache-Control':'no-store'}, data});
 
 export function createBoundary({portal, resolveSession, allowedOrigin}) {
@@ -37,10 +39,10 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
     if(input?.reviewDigest!==undefined && !/^[a-f0-9]{64}$/.test(input.reviewDigest))return response(400,{error:'INVALID_REQUEST'});
     if (!input || Array.isArray(input) || typeof input !== 'object' ||
         Object.keys(input).length !== fields.length ||
-        !fields.every(key => Object.hasOwn(input,key)&&(action==='admin-update-access'&&key==='projectIds'?Array.isArray(input[key])&&input[key].length<=50&&input[key].every(id=>typeof id==='string'&&id.length>0&&id.length<=128):action==='admin-update-access'&&key==='expectedRevision'?Number.isSafeInteger(input[key])&&input[key]>=0:typeof input[key]==='string'&&input[key].length>0))) {
+        !fields.every(key => Object.hasOwn(input,key)&&(action==='admin-update-access'&&key==='projectIds'?Array.isArray(input[key])&&input[key].length<=50&&input[key].every(id=>typeof id==='string'&&id.length>0&&id.length<=128):['admin-update-access','update-colleague-access'].includes(action)&&key==='expectedRevision'?Number.isSafeInteger(input[key])&&input[key]>=0:action==='update-colleague-access'&&key==='grant'?typeof input[key]==='boolean':typeof input[key]==='string'&&input[key].length>0))) {
       return response(400, {error:'INVALID_REQUEST'});
     }
-    for (const key of fields.filter(key => !['body','subject','type','stage','nextStep','title','note','projectIds','expectedRevision'].includes(key))) {
+    for (const key of fields.filter(key => !['body','subject','type','stage','nextStep','title','note','projectIds','expectedRevision','grant'].includes(key))) {
       if (input[key].length > 128) return response(400, {error:'INVALID_REQUEST'});
     }
     try {
@@ -51,6 +53,8 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         'workspace-access': () => portal.workspaceAccess(session.actorId),
         'admin-overview': () => portal.adminOverview(session.actorId),
         'admin-accounts': () => portal.adminAccounts(session.actorId,input.businessId),
+        colleagues: () => portal.colleaguesFor(session.actorId,input.projectId),
+        'update-colleague-access': () => portal.updateColleagueAccess(request),
         'admin-update-access': () => portal.updateAccessAsAdmin(request),
         'update-progress': () => portal.updateProjectProgress(request),
         'publish-review': () => portal.publishReviewAsAdmin(request),
@@ -67,7 +71,9 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
         feedback: () => portal.submitFeedback(request),
         approve: () => portal.approve(request)
       };
-      return response(200, await operations[action]());
+      const result=await operations[action]();
+      if(action==='update-colleague-access')return response(200,{changed:result.changed,accountId:input.uid,projectId:input.projectId,hasProjectAccess:input.grant});
+      return response(200,result);
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
       if (['ACCESS_DENIED','BUSINESS_SCOPE_DENIED','PROJECT_SCOPE_DENIED','IDENTITY_DISABLED','ACCESS_REVOKED','ACCESS_MEMBERSHIP_REQUIRED','VERIFIED_FIREBASE_USER_REQUIRED','FIREBASE_USER_REQUIRED'].includes(message)) return response(403, {error:'ACCESS_DENIED'});

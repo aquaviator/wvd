@@ -1,4 +1,4 @@
-import {createFirebaseAdminAccessUpdater} from './firebase-provisioning.mjs';
+import {createFirebaseAdminAccessUpdater,createFirebaseColleagueAccessUpdater} from './firebase-provisioning.mjs';
 import {initializeApp,applicationDefault,deleteApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
@@ -13,6 +13,7 @@ export function createFirebaseBackend(config) {
   const app=initializeApp(options,`wvd-${randomUUID()}`),db=getFirestore(app,checked.databaseId),auth=getAuth(app);
   const portal=new FirestorePortal({db,productId:checked.productId,backupBinding:checked});
   portal.updateAccessAsAdmin=createFirebaseAdminAccessUpdater({auth,portal});
+  portal.updateColleagueAccess=createFirebaseColleagueAccessUpdater({auth,portal});
   const resolveSession=createFirebaseSessionResolver({auth,portal});
   return {portal,auth,resolveSession,close:async()=>{await db.terminate();await deleteApp(app);}};
 }
