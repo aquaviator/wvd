@@ -339,3 +339,13 @@ creates no membership and is not substituted for the portal resolver. Unit tests
 cover email changes, disabled/unverified/unsupported users and sanitised outages;
 the emulator checks identity proof without access to an inactive product. Token
 issuance, one-time persistence/redemption and delivery remain integration work.
+
+### Shared opaque invitation tokens — 3 October 2026
+
+Extracted the existing local-auth 32-byte opaque token and SHA-256 digest primitives
+at local base b70e48c into a shared module for the invitation workflow. Local
+sessions/invitations retain their wire format and stored digests; Firebase identity
+verification is unchanged. Hash comparisons validate encoding/length and use
+constant-time comparison. The helper does not provide expiry, one-time consumption,
+storage or delivery; those must be bound inside the later invitation transaction.
+No plaintext token is introduced into portal state, logs or durable fixtures.

@@ -1,11 +1,10 @@
+import {createOpaqueToken,opaqueTokenDigest,isOpaqueToken} from './opaque-token.mjs';
 import {DatabaseSync} from 'node:sqlite';
-import {randomBytes, createHash, scrypt, timingSafeEqual} from 'node:crypto';
+import {randomBytes, scrypt, timingSafeEqual} from 'node:crypto';
 import {promisify} from 'node:util';
 
 const derive = promisify(scrypt);
-const hash = token => createHash('sha256').update(token).digest('hex');
-const token = () => randomBytes(32).toString('base64url');
-const validToken = value => typeof value === 'string' && /^[A-Za-z0-9_-]{43}$/.test(value);
+const hash=opaqueTokenDigest,token=createOpaqueToken,validToken=isOpaqueToken;
 const emailAddress = value => {
   if (typeof value !== 'string' || value.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) throw new Error('INVALID_REQUEST');
   return value.toLowerCase();
