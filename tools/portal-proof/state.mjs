@@ -101,8 +101,8 @@ export function validatePortalState(state) {
     const linked = records.get(intent.receiptId);
     if (!linked || intent.id !== intent.receiptId || intent.type !== linked.eventType) corrupt();
   }
-  // This proof persists one pending intent with every domain write; no dispatcher
-  // removes intents, so a missing link indicates an incomplete/tampered aggregate.
+  // Approval, feedback, ticket and reply records each retain one intent. No
+  // dispatcher removes intents; a missing link indicates an incomplete aggregate.
   if (state.outbox.length !== records.size) corrupt();
   validateOperatorAudit(state);
   return state;

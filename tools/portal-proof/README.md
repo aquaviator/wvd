@@ -132,3 +132,13 @@ application. It uses the shared bounded JSON reader with an 8 KiB request limit.
 Invitation lists show the issuing Owner’s own records for a currently authorised
 project, never raw tokens, token digests, other grant lists or recipient UIDs.
 Pending invitation revocation rechecks all included project permissions.
+
+`notification-plan.mjs` prepares a read-only plan from a validated pending intent.
+Approval/feedback select the explicit admin mailbox. Ticket/reply client audiences
+must be explicitly bound to conversation participants or active project members;
+no audience, mailbox, product namespace or portal origin is assumed. Plans retain
+only eligible current product UIDs and an HTTPS workspace link, not ticket/reply
+text, subject lines or review content. Google backend planning checks its product
+binding before reading state. It does not resolve email addresses, send messages,
+acknowledge an intent or promise delivery. Current Firebase recipient checks,
+recipient-policy agreement and a delivery/retry mechanism remain separate gates.

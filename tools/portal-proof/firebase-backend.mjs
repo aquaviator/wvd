@@ -1,3 +1,4 @@
+import {createNotificationPlanner} from './notification-plan.mjs';
 import {createFirebaseInvitations} from './firebase-invitations.mjs';
 import {createFirebaseAdminAccessUpdater,createFirebaseColleagueAccessUpdater} from './firebase-provisioning.mjs';
 import {initializeApp,applicationDefault,deleteApp} from 'firebase-admin/app';
@@ -18,5 +19,5 @@ export function createFirebaseBackend(config,{invitationPolicy}={}) {
   const resolveSession=createFirebaseSessionResolver({auth,portal});
   const resolveInvitationIdentity=createFirebaseInvitationIdentityResolver({auth});
   const invitations=createFirebaseInvitations({auth,portal,resolveSession,resolveInvitationIdentity});
-  return {portal,auth,resolveSession,resolveInvitationIdentity,invitations,close:async()=>{await db.terminate();await deleteApp(app);}};
+  return {portal,auth,resolveSession,resolveInvitationIdentity,invitations,planNotification:createNotificationPlanner({portal,productId:checked.productId}),close:async()=>{await db.terminate();await deleteApp(app);}};
 }
