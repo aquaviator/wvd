@@ -349,3 +349,24 @@ verification is unchanged. Hash comparisons validate encoding/length and use
 constant-time comparison. The helper does not provide expiry, one-time consumption,
 storage or delivery; those must be bound inside the later invitation transaction.
 No plaintext token is introduced into portal state, logs or durable fixtures.
+
+### Internal Member invitation lifecycle — 3 October 2026
+
+Reused Owner preflight, opaque token hashing, Firebase email proof, global operation
+binding and the SQLite/Firestore transactions from local base 141f6ce. The internal
+Google service issues an opaque token once, stores its digest, and atomically grants
+an explicit Member membership with a consumed-invitation record. Current issuer
+SDK/Owner checks occur before and during commit; no network work runs in callbacks.
+Creation retries cannot return a replacement token; consumed-token retries cannot
+restore revoked access. Expiry, recipient mismatch, policy changes, revoked issuer
+scope and conflicting/disabled memberships are denied without consumption.
+
+Invitation policy reference/lifetime are mandatory explicit configuration, without
+a company default. State validates immutable payload digest, project/identity
+references, lifecycle times, operation uniqueness and token-hash uniqueness. The
+aggregate retains the existing Firestore capacity bound and caps invitations at
+200 records per business. Expiration is enforced on redemption, not claimed as
+automatic data deletion. Real emulator coverage races two redemptions and verifies
+one membership; fake transaction retries/capacity rollback test atomic consumption.
+HTTP/UI registration, email verification/delivery, abuse/retention binding and
+broader Owner delegation remain unfinished. No actual emails or live users created.

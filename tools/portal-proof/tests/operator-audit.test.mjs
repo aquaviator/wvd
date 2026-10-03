@@ -6,7 +6,7 @@ const seed=()=>({identities:[],projects:[{id:'p',businessId:'b'}],memberships:[]
 const context={operatorRef:'synthetic-operator',changeRef:'test-change'};
 const grant={uid:'o',businessId:'b',role:'Owner',projectIds:['p']};
 const review={projectId:'p',milestoneId:'m',versionId:'v',title:'Review',body:'Check the heading.'};
-function setup() {
+function setup(policy) {
  let stored;
  const doc=()=>({exists:Boolean(stored),data:()=>structuredClone(stored)});
  const db={doc:()=>({get:async()=>doc()}),runTransaction:async callback=>{
@@ -15,7 +15,7 @@ function setup() {
    // Discard first attempt to exercise retry-safe callbacks.
    await run();pending=undefined;const result=await run();if(pending)stored=pending;return result;
  }};
- const portal=new FirestorePortal({db,productId:'audit-test',clock:()=> '2026-10-02T16:00:00Z'});
+ const portal=new FirestorePortal({db,productId:'audit-test',clock:()=> '2026-10-02T16:00:00Z',invitationPolicy:policy});
  return {portal,raw:()=>structuredClone(stored),replace:value=>{stored=value;}};
 }
 test('operator mutations atomically record one audit each despite transaction retries',async()=>{
@@ -84,4 +84,10 @@ test('Admin access capacity failure preserves permissions and audit together',as
 
 test('Firestore Owner Member-project changes are atomic, scoped and audited once across retries',async()=>{
  const s=setup(),state=seed();state.identities=[{id:'o',active:true},{id:'member',active:true}];state.memberships=[{actorId:'o',businessId:'b',role:'Owner',active:true,projectIds:['p']},{actorId:'member',businessId:'b',role:'Member',active:true,projectIds:['p']}];await s.portal.initialize(state);const input={actorId:'o',projectId:'p',uid:'member',grant:false,expectedRevision:0};await s.portal.updateColleagueAccess(input);assert.equal((await s.portal.colleaguesFor('o','p')).revision,1);assert.equal((await s.portal.snapshot()).operatorAudit.length,1);assert.equal((await s.portal.snapshot()).operatorAudit[0].changeRef,'owner-project-access');const before=s.raw();await assert.rejects(()=>s.portal.updateColleagueAccess(input),/ACCESS_REVISION_CONFLICT/);assert.deepEqual(s.raw(),before);
+});
+
+test('Invitation grant and consumption are atomic across Firestore retries, and capacity failure consumes nothing',async()=>{
+ const {createOpaqueToken,opaqueTokenDigest}=await import('../opaque-token.mjs');const policy={ref:'synthetic-hour',maxLifetimeMs:3600000},s=setup(policy),state=seed();state.identities=[{id:'o',active:true}];state.memberships=[{actorId:'o',businessId:'b',role:'Owner',active:true,projectIds:['p']}];await s.portal.initialize(state);const token=createOpaqueToken(),input={actorId:'o',businessId:'b',email:'new@example.test',projectIds:['p'],expiresAt:'2026-10-02T17:00:00.000Z',operationId:'invite',tokenHash:opaqueTokenDigest(token)};await s.portal.createMemberInvitation(input);const before=s.raw();
+ const {MAX_STATE_BYTES}=await import('../firestore.mjs');const padded=JSON.parse(before.stateJson);padded.projects[0].padding='';padded.projects[0].padding='x'.repeat(MAX_STATE_BYTES-Buffer.byteLength(JSON.stringify(padded))-100);s.replace({...before,stateJson:JSON.stringify(padded)});const full=s.raw();await assert.rejects(()=>s.portal.redeemMemberInvitation({token,recipientId:'new',email:input.email}),/STATE_CAPACITY/);assert.deepEqual(s.raw(),full);
+ s.replace(before);assert.equal((await s.portal.redeemMemberInvitation({token,recipientId:'new',email:input.email})).alreadyRedeemed,false);const consumed=await s.portal.snapshot();assert.equal(consumed.invitations.length,1);assert.equal(consumed.invitations[0].status,'redeemed');assert.equal(consumed.memberships.filter(x=>x.actorId==='new').length,1);assert.equal((await s.portal.redeemMemberInvitation({token,recipientId:'new',email:input.email})).alreadyRedeemed,true);
 });

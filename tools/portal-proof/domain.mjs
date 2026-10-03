@@ -1,3 +1,6 @@
+import {memberInvitation} from './invitation.mjs';
+import {invitationPolicy} from './invitation-state.mjs';
+import {matchesOpaqueToken} from './opaque-token.mjs';
 import {colleagueAccessRequest} from './colleague-access.mjs';
 import {reviewDigest} from './review.mjs';
 import {progressDigest} from './progress.mjs';
@@ -28,8 +31,9 @@ export function authorise(state, actorId, projectId, action) {
 
 export class PortalProof {
   #state;
-  #clock;
-  constructor(state, clock) {
+  #clock; #invitationPolicy;
+  constructor(state, clock, policy) {
+    this.#invitationPolicy=policy===undefined?undefined:invitationPolicy(policy);
     this.#state = structuredClone(state);
     this.#clock = clock;
     // Reject ambiguous identifiers rather than choosing the first row.
@@ -123,6 +127,49 @@ export class PortalProof {
     next.memberships.push({actorId:uid,businessId,role,projectIds,active:true,provisionedAt:timestamp});
     this.#state=next;
     return {created:true,identityId:uid,businessId,role,projectIds};
+  }
+  // Trusted internal invitation operations. Redemption identity/email must come
+  // from the separate current Firebase SDK proof, never directly from HTTP input.
+  createMemberInvitation(request) {
+    if(!request||Object.keys(request).sort().join(',')!=='actorId,businessId,email,expiresAt,operationId,projectIds,tokenHash'||typeof request.tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(request.tokenHash))throw Error('INVALID_INVITATION');
+    const policy=invitationPolicy(this.#invitationPolicy),createdAt=new Date(this.#timestamp()).toISOString();
+    const {operationId,tokenHash,...input}=request,review=memberInvitation(this.#state,input,{now:createdAt,maxLifetimeMs:policy.maxLifetimeMs});
+    const payload={kind:'invitation',operationId,...review};
+    // The canonical digest binds the project array for the shared scalar retry contract.
+    const retry=this.#retry(operationId,{kind:'invitation',operationId,digest:review.digest});if(retry)return {created:false,invitation:retry};
+    if(this.#state.invitations?.some(x=>x.tokenHash===tokenHash))throw Error('INVITATION_TOKEN_CONFLICT');
+    if((this.#state.invitations??[]).filter(x=>x.businessId===input.businessId).length>=200)throw Error('INVITATION_CAPACITY');
+    const record={id:`invitation-${(this.#state.invitations?.length??0)+1}`,...payload,createdAt,policyRef:policy.ref,maxLifetimeMs:policy.maxLifetimeMs,tokenHash,status:'pending'};
+    const next=structuredClone(this.#state);next.invitations??=[];next.invitations.push(record);this.#state=next;
+    return {created:true,invitation:structuredClone(record)};
+  }
+  memberInvitationRecord(token) {
+    const record=this.#state.invitations?.find(x=>matchesOpaqueToken(token,x.tokenHash));
+    if(!record)throw Error('INVALID_INVITATION');return structuredClone(record);
+  }
+  #pendingInvitation(record,now) {
+    const policy=invitationPolicy(this.#invitationPolicy);
+    if(record.status!=='pending'||Date.parse(now)<Date.parse(record.createdAt)||Date.parse(record.expiresAt)<=Date.parse(now)||record.policyRef!==policy.ref||record.maxLifetimeMs!==policy.maxLifetimeMs)throw Error('INVALID_INVITATION');
+    memberInvitation(this.#state,{actorId:record.actorId,businessId:record.businessId,email:record.email,projectIds:record.projectIds,expiresAt:record.expiresAt},{now,maxLifetimeMs:policy.maxLifetimeMs});
+  }
+  redeemMemberInvitation({token,recipientId,email}) {
+    if(typeof recipientId!=='string'||!recipientId.trim()||recipientId.length>128||typeof email!=='string')throw Error('INVALID_INVITATION');
+    const record=this.memberInvitationRecord(token);
+    if(record.email.toLowerCase()!==email.toLowerCase())throw Error('INVITATION_RECIPIENT_MISMATCH');
+    if(record.status==='redeemed'){if(record.recipientId!==recipientId)throw Error('INVALID_INVITATION');return {redeemed:true,alreadyRedeemed:true,invitationId:record.id};}
+    const now=new Date(this.#timestamp()).toISOString();this.#pendingInvitation(record,now);
+    const candidate=new PortalProof(this.#state,()=>now,this.#invitationPolicy);
+    candidate.provisionAccess({uid:recipientId,businessId:record.businessId,role:'Member',projectIds:record.projectIds});
+    const saved=candidate.#state.invitations.find(x=>x.id===record.id);saved.status='redeemed';saved.recipientId=recipientId;saved.redeemedAt=now;
+    this.#state=candidate.snapshot();return {redeemed:true,alreadyRedeemed:false,invitationId:record.id};
+  }
+  revokeMemberInvitation({actorId,invitationId}) {
+    const record=this.#state.invitations?.find(x=>x.id===invitationId&&x.actorId===actorId);if(!record)denied();
+    for(const projectId of record.projectIds)authorise(this.#state,actorId,projectId,'manage-colleagues');
+    if(record.status==='redeemed')throw Error('INVITATION_CONSUMED');
+    if(record.status==='revoked')return {revoked:true,invitationId};
+    const now=new Date(this.#timestamp()).toISOString();if(Date.parse(now)<Date.parse(record.createdAt))throw Error('INVALID_SERVER_TIME');
+    const next=structuredClone(this.#state),saved=next.invitations.find(x=>x.id===invitationId);saved.status='revoked';saved.revokedAt=now;this.#state=next;return {revoked:true,invitationId};
   }
   colleaguesFor(actorId,projectId) {
     const project=authorise(this.#state,actorId,projectId,'manage-colleagues');
@@ -237,7 +284,7 @@ export class PortalProof {
   }
   #retry(operationId, payload) {
     if (typeof operationId !== 'string' || !operationId || operationId.length > 128) throw new Error('INVALID_OPERATION');
-    const existing = [...this.#state.receipts, ...this.#state.feedback, ...this.#state.tickets, ...this.#state.replies,...this.#state.projects.flatMap(x=>x.progressHistory??[]),...this.#state.tickets.flatMap(x=>x.triageHistory??[])].find(x => x.operationId === operationId);
+    const existing = [...this.#state.receipts, ...this.#state.feedback, ...this.#state.tickets, ...this.#state.replies,...(this.#state.invitations??[]),...this.#state.projects.flatMap(x=>x.progressHistory??[]),...this.#state.tickets.flatMap(x=>x.triageHistory??[])].find(x => x.operationId === operationId);
     if (!existing) return null;
     for (const [key, value] of Object.entries(payload)) if (existing[key] !== value) throw new Error('OPERATION_CONFLICT');
     return structuredClone(existing);

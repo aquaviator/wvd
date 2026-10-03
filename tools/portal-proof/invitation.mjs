@@ -1,4 +1,4 @@
-import {createHash} from 'node:crypto';
+import {invitationDigest} from './invitation-state.mjs';
 import {authorise} from './domain.mjs';
 // Member invitation contract. Tokens/delivery and verified-email redemption are
 // separate integration steps; this preflight grants no account permissions.
@@ -9,5 +9,5 @@ export function memberInvitation(state,request,{now,maxLifetimeMs}) {
   if(typeof request.expiresAt!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(request.expiresAt)||!Number.isFinite(Date.parse(request.expiresAt))||new Date(request.expiresAt).toISOString()!==request.expiresAt||Date.parse(request.expiresAt)<=Date.parse(now)||Date.parse(request.expiresAt)-Date.parse(now)>maxLifetimeMs)throw Error('INVALID_INVITATION_EXPIRY');
   for(const id of request.projectIds){const project=authorise(state,request.actorId,id,'manage-colleagues');if(project.businessId!==request.businessId)throw Error('PROJECT_SCOPE_DENIED');}
   const result={actorId:request.actorId,businessId:request.businessId,email:request.email,role:'Member',projectIds:[...request.projectIds].sort(),expiresAt:request.expiresAt};
-  return {...result,digest:createHash('sha256').update(JSON.stringify(result)).digest('hex')};
+  return {...result,digest:invitationDigest(result)};
 }

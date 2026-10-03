@@ -3,7 +3,7 @@ import {adminAccessRequest} from './admin-access.mjs';
 import {accessGrant} from './access.mjs';
 // Trusted operator APIs, never attached to a client HTTP route. They use the
 // explicitly bound Auth/Firestore instances of the selected Google backend.
-async function verifiedFirebaseUser(auth,uid) {
+export async function verifiedFirebaseUser(auth,uid) {
   let user;
   try {user=await auth.getUser(uid);} catch(error) {
     if(error?.code==='auth/user-not-found')throw Error('FIREBASE_USER_REQUIRED');

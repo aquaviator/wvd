@@ -14,7 +14,7 @@ const fixture=()=>({identities:[{id:'owner',active:true},{id:'member',active:tru
 const approval={actorId:'owner',projectId:'p',milestoneId:'m',versionId:'v',operationId:'approve'};
 const ticket=id=>({actorId:'owner',projectId:'p',type:'question',subject:'Question',body:'Help',operationId:id});
 test('real Google emulators: identity, product isolation, concurrent atomic writes, denial and persistence',async t=>{
- const backend=createFirebaseBackend(config);t.after(()=>backend.close());
+ const backend=createFirebaseBackend(config,{invitationPolicy:{ref:'synthetic-emulator-hour',maxLifetimeMs:3600000}});t.after(()=>backend.close());
  const app=initializeApp({projectId:config.projectId},'fixtures-'+randomUUID()),auth=getAuth(app),db=getFirestore(app);
  t.after(async()=>{await db.terminate();await deleteApp(app);});
  assert.deepEqual(await backend.portal.initialize(fixture()),{created:true});
@@ -25,6 +25,9 @@ test('real Google emulators: identity, product isolation, concurrent atomic writ
  assert.equal(login.status,200);const {idToken}=await login.json();
  assert.deepEqual(await backend.resolveSession(idToken),{actorId:uid});assert.equal(await other.resolveSession(idToken),null);assert.deepEqual(await other.resolveInvitationIdentity(idToken),{actorId:uid,email:'owner@example.test'});assert.equal(await other.resolveSession(idToken),null);
  await assert.rejects(()=>backend.portal.projectOverview('foreign','p'),/ACCESS_DENIED/);
+ const invitedUid='invitation-recipient';await auth.createUser({uid:invitedUid,email:invitedUid+'@example.test',emailVerified:true,password:'Emulator-only-123!'});const invitedLogin=await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:invitedUid+'@example.test',password:'Emulator-only-123!',returnSecureToken:true})});assert.equal(invitedLogin.status,200);const invitedToken=(await invitedLogin.json()).idToken;assert.equal(await backend.resolveSession(invitedToken),null);
+ const invitation=await backend.invitations.create(idToken,{businessId:'b',email:invitedUid+'@example.test',projectIds:['p'],expiresAt:new Date(Date.now()+15*60000).toISOString(),operationId:'synthetic-invitation'});assert.equal(JSON.stringify(await backend.portal.snapshot()).includes(invitation.token),false);const claims=await Promise.all([backend.invitations.redeem(invitedToken,invitation.token),backend.invitations.redeem(invitedToken,invitation.token)]);assert.equal(claims.filter(x=>x.alreadyRedeemed===false).length,1);assert.deepEqual(await backend.resolveSession(invitedToken),{actorId:invitedUid});assert.equal((await backend.portal.projectOverview(invitedUid,'p')).canApprove,false);assert.equal((await backend.portal.snapshot()).memberships.filter(x=>x.actorId===invitedUid&&x.businessId==='b').length,1);
+
  await assert.rejects(()=>backend.portal.approve({...approval,actorId:'member'}),/ACCESS_DENIED/);
  const server=createPortalServer({portal:backend.portal,resolveSession:backend.resolveSession,allowedOrigin:'http://localhost'});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>new Promise(resolve=>server.close(resolve)));

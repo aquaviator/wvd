@@ -361,3 +361,33 @@ not grant portal access. The normal portal resolver still requires an active
 product identity, and token role flags remain ignored. No invitation redemption
 HTTP endpoint is connected yet; the proof must be bound to a valid, unexpired,
 one-time invitation before any future membership grant.
+
+### Internal one-time Member invitation service
+
+The Google backend now has internal `invitations.create/redeem/revoke` operations.
+Enable them only with an explicit second backend option:
+`{invitationPolicy: {ref: '<reviewed-policy-reference>', maxLifetimeMs: <positive-duration>}}`.
+No lifetime or company policy is supplied by default. The local/Firestore domain
+adapters accept the same explicit policy for synthetic verification.
+
+Creation requires current Owner authority for every selected project and a current
+verified issuer account. It returns a 32-byte opaque token once; state stores only
+its digest. An exact creation retry returns no replacement token. A new request is
+needed to issue another link. Receipt fields retain issuer, recipient binding,
+project list, expiry, server time and policy reference. Proof capacity is 200
+invitation records per business; records are not automatically purged by expiry.
+
+Redemption requires current Firebase identity/email proof, the matching token and
+recipient email, a pending unexpired invitation, unchanged policy binding and
+current issuer/Owner authority. Membership creation and consumption commit together.
+Only Member permissions are provisioned; revoked/disabled/conflicting memberships
+are not overwritten. A consumed-token retry by the same verified identity returns
+the receipt and does not restore later-revoked permissions. Concurrent redemptions
+produce one grant/consumption. An Owner can revoke their pending invitation; this
+does not revoke an already provisioned membership.
+
+These are internal methods with emulator coverage, not connected public HTTP/UI
+registration or email delivery. They create no Firebase Auth users and send no
+messages. Invitation policy, registration/email verification, abuse controls,
+retention and delivery still need binding before live onboarding. Normal portal
+requests continue to require the active product identity and project permissions.

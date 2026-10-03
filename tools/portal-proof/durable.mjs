@@ -1,3 +1,4 @@
+import {invitationPolicy} from './invitation-state.mjs';
 import {colleagueAccessRequest} from './colleague-access.mjs';
 import {adminAccessAudit,adminAccessRequest} from './admin-access.mjs';
 import { DatabaseSync } from 'node:sqlite';
@@ -9,8 +10,9 @@ import {validatePortalState as validate} from './state.mjs';
 // fixture administration. Not a hosted backend, identity provider, distributed
 // store or notification dispatcher. Caller owns filesystem permissions/backups.
 export class DurablePortal {
-  #db; #clock;
-  constructor(path, state, clock = () => new Date().toISOString()) {
+  #db; #clock; #invitationPolicy;
+  constructor(path, state, clock = () => new Date().toISOString(),policy) {
+    this.#invitationPolicy=policy===undefined?undefined:invitationPolicy(policy);
     this.#clock = clock;
     this.#db = new DatabaseSync(path);
     try {
@@ -21,7 +23,7 @@ export class DurablePortal {
         if (existing) new PortalProof(this.#decode(existing), this.#clock);
         else {
           if (state === undefined) throw new Error('PORTAL_SEED_REQUIRED');
-          const normalized = new PortalProof(state, this.#clock).snapshot();
+          const normalized = new PortalProof(state, this.#clock,this.#invitationPolicy).snapshot();
           validate(normalized);
           this.#db.prepare('INSERT INTO portal_state VALUES (1, 0, ?)').run(JSON.stringify(normalized));
         }
@@ -38,7 +40,7 @@ export class DurablePortal {
     this.#db.exec('BEGIN IMMEDIATE');
     try {
       const row = this.#db.prepare('SELECT revision, state_json FROM portal_state WHERE id = 1').get();
-      const proof = new PortalProof(this.#decode(row), this.#clock);
+      const proof = new PortalProof(this.#decode(row), this.#clock,this.#invitationPolicy);
       if(method==='updateAccessAsAdmin'&&!proof.workspaceAccess(args[0].actorId).admin)throw Error('ACCESS_DENIED');
       if(method==='updateColleagueAccess')proof.colleagueAccessGrant(args[0]);
       if(expectedRevision!==undefined&&row.revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
@@ -66,6 +68,10 @@ export class DurablePortal {
   projectsFor(...args) { return this.#run('projectsFor', args); }
   workspaceAccess(...args) { return this.#run('workspaceAccess', args); }
   adminOverview(...args) { return this.#run('adminOverview', args); }
+  createMemberInvitation(...args) { return this.#run('createMemberInvitation', args); }
+  memberInvitationRecord(...args) { return this.#run('memberInvitationRecord', args); }
+  redeemMemberInvitation(...args) { return this.#run('redeemMemberInvitation', args); }
+  revokeMemberInvitation(...args) { return this.#run('revokeMemberInvitation', args); }
   colleaguesFor(...args) { return this.#run('colleaguesFor', args); }
   colleagueAccessGrant(...args) { return this.#run('colleagueAccessGrant', args); }
   adminAccounts(...args) { return this.#run('adminAccounts', args); }

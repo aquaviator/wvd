@@ -1,3 +1,4 @@
+import {invitationPolicy} from './invitation-state.mjs';
 import {colleagueAccessRequest} from './colleague-access.mjs';
 import {adminAccessAudit,adminAccessRequest} from './admin-access.mjs';
 import {inspectAccess} from './access.mjs';
@@ -26,10 +27,11 @@ function decode(document) {
 // Firestore transactions commit domain data and outbox intent atomically. No
 // network side effects occur in callbacks, which Firestore may rerun on conflict.
 export class FirestorePortal {
-  #db; #ref; #clock; #backupBinding;
-  constructor({db,productId,backupBinding,clock=()=>new Date().toISOString()}) {
+  #db; #ref; #clock; #backupBinding; #invitationPolicy;
+  constructor({db,productId,backupBinding,clock=()=>new Date().toISOString(),invitationPolicy:policy}) {
     if(typeof db?.doc!=='function'||typeof db?.runTransaction!=='function'||!product(productId)||typeof clock!=='function')throw Error('INVALID_CONFIGURATION');
     if(backupBinding&&backupBinding.productId!==productId)throw Error('INVALID_CONFIGURATION');
+    this.#invitationPolicy=policy===undefined?undefined:invitationPolicy(policy);
     this.#backupBinding=backupBinding?structuredClone(backupBinding):undefined;
     this.#db=db;this.#clock=clock;
     this.#ref=db.doc(`wvd_products/${productId}/private/portal-state`);
@@ -37,7 +39,7 @@ export class FirestorePortal {
   // Trusted provisioning API only; never exposed as a client route. Firebase UIDs
   // must be supplied as identity IDs. Existing product data is never overwritten.
   async initialize(state) {
-    const normalized=new PortalProof(state,this.#clock).snapshot();
+    const normalized=new PortalProof(state,this.#clock,this.#invitationPolicy).snapshot();
     if(normalized.operatorAudit?.length)throw Error('CORRUPT_PORTAL_STATE');
     const stateJson=encode(normalized);
     return this.#db.runTransaction(async transaction=>{
@@ -51,7 +53,7 @@ export class FirestorePortal {
     const timestamp=this.#clock();
     return this.#db.runTransaction(async transaction=>{
       const document=await transaction.get(this.#ref),{state,revision}=decode(document);
-      const model=new PortalProof(state,()=>timestamp),before=encode(model.snapshot());
+      const model=new PortalProof(state,()=>timestamp,this.#invitationPolicy),before=encode(model.snapshot());
       if(method==='updateAccessAsAdmin'&&!model.workspaceAccess(args[0].actorId).admin)throw Error('ACCESS_DENIED');
       if(method==='updateColleagueAccess')model.colleagueAccessGrant(args[0]);
       if(expectedRevision!==undefined&&revision!==expectedRevision)throw Error('ACCESS_REVISION_CONFLICT');
@@ -107,6 +109,10 @@ export class FirestorePortal {
   projectsFor(...args){return this.#run('projectsFor',args);}
   workspaceAccess(...args){return this.#run('workspaceAccess',args);}
   adminOverview(...args){return this.#run('adminOverview',args);}
+  createMemberInvitation(...args) { return this.#run('createMemberInvitation', args); }
+  memberInvitationRecord(...args) { return this.#run('memberInvitationRecord', args); }
+  redeemMemberInvitation(...args) { return this.#run('redeemMemberInvitation', args); }
+  revokeMemberInvitation(...args) { return this.#run('revokeMemberInvitation', args); }
   colleaguesFor(...args) { return this.#run('colleaguesFor', args); }
   colleagueAccessGrant(...args) { return this.#run('colleagueAccessGrant', args); }
   adminAccounts(...args) { return this.#run('adminAccounts', args); }

@@ -1,3 +1,4 @@
+import {validateInvitations} from './invitation-state.mjs';
 import {validateOperatorAudit} from './operator-audit.mjs';
 import {reviewDigest} from './review.mjs';
 import {progressDigest} from './progress.mjs';
@@ -95,6 +96,7 @@ export function validatePortalState(state) {
     const last=ticket.triageHistory.at(-1);
     if(['priority','careAssessment','note','timestamp','digest'].some(key=>ticket.triage[key]!==last[key]))corrupt();
   }
+  validateInvitations(state,operations);
   for (const intent of state.outbox) {
     const linked = records.get(intent.receiptId);
     if (!linked || intent.id !== intent.receiptId || intent.type !== linked.eventType) corrupt();
