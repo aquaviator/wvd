@@ -386,8 +386,11 @@ the receipt and does not restore later-revoked permissions. Concurrent redemptio
 produce one grant/consumption. An Owner can revoke their pending invitation; this
 does not revoke an already provisioned membership.
 
-These are internal methods with emulator coverage, not connected public HTTP/UI
-registration or email delivery. They create no Firebase Auth users and send no
+An optional HTTP adapter exposes create, redeem and revoke operations only when
+explicitly supplied to the isolated emulator application. It enforces bearer
+authentication, exact input schemas, same-origin POST requests, an 8 KiB body
+limit and no-store responses. Tokens in query strings and caller-supplied actors
+are rejected. The browser registration flow and email delivery are not connected. They create no Firebase Auth users and send no
 messages. Invitation policy, registration/email verification, abuse controls,
 retention and delivery still need binding before live onboarding. Normal portal
 requests continue to require the active product identity and project permissions.

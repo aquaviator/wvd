@@ -1,3 +1,4 @@
+import {readJsonBody} from './http-body.mjs';
 import {createBoundary} from './boundary.mjs';
 
 // Node HTTP adapter. No default identity, development bypass or cookie session.
@@ -32,23 +33,14 @@ export function createPortalHandler({portal, resolveSession, allowedOrigin}) {
         rawBody = JSON.stringify(input);
       } else {
         if (url.search) return reject(400,'INVALID_REQUEST');
-        if (!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(request.headers['content-type'] ?? '')) return reject(415,'UNSUPPORTED_MEDIA_TYPE');
-        const length = request.headers['content-length'];
-        if (length !== undefined && !/^\d+$/.test(length)) return reject(400,'INVALID_REQUEST');
-        if (Number(length) > 32768) return reject(413,'REQUEST_TOO_LARGE');
-        const chunks = []; let bytes = 0;
-        for await (const chunk of request) {
-          const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-          bytes += buffer.length;
-          if (bytes > 32768) return reject(413,'REQUEST_TOO_LARGE');
-          chunks.push(buffer);
-        }
-        if (length !== undefined && Number(length) !== bytes) return reject(400,'INVALID_REQUEST');
-        rawBody = Buffer.concat(chunks,bytes).toString('utf8');
+        rawBody = await readJsonBody(request);
       }
       send(await boundary({action:route[1],method:request.method,origin:request.headers.origin,rawBody,sessionToken:match[1]}));
-    } catch {
-      if (!response.headersSent) reject(503,'SERVICE_UNAVAILABLE');
+    } catch (error) {
+      if (!response.headersSent) {
+        const known=error?.httpStatus;
+        reject([400,413,415].includes(known)?known:503,[400,413,415].includes(known)?error.message:'SERVICE_UNAVAILABLE');
+      }
       else response.destroy();
     }
   };
