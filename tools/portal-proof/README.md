@@ -127,12 +127,15 @@ retryable database callbacks. Exact approval retries reuse the saved receipt
 without a provider dependency.
 
 The optional development HTTP/browser composition displays UTF-8 text snapshots
-using text content, then re-verifies the source before approval. It adds no active
+using text content and static PNG previews using a typed data URI. PNG byte size,
+chunk boundaries/checksums, single-image structure and dimensions (at most
+2048×2048) are checked before returning bytes; browser decoding must succeed
+before approval becomes available. Approval re-verifies the source. It adds no active
 HTML or external links. Without a source reader, approval of referenced content
-stays paused. Other manifest media types are metadata only in this browser slice.
+stays paused. JPEG, PDF and ZIP manifests remain metadata only in this browser slice.
 The browser source is synthetic and the application option requires isolated
 Firebase emulators. No live Google file adapter, production endpoint, artifact
-retention policy or binary preview is established by these tests.
+retention policy or live binary source integration is established by these tests.
 
 `deliverable-catalogue.mjs` registers at most 200 explicit project/source/version
 entries in trusted composition. Admin lists and selection are project scoped;

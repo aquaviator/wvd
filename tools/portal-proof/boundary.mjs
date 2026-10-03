@@ -1,3 +1,4 @@
+import {deliverablePreview} from './deliverable-preview.mjs';
 // Transport-independent proof. resolveSession must be a trusted server adapter.
 const schemas = {
   'workspace-access': [],
@@ -41,9 +42,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
   const readDeliverable=async(actorId,input)=>{
     if(!deliverableReader)throw Error('DELIVERABLE_UNAVAILABLE');
     const proof=await deliverableReader(actorId,{projectId:input.projectId,milestoneId:input.milestoneId,versionId:input.versionId,reviewDigest:input.reviewDigest});
-    if(proof.manifest.mediaType!=='text/plain')throw Error('DELIVERABLE_UNAVAILABLE');
-    let contentText;try{contentText=new TextDecoder('utf-8',{fatal:true}).decode(proof.bytes);}catch{throw Error('DELIVERABLE_CONTENT_CONFLICT');}
-    return {proof,contentText};
+    return {proof,preview:deliverablePreview(proof)};
   };
   return async function handle({action, method, origin, rawBody, sessionToken}) {
     let fields = Object.hasOwn(schemas, action) ? schemas[action] : null;
@@ -71,7 +70,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
       const request = {...input, actorId:session.actorId};
       const operations = {
         'deliverable-catalogue': async()=>{await portal.authorise(session.actorId,input.projectId,'manage-reviews');return deliverableCatalogue?deliverableCatalogue.list(session.actorId,input.projectId):[];},
-        deliverable: async()=>{const {proof,contentText}=await readDeliverable(session.actorId,input);return {label:proof.manifest.label,sourceVersion:proof.manifest.sourceVersion,reviewDigest:proof.reviewDigest,contentText};},
+        deliverable: async()=>{const {proof,preview}=await readDeliverable(session.actorId,input);return {label:proof.manifest.label,sourceVersion:proof.manifest.sourceVersion,reviewDigest:proof.reviewDigest,...preview};},
         'workspace-access': () => portal.workspaceAccess(session.actorId),
         'admin-overview': () => portal.adminOverview(session.actorId),
         'admin-accounts': () => portal.adminAccounts(session.actorId,input.businessId),

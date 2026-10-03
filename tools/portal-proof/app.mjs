@@ -31,7 +31,7 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
   const portalHandler=createPortalHandler({portal,allowedOrigin,resolveSession:raw=>auth.resolveSession(raw),deliverableReader,deliverableCatalogue});
   const server=createServer({maxHeaderSize:16384},async (request,response) => {
     const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',
-      'Referrer-Policy':'no-referrer','Content-Security-Policy':`default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' ${authConnect}; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`};
+      'Referrer-Policy':'no-referrer','Content-Security-Policy':`default-src 'none'; script-src 'self'; style-src 'self'; img-src data:; connect-src 'self' ${authConnect}; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`};
     const send=(status,data) => { response.writeHead(status,{...headers,'Content-Type':'application/json; charset=utf-8'}); response.end(JSON.stringify(data)); };
     try {
       if (typeof request.url!=='string' || request.url.length>4096) return send(400,{error:'INVALID_REQUEST'});

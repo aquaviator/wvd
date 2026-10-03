@@ -492,6 +492,19 @@ then switches to the Owner to view and approve its verified synthetic content.
 Local suite: 352 passed, one Windows-only skip. Source
 `df5452f36878bcfd91d5ec3061b4cb1b4cd3c406` passed all four CI jobs and
 offline container run 37126362514 after correcting the selector accessible name.
-Additional browser coverage checks Member preview with approval denied and source
-content changing between Owner viewing and approval; verification is pending. The catalogue is explicit development configuration, not a live Google
+Source `b1bf48f79f517e483496c74d8d6ccd3f2c527289` then passed all CI jobs
+and offline container run 37126520749, including Member preview with approval
+denied and source changes between Owner viewing and approval. Downloaded results
+matched the commit and synthetic denial evidence was inspected. The catalogue is explicit development configuration, not a live Google
 source discovery service or proof of retained artifact access.
+
+### Bounded PNG deliverable preview — 3 October 2026
+
+Adapted the existing pinned-reader/boundary/UI path; the reuse catalogue contains
+no suitable image preview module. Static PNG bytes use bounded data URIs rather
+than external browser URLs. Structural/chunk checksum checks and 2048×2048
+dimension bounds precede transport, then browser decoding gates the approval
+button. Approval rechecks exact source bytes through the existing transaction
+proof. Animated PNGs, corrupt/truncated images and other binary formats stay
+unavailable. This is not a general image decoder or a live Google file binding.
+Unit and isolated browser verification is in progress.

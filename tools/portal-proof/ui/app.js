@@ -17,13 +17,20 @@ function node(tag,text){const result=document.createElement(tag);result.textCont
 function deliverableReference(container,review,onViewed){
   if(!review?.deliverable)return;const item=review.deliverable;
   container.append(node('p',`Deliverable: ${item.label}`),node('p',`Deliverable version: ${item.sourceVersion}`));
-  if(!deliverablesEnabled||item.mediaType!=='text/plain'){container.append(node('p','Preview access is not connected for this deliverable.'));return;}
-  const button=node('button','View referenced deliverable'),snapshot=node('pre','');button.type='button';snapshot.className='deliverable-snapshot';snapshot.hidden=true;const generation=revision;
+  if(!deliverablesEnabled||!['text/plain','image/png'].includes(item.mediaType)){container.append(node('p','Preview access is not connected for this deliverable.'));return;}
+  const button=node('button','View referenced deliverable'),snapshot=node(item.mediaType==='image/png'?'img':'pre','');button.type='button';snapshot.className='deliverable-snapshot';snapshot.hidden=true;const generation=revision;
   button.addEventListener('click',async()=>{button.disabled=true;try{
     const data=await api('/api/portal/deliverable',{projectId:review.projectId,milestoneId:review.milestoneId,versionId:review.versionId,reviewDigest:review.digest});
     if(generation!==revision||!sessionToken||!container.isConnected)return;
-    if(data.reviewDigest!==review.digest||typeof data.contentText!=='string')throw Error('The referenced content could not be verified.');
-    snapshot.textContent=data.contentText;snapshot.hidden=false;onViewed?.();
+    if(data.reviewDigest!==review.digest)throw Error('The referenced content could not be verified.');
+    if(item.mediaType==='image/png'){
+      if(data.mediaType!=='image/png'||typeof data.contentBase64!=='string'||data.contentBase64.length>699052||data.contentBase64.length%4!==0||!/^[A-Za-z0-9+/]*={0,2}$/.test(data.contentBase64)||!Number.isSafeInteger(data.width)||!Number.isSafeInteger(data.height)||data.width<1||data.height<1||data.width>2048||data.height>2048)throw Error('The referenced content could not be verified.');
+      snapshot.alt=item.label;snapshot.src=`data:image/png;base64,${data.contentBase64}`;
+      await snapshot.decode();
+      if(snapshot.naturalWidth!==data.width||snapshot.naturalHeight!==data.height)throw Error('The referenced content could not be verified.');
+    }else{if(typeof data.contentText!=='string')throw Error('The referenced content could not be verified.');snapshot.textContent=data.contentText;}
+    if(generation!==revision||!sessionToken||!container.isConnected)return;
+    snapshot.hidden=false;onViewed?.();
   }catch(error){status(error.message);}finally{button.disabled=false;}});
   container.append(button,snapshot);
 }
