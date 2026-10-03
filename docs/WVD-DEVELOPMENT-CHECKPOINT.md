@@ -529,5 +529,9 @@ Ten focused adapter/bridge tests pass locally. The current restricted workspace
 blocks local listening sockets and child CLI execution, so three existing local
 HTTP/CLI checks cannot complete here; full verification uses the established CI
 and offline container. Browser coverage now routes text/PNG source reads through
-the Drive adapter with a synthetic provider. CI verification is pending. See
+the Drive adapter with a synthetic provider. Source
+`a870a16d3fc5fa34c57b7fb8e3e5bc8197f9df81` passed all four CI jobs and
+offline container run 37128147143: 365 portal tests passed, with one native
+Windows skip in Linux. The native Windows job also passed. Downloaded results
+matched the commit and the PNG preview screenshot was inspected. See
 WVD-GOOGLE-DELIVERABLE-DEVELOPMENT.md for exact remaining live bindings.

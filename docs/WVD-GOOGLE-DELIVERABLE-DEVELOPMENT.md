@@ -56,7 +56,11 @@ Focused tests cover registry isolation, immutable copies, metadata and stream
 failures, cancellation, timeout/admission, fixed request URLs and composition with
 Owner approval proofs. The existing real Firebase-emulator browser journey now
 uses this adapter with a synthetic Drive client for text and PNG deliverables.
-This verifies the adapter contract through the portal; it is not live Drive access.
+Source `a870a16d3fc5fa34c57b7fb8e3e5bc8197f9df81` passed all four CI jobs
+and offline container run 37128147143 (365 portal tests passed, one Windows-only
+skip on Linux; native Windows also passed). Downloaded results matched the source
+and the PNG screenshot was inspected. This verifies the adapter contract through
+the portal; it is not live Drive access.
 
 Before a live development read:
 
