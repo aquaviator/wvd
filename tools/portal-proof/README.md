@@ -118,6 +118,16 @@ confirmation delivery remain integration work. Holiday fixtures are synthetic.
 
 ## Production acceptance remains open
 
+`call-http.mjs` optionally exposes `POST /api/calls/availability` around the
+existing read-only screening composition. Its exact request contains only UTC
+candidate starts. Calendar IDs, holiday evidence, policy and lookup capacity are
+server bindings. The shared bounded JSON transport rejects oversized requests;
+explicit concurrent admission prevents an unbounded provider queue. Responses
+project only candidate start/end, London timezone and `provisional: true`.
+They never imply a reservation. The development application enables this adapter
+only when explicitly supplied in isolated Firebase emulator mode. No live
+Calendar credentials, public site endpoint or holiday source is configured.
+
 The executable development foundation is not production readiness. Outstanding
 work includes live browser authentication and server credentials, colleague invitation and
 verified account onboarding, external artifact/preview binding,

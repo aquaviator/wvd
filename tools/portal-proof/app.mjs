@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs';
 import {firebaseConfiguration} from './firebase-config.mjs';
 import {createPortalHandler} from './http.mjs';
 import {createInvitationHandler} from './invitation-http.mjs';
+import {createCallAvailabilityHandler} from './call-http.mjs';
 
 const assets = new Map([
   ['/', ['text/html; charset=utf-8',readFileSync(new URL('./ui/index.html',import.meta.url))]],
@@ -10,7 +11,7 @@ const assets = new Map([
   ['/auth-client.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/auth-client.js',import.meta.url))]],
   ['/style.css', ['text/css; charset=utf-8',readFileSync(new URL('./ui/style.css',import.meta.url))]]
 ]);
-export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,invitations}) {
+export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,invitations,callAvailability}) {
   if (new URL(allowedOrigin).origin!==allowedOrigin) throw new Error('INVALID_CONFIGURATION');
   let authConfig={mode:'local'},authConnect='';
   if(firebaseEmulator!==undefined) {
@@ -20,6 +21,8 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
     authConfig={mode:'firebase-emulator',authOrigin:authConnect};
   }
   if(invitations!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
+  if(callAvailability!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
+  const callHandler=callAvailability===undefined?null:createCallAvailabilityHandler({...callAvailability,allowedOrigin});
   const invitationHandler=invitations===undefined?null:createInvitationHandler({invitations,allowedOrigin});
   if(invitationHandler)authConfig.invitationsEnabled=true;
   const portalHandler=createPortalHandler({portal,allowedOrigin,resolveSession:raw=>auth.resolveSession(raw)});
@@ -30,6 +33,7 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
     try {
       if (typeof request.url!=='string' || request.url.length>4096) return send(400,{error:'INVALID_REQUEST'});
       const url=new URL(request.url,'http://localhost');
+      if(url.pathname.startsWith('/api/calls/')&&callHandler)return callHandler(request,response);
       if(url.pathname.startsWith('/api/invitations/')&&invitationHandler)return invitationHandler(request,response);
       if (url.pathname.startsWith('/api/portal/')) return portalHandler(request,response);
       if(url.pathname==='/auth-config.json'&&!url.search&&request.method==='GET')return send(200,authConfig);

@@ -383,3 +383,16 @@ the helper confers no product access. Regression coverage proves no grant write,
 no invalid-token account lookup, and suppression without consuming an outbox intent.
 Local portal suite: 321 passed, zero failed, one Windows-only skip on Linux.
 CI/native and unattended container verification remain pending for this change.
+
+### Public call availability boundary — 3 October 2026
+
+Reconciled Firebase account-proof source `6ab2603`; its CI and unattended
+development container completed successfully. Added an optional, bounded public
+HTTP read adapter over the existing call screening rules and Google evidence
+reader. Client input cannot replace calendar IDs, holiday evidence or policy;
+explicit concurrent capacity and the shared 8 KiB body reader bound admission.
+Responses project validated provisional slots only. The development application
+requires explicit isolated emulator configuration to expose it. No live endpoint,
+Calendar write, credential, registration or booking confirmation was added.
+Actual authorised Google binding, complete conflict calendar set, holiday
+coverage/freshness policy and reservation/confirmation remain unfinished.

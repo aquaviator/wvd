@@ -35,6 +35,14 @@ evidence is still not proof of provider authenticity or slot reservation.
 
 ## Remaining live dependencies
 
+The optional `call-http.mjs` development boundary reuses the shared body reader,
+candidate normaliser and screening composition. It accepts candidate starts only,
+keeps conflict calendars/holiday evidence on the server, bounds concurrent reads
+with explicit capacity, and validates/projects provisional slot output. Synthetic
+tests compose the HTTP handler through Google-shaped free/busy evidence and the
+actual shared availability rules; errors and private calendar details are omitted.
+The emulator application can opt in explicitly. No live endpoint is enabled.
+
 - Connect app-owned, appropriately scoped Calendar credentials through the
   approved secret mechanism; no connector token is exported into code or logs.
 - Establish the full set of calendars that must prevent founder conflicts. The
