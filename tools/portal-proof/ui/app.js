@@ -91,7 +91,7 @@ async function project(){
   const [overview,tickets]=await Promise.all([read('overview',{projectId:id}),read('tickets',{projectId:id})]);
   const colleagues=overview.canManageColleagues?await read('colleagues',{projectId:id}):null;
   const catalogue=adminAccess?await read('deliverable-catalogue',{projectId:id}):[];
-  const addDeliverableChoice=form=>{if(!catalogue.length)return null;const select=document.createElement('select'),label=node('label','Referenced deliverable');const empty=node('option','No referenced deliverable (text review only)');empty.value='';select.append(empty);for(const item of catalogue){const option=node('option',`${item.label} — ${item.sourceVersion}`);option.value=item.id;select.append(option);}label.append(select);form.append(label);return select;};
+  const addDeliverableChoice=form=>{if(!catalogue.length)return null;const select=document.createElement('select'),label=node('label','Referenced deliverable');select.setAttribute('aria-label','Referenced deliverable');const empty=node('option','No referenced deliverable (text review only)');empty.value='';select.append(empty);for(const item of catalogue){const option=node('option',`${item.label} — ${item.sourceVersion}`);option.value=item.id;select.append(option);}label.append(select);form.append(label);return select;};
   if(generation!==revision||!sessionToken)return;
   const box=el('overview');box.append(node('h2','Project progress'),node('p',`Stage: ${overview.stage??'Awaiting update'}`),node('p',`Next step: ${overview.nextStep??'Awaiting update'}`));
   if(adminAccess){
