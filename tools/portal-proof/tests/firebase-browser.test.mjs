@@ -26,3 +26,13 @@ test('Firebase failures are sanitized and malformed ID tokens rejected',async()=
 test('server rejects live Firebase configuration before constructing browser app',()=>{
  assert.throws(()=>createApplication({portal:{},auth:{},allowedOrigin:'http://127.0.0.1:4703',firebaseEmulator:{projectId:'wvd-development',productId:'wvd',databaseId:'(default)',mode:'live'}}),/ISOLATED_EMULATORS_REQUIRED/);
 });
+
+test('emulator account registration requests verification and discards all credentials/tokens',async()=>{
+ const calls=[],client=createAuthClient({mode:'firebase-emulator',authOrigin},{fetcher:async(url,options)=>{calls.push({url,options});return {ok:true,json:async()=>({idToken:'temporary-id-token',refreshToken:'never-retained',emailVerified:true})};}});
+ assert.deepEqual(await client.register({email:'member@example.test',password:'Synthetic-long-password!'}),{verificationRequested:true});assert.equal(calls.length,2);assert.ok(calls[0].url.includes('accounts:signUp?'));assert.deepEqual(JSON.parse(calls[1].options.body),{requestType:'VERIFY_EMAIL',idToken:'temporary-id-token'});
+ assert.deepEqual(await client.confirmVerification({code:'synthetic-action-code'}),{verified:true});assert.deepEqual(JSON.parse(calls.at(-1).options.body),{oobCode:'synthetic-action-code'});
+ await assert.rejects(()=>client.register({email:'member@example.test',password:'short'}),/15 characters/);assert.equal(calls.length,3);
+});
+test('verification failure returns no portal session and does not expose upstream details',async()=>{
+ const client=createAuthClient({mode:'firebase-emulator',authOrigin},{fetcher:async()=>({ok:false,json:async()=>({error:'private mailbox'})})});await assert.rejects(()=>client.confirmVerification({code:'code'}),error=>!error.message.includes('private mailbox')&&/verify/.test(error.message));
+});

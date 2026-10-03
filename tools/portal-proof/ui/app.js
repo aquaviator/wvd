@@ -177,14 +177,28 @@ async function project(){
     }catch(error){status(error.message);open.disabled=false;}});card.append(open);el('tickets').append(card);
   }
 }
-el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();let projects;try{if(pendingMemberInvite){if(!invitationsEnabled)throw Error('Invitation acceptance is unavailable.');await api('/api/invitations/redeem',{token:pendingMemberInvite});pendingMemberInvite=null;}projects=await read('projects',{});}catch(error){signedOut();throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':'No projects are assigned to your account.');await administration();await project();});});
+function invitedRegistration(){
+    if(pendingMemberInvite&&invitationsEnabled&&authClient&&!el('firebase-registration')){
+      const details=document.createElement('details');details.id='firebase-registration';details.append(node('summary','Create your invited development account'));
+      const form=document.createElement('form'),email=document.createElement('input'),password=document.createElement('input');email.type='email';email.required=true;email.maxLength=320;email.autocomplete='username';password.type='password';password.required=true;password.minLength=15;password.maxLength=1024;password.autocomplete='new-password';
+      for(const [text,input]of [['Invited account email',email],['Invited account password',password]]){const label=node('label',text);label.append(input);form.append(label);}
+      form.append(node('p','Synthetic emulator accounts only. Use the email named in the invitation and a password of at least 15 characters. Registration does not grant project access.'),node('button','Create invited account'));
+      form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{try{await authClient.register({email:email.value,password:password.value});status('Verification requested. In this emulator, use the action code shown by the development Auth emulator, then sign in.');}finally{password.value='';}});});
+      const resend=node('button','Request another verification code');resend.type='button';resend.addEventListener('click',async()=>{resend.disabled=true;try{await authClient.requestVerification({email:email.value,password:password.value});status('Verification requested from the development Auth emulator.');}catch(error){status(error.message);}finally{password.value='';resend.disabled=false;}});form.append(resend);
+      const verify=document.createElement('form'),code=document.createElement('input');code.required=true;code.maxLength=2048;code.autocomplete='off';const label=node('label','Development email verification code');label.append(code);verify.append(label,node('button','Verify development email'));
+      verify.addEventListener('submit',event=>{event.preventDefault();busy(verify,async()=>{try{await authClient.confirmVerification({code:code.value});status('Email verified. Sign in above to accept the invitation.');}finally{code.value='';}});});details.append(form,verify);el('account').append(details);
+    }
+
+}
+el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();let projects;try{if(pendingMemberInvite){if(!invitationsEnabled)throw Error('Invitation acceptance is unavailable.');await api('/api/invitations/redeem',{token:pendingMemberInvite});pendingMemberInvite=null;el('firebase-registration')?.remove();}projects=await read('projects',{});}catch(error){signedOut();throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':'No projects are assigned to your account.');await administration();await project();});});
 el('redeem').addEventListener('submit',event=>{event.preventDefault();busy(el('redeem'),async()=>{await authClient.redeem(Object.fromEntries(new FormData(el('redeem'))));el('redeem').reset();el('invite-panel').open=false;status('Password set. You can now sign in.');});});
 el('logout').addEventListener('click',async()=>{try{await authClient.logout();signedOut();status('Signed out.');}catch(error){status(error.message);}});
 el('projects').addEventListener('change',()=>{project().catch(error=>status(error.message));});
 el('ticket').addEventListener('submit',event=>{event.preventDefault();busy(el('ticket'),async()=>{await api('/api/portal/ticket',{...Object.fromEntries(new FormData(el('ticket'))),projectId:projectId(),operationId:crypto.randomUUID()});el('ticket').reset();status('Ticket saved.');await project();});});
 // Tokens are held in memory only. An optional invitation fragment is removed
 // immediately so it cannot appear in subsequent page/referrer URLs.
-if(location.hash.startsWith('#member-invite=')){const code=location.hash.slice(15);history.replaceState(null,'',location.pathname);if(/^[A-Za-z0-9_-]{43}$/.test(code))pendingMemberInvite=code;}
+function captureMemberInvitation(){if(location.hash.startsWith('#member-invite=')){const code=location.hash.slice(15);history.replaceState(null,'',location.pathname);if(/^[A-Za-z0-9_-]{43}$/.test(code)){pendingMemberInvite=code;invitedRegistration();if(authClient)status(sessionToken?'Sign out, then sign in with the email named in this invitation.':'Sign in with the verified email account named in your Member invitation.');}}}
+captureMemberInvitation();window.addEventListener('hashchange',captureMemberInvitation);
 if(location.hash.startsWith('#invite=')){const code=location.hash.slice(8);history.replaceState(null,'',location.pathname);if(/^[A-Za-z0-9_-]{43}$/.test(code)){el('redeem').elements.invitationToken.value=code;el('invite-panel').open=true;}}
 
 try {
@@ -193,6 +207,7 @@ try {
   authClient=createAuthClient(authConfig,{request:api});
   if(config.mode==='firebase-emulator'){
     el('invite-panel').hidden=true;
+    invitedRegistration();
     el('account').querySelector('h1').textContent='Development project workspace';
     status(pendingMemberInvite?'Sign in with the verified email account named in your Member invitation.':'Firebase emulator: synthetic development accounts only.');
   }

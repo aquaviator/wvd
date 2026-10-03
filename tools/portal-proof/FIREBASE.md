@@ -394,7 +394,11 @@ are rejected. The emulator demo provides Owner link creation/revocation and invi
 acceptance during sign-in for an existing verified Firebase account. The link is
 held in memory, copied only on request, and removed from the incoming URL
 fragment immediately. No raw token is rendered or persisted in browser storage.
-New Auth account registration and email delivery are not connected. They create no Firebase Auth users and send no
+An invitation link also enables synthetic account registration and verification
+using the development Auth emulator action code. Registration alone creates no
+portal identity or project grants. Auth credentials and returned refresh tokens
+are not retained. Live registration, email delivery and abuse protection remain
+unconnected. They create no Firebase Auth users and send no
 messages. Invitation policy, registration/email verification, abuse controls,
 retention and delivery still need binding before live onboarding. Normal portal
 requests continue to require the active product identity and project permissions.
