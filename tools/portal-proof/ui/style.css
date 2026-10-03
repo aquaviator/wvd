@@ -5,3 +5,5 @@
 .account-project-access fieldset{min-width:0;border:1px solid #c9d6d3;padding:.7rem}.account-project-access label{display:flex;align-items:center;gap:.7rem;overflow-wrap:anywhere}.account-project-access input[type="checkbox"]{display:inline-block;width:1.2rem;height:1.2rem;flex-shrink:0;padding:0}.account-list h4{overflow-wrap:anywhere}
 
 .colleague-access h4{overflow-wrap:anywhere}
+
+.invitation-actions{display:flex;flex-direction:column;align-items:flex-start;gap:.75rem}.invitation-actions p{margin:.5rem 0;overflow-wrap:anywhere}#firebase-registration form>button{display:block;margin-top:.75rem}
