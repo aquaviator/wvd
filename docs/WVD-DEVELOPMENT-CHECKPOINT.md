@@ -507,4 +507,8 @@ dimension bounds precede transport, then browser decoding gates the approval
 button. Approval rechecks exact source bytes through the existing transaction
 proof. Animated PNGs, corrupt/truncated images and other binary formats stay
 unavailable. This is not a general image decoder or a live Google file binding.
-Unit and isolated browser verification is in progress.
+Source `e1ee6222ffe4dd578149c4770bc7ff9f3209929c` passed all CI jobs and offline container run
+37126914296, including admin PNG publication, browser decoding and Owner approval.
+The follow-up also bounds PNG decompression to expected pixel rows and clears
+stale verified content after source conflict. Local suite: 355 passed, one native
+Windows skip. Follow-up browser/container verification is pending.

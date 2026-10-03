@@ -128,8 +128,9 @@ without a provider dependency.
 
 The optional development HTTP/browser composition displays UTF-8 text snapshots
 using text content and static PNG previews using a typed data URI. PNG byte size,
-chunk boundaries/checksums, single-image structure and dimensions (at most
-2048×2048) are checked before returning bytes; browser decoding must succeed
+chunk boundaries/checksums, noninterlaced single-image structure and dimensions
+(at most 2048×2048) are checked before returning bytes. Decompression is bounded
+to the exact expected pixel-row size and row filter values are checked; browser decoding must succeed
 before approval becomes available. Approval re-verifies the source. It adds no active
 HTML or external links. Without a source reader, approval of referenced content
 stays paused. JPEG, PDF and ZIP manifests remain metadata only in this browser slice.

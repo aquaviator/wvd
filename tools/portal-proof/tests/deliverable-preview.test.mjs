@@ -5,7 +5,7 @@ import {deliverablePreview} from '../deliverable-preview.mjs';
 import {createReviewDeliverableReader} from '../deliverable.mjs';
 import {createBoundary} from '../boundary.mjs';
 import {PortalProof} from '../domain.mjs';
-import {designPng,oversizedPng,animatedPng} from './fixtures/png.mjs';
+import {designPng,oversizedPng,animatedPng,brokenPayloadPng,excessPixelsPng} from './fixtures/png.mjs';
 const png=bytes=>deliverablePreview({manifest:{mediaType:'image/png'},bytes});
 test('pinned PNG preview preserves exact bytes and bounded dimensions; text stays inert and other formats stay unavailable',()=>{
  assert.deepEqual(png(designPng),{mediaType:'image/png',contentBase64:designPng.toString('base64'),width:240,height:120});
@@ -15,7 +15,7 @@ test('pinned PNG preview preserves exact bytes and bounded dimensions; text stay
 });
 test('PNG preview rejects corrupt, truncated, appended, excessive-dimension and animated content before browser decoding',()=>{
  const changed=Buffer.from(designPng);changed[50]^=1;
- for(const bytes of [Buffer.from('<svg/>'),designPng.subarray(0,56),designPng.subarray(0,designPng.length-1),Buffer.concat([designPng,Buffer.from('extra')]),changed,oversizedPng,animatedPng,Buffer.alloc(512*1024+1)])assert.throws(()=>png(bytes),/DELIVERABLE_CONTENT_CONFLICT/);
+ for(const bytes of [Buffer.from('<svg/>'),designPng.subarray(0,56),designPng.subarray(0,designPng.length-1),Buffer.concat([designPng,Buffer.from('extra')]),changed,oversizedPng,animatedPng,brokenPayloadPng,excessPixelsPng,Buffer.alloc(512*1024+1)])assert.throws(()=>png(bytes),/DELIVERABLE_CONTENT_CONFLICT/);
 });
 test('PNG HTTP reads and approval use actor-scoped byte proofs; malformed images cannot save approval even with matching hash',async()=>{
  const run=async(bytes)=>{
@@ -30,5 +30,5 @@ test('PNG HTTP reads and approval use actor-scoped byte proofs; malformed images
   return {viewed,approved,state:portal.snapshot()};
  };
  const valid=await run(designPng);assert.equal(valid.viewed.status,200);assert.equal(valid.viewed.data.contentBase64,designPng.toString('base64'));assert.equal(valid.approved.status,200);assert.equal(valid.state.receipts.length,1);
- const invalid=await run(Buffer.from('Not PNG'));assert.equal(invalid.viewed.status,409);assert.equal(invalid.approved.status,409);assert.equal(invalid.state.receipts.length,0);
+ const invalid=await run(brokenPayloadPng);assert.equal(invalid.viewed.status,409);assert.equal(invalid.approved.status,409);assert.equal(invalid.state.receipts.length,0);
 });

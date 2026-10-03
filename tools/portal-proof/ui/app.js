@@ -11,15 +11,15 @@ async function api(path,body,method='POST'){
   const options={method,headers,credentials:'omit',cache:'no-store'};
   if(method==='POST'){headers['Content-Type']='application/json';options.body=JSON.stringify(body);}
   const response=await fetch(path,options);const data=await response.json();
-  if(!response.ok){if(response.status===401&&path.startsWith('/api/portal/'))signedOut();throw new Error(messages[data.error]??'The request could not be completed.');}return data;
+  if(!response.ok){if(response.status===401&&path.startsWith('/api/portal/'))signedOut();const error=new Error(messages[data.error]??'The request could not be completed.');error.code=data.error;throw error;}return data;
 }
 function node(tag,text){const result=document.createElement(tag);result.textContent=text;return result;}
-function deliverableReference(container,review,onViewed){
+function deliverableReference(container,review,onViewed,onUnavailable){
   if(!review?.deliverable)return;const item=review.deliverable;
   container.append(node('p',`Deliverable: ${item.label}`),node('p',`Deliverable version: ${item.sourceVersion}`));
   if(!deliverablesEnabled||!['text/plain','image/png'].includes(item.mediaType)){container.append(node('p','Preview access is not connected for this deliverable.'));return;}
-  const button=node('button','View referenced deliverable'),snapshot=node(item.mediaType==='image/png'?'img':'pre','');button.type='button';snapshot.className='deliverable-snapshot';snapshot.hidden=true;const generation=revision;
-  button.addEventListener('click',async()=>{button.disabled=true;try{
+  const button=node('button','View referenced deliverable'),snapshot=node(item.mediaType==='image/png'?'img':'pre','');button.type='button';snapshot.className='deliverable-snapshot';snapshot.hidden=true;const generation=revision;const clear=()=>{snapshot.hidden=true;snapshot.removeAttribute('src');snapshot.textContent='';onUnavailable?.();};
+  button.addEventListener('click',async()=>{button.disabled=true;clear();try{
     const data=await api('/api/portal/deliverable',{projectId:review.projectId,milestoneId:review.milestoneId,versionId:review.versionId,reviewDigest:review.digest});
     if(generation!==revision||!sessionToken||!container.isConnected)return;
     if(data.reviewDigest!==review.digest)throw Error('The referenced content could not be verified.');
@@ -32,7 +32,7 @@ function deliverableReference(container,review,onViewed){
     if(generation!==revision||!sessionToken||!container.isConnected)return;
     snapshot.hidden=false;onViewed?.();
   }catch(error){status(error.message);}finally{button.disabled=false;}});
-  container.append(button,snapshot);
+  container.append(button,snapshot);return clear;
 }
 async function busy(form,fn){status('');const button=form.querySelector('button');button.disabled=true;try{await fn();}catch(error){status(error.message);}finally{button.disabled=false;}}
 const projectId=()=>el('projects').value;
@@ -174,10 +174,10 @@ async function project(){
   for(const m of overview.awaitingClient){
     const card=node('article','');card.append(node('h3',m.id),node('p',`Review version: ${m.currentVersionId}`));
     if(m.review){card.append(node('h4',m.review.title),node('p',m.review.body));}
-    const approval=node('button','Approve this version');approval.type='button';approval.disabled=!overview.canApprove||Boolean(m.reviewRequired&&!m.review)||Boolean(m.review?.deliverable);
-    if(m.review?.deliverable){const notice=node('p','Approval is paused until the referenced preview can be reviewed.');card.append(notice);deliverableReference(card,m.review,()=>{notice.textContent='Referenced content verified for this review version.';approval.disabled=!overview.canApprove;});}
+    let reviewed=!m.review?.deliverable,clearPreview;const approval=node('button','Approve this version');approval.type='button';const unavailable=()=>{reviewed=false;approval.disabled=true;};approval.disabled=!overview.canApprove||Boolean(m.reviewRequired&&!m.review)||!reviewed;
+    if(m.review?.deliverable){const notice=node('p','Approval is paused until the referenced preview can be reviewed.');card.append(notice);clearPreview=deliverableReference(card,m.review,()=>{reviewed=true;notice.textContent='Referenced content verified for this review version.';approval.disabled=!overview.canApprove;},()=>{unavailable();notice.textContent='Approval is paused until the referenced preview can be reviewed.';});}
     if(m.reviewRequired&&!m.review)card.append(node('p','Review content is unavailable. Approval is paused.'));
-    approval.addEventListener('click',async()=>{approval.disabled=true;try{await api('/api/portal/approve',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,...(m.review?{reviewDigest:m.review.digest}:{}),operationId:crypto.randomUUID()});status('Milestone approved.');await project();}catch(error){status(error.message);}finally{approval.disabled=false;}});
+    approval.addEventListener('click',async()=>{approval.disabled=true;try{await api('/api/portal/approve',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,...(m.review?{reviewDigest:m.review.digest}:{}),operationId:crypto.randomUUID()});status('Milestone approved.');await project();}catch(error){if(['DELIVERABLE_CONTENT_CONFLICT','DELIVERABLE_UNAVAILABLE'].includes(error.code)){unavailable();clearPreview?.();}status(error.message);}finally{approval.disabled=!overview.canApprove||Boolean(m.reviewRequired&&!m.review)||!reviewed;}});
     card.append(approval,node('p','Only the client Owner can approve.'));
     const form=document.createElement('form'),label=node('label','Feedback'),body=document.createElement('textarea');body.required=true;body.maxLength=10000;label.append(body);form.append(label,node('button','Send feedback'));
     form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/feedback',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,body:body.value,operationId:crypto.randomUUID()});body.value='';await project();status('Feedback saved.');});});card.append(form);box.append(card);
