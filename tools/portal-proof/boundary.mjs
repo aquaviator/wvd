@@ -2,6 +2,7 @@
 const schemas = {
   'workspace-access': [],
   'admin-overview': [],
+  'admin-accounts': ['businessId'],
   'update-progress': ['projectId','stage','nextStep','expectedDigest','operationId'],
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
   'create-milestone': ['projectId','milestoneId','versionId','title','body'],
@@ -16,7 +17,7 @@ const schemas = {
   feedback: ['projectId', 'milestoneId', 'versionId', 'body', 'operationId'],
   approve: ['projectId', 'milestoneId', 'versionId', 'operationId']
 };
-const reads = new Set(['workspace-access', 'admin-overview', 'projects', 'tickets', 'overview', 'read-ticket']);
+const reads = new Set(['workspace-access', 'admin-overview', 'admin-accounts', 'projects', 'tickets', 'overview', 'read-ticket']);
 const response = (status, data) => ({status, headers: {'Cache-Control':'no-store'}, data});
 
 export function createBoundary({portal, resolveSession, allowedOrigin}) {
@@ -47,6 +48,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin}) {
       const operations = {
         'workspace-access': () => portal.workspaceAccess(session.actorId),
         'admin-overview': () => portal.adminOverview(session.actorId),
+        'admin-accounts': () => portal.adminAccounts(session.actorId,input.businessId),
         'update-progress': () => portal.updateProjectProgress(request),
         'publish-review': () => portal.publishReviewAsAdmin(request),
         'create-milestone': () => portal.createMilestoneAsAdmin(request),

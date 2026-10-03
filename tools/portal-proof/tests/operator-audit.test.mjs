@@ -67,3 +67,7 @@ test('Access inspection binds grants to one document revision and returns only s
  await assert.rejects(()=>s.portal.inspectAccess({uid:'o',businessId:'b',includeAll:true}),/INVALID_ACCESS_GRANT/);await assert.rejects(()=>s.portal.inspectAccess({uid:'o',businessId:'missing'}),/ACCESS_MEMBERSHIP_REQUIRED/);
  await s.portal.updateAccess({...grant,projectIds:[]},0,context);assert.equal((await s.portal.inspectAccess({uid:'o',businessId:'b'})).revision,1);await assert.rejects(()=>s.portal.updateAccess(grant,read.revision,context),/ACCESS_REVISION_CONFLICT/);
 });
+
+test('Firestore admin account read checks current capability and leaves aggregate unchanged',async()=>{
+ const s=setup(),state=seed();state.identities=[{id:'admin',active:true,wvdAdmin:true}];await s.portal.initialize(state);await s.portal.provisionAccess(grant,0,context);const before=s.raw();assert.equal((await s.portal.adminAccounts('admin','b')).accounts[0].accountId,'o');assert.deepEqual(s.raw(),before);await assert.rejects(()=>s.portal.adminAccounts('o','b'),/ACCESS_DENIED/);
+});

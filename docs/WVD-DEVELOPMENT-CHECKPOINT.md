@@ -257,3 +257,15 @@ with its aggregate revision from one document read. The projection omits other
 businesses and admin flags; it makes no claim about current Firebase Auth status.
 There is no public endpoint or permission mutation. Stale subsequent updates
 remain rejected, including after an intervening permission change.
+
+### Admin account overview — 3 October 2026
+
+Active WVD admins can load stored accounts for one existing client from the
+client overview. The read-only projection includes account ID, existing role,
+portal activation and explicit project grants, including revoked memberships.
+It reuses the WVD domain, boundary and SQLite/Firestore adapters at local base
+29381cd (remote ad55c46). Other business memberships and admin flags are omitted.
+Owner/Member requests and disabled admins are denied; no-store reads do not
+mutate aggregate state. UI clears account data with the existing sign-out flow
+and ignores results after sign-out or overview replacement. Current Firebase
+Auth status, invitations and access editing remain separate work.

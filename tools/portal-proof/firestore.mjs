@@ -96,6 +96,7 @@ export class FirestorePortal {
   projectsFor(...args){return this.#run('projectsFor',args);}
   workspaceAccess(...args){return this.#run('workspaceAccess',args);}
   adminOverview(...args){return this.#run('adminOverview',args);}
+  adminAccounts(...args) { return this.#run('adminAccounts', args); }
   updateProjectProgress(...args){return this.#run('updateProjectProgress',args);}
   publishReviewAsAdmin(...args){return this.#run('publishReviewAsAdmin',args);}
   createMilestoneAsAdmin(...args){return this.#run('createMilestoneAsAdmin',args);}

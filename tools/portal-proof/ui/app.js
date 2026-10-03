@@ -35,6 +35,17 @@ async function administration(){
       const card=node('article','');card.append(node('h4',item.projectId),node('p',`Stage: ${item.stage??'Awaiting update'}`),node('p',`Next step: ${item.nextStep??'Awaiting update'}`),node('p',`${item.awaitingReview} awaiting review · ${item.feedbackCount} feedback ${item.feedbackCount===1?'record':'records'} · ${item.ticketCount} support ${item.ticketCount===1?'ticket':'tickets'}`));
       const open=node('button','Open project');open.type='button';open.addEventListener('click',()=>{el('projects').value=item.projectId;project().catch(error=>status(error.message));});card.append(open);section.append(card);
     }
+    const accounts=document.createElement('details');accounts.className='admin-accounts';accounts.append(node('summary','Client accounts'));
+    const load=node('button','Load accounts');load.type='button';const list=node('div','');list.className='account-list';
+    load.addEventListener('click',async()=>{load.disabled=true;try{
+      const result=await read('admin-accounts',{businessId:business.businessId});
+      if(token!==sessionToken||!accounts.isConnected)return;
+      list.replaceChildren();
+      for(const account of result.accounts){const card=node('article','');card.append(node('h4',`Account: ${account.accountId}`),node('p',`Role: ${account.role}`),node('p',`Portal identity: ${account.identityActive?'Active':'Disabled'}`),node('p',`Client membership: ${account.membershipActive?'Active':'Revoked'}`),node('p',`Project access: ${account.projectIds.length?account.projectIds.join(', '):'No projects assigned'}`));list.append(card);}
+      if(!result.accounts.length)list.append(node('p','No client accounts are recorded.'));
+      load.textContent='Refresh accounts';
+    }catch(error){if(token===sessionToken)status(error.message);}finally{load.disabled=false;}});
+    accounts.append(node('p','Stored portal access. This view does not check current Firebase sign-in status. Access changes use the trusted operator workflow.'),load,list);section.append(accounts);
     box.append(section);
   }
   if(overview.businesses.length){

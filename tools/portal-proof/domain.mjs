@@ -91,6 +91,16 @@ export class PortalProof {
       }))
     }))});
   }
+  adminAccounts(actorId,businessId) {
+    if(!this.workspaceAccess(actorId).admin)denied();
+    this.#text(businessId,128);
+    if(!this.#state.projects.some(x=>x.businessId===businessId))throw Error('BUSINESS_SCOPE_DENIED');
+    return structuredClone({businessId,accounts:this.#state.memberships.filter(x=>x.businessId===businessId).map(member=>({
+      accountId:member.actorId,role:member.role,
+      identityActive:this.#state.identities.find(x=>x.id===member.actorId)?.active===true,
+      membershipActive:member.active,projectIds:[...member.projectIds].sort()
+    }))});
+  }
   // Trusted operator capability only. Do not expose this through client routes.
   provisionAccess(request) {
     const {uid,businessId,role,projectIds}=accessGrant(request);
