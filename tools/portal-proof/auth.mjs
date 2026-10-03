@@ -1,3 +1,4 @@
+import {validEmailAddress} from './email-address.mjs';
 import {createOpaqueToken,opaqueTokenDigest,isOpaqueToken} from './opaque-token.mjs';
 import {DatabaseSync} from 'node:sqlite';
 import {randomBytes, scrypt, timingSafeEqual} from 'node:crypto';
@@ -6,7 +7,7 @@ import {promisify} from 'node:util';
 const derive = promisify(scrypt);
 const hash=opaqueTokenDigest,token=createOpaqueToken,validToken=isOpaqueToken;
 const emailAddress = value => {
-  if (typeof value !== 'string' || value.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) throw new Error('INVALID_REQUEST');
+  if (!validEmailAddress(value) || value.length > 254) throw new Error('INVALID_REQUEST');
   return value.toLowerCase();
 };
 const passwordInput = value => {

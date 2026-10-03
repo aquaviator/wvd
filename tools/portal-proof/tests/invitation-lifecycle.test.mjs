@@ -4,6 +4,7 @@ import {PortalProof} from '../domain.mjs';
 import {DurablePortal} from '../durable.mjs';
 import {createOpaqueToken,opaqueTokenDigest} from '../opaque-token.mjs';
 import {validatePortalState} from '../state.mjs';
+import {invitationDigest} from '../invitation-state.mjs';
 import {createFirebaseInvitations} from '../firebase-invitations.mjs';
 const state=()=>({identities:[{id:'o',active:true},{id:'m',active:true}],projects:[{id:'p',businessId:'b'},{id:'foreign',businessId:'other'}],memberships:[{actorId:'o',businessId:'b',role:'Owner',active:true,projectIds:['p']}],milestones:[]});
 const policy={ref:'synthetic-one-hour',maxLifetimeMs:3600000},clock=()=> '2026-10-03T10:00:00.000Z';
@@ -39,4 +40,14 @@ test('Policy changes invalidate pending invitations; archived records retain the
 test('Owner invitation history is issuer/project scoped, contains no secrets and rechecks revocation scope',()=>{
  const seed=state();seed.projects.push({id:'second',businessId:'b'});seed.memberships[0].projectIds.push('second');seed.identities.push({id:'another',active:true});seed.memberships.push({actorId:'another',businessId:'b',role:'Owner',active:true,projectIds:['p']});const portal=new PortalProof(seed,clock,policy);issue(portal);portal.createMemberInvitation({...body,actorId:'another',email:'other@example.test',operationId:'other-invitation',tokenHash:opaqueTokenDigest(createOpaqueToken())});const before=portal.snapshot(),own=portal.memberInvitationsFor('o','p');assert.equal(own.invitations.length,1);assert.equal(own.invitations[0].email,body.email);assert.equal(own.invitations[0].canRevoke,true);assert.equal(JSON.stringify(own).includes('tokenHash'),false);assert.equal(JSON.stringify(own).includes('other@example.test'),false);assert.deepEqual(portal.memberInvitationsFor('o','second').invitations,[]);assert.deepEqual(portal.snapshot(),before);assert.throws(()=>portal.memberInvitationsFor('m','p'),/ACCESS_DENIED/);assert.throws(()=>portal.memberInvitationsFor('o','foreign'),/ACCESS_DENIED/);
  portal.createMemberInvitation({...body,projectIds:['p','second'],operationId:'multi',tokenHash:opaqueTokenDigest(createOpaqueToken())});portal.updateAccess({uid:'o',businessId:'b',role:'Owner',projectIds:['p']});assert.equal(portal.memberInvitationsFor('o','p').invitations.find(x=>x.email===body.email&&x.invitationId!=='invitation-1').canRevoke,false);
+});
+
+test('control characters cannot create an invitation or survive stored validation with a recomputed digest',()=>{
+ for(const control of ['\u0000','\u0001','\u007f']){
+  const portal=new PortalProof(state(),clock,policy),before=portal.snapshot(),email='new'+control+'@example.test';
+  assert.throws(()=>portal.createMemberInvitation({...body,email,tokenHash:opaqueTokenDigest(createOpaqueToken())}),/INVALID_INVITATION/);
+  assert.deepEqual(portal.snapshot(),before);
+  issue(portal);const corrupted=portal.snapshot();corrupted.invitations[0].email=email;corrupted.invitations[0].digest=invitationDigest(corrupted.invitations[0]);
+  assert.throws(()=>validatePortalState(corrupted),/CORRUPT_PORTAL_STATE/);
+ }
 });

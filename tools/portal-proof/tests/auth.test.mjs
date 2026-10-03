@@ -25,3 +25,9 @@ test('disable during password hashing prevents redemption',async t=>{const {auth
 test('disable during login prevents session creation',async t=>{const {auth}=setup(t);await account(auth);const pending=auth.login('owner@example.test',password,'peer');auth.disable('owner');await assert.rejects(pending,/UNAUTHENTICATED/);});
 test('simultaneous password work has a bounded queue',async t=>{const {auth}=setup(t);const a=auth.login('a@example.test','wrong','peer-a'),b=auth.login('b@example.test','wrong','peer-b');await assert.rejects(auth.login('c@example.test','wrong','peer-c'),/AUTH_BUSY/);await Promise.all([assert.rejects(a,/UNAUTHENTICATED/),assert.rejects(b,/UNAUTHENTICATED/)]);});
 test('only five sessions remain usable per account',async t=>{const {auth}=setup(t);await account(auth);const tokens=[];for(let i=0;i<6;i++)tokens.push((await auth.login('owner@example.test',password,'peer')).sessionToken);assert.equal(tokens.filter(raw=>auth.resolveSession(raw)).length,5);});
+
+test('local invitation address controls are rejected before creating an account binding',t=>{
+ const {auth}=setup(t);
+ for(const control of ['\u0000','\u0001','\u007f'])assert.throws(()=>auth.invite('owner','owner'+control+'@example.test'),/INVALID_REQUEST/);
+ assert.equal(typeof auth.invite('owner','owner@example.test').invitationToken,'string');
+});

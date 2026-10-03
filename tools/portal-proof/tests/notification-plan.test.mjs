@@ -31,3 +31,10 @@ test('malformed Firebase accounts are suppressed without returning an unsafe ema
   assert.deepEqual(result.clientRecipients,[]);assert.deepEqual(result.suppressedClientActorIds,['owner']);assert.deepEqual(portal.snapshot(),before);
  }
 });
+
+test('unsafe configured admin addresses abort recipient preparation before account reads and leave intent pending',async()=>{
+ const portal=fixture(),created=ticket(portal),before=portal.snapshot();let reads=0;
+ const prepare=createFirebaseNotificationPreparation({portal,productId:policy.productId,auth:{getUser:async()=>{reads++;assert.fail();}}});
+ for(const control of ['\u0000','\u0001','\u007f'])await assert.rejects(()=>prepare(created.id,{...policy,adminEmail:'admin'+control+'@example.test'},{maxClientRecipients:10}),/NOTIFICATION_POLICY_REQUIRED/);
+ assert.equal(reads,0);assert.deepEqual(portal.snapshot(),before);
+});

@@ -1,10 +1,11 @@
+import {validEmailAddress} from './email-address.mjs';
 import {validatePortalState} from './state.mjs';
 // Read-only planning over the existing durable notification intents. No email
 // lookup, message content, sender, acknowledgement or delivery occurs here.
 export function planNotification(state,intentId,policy) {
   validatePortalState(state);
   const keys=['adminEmail','clientAudience','portalOrigin','productId','ref'];
-  if(!policy||typeof policy!=='object'||Array.isArray(policy)||Object.keys(policy).sort().join(',')!==keys.sort().join(',')||typeof policy.ref!=='string'||!policy.ref.trim()||policy.ref.length>128||typeof policy.productId!=='string'||!/^[a-z][a-z0-9-]{1,62}$/.test(policy.productId)||typeof policy.adminEmail!=='string'||policy.adminEmail.length>320||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(policy.adminEmail)||!['ticket-participants','project-members'].includes(policy.clientAudience))throw Error('NOTIFICATION_POLICY_REQUIRED');
+  if(!policy||typeof policy!=='object'||Array.isArray(policy)||Object.keys(policy).sort().join(',')!==keys.sort().join(',')||typeof policy.ref!=='string'||!policy.ref.trim()||policy.ref.length>128||typeof policy.productId!=='string'||!/^[a-z][a-z0-9-]{1,62}$/.test(policy.productId)||!validEmailAddress(policy.adminEmail)||!['ticket-participants','project-members'].includes(policy.clientAudience))throw Error('NOTIFICATION_POLICY_REQUIRED');
   let origin;try{origin=new URL(policy.portalOrigin);if(origin.protocol!=='https:'||origin.origin!==policy.portalOrigin)throw Error();}catch{throw Error('NOTIFICATION_POLICY_REQUIRED');}
   if(typeof intentId!=='string'||!intentId||intentId.length>128)throw Error('INVALID_NOTIFICATION');
   const intent=state.outbox.find(x=>x.id===intentId);if(!intent||intent.status!=='pending')throw Error('INVALID_NOTIFICATION');

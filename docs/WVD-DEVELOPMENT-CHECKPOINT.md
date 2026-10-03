@@ -433,6 +433,21 @@ overwrite; cleanup removes the restored document. Demo-project and loopback
 checks run before SDK loading, and there is no live restore or HTTP route.
 The emulator test compares SQLite and Firestore results, verifies source state
 and revision remain unchanged and checks cleanup. Local portal suite: 333 passed,
-one native Windows skip. Emulator/container verification is pending on CI;
-this workspace has Java 17 rather than the required Java 21. This does not
+one native Windows skip. Source `da847dd08f6f62fae7b4592450de69a92e566e84` passed all four
+CI jobs and container run 37123975274, including the real emulator restore.
+The downloaded result report matches that exact source and the synthetic
+invitation-history screenshot was inspected. This workspace has Java 17 rather
+than the required Java 21, so emulator verification used the established CI. This does not
 establish recovery of Auth, files, IAM, rules or a production deployment.
+
+### Address validation consistency — 3 October 2026
+
+Extracted the existing Firebase email shape check into `email-address.mjs` and
+reused it for invitation requests/stored records, notification admin policy and
+local proof authentication. Firebase retains its existing exported validator;
+local auth retains its stricter 254-character bound and lower-case matching.
+NUL, other ASCII controls and DEL are rejected before invitation mutation or
+notification account lookup. Recomputed invitation digests do not legitimise an
+unsafe address in stored state. The helper does not verify address ownership or
+authorise delivery. Local portal suite: 336 passed, one Windows-only skip.
+Native/emulator/container checks remain pending for this follow-up.
