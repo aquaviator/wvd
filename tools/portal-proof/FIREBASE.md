@@ -350,3 +350,14 @@ fresh verified target checks for added grants, outside retryable transactions,
 and rechecks Owner authority at commit. Removal-only changes also work when the
 target Auth account is disabled/deleted. This is project-level Member management,
 not business-wide account revocation or the completed invitation delivery flow.
+
+### Invitation identity proof
+
+The backend now exposes a separate internal invitation identity resolver. It
+reuses Firebase token verification, then reads the current Firebase user and
+requires an enabled, verified, matching email and supported Google/password
+account. It can identify an invited user before product provisioning; this does
+not grant portal access. The normal portal resolver still requires an active
+product identity, and token role flags remain ignored. No invitation redemption
+HTTP endpoint is connected yet; the proof must be bound to a valid, unexpired,
+one-time invitation before any future membership grant.

@@ -23,7 +23,7 @@ test('real Google emulators: identity, product isolation, concurrent atomic writ
  const uid='owner';await auth.createUser({uid,email:'owner@example.test',emailVerified:true,password:'Emulator-only-123!'});
  const login=await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'owner@example.test',password:'Emulator-only-123!',returnSecureToken:true})});
  assert.equal(login.status,200);const {idToken}=await login.json();
- assert.deepEqual(await backend.resolveSession(idToken),{actorId:uid});assert.equal(await other.resolveSession(idToken),null);
+ assert.deepEqual(await backend.resolveSession(idToken),{actorId:uid});assert.equal(await other.resolveSession(idToken),null);assert.deepEqual(await other.resolveInvitationIdentity(idToken),{actorId:uid,email:'owner@example.test'});assert.equal(await other.resolveSession(idToken),null);
  await assert.rejects(()=>backend.portal.projectOverview('foreign','p'),/ACCESS_DENIED/);
  await assert.rejects(()=>backend.portal.approve({...approval,actorId:'member'}),/ACCESS_DENIED/);
  const server=createPortalServer({portal:backend.portal,resolveSession:backend.resolveSession,allowedOrigin:'http://localhost'});

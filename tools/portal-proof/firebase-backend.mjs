@@ -5,7 +5,7 @@ import {getFirestore} from 'firebase-admin/firestore';
 import {randomUUID} from 'node:crypto';
 import {firebaseConfiguration} from './firebase-config.mjs';
 import {FirestorePortal} from './firestore.mjs';
-import {createFirebaseSessionResolver} from './firebase-auth.mjs';
+import {createFirebaseSessionResolver,createFirebaseInvitationIdentityResolver} from './firebase-auth.mjs';
 export function createFirebaseBackend(config) {
   const checked=firebaseConfiguration(config);
   const options={projectId:checked.projectId};
@@ -15,5 +15,6 @@ export function createFirebaseBackend(config) {
   portal.updateAccessAsAdmin=createFirebaseAdminAccessUpdater({auth,portal});
   portal.updateColleagueAccess=createFirebaseColleagueAccessUpdater({auth,portal});
   const resolveSession=createFirebaseSessionResolver({auth,portal});
-  return {portal,auth,resolveSession,close:async()=>{await db.terminate();await deleteApp(app);}};
+  const resolveInvitationIdentity=createFirebaseInvitationIdentityResolver({auth});
+  return {portal,auth,resolveSession,resolveInvitationIdentity,close:async()=>{await db.terminate();await deleteApp(app);}};
 }

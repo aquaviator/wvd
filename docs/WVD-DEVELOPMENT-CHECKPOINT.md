@@ -328,3 +328,14 @@ removal-only changes do not depend on target Auth availability. The browser slic
 removes/restores a synthetic Member grant and checks Member controls remain absent.
 This does not create an account, change another Owner, revoke business-wide access
 or complete invitation issuance/delivery. Broader Owner delegation remains open.
+
+### Invitation verified identity — 3 October 2026
+
+Reused existing Firebase Admin token verification at local base d1cfa3f and added
+a separate internal pre-provisioning resolver. It verifies current enabled account,
+verified email equality and supported provider through the SDK. Current portal
+session resolution still checks active product identity; the invitation proof
+creates no membership and is not substituted for the portal resolver. Unit tests
+cover email changes, disabled/unverified/unsupported users and sanitised outages;
+the emulator checks identity proof without access to an inactive product. Token
+issuance, one-time persistence/redemption and delivery remain integration work.
