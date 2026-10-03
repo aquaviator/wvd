@@ -209,3 +209,10 @@ requires an explicit lookup capacity and rechecks the current plan afterward. It
 leaves intents pending and reports no send or acknowledgement. Recipient-policy
 agreement, verification at the actual send boundary and a delivery/retry
 mechanism remain separate gates.
+
+`google-drive-client.mjs` adapts an explicit Google Auth client to fixed Drive v3
+revision GET requests. `google-drive-deliverable.mjs` maps registered project
+source versions to retained blob revisions, bounds and cancels streamed reads,
+then rechecks revision metadata before the existing SHA-256/access proof checks.
+See `docs/WVD-GOOGLE-DELIVERABLE-DEVELOPMENT.md` for the provider contract,
+reuse decision, synthetic verification and remaining live credential/file bindings.

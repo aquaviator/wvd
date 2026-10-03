@@ -511,4 +511,23 @@ Source `e1ee6222ffe4dd578149c4770bc7ff9f3209929c` passed all CI jobs and offline
 37126914296, including admin PNG publication, browser decoding and Owner approval.
 The follow-up also bounds PNG decompression to expected pixel rows and clears
 stale verified content after source conflict. Local suite: 355 passed, one native
-Windows skip. Follow-up browser/container verification is pending.
+Windows skip. Follow-up source `83a8b2ed012b34e0a7a096a49553097a4fb33e86` passed all
+four CI jobs and offline container run 37127287809. Downloaded results matched
+the commit; the stale-preview denial screenshot was inspected.
+
+### Google Drive retained-revision adapter — 3 October 2026
+
+Continued into the real provider contract without exporting connector tokens or
+selecting live customer files. Reused the explicit Google-client pattern and
+existing pinned reader, catalogue and approval flow. Added a fixed revision-GET
+bridge for an approved Google Auth client and a project-bound source adapter.
+The adapter checks retained revision metadata, bounds/cancels streaming, rechecks
+metadata and holds admission until stalled providers settle. Native Google Docs
+are not silently exported as the latest version.
+
+Ten focused adapter/bridge tests pass locally. The current restricted workspace
+blocks local listening sockets and child CLI execution, so three existing local
+HTTP/CLI checks cannot complete here; full verification uses the established CI
+and offline container. Browser coverage now routes text/PNG source reads through
+the Drive adapter with a synthetic provider. CI verification is pending. See
+WVD-GOOGLE-DELIVERABLE-DEVELOPMENT.md for exact remaining live bindings.
