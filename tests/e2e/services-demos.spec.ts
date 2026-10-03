@@ -3,7 +3,7 @@ import {join} from 'node:path';
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-for (const route of ['/', '/services/', '/about/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/', '/insights/ownership-and-handover/', '/insights/when-to-automate/']) {
+for (const route of ['/', '/services/', '/enquire/', '/about/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/', '/insights/ownership-and-handover/', '/insights/when-to-automate/']) {
   test(`${route} new delivery pages are accessible and fit narrow screens`, async ({page},testInfo) => {
     await page.goto(route);
     await expect(page.getByRole('heading', {level:1})).toBeVisible();
@@ -56,4 +56,16 @@ test('Hospitality controls never submit a request with JavaScript disabled',asyn
   await page.getByRole('button',{name:'Simulate enquiry',exact:true}).click();
   await expect(page).toHaveURL(/\/demos\/hospitality\/$/);
   expect(calls).toEqual([]);await context.close();
+});
+
+test('enquiry draft is reviewable, optional budget stays optional and changed details invalidate it without network/storage',async({page},testInfo)=>{
+ const calls:string[]=[];page.on('request',request=>{if(['fetch','xhr'].includes(request.resourceType()))calls.push(request.url());});
+ await page.goto('/enquire/');await page.getByLabel('Your name',{exact:true}).fill('Synthetic visitor');await page.getByLabel('Business or organisation',{exact:true}).fill('Synthetic business');await page.getByLabel('Your email',{exact:true}).fill('visitor@example.test');await page.getByLabel('What do you need?',{exact:true}).fill('A clearer website');
+ await page.getByRole('button',{name:'Prepare email draft',exact:true}).click();await expect(page.locator('#enquiry-status')).toContainText('Nothing has been sent');await expect(page.getByLabel('Email draft',{exact:true})).toHaveValue(/A clearer website/);const href=await page.getByRole('link',{name:'Open email app',exact:true}).getAttribute('href');expect(new URL(href!).searchParams.get('body')).toContain('Email: visitor@example.test');expect(new URL(href!).searchParams.get('body')).not.toContain('Budget context:');
+ expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+ if(process.env.WVD_PUBLIC_EVIDENCE_DIR){mkdirSync(process.env.WVD_PUBLIC_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.WVD_PUBLIC_EVIDENCE_DIR,`enquiry-draft-${testInfo.project.name}.png`),fullPage:true,scale:'css'});}
+ await page.getByLabel('Timing (optional)',{exact:true}).fill('Flexible');await expect(page.locator('#enquiry-draft-panel')).toBeHidden();await expect(page.locator('#enquiry-draft')).toHaveValue('');await page.getByRole('button',{name:'Prepare email draft',exact:true}).click();await expect(page.locator('#enquiry-draft')).toHaveValue(/Timing: Flexible/);await page.getByRole('button',{name:'Clear details',exact:true}).click();await expect(page.locator('#enquiry-draft')).toHaveValue('');await expect(page.getByLabel('Your email',{exact:true})).toHaveValue('');expect(calls).toEqual([]);expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);
+});
+test('enquiry cannot submit personal fields with JavaScript disabled',async({browser})=>{
+ const context=await browser.newContext({javaScriptEnabled:false});try{const page=await context.newPage();await page.goto('http://127.0.0.1:4321/enquire/');await expect(page.getByLabel('Your email',{exact:true})).toBeDisabled();await expect(page.getByRole('link',{name:'Email a general enquiry directly',exact:true})).toHaveAttribute('href','mailto:hello@wearvalleydigital.com');}finally{await context.close();}
 });

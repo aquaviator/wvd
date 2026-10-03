@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Discuss your project | Wear Valley Digital" description="Prepare a general enquiry about a website, software or automation project." canonical="https://wearvalleydigital.com/enquire/" disableAnalytics={true}>
+<section class="hero"><div class="wrap prose"><p class="eyebrow">Start a conversation</p><h1>Tell us what you need</h1><p class="lede">Share the problem you want to solve. Timing, an existing website and budget context are helpful if you know them.</p><p>This page prepares an email draft. Your details stay on this page until you choose to open your email app or copy them. WVD receives the enquiry only if you send the email.</p></div></section>
+<section class="section"><div class="wrap prose enquiry">
+<fieldset id="enquiry-fields" disabled><legend>Your enquiry</legend>
+<label for="enquiry-name">Your name</label><input id="enquiry-name" name="name" required maxlength="120" autocomplete="name">
+<label for="enquiry-business">Business or organisation</label><input id="enquiry-business" name="business" required maxlength="200" autocomplete="organization">
+<label for="enquiry-email">Your email</label><input id="enquiry-email" name="email" type="email" required maxlength="320" autocomplete="email">
+<label for="enquiry-need">What do you need?</label><textarea id="enquiry-need" name="need" required maxlength="2000" rows="6"></textarea>
+<label for="enquiry-website">Existing website (optional)</label><input id="enquiry-website" name="website" type="url" maxlength="500" placeholder="https://" autocomplete="url">
+<label for="enquiry-timing">Timing (optional)</label><input id="enquiry-timing" name="timing" maxlength="300">
+<label for="enquiry-budget">Budget context (optional)</label><input id="enquiry-budget" name="budget" maxlength="300">
+<p>You can leave the optional fields blank. Please avoid passwords, account credentials or sensitive customer information.</p>
+<div class="button-row"><button class="button" type="button" id="enquiry-prepare">Prepare email draft</button><button class="button" type="button" id="enquiry-clear">Clear details</button></div>
+</fieldset>
+<p id="enquiry-status" role="status" aria-live="polite"></p>
+<div id="enquiry-draft-panel" hidden><h2>Review your draft</h2><p>To: hello@wearvalleydigital.com<br>Subject: General project enquiry</p><label for="enquiry-draft">Email draft</label><textarea id="enquiry-draft" readonly rows="12"></textarea><div class="button-row"><a class="button" id="enquiry-open" href="mailto:hello@wearvalleydigital.com">Open email app</a><button class="button" type="button" id="enquiry-copy">Copy draft</button></div><p>If your email app does not open, copy the draft or select its text and send it to hello@wearvalleydigital.com.</p></div>
+<p><a href="mailto:hello@wearvalleydigital.com">Email a general enquiry directly</a>. This address is not the monitored support channel. Existing clients should use their project support conversation.</p><noscript><p>Draft preparation needs JavaScript. You can email a general enquiry directly using the link above.</p></noscript>
+</div></section>
+</BaseLayout>
+<style>.enquiry fieldset{min-width:0;padding:1.4rem;border:1px solid var(--line);border-radius:.65rem;background:white}.enquiry legend{font-weight:800}.enquiry label{display:block;font-weight:750;margin-top:1rem}.enquiry input,.enquiry textarea{display:block;width:100%;max-width:100%;font:inherit;color:var(--ink);background:white;border:1px solid var(--muted);border-radius:.3rem;padding:.65rem}.enquiry button{font:inherit}.enquiry #enquiry-draft-panel{margin-top:2rem}.enquiry [hidden]{display:none!important}</style>
+<script>
+import {buildEnquiryDraft,type EnquiryFields} from '../lib/contact/enquiry';
+const fields=document.querySelector<HTMLFieldSetElement>('#enquiry-fields'),panel=document.querySelector<HTMLElement>('#enquiry-draft-panel'),draft=document.querySelector<HTMLTextAreaElement>('#enquiry-draft'),open=document.querySelector<HTMLAnchorElement>('#enquiry-open'),status=document.querySelector<HTMLElement>('#enquiry-status');
+const inputs=Array.from(fields?.querySelectorAll<HTMLInputElement|HTMLTextAreaElement>('input,textarea')??[]);
+function clearDraft(){if(panel)panel.hidden=true;if(draft)draft.value='';if(open){open.href='mailto:hello@wearvalleydigital.com';open.hidden=false;}}
+if(fields)fields.disabled=false;
+document.querySelector('#enquiry-prepare')?.addEventListener('click',()=>{if(!inputs.every(input=>input.reportValidity()))return;try{const result=buildEnquiryDraft(Object.fromEntries(inputs.map(input=>[input.name,input.value])) as EnquiryFields,'hello@wearvalleydigital.com');if(draft)draft.value=result.body;if(open){open.hidden=!result.mailto;open.href=result.mailto??'mailto:hello@wearvalleydigital.com';}if(panel)panel.hidden=false;if(status)status.textContent=result.mailto?'Draft ready to review. Nothing has been sent.':'Draft ready to review. Copy this longer enquiry into your email app. Nothing has been sent.';panel?.scrollIntoView({block:'nearest'});}catch(error){clearDraft();if(status)status.textContent=error instanceof Error?error.message:'Check your enquiry details.';}});
+fields?.addEventListener('input',()=>{if(panel&&!panel.hidden){clearDraft();if(status)status.textContent='Details changed. Prepare a new draft before sending.';}});
+document.querySelector('#enquiry-clear')?.addEventListener('click',()=>{inputs.forEach(input=>input.value='');clearDraft();if(status)status.textContent='Details cleared.';});
+document.querySelector('#enquiry-copy')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(draft?.value??'');if(status)status.textContent='Draft copied. Nothing has been sent.';}catch{draft?.focus();draft?.select();if(status)status.textContent='Select and copy the draft text, then paste it into your email app.';}});
+</script>
