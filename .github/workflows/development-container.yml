@@ -1,0 +1,66 @@
+name: Development container
+on:
+  push:
+    branches: [development/shared-factory-bootstrap]
+    paths:
+      - 'tools/portal-proof/**'
+      - 'src/assets/brand/horizontal-logo.png'
+      - 'tools/development-container/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/development-container.yml'
+  pull_request:
+    paths:
+      - 'tools/portal-proof/**'
+      - 'src/assets/brand/horizontal-logo.png'
+      - 'tools/development-container/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/development-container.yml'
+permissions:
+  contents: read
+concurrency:
+  group: development-container-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  portal-container:
+    # The development push already verifies this same-repository PR head.
+    if: github.event_name == 'push' || github.head_ref != 'development/shared-factory-bootstrap' || github.event.pull_request.head.repo.full_name != github.repository
+    # Standard public-repository runner; no larger/paid runner or published image.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - name: Build isolated development image
+        run: docker build -f tools/development-container/Dockerfile -t wvd-development-test .
+      - name: Test offline container
+        env:
+          SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          mkdir -p evidence
+          docker image inspect wvd-development-test --format '{{.Id}}' > evidence/image-id.txt
+          sudo chown 0:0 evidence
+          docker run --rm --init --network none --shm-size 1g --cap-drop ALL --security-opt no-new-privileges --memory 4g --cpus 2 -e WVD_SOURCE_COMMIT="$SOURCE_COMMIT" -v "$PWD/evidence:/evidence" wvd-development-test
+      - name: Record visible result
+        if: always()
+        run: |
+          echo '### WVD development container' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Disposable container; synthetic Firebase data; no runtime network, host ports, credentials or Docker socket.' >> "$GITHUB_STEP_SUMMARY"
+          if test -f evidence/results.json; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat evidence/results.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Check evidence size
+        id: evidence-limit
+        if: always()
+        run: test "$(du -sb evidence | cut -f1)" -le 5242880
+      - name: Save synthetic browser evidence
+        if: always() && steps.evidence-limit.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-container-evidence-${{ github.run_id }}
+          path: evidence/
+          retention-days: 1
+          if-no-files-found: warn

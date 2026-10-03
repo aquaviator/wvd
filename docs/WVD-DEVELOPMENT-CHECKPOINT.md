@@ -1,0 +1,558 @@
+# WVD development checkpoint
+
+Authority: agreed founder brief and subsequent instructions in the development
+conversation. The repository development standard governs implementation. This
+checkpoint records progress; it does not replace product requirements or release
+approval. Continue independent authorised development without founder-local pulls.
+
+## Established direction
+
+Build WVD's public services site and scoped client project portal. Use the
+existing Google/Firebase platform, reuse Human V1/PECP/WVD code and configuration,
+and introduce no new service subscription or external spend without approval.
+Development pushes are authorised; production deployment requires approval of an
+exact tested release. Preserve product/customer isolation.
+
+## Implemented development foundation
+
+- Public services/about pages and synthetic hospitality/salon demonstrations.
+- Four practical guides and a public enquiry draft with required contact/need
+  fields, optional timing/budget/website, explicit review and no automatic send.
+- Scoped project views, Owner-only version approval, feedback, tickets and replies.
+- Shared domain with local SQLite and bounded transactional Firestore adapters.
+- Firebase server token checks and trusted revision-checked access provisioning.
+- Admin client/project creation, progress/milestone/review management, scoped
+  account/grant changes and manual ticket triage with atomic audit references.
+- Owner controls for existing Member project grants, one-time Member invitations,
+  private invitation history/revocation, and emulator registration/verification.
+- Product-bound notification planning and fresh Firebase recipient preparation,
+  preserving pending intents; message delivery is not implemented.
+- Shared call rules, bounded Google free/busy evidence adaptation and optional
+  provisional HTTP availability with timing preflight and explicit read capacity.
+- Immutable review text and approval digest binding, with transactional operator
+  attribution references (not verified IAM-principal attribution).
+- Client histories preserve approved review text and saved feedback across new
+  versions and persistence reopen; legacy approvals explicitly lack review text.
+- Synthetic emulator sign-in and disposable offline container verification with
+  commit-bound screenshots, video and results; native Windows checks retained.
+- Versioned scope-bound aggregate backup verification and isolated SQLite disk
+  restore rehearsal; live Google restore and retention remain unfinished.
+- Standard/factory inheritance of continuous development from the agreed brief.
+
+## Remaining development and release acceptance
+
+Continue from unmet brief criteria, inspecting existing source before building.
+Remaining work includes live Google browser authentication/server runtime access,
+production persistence and migration acceptance, live invitation/onboarding
+delivery and broader Owner delegation policy,
+live external deliverable/binary preview binding, notification delivery, Calendar/Meet
+integration, hosting/TLS, monitoring, retention and backup/restore rehearsal.
+Dependency remediation and independent integrated release review remain open.
+The Firestore aggregate and local authentication are development proofs; passing
+emulator tests does not establish production readiness.
+
+## Access dependencies
+
+Scoped Google access is founder-approved but the runtime credential connection
+is unactivated. Project ownership and billing-disabled status were verified by
+founder CLI output. Do not require the founder's laptop for independent emulator,
+domain, UI or container work. Live connection, hosting cost or production release
+steps must wait for their actual access/approval prerequisites; do not invent
+credentials, enable billing or mutate another product to bypass them.
+
+## Verification references
+
+Prior operator-history slice: 299352a6f061d6080e519617d9a4ce7b8959243a,
+container run https://github.com/aquaviator/wvd/actions/runs/37033807179.
+Continuous-development rule: 1b914c95a765cb2eec10671002ef8c9139917ca3,
+all applicable CI runs passed. Client history and backup rehearsal changes are verified by the push-triggered
+CI. The first history browser run found an ambiguous test selector; the next
+revision scopes that selector to the approval record. Inspect exact commit runs and
+bounded evidence before recording integration success. GitHub artifacts expire
+after one day; run results remain the durable verification reference.
+
+## Recovered brief bindings
+
+Read the actual authoritative Drive control records on 2 October 2026, rather
+than relying on placeholder links in the earlier handover:
+
+- WVD-PF009-Product-Blueprint-v0.1.1; observed modification
+  2026-10-01T14:15:59.315Z. The separate approval record establishes approval of
+  this baseline; its original candidate wording is historical.
+- WVD PF-009 Blueprint Approval Record v0.1.0; observed modification
+  2026-10-01T16:14:29.521Z.
+- WVD-WEB-AMENDMENT-v0.1.2; observed modification 2026-10-02T08:49:25.111Z.
+  Adds the client/admin portal, booking and the Hospitality/Salon scope.
+- WVD-PF010-WEBSITE-EXECUTION-v0.1.0; observed modification
+  2026-10-01T16:11:19.633Z.
+- WVD PF-024 Website Bounded Delivery Task Packs v0.1.0; observed modification
+  2026-10-01T16:14:47.666Z.
+
+Drive remains the business-document authority. Latest explicit founder directions
+supply development-push authority and the Google/reuse/no-new-subscriptions
+implementation direction. Historical preparation-only restrictions are not used
+to request repeated development permission. Release gates, unsupported public
+claims, external spend and independent-verification requirements remain distinct.
+No source record was rewritten or promoted to a new verification state.
+
+Buyer guides implement the B15 guidance themes and amended launch content as
+non-production content: a website brief checklist and Care versus development.
+They introduce no numerical promises or new entitlements. Portal history dates
+use explicit Europe/London formatting. Current 22-route build, content validation
+and 15 site unit tests passed locally; new route accessibility/mobile checks and
+portal browser evidence are verified by CI. Prior history/backup commit
+2ee4cd1ed79f6ba06d24f73bb35fbb0e26ff696c passed all four CI checks and container
+run https://github.com/aquaviator/wvd/actions/runs/37045427568; downloaded evidence
+was inspected and bound to that exact commit.
+
+Introductory-call policy screening now has a pure synthetic test slice, adapted
+from Salon duration/conflict checks. It covers UK daylight saving, notice, gaps,
+weekends and supplied holiday/calendar coverage. No live availability or booking
+endpoint exists; Calendar permissions, full conflict-calendar discovery, fresh
+holiday data, reservation concurrency and Meet/delivery remain integration work.
+
+Read-only WVD Calendar ownership and free/busy connector checks are now recorded
+in WVD-CALENDAR-DEVELOPMENT.md. App credentials, all conflict calendars, holiday
+freshness, Meet and reservation/delivery remain unverified. Final guide screenshot
+review found an unnecessary analytics prompt; the guide routes now use the
+existing analytics-disabled layout option until an actual integration is ready.
+No site-wide analytics behaviour or marketing provider was changed.
+
+## Admin overview development slice
+
+The existing provider-free domain and SQLite/Firestore read transactions now
+provide an active-WVD-admin-only client/project overview. It groups explicit
+business IDs and shows stage, next step, awaiting-review, feedback and ticket
+counts; it exposes no credentials, membership rows or notification payloads.
+The browser derives visibility from current server-owned identity capability,
+opens existing scoped project conversations, and clears the overview on logout.
+Owner/Member accounts cannot request this cross-client projection, and token or
+request role flags confer no privilege. Admins still cannot approve for clients.
+This is a read-only workflow foundation: client creation, invitation management,
+progress editing, support triage and delivery remain unmet amended-brief work.
+No live resources, authentication provider or subscription was added.
+
+The ownership/handover buyer guide extends the approved B15 theme using the
+existing public layout. It asks readers to clarify account control, reusable
+software licences, exports and practical transfer responsibilities; it creates
+no additional contractual entitlement or claim of completed legal review.
+
+Admin screenshot review confirmed the grouped overview and UK history times.
+It also exposed unsent support form text surviving a forced sign-out. Sign-out
+now resets those drafts before another account can use the page. Browser checks
+cover forced and explicit sign-out; the admin overview has an explicit refresh
+control so its activity counts can be reloaded after other users' writes.
+
+## Admin progress updates
+
+Active WVD admins can update bounded stage/next-step text through the existing
+server boundary and shared persistence adapters. Each write retains actor,
+project/business, server time and exact text in project progress history. A
+SHA-256 binding to the previously read values prevents stale overwrites; operation
+IDs bind exact retries and cannot cross approval, feedback or ticket writes.
+These records remain part of the same aggregate transaction and scoped backup.
+Client views show progress history without internal actor/operation identifiers.
+Owner/Member accounts cannot write progress, and no milestone status or approval
+receipt is changed. Progress writes create no email promise or delivery intent.
+History has a bounded 200-entry proof capacity; production retention/scaling
+acceptance remains open. Digests are integrity/conflict checks, not an external
+tamper-proof audit service. Existing grants, review-publication configuration and
+UI patterns were adapted rather than adding a new provider or workflow engine.
+
+Calendar reuse review found that the candidate-screening slice duplicated the
+earlier single-slot availability proof. The batch now delegates to that existing
+contract, adds bounded candidate input, and preserves explicit evidence freshness
+and opening/closing buffer policy. Strict holiday-date and malformed-calendar
+checks are shared by both consumers. No live call site depended on the replaced
+synthetic batch input shape. This supersedes the earlier Salon-adaptation note.
+
+Verified progress-editing revision:
+cc73826d3e7111b9b516ed6fba7c72066db64385. All four push CI jobs passed
+(run 37049577937), and the offline container passed
+https://github.com/aquaviator/wvd/actions/runs/37049577883. Downloaded results
+match that source commit, Node 22.23.3 and Playwright 1.62.1 with liveAccess=false.
+The synthetic admin screenshot was inspected: progress update/history and UK
+times display correctly, refreshed counts are visible, and support drafts are
+empty after account change. Ownership guide revision
+cfa495611600812e3ecd5716c3717ef328cbbc13 passed CI and its mobile screenshot
+was inspected. Shared Calendar checks now pass all 203 applicable local portal
+tests; native Windows-only coverage remains verified in CI.
+
+The justified-automation buyer guide completes the four B15 guidance themes
+(website scope, Care, ownership/handover and automation) using existing layouts.
+It focuses on actual repeated work, existing capabilities, exceptions, whole
+cost and bounded verification; it makes no quantified savings or AI capability
+claims. Guide screenshots use CSS pixel scale to keep the growing route set
+within the existing 5 MiB evidence cap, with no change to viewport/overflow checks.
+
+## Admin review publication
+
+The admin workspace can publish review text to an existing milestone using the
+existing immutable review/version implementation. The server checks active WVD
+admin capability and the currently read milestone version before a new write.
+Exact version/content retries return the stored version without rolling back
+current progress; changed text under an existing version is refused. Published
+versions retain server-derived publisher identity/time in durable storage and
+backups. Client projections retain exact review text/digest while omitting that
+internal publisher identifier. A new version requires fresh client approval;
+admins gain no client-approval permission. Trusted CLI publication remains
+separate and retains its existing revision/operator-context checks.
+This text-review workflow does not establish external artifact/preview binding,
+new-milestone creation, notification delivery or production release acceptance.
+
+Admin milestone creation also reuses the immutable-review publisher: a new
+milestone and its first review are committed together with server-derived creator
+and publisher attribution. Name/version keys provide exact retry behaviour;
+existing milestones cannot be overwritten or silently adopted. Input/clock or
+transaction failures leave neither a partial milestone nor a partial review.
+Client views omit internal creator identifiers, and every new milestone awaits
+Owner approval. Creation is capped at 200 milestones per proof project and creates
+no additional project/member grants or notification-delivery claim.
+
+Approval controls now use a server-computed per-project Owner capability. The
+Member/admin browser tests check disabled controls rather than presenting an
+unauthorised click as a normal workflow. Domain/HTTP tests retain direct denial
+coverage, and every approval still rechecks current identity and membership,
+including retries. Page capability is presentation data, not write authority.
+
+## Project creation for existing clients
+
+Active WVD admins can create a project under an explicitly selected existing
+client reference. Creation adapts the progress-history transaction to retain
+creator, server time, initial stage and next step; resource-bound retry keys
+prevent duplicate projects, changed retries and silent adoption of seeded rows.
+Creation and initial progress are atomic. No account, membership or project grant
+is added or widened, and no new client/business reference is guessed. Client
+accounts therefore cannot see a new project until access is assigned through an
+appropriate trusted workflow. The UI says this explicitly and refreshes its
+project selector after creation. New client onboarding and project-grant
+management remain separate unmet requirements. Creation is capped at 200 proof
+projects per business; aggregate capacity/release limits still apply.
+
+Unsent support drafts are now reset when the selected project changes, including
+opening a newly created project. Refreshing the same project preserves a draft.
+Explicit logout and forced sign-out still clear it. Browser checks cover project
+and account transitions so one client's unsent text cannot carry into another
+client's ticket form. No draft is persisted to browser storage.
+
+## Manual WVD support assessment
+
+Active WVD admins can record bounded priority text, a Care assessment (needs
+review, included in agreed Care, or separate quote required), and a client-visible
+explanation on an existing scoped ticket. Ticket type never selects entitlement
+or a deadline. The operator uses the client's agreed scope; no priority tiers,
+prices or SLA are invented. Exact retry keys, stale-value digests and transaction
+rollback preserve current assessment plus actor/time/history. Clients can read
+assessment/history but cannot write it; new private actor/operation identifiers
+are omitted from ticket projections, including ticket-creation retries. History
+is capped at 200 proof assessments per ticket and remains in scoped backups.
+No additional notification intent, recipient policy or external message is
+created; notification delivery and operational support policy remain open.
+
+## Trusted project-access updates
+
+The existing Google provisioner/CLI now supports an explicit project-list update
+for an existing business membership. Shared input validation and fresh Firebase
+user checks are reused. New grants require a verified enabled account; removal
+does not depend on a disabled/deleted Auth account being usable. Role, global
+admin flags, business binding and activation stay unchanged. A reviewed full
+desired list, aggregate revision and operator/change references prevent stale or
+implicit privilege changes. Before/after project lists and audit commit together;
+no-op/rejected changes create no history. Client HTTP routes expose no operator
+access method. Owner invitations and an admin account UI remain unfinished.
+
+### Scoped access inspection
+
+Trusted Google operators can inspect one existing account/business membership
+with its aggregate revision from one document read. The projection omits other
+businesses and admin flags; it makes no claim about current Firebase Auth status.
+There is no public endpoint or permission mutation. Stale subsequent updates
+remain rejected, including after an intervening permission change.
+
+### Admin account overview — 3 October 2026
+
+Active WVD admins can load stored accounts for one existing client from the
+client overview. The read-only projection includes account ID, existing role,
+portal activation and explicit project grants, including revoked memberships.
+It reuses the WVD domain, boundary and SQLite/Firestore adapters at local base
+29381cd (remote ad55c46). Other business memberships and admin flags are omitted.
+Owner/Member requests and disabled admins are denied; no-store reads do not
+mutate aggregate state. UI clears account data with the existing sign-out flow
+and ignores results after sign-out or overview replacement. Current Firebase
+Auth status, invitations and access editing remain separate work.
+
+### Admin project-access editing — 3 October 2026
+
+The account overview now supports explicit project assignment/removal for existing
+client memberships. Reused `accessGrant`, `updateAccess` and Firebase SDK verification
+from local base 963f96d; no new account/provider/subscription flow is introduced.
+SQLite and Firestore bind the displayed revision to the account read and commit
+permission updates plus before/after audit atomically. Attribution is the current
+server session actor; client-supplied actor/operator fields are rejected. Revoked
+admins, stale revisions, role changes and cross-client grants are denied. Added
+grants require a fresh verified enabled Firebase target; removal-only updates
+remain possible for disabled/deleted Auth accounts. Browser verification assigns
+a newly created project to a Member and then checks visibility after client login
+without approval capability. Owner invitations and client onboarding remain open.
+
+### New client and first project — 3 October 2026
+
+Active WVD admins can create an unused client namespace with its first project.
+This adapts the existing project/progress workflow at local base b3659c7; no new
+business database, provider or account-creation default is introduced. The first
+project records a validated unique new-client marker, creator and server time.
+Duplicate client/project adoption is rejected; resource-bound retries retain later
+progress. The aggregate proof caps client namespaces at 200 and retains the
+512 KiB Firestore bound. Creating a client grants no account permissions and makes
+no external notification. Local tests and real-emulator/browser coverage exercise
+new-client isolation; account invitations remain independent unfinished work.
+
+Previous admin account/editor source 97371d6 passed all four CI jobs and the offline
+container (runs 37112653481/37112653484). Account accessibility/isolation coverage
+also passed at the following source, in runs 37112847077/37112847025. Reviewed
+synthetic account controls and source-bound container evidence; no live access used.
+
+### Member invitation preflight — 3 October 2026
+
+The next invitation slice reuses current `manage-colleagues` authorisation at local
+base b034be6. The provider-free contract binds a Member recipient, explicit project
+list and canonical expiry with a digest. Every selected project must belong to
+that business and already be granted to the active Owner. WVD admin status alone
+cannot confer client Owner delegation. Maximum invitation lifetime is required
+caller policy, not an invented company default. Broader Owner delegation remains
+unresolved; this bounded Member path does not claim it was approved.
+
+This preflight does not issue a token, persist an invitation, send an email,
+register a user or grant access. Verified-email redemption, one-time tokens,
+revocation, persistence and delivery are the following integration work.
+
+### Owner Member-project access — 3 October 2026
+
+Reused current `manage-colleagues`, verified Firebase access updating and the
+shared transactional audit projection at local base fa1872f. An active Owner with
+an explicit selected-project grant may change that project's access for an existing
+Member in the same business. Other projects/memberships, roles and activation are
+preserved. The scoped read/success response omits other project names and audit
+lists; unsupported internal helpers have no HTTP route. Added grants require a
+fresh verified target. Authority is rechecked after SDK lookup and during commit;
+removal-only changes do not depend on target Auth availability. The browser slice
+removes/restores a synthetic Member grant and checks Member controls remain absent.
+This does not create an account, change another Owner, revoke business-wide access
+or complete invitation issuance/delivery. Broader Owner delegation remains open.
+
+### Invitation verified identity — 3 October 2026
+
+Reused existing Firebase Admin token verification at local base d1cfa3f and added
+a separate internal pre-provisioning resolver. It verifies current enabled account,
+verified email equality and supported provider through the SDK. Current portal
+session resolution still checks active product identity; the invitation proof
+creates no membership and is not substituted for the portal resolver. Unit tests
+cover email changes, disabled/unverified/unsupported users and sanitised outages;
+the emulator checks identity proof without access to an inactive product. Token
+issuance, one-time persistence/redemption and delivery remain integration work.
+
+### Shared opaque invitation tokens — 3 October 2026
+
+Extracted the existing local-auth 32-byte opaque token and SHA-256 digest primitives
+at local base b70e48c into a shared module for the invitation workflow. Local
+sessions/invitations retain their wire format and stored digests; Firebase identity
+verification is unchanged. Hash comparisons validate encoding/length and use
+constant-time comparison. The helper does not provide expiry, one-time consumption,
+storage or delivery; those must be bound inside the later invitation transaction.
+No plaintext token is introduced into portal state, logs or durable fixtures.
+
+### Internal Member invitation lifecycle — 3 October 2026
+
+Reused Owner preflight, opaque token hashing, Firebase email proof, global operation
+binding and the SQLite/Firestore transactions from local base 141f6ce. The internal
+Google service issues an opaque token once, stores its digest, and atomically grants
+an explicit Member membership with a consumed-invitation record. Current issuer
+SDK/Owner checks occur before and during commit; no network work runs in callbacks.
+Creation retries cannot return a replacement token; consumed-token retries cannot
+restore revoked access. Expiry, recipient mismatch, policy changes, revoked issuer
+scope and conflicting/disabled memberships are denied without consumption.
+
+Invitation policy reference/lifetime are mandatory explicit configuration, without
+a company default. State validates immutable payload digest, project/identity
+references, lifecycle times, operation uniqueness and token-hash uniqueness. The
+aggregate retains the existing Firestore capacity bound and caps invitations at
+200 records per business. Expiration is enforced on redemption, not claimed as
+automatic data deletion. Real emulator coverage races two redemptions and verifies
+one membership; fake transaction retries/capacity rollback test atomic consumption.
+HTTP/UI registration, email verification/delivery, abuse/retention binding and
+broader Owner delegation remain unfinished. No actual emails or live users created.
+
+### Resumed account-proof validation — 3 October 2026
+
+Resumed from source `2d22a18ac49d082f93243b82f6eaeeb97a1eb4a6`.
+Adapted the existing Firebase account checks into a shared shape validator for
+provisioning and invitation identity proof. Malformed provider lists now deny
+proof rather than raising an unsanitised type error. Email checks reject malformed
+addresses, whitespace and control characters before grants or notification
+recipient preparation. Matching token/current-account email remains required;
+the helper confers no product access. Regression coverage proves no grant write,
+no invalid-token account lookup, and suppression without consuming an outbox intent.
+Local portal suite: 321 passed, zero failed, one Windows-only skip on Linux.
+CI/native and unattended container verification remain pending for this change.
+
+### Public call availability boundary — 3 October 2026
+
+Reconciled Firebase account-proof source `6ab2603`; its CI and unattended
+development container completed successfully. Added an optional, bounded public
+HTTP read adapter over the existing call screening rules and Google evidence
+reader. Client input cannot replace calendar IDs, holiday evidence or policy;
+explicit concurrent capacity and the shared 8 KiB body reader bound admission.
+Responses project validated provisional slots only. The development application
+requires explicit isolated emulator configuration to expose it. No live endpoint,
+Calendar write, credential, registration or booking confirmation was added.
+Actual authorised Google binding, complete conflict calendar set, holiday
+coverage/freshness policy and reservation/confirmation remain unfinished.
+
+The first availability source `5a4f913a2a6277421a7da5b4f5e1400107018965`
+passed all four native CI jobs and the development container. Follow-up coverage
+exercises the real HTTP application without a session, confirms private portal
+authentication remains enforced, and sanitises upstream errors carrying HTTP
+metadata. The dependency review was refreshed without modifying package pins;
+the current development-toolchain findings remain unresolved release work.
+
+Timing preflight now reuses the final availability assessor's shared timing
+function. Ineligible candidates make no Calendar query; mixed requests query
+only eligible slots plus both conflict margins. Final notice/freshness checks
+still run after provider latency. No alternative slot algorithm or schedule
+grid was added. Synthetic tests cover no-read rejection, narrowed queries and
+loss of eligibility across the minimum-notice boundary during a slow read.
+
+### Firestore emulator recovery rehearsal — 3 October 2026
+
+Resumed from remote source `c84c939`. Reused the scoped backup verifier and
+Firestore adapter to restore an aggregate into a random disposable emulator
+namespace. The rehearsal preserves source revision, immutable reviews, receipts,
+feedback, tickets, invitations and operator history, then reads through the
+existing adapter and checks exact state equality. Create-only writes prevent
+overwrite; cleanup removes the restored document. Demo-project and loopback
+checks run before SDK loading, and there is no live restore or HTTP route.
+The emulator test compares SQLite and Firestore results, verifies source state
+and revision remain unchanged and checks cleanup. Local portal suite: 333 passed,
+one native Windows skip. Source `da847dd08f6f62fae7b4592450de69a92e566e84` passed all four
+CI jobs and container run 37123975274, including the real emulator restore.
+The downloaded result report matches that exact source and the synthetic
+invitation-history screenshot was inspected. This workspace has Java 17 rather
+than the required Java 21, so emulator verification used the established CI. This does not
+establish recovery of Auth, files, IAM, rules or a production deployment.
+
+### Address validation consistency — 3 October 2026
+
+Extracted the existing Firebase email shape check into `email-address.mjs` and
+reused it for invitation requests/stored records, notification admin policy and
+local proof authentication. Firebase retains its existing exported validator;
+local auth retains its stricter 254-character bound and lower-case matching.
+NUL, other ASCII controls and DEL are rejected before invitation mutation or
+notification account lookup. Recomputed invitation digests do not legitimise an
+unsafe address in stored state. The helper does not verify address ownership or
+authorise delivery. Local portal suite: 336 passed, one Windows-only skip.
+Source `db54b13e4ed7255ec859b9226d58f2758751c487` passed all four CI jobs
+and container run 37124181657. The downloaded report matches the exact source;
+the synthetic invitation-history screenshot was inspected.
+
+### Pinned deliverable review development — 3 October 2026
+
+Reused immutable review fingerprints, client projections, transactional approval,
+shared persistence and the HTTP/session boundary from source `db54b13e`.
+Operator publication can bind an explicit source/version/byte-digest manifest.
+Existing text-only reviews retain their exact fingerprints. Trusted source reads
+validate pinned metadata and bounded bytes, recheck access, and mint short-lived
+in-process proofs scoped to actor and adapter instance. Approval checks the proof
+inside the transaction; raw JSON flags or proofs from another adapter cannot
+authorise it. Exact receipt retries do not depend on provider availability.
+
+The optional isolated-emulator browser composition shows verified UTF-8 text via
+text content and re-verifies bytes before approval. Other file types and missing
+source readers stay paused. HTTP clients cannot publish arbitrary source manifests.
+Unit checks cover corruption, digest/version changes, revocation, provider timeout,
+capacity, expired/forged/cross-adapter proof and SQLite reopen. Emulator/browser
+coverage adds the Firestore approval flow and literal script text without execution.
+Live Google source binding, binary previews, artifact retention and production
+integration remain open. The local portal suite passed 347 checks with one native Windows skip.
+Source `01c118caa8e27b4e6dfca52913d7dfc6191d1025` passed all four CI jobs
+and offline container run 37125429636. Downloaded results matched the source;
+the verified Owner-preview screenshot was inspected. No credentials, live files
+or new services were provisioned.
+
+
+### Admin deliverable catalogue — 3 October 2026
+
+Continued from the verified pinned-preview slice. Trusted composition registers
+project-bound source/version/digest entries, and admins choose a catalogue ID in
+milestone/review publication. Browser-authored raw manifests and foreign project
+IDs are rejected. Owner/Member accounts cannot read the admin catalogue. Source
+metadata is copied, publication rechecks current admin authority and immutable
+version retries/stale-version protection reuse the existing domain/storage path.
+The browser test now publishes a registered reference through the admin form,
+then switches to the Owner to view and approve its verified synthetic content.
+Local suite: 352 passed, one Windows-only skip. Source
+`df5452f36878bcfd91d5ec3061b4cb1b4cd3c406` passed all four CI jobs and
+offline container run 37126362514 after correcting the selector accessible name.
+Source `b1bf48f79f517e483496c74d8d6ccd3f2c527289` then passed all CI jobs
+and offline container run 37126520749, including Member preview with approval
+denied and source changes between Owner viewing and approval. Downloaded results
+matched the commit and synthetic denial evidence was inspected. The catalogue is explicit development configuration, not a live Google
+source discovery service or proof of retained artifact access.
+
+### Bounded PNG deliverable preview — 3 October 2026
+
+Adapted the existing pinned-reader/boundary/UI path; the reuse catalogue contains
+no suitable image preview module. Static PNG bytes use bounded data URIs rather
+than external browser URLs. Structural/chunk checksum checks and 2048×2048
+dimension bounds precede transport, then browser decoding gates the approval
+button. Approval rechecks exact source bytes through the existing transaction
+proof. Animated PNGs, corrupt/truncated images and other binary formats stay
+unavailable. This is not a general image decoder or a live Google file binding.
+Source `e1ee6222ffe4dd578149c4770bc7ff9f3209929c` passed all CI jobs and offline container run
+37126914296, including admin PNG publication, browser decoding and Owner approval.
+The follow-up also bounds PNG decompression to expected pixel rows and clears
+stale verified content after source conflict. Local suite: 355 passed, one native
+Windows skip. Follow-up source `83a8b2ed012b34e0a7a096a49553097a4fb33e86` passed all
+four CI jobs and offline container run 37127287809. Downloaded results matched
+the commit; the stale-preview denial screenshot was inspected.
+
+### Google Drive retained-revision adapter — 3 October 2026
+
+Continued into the real provider contract without exporting connector tokens or
+selecting live customer files. Reused the explicit Google-client pattern and
+existing pinned reader, catalogue and approval flow. Added a fixed revision-GET
+bridge for an approved Google Auth client and a project-bound source adapter.
+The adapter checks retained revision metadata, bounds/cancels streaming, rechecks
+metadata and holds admission until stalled providers settle. Native Google Docs
+are not silently exported as the latest version.
+
+Ten focused adapter/bridge tests pass locally. The current restricted workspace
+blocks local listening sockets and child CLI execution, so three existing local
+HTTP/CLI checks cannot complete here; full verification uses the established CI
+and offline container. Browser coverage now routes text/PNG source reads through
+the Drive adapter with a synthetic provider. Source
+`a870a16d3fc5fa34c57b7fb8e3e5bc8197f9df81` passed all four CI jobs and
+offline container run 37128147143: 365 portal tests passed, with one native
+Windows skip in Linux. The native Windows job also passed. Downloaded results
+matched the commit and the PNG preview screenshot was inspected. See
+WVD-GOOGLE-DELIVERABLE-DEVELOPMENT.md for exact remaining live bindings.
+
+## Portal brand and keyboard access — 3 October 2026
+
+Reused the unchanged `src/assets/brand/horizontal-logo.png` already used by the
+public site. The portal now serves that exact asset through a fixed static route,
+uses navy/blue styling and provides a keyboard skip link to the main workspace.
+Disabled actions use a not-allowed cursor. No external fonts or asset services
+were added. The offline image copies the same asset and its workflow tracks logo
+changes. Existing desktop/mobile browser coverage now checks image decoding and
+keyboard navigation before the account journey. Source
+`88c14a63b56587ae47cdd90c836c21802511c315` passed all four CI jobs and
+offline container run 37129110542. The container asset allowlist was corrected
+after its first build rejected the logo. Downloaded results match the source;
+the mobile signed-out screen was visually inspected. Evidence stayed below the
+existing 5 MiB cap. The public-site palette is unchanged.
+
+Live Google access remains unactivated. Google's deployment-pipeline federation
+guide lists enabled project billing as a prerequisite, while IAM pricing describes
+Workload Identity Federation itself as no additional cost. The development project
+was last verified on Spark with billing disabled; no billing change is authorised.
+Continue independent development without claiming an app credential connection.

@@ -1,0 +1,6 @@
+{
+  "identities": [{"id":"example-owner","active":true}],
+  "projects": [{"id":"example-project","businessId":"example-business","stage":"Design","nextStep":"Review the first milestone"}],
+  "memberships": [{"actorId":"example-owner","businessId":"example-business","active":true,"role":"Owner","projectIds":["example-project"]}],
+  "milestones": [{"id":"example-milestone","projectId":"example-project","currentVersionId":"version-1","status":"awaiting-client"}]
+}

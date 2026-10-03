@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/demos.css';
+---
+<BaseLayout title="Hospitality demo | Wear Valley Digital" description="Explore a fictional venue website and simulated booking enquiry." canonical={new URL('/demos/hospitality/', Astro.site)} disableAnalytics={true}>
+  <aside class="demo-banner" aria-label="Demo notice"><div class="wrap"><p>Fictional demo · All interactions are simulated. No enquiry is sent and no booking is made.</p></div></aside>
+  <div class="wrap">
+    <div class="demo-hero"><a class="text-link" href="/services/">← Back to WVD services</a><p class="eyebrow">Hospitality website demonstration</p><h1>The Fellside Kitchen</h1><p class="lede">A fictional village kitchen serving seasonal lunches and relaxed evening meals.</p><a class="button" href="#enquiry">Try a simulated enquiry</a></div>
+    <section class="section grid" aria-label="Venue information">
+      <div class="panel"><h2>Sample menu</h2><ul class="demo-menu"><li><strong>Roasted vegetable soup · £7</strong>Warm bread and herb butter.</li><li><strong>Fellside pie · £16</strong>Seasonal vegetables and rich gravy.</li><li><strong>Garden plate · £14</strong>Roasted roots, grains and house dressing.</li><li><strong>Apple crumble · £7</strong>Served with custard.</li></ul><p class="demo-note">Illustrative menu and prices for this fictional venue. A real venue would confirm ingredients and allergens directly.</p></div>
+      <div class="panel"><h2>Opening hours</h2><dl class="demo-hours"><dt>Monday–Tuesday</dt><dd>Closed</dd><dt>Wednesday–Saturday</dt><dd>12:00–21:00</dd><dt>Sunday</dt><dd>12:00–17:00</dd></dl><p>In this example, the team reviews dining enquiries and confirms them personally.</p><p class="demo-note">This demo does not show live table availability or reserve tables.</p></div>
+    </section>
+    <section class="section" id="enquiry"><h2>Try the enquiry journey</h2><p>Choose example details. No name, email or other personal information is needed.</p>
+      <form class="demo-form" id="venue-demo"><label>Example visit<select name="visit"><option>Wednesday evening</option><option>Friday evening</option><option>Sunday lunch</option></select></label><label>Party size<select name="party"><option>2 people</option><option>4 people</option><option>6 people</option></select></label><button class="button" type="button" id="venue-simulate">Simulate enquiry</button><p class="demo-result" id="venue-result" role="status" aria-live="polite" aria-atomic="true">Simulation ready. Nothing will be sent to a venue.</p><button class="button" type="button" id="venue-confirm" hidden>Show example venue response</button></form>
+      <noscript><p>This optional simulation needs JavaScript. In a real enquiry journey, a venue would review your request before confirming it.</p></noscript>
+    </section>
+  </div>
+  <script>
+    const form = document.querySelector<HTMLFormElement>('#venue-demo');
+    const result = document.querySelector<HTMLElement>('#venue-result');
+    const confirm = document.querySelector<HTMLButtonElement>('#venue-confirm');
+    let example = '';
+    form?.addEventListener('submit', (event) => event.preventDefault());
+    document.querySelector<HTMLButtonElement>('#venue-simulate')?.addEventListener('click', () => { const data = new FormData(form); example = `${data.get('visit')}, ${data.get('party')}`; if (result) result.textContent = `Simulated enquiry: ${example}. In a real service, this would await the venue’s response. No booking has been made.`; if (confirm) confirm.hidden = false; });
+    confirm?.addEventListener('click', () => { if (result) result.textContent = `Example venue response for ${example}: “We can welcome your party; please contact us to confirm.” This is a fictional response, not an availability check or reservation.`; confirm.hidden = true; });
+    form?.addEventListener('change', () => { if (confirm) confirm.hidden = true; if (result) result.textContent = 'Example details changed. Simulate a new enquiry to continue. Nothing has been sent.'; });
+  </script>
+</BaseLayout>

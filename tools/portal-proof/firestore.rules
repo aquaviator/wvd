@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Server API owns access/transactions. Clients never read the full aggregate.
+    match /wvd_products/{productId}/{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
