@@ -10,6 +10,7 @@ const schemas = {
   'publish-review': ['projectId','milestoneId','versionId','title','body','expectedVersionId'],
   'create-milestone': ['projectId','milestoneId','versionId','title','body'],
   deliverable: ['projectId','milestoneId','versionId','reviewDigest'],
+  'deliverable-catalogue': ['projectId'],
   'create-project': ['businessId','projectId','stage','nextStep'],
   'create-client': ['businessId','projectId','stage','nextStep'],
   'triage-ticket': ['projectId','ticketId','priority','careAssessment','note','expectedDigest','operationId'],
@@ -22,12 +23,21 @@ const schemas = {
   feedback: ['projectId', 'milestoneId', 'versionId', 'body', 'operationId'],
   approve: ['projectId', 'milestoneId', 'versionId', 'operationId']
 };
-const reads = new Set(['workspace-access', 'admin-overview', 'admin-accounts', 'colleagues', 'projects', 'tickets', 'overview', 'read-ticket']);
+const reads = new Set(['workspace-access', 'admin-overview', 'admin-accounts', 'colleagues', 'projects', 'tickets', 'overview', 'read-ticket','deliverable-catalogue']);
 const response = (status, data) => ({status, headers: {'Cache-Control':'no-store'}, data});
 
-export function createBoundary({portal, resolveSession, allowedOrigin,deliverableReader}) {
+export function createBoundary({portal, resolveSession, allowedOrigin,deliverableReader,deliverableCatalogue}) {
   if (typeof resolveSession !== 'function' || new URL(allowedOrigin).origin !== allowedOrigin) throw new Error('INVALID_CONFIGURATION');
   if(deliverableReader!==undefined&&typeof deliverableReader!=='function')throw Error('INVALID_CONFIGURATION');
+  if(deliverableCatalogue!==undefined&&(typeof deliverableCatalogue?.list!=='function'||typeof deliverableCatalogue?.resolve!=='function'))throw Error('INVALID_CONFIGURATION');
+  const publication=async(method,request)=>{
+    const {deliverableId,...content}=request;
+    if(deliverableId!==undefined){
+      if(!deliverableCatalogue)throw Error('INVALID_DELIVERABLE');
+      content.deliverable=await deliverableCatalogue.resolve(request.actorId,request.projectId,deliverableId);
+    }
+    return portal[method](content);
+  };
   const readDeliverable=async(actorId,input)=>{
     if(!deliverableReader)throw Error('DELIVERABLE_UNAVAILABLE');
     const proof=await deliverableReader(actorId,{projectId:input.projectId,milestoneId:input.milestoneId,versionId:input.versionId,reviewDigest:input.reviewDigest});
@@ -45,6 +55,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
     let input;
     try { input = JSON.parse(rawBody); } catch { return response(400, {error:'INVALID_REQUEST'}); }
     if(action==='approve' && input && Object.hasOwn(input,'reviewDigest'))fields=[...fields,'reviewDigest'];
+    if(['publish-review','create-milestone'].includes(action)&&input&&Object.hasOwn(input,'deliverableId'))fields=[...fields,'deliverableId'];
     if(input?.reviewDigest!==undefined && !/^[a-f0-9]{64}$/.test(input.reviewDigest))return response(400,{error:'INVALID_REQUEST'});
     if (!input || Array.isArray(input) || typeof input !== 'object' ||
         Object.keys(input).length !== fields.length ||
@@ -59,6 +70,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
       if (!session || typeof session.actorId !== 'string' || !session.actorId) return response(401, {error:'UNAUTHENTICATED'});
       const request = {...input, actorId:session.actorId};
       const operations = {
+        'deliverable-catalogue': async()=>{await portal.authorise(session.actorId,input.projectId,'manage-reviews');return deliverableCatalogue?deliverableCatalogue.list(session.actorId,input.projectId):[];},
         deliverable: async()=>{const {proof,contentText}=await readDeliverable(session.actorId,input);return {label:proof.manifest.label,sourceVersion:proof.manifest.sourceVersion,reviewDigest:proof.reviewDigest,contentText};},
         'workspace-access': () => portal.workspaceAccess(session.actorId),
         'admin-overview': () => portal.adminOverview(session.actorId),
@@ -67,8 +79,8 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
         'update-colleague-access': () => portal.updateColleagueAccess(request),
         'admin-update-access': () => portal.updateAccessAsAdmin(request),
         'update-progress': () => portal.updateProjectProgress(request),
-        'publish-review': () => portal.publishReviewAsAdmin(request),
-        'create-milestone': () => portal.createMilestoneAsAdmin(request),
+        'publish-review': () => publication('publishReviewAsAdmin',request),
+        'create-milestone': () => publication('createMilestoneAsAdmin',request),
         'create-project': () => portal.createProjectAsAdmin(request),
         'create-client': () => portal.createClientAsAdmin(request),
         'triage-ticket': () => portal.triageTicket(request),
@@ -95,7 +107,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
       const message = error instanceof Error ? error.message : '';
       if (['ACCESS_DENIED','BUSINESS_SCOPE_DENIED','PROJECT_SCOPE_DENIED','IDENTITY_DISABLED','ACCESS_REVOKED','ACCESS_MEMBERSHIP_REQUIRED','VERIFIED_FIREBASE_USER_REQUIRED','FIREBASE_USER_REQUIRED'].includes(message)) return response(403, {error:'ACCESS_DENIED'});
       if (['OPERATION_CONFLICT','VERSION_CONFLICT','STATE_CONFLICT','REVIEW_CONFLICT','PROGRESS_CONFLICT','REVIEW_IMMUTABLE','MILESTONE_CONFLICT','PROJECT_CONFLICT','CLIENT_CONFLICT','TRIAGE_CONFLICT','ACCESS_REVISION_CONFLICT','ACCESS_ROLE_CONFLICT','DELIVERABLE_UNAVAILABLE','DELIVERABLE_CONTENT_CONFLICT'].includes(message)) return response(409, {error:message});
-      if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS','INVALID_TRIAGE','INVALID_ACCESS_GRANT','ACCESS_REVISION_REQUIRED'].includes(message)) return response(400, {error:message});
+      if (['INVALID_OPERATION','INVALID_TEXT','INVALID_TICKET_TYPE','INVALID_PROGRESS','INVALID_TRIAGE','INVALID_ACCESS_GRANT','ACCESS_REVISION_REQUIRED','INVALID_DELIVERABLE'].includes(message)) return response(400, {error:message});
       return response(503, {error:'SERVICE_UNAVAILABLE'});
     }
   };

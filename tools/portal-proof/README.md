@@ -110,7 +110,8 @@ Privileged review publication can attach one explicit deliverable manifest:
 label, opaque source ID, exact source version, media type and SHA-256 of bytes.
 `review.mjs` includes its canonical fields in the review digest. Text-only
 fingerprints stay compatible. Current views and approval history retain the
-manifest; clients cannot attach one through the existing publication HTTP schema.
+manifest. Admin publication accepts only a registered catalogue ID; the server
+resolves its source/version/digest. Raw browser-authored manifests remain rejected.
 
 `deliverable.mjs` retrieves a pinned version through a separately supplied trusted
 source adapter. Project access is checked before and after retrieval. Source ID,
@@ -132,6 +133,14 @@ stays paused. Other manifest media types are metadata only in this browser slice
 The browser source is synthetic and the application option requires isolated
 Firebase emulators. No live Google file adapter, production endpoint, artifact
 retention policy or binary preview is established by these tests.
+
+`deliverable-catalogue.mjs` registers at most 200 explicit project/source/version
+entries in trusted composition. Admin lists and selection are project scoped;
+Owner/Member accounts cannot list or resolve this admin catalogue. Inputs and
+returned manifests are copied. New milestone/review publication selects a
+registered ID and rechecks authority inside the write transaction. Catalogue
+metadata is not proof of source ownership, retention or provider access; actual
+retrieval and content verification still gate approval.
 
 ## Booking evidence
 

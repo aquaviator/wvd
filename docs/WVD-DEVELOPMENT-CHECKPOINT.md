@@ -45,7 +45,7 @@ Continue from unmet brief criteria, inspecting existing source before building.
 Remaining work includes live Google browser authentication/server runtime access,
 production persistence and migration acceptance, live invitation/onboarding
 delivery and broader Owner delegation policy,
-external deliverable/version binding, notification delivery, Calendar/Meet
+live external deliverable/binary preview binding, notification delivery, Calendar/Meet
 integration, hosting/TLS, monitoring, retention and backup/restore rehearsal.
 Dependency remediation and independent integrated release review remain open.
 The Firestore aggregate and local authentication are development proofs; passing
@@ -473,5 +473,22 @@ capacity, expired/forged/cross-adapter proof and SQLite reopen. Emulator/browser
 coverage adds the Firestore approval flow and literal script text without execution.
 Live Google source binding, binary previews, artifact retention and production
 integration remain open. The local portal suite passed 347 checks with one native Windows skip.
-CI/native and unattended container verification remain pending;
-no credentials, live files or new services were provisioned.
+Source `01c118caa8e27b4e6dfca52913d7dfc6191d1025` passed all four CI jobs
+and offline container run 37125429636. Downloaded results matched the source;
+the verified Owner-preview screenshot was inspected. No credentials, live files
+or new services were provisioned.
+
+
+### Admin deliverable catalogue — 3 October 2026
+
+Continued from the verified pinned-preview slice. Trusted composition registers
+project-bound source/version/digest entries, and admins choose a catalogue ID in
+milestone/review publication. Browser-authored raw manifests and foreign project
+IDs are rejected. Owner/Member accounts cannot read the admin catalogue. Source
+metadata is copied, publication rechecks current admin authority and immutable
+version retries/stale-version protection reuse the existing domain/storage path.
+The browser test now publishes a registered reference through the admin form,
+then switches to the Owner to view and approve its verified synthetic content.
+Local suite: 352 passed, one Windows-only skip. CI/container verification remains
+pending. The catalogue is explicit development configuration, not a live Google
+source discovery service or proof of retained artifact access.

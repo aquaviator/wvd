@@ -15,7 +15,8 @@ export function reviewDeliverable(value) {
   return Object.fromEntries(keys.map(key=>[key,value[key]]));
 }
 
-// Internal read capability only; no route, source discovery or credentials.
+// Trusted reader primitive; HTTP composition supplies the verified session.
+// No source discovery or credential lookup occurs here.
 // source.readVersion must honour AbortSignal and its own provider timeout. Keep
 // a capacity slot until it settles, even when the caller times out, so a broken
 // adapter cannot create an unbounded set of abandoned provider reads.

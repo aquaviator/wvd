@@ -90,6 +90,8 @@ async function project(){
   const id=projectId(),generation=++revision;if(id!==displayedProjectId){el('ticket').reset();displayedProjectId=id;}el('overview').replaceChildren();el('tickets').replaceChildren();if(!id)return;
   const [overview,tickets]=await Promise.all([read('overview',{projectId:id}),read('tickets',{projectId:id})]);
   const colleagues=overview.canManageColleagues?await read('colleagues',{projectId:id}):null;
+  const catalogue=adminAccess?await read('deliverable-catalogue',{projectId:id}):[];
+  const addDeliverableChoice=form=>{if(!catalogue.length)return null;const select=document.createElement('select'),label=node('label','Referenced deliverable');const empty=node('option','No referenced deliverable (text review only)');empty.value='';select.append(empty);for(const item of catalogue){const option=node('option',`${item.label} — ${item.sourceVersion}`);option.value=item.id;select.append(option);}label.append(select);form.append(label);return select;};
   if(generation!==revision||!sessionToken)return;
   const box=el('overview');box.append(node('h2','Project progress'),node('p',`Stage: ${overview.stage??'Awaiting update'}`),node('p',`Next step: ${overview.nextStep??'Awaiting update'}`));
   if(adminAccess){
@@ -128,8 +130,9 @@ async function project(){
     const details=document.createElement('details');details.className='create-milestone';details.append(node('summary','Add a milestone'));
     const form=document.createElement('form'),fields={};
     for(const [key,text,maximum,tag] of [['milestoneId','Milestone name',128,'input'],['versionId','First review version',128,'input'],['title','First review title',200,'input'],['body','First review text',10000,'textarea']]){const input=document.createElement(tag);input.required=true;input.maxLength=maximum;fields[key]=input;const label=node('label',text);label.append(input);form.append(label);}
+    const deliverableChoice=addDeliverableChoice(form);
     form.append(node('p','The first review is published for the client Owner to approve.'),node('button','Add milestone'));
-    form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/create-milestone',{projectId:id,...Object.fromEntries(Object.entries(fields).map(([key,input])=>[key,input.value]))});await administration();await project();status('Milestone added for client approval.');});});details.append(form);box.append(details);
+    form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/create-milestone',{projectId:id,...Object.fromEntries(Object.entries(fields).map(([key,input])=>[key,input.value])),...(deliverableChoice?.value?{deliverableId:deliverableChoice.value}:{})});await administration();await project();status('Milestone added for client approval.');});});details.append(form);box.append(details);
   }
   if(adminAccess){
     for(const milestone of [...overview.completedMilestones,...overview.awaitingClient]){
@@ -139,8 +142,9 @@ async function project(){
       const title=document.createElement('input');title.required=true;title.maxLength=200;title.value=milestone.review?.title??'';
       const body=document.createElement('textarea');body.required=true;body.maxLength=10000;body.value=milestone.review?.body??'';
       for(const [text,input] of [['New review version',version],['Review title',title],['Review text',body]]){const label=node('label',text);label.append(input);form.append(label);}
+      const deliverableChoice=addDeliverableChoice(form);
       form.append(node('p','Published versions cannot be edited. The client Owner must approve each new version.'),node('button','Publish review'));
-      form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/publish-review',{projectId:id,milestoneId:milestone.id,versionId:version.value,title:title.value,body:body.value,expectedVersionId:milestone.currentVersionId});await administration();await project();status('Review version published for client approval.');});});details.append(form);box.append(details);
+      form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/publish-review',{projectId:id,milestoneId:milestone.id,versionId:version.value,title:title.value,body:body.value,expectedVersionId:milestone.currentVersionId,...(deliverableChoice?.value?{deliverableId:deliverableChoice.value}:{})});await administration();await project();status('Review version published for client approval.');});});details.append(form);box.append(details);
     }
   }
   box.append(node('h3','Completed milestones'));for(const m of overview.completedMilestones)box.append(node('p',`${m.id} — approved`));

@@ -3,8 +3,8 @@ import {createBoundary} from './boundary.mjs';
 
 // Node HTTP adapter. No default identity, development bypass or cookie session.
 // The host must supply a real server-side bearer-token resolver and TLS.
-export function createPortalHandler({portal, resolveSession, allowedOrigin,deliverableReader}) {
-  const boundary = createBoundary({portal, resolveSession, allowedOrigin,deliverableReader});
+export function createPortalHandler({portal, resolveSession, allowedOrigin,deliverableReader,deliverableCatalogue}) {
+  const boundary = createBoundary({portal, resolveSession, allowedOrigin,deliverableReader,deliverableCatalogue});
   return async (request, response) => {
     const send = result => {
       response.writeHead(result.status, {
