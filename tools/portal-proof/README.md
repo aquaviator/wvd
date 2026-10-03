@@ -140,5 +140,9 @@ no audience, mailbox, product namespace or portal origin is assumed. Plans retai
 only eligible current product UIDs and an HTTPS workspace link, not ticket/reply
 text, subject lines or review content. Google backend planning checks its product
 binding before reading state. It does not resolve email addresses, send messages,
-acknowledge an intent or promise delivery. Current Firebase recipient checks,
-recipient-policy agreement and a delivery/retry mechanism remain separate gates.
+acknowledge an intent or promise delivery. The optional Google preparation adapter resolves minimal client email proof with
+the reused Firebase verifier, suppresses disabled/deleted/unverified accounts,
+requires an explicit lookup capacity and rechecks the current plan afterward. It
+leaves intents pending and reports no send or acknowledgement. Recipient-policy
+agreement, verification at the actual send boundary and a delivery/retry
+mechanism remain separate gates.

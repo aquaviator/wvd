@@ -9,7 +9,8 @@ export async function verifiedFirebaseUser(auth,uid) {
     if(error?.code==='auth/user-not-found')throw Error('FIREBASE_USER_REQUIRED');
     throw Error('IDENTITY_SERVICE_UNAVAILABLE');
   }
-  if(user?.uid!==uid||user.disabled||user.emailVerified!==true||typeof user.email!=='string'||!user.email||!user.providerData?.some(item=>['google.com','password'].includes(item.providerId)))throw Error('VERIFIED_FIREBASE_USER_REQUIRED');
+  if(user?.uid!==uid||user.disabled||user.emailVerified!==true||typeof user.email!=='string'||!user.email||user.email.length>320||/[\r\n]/.test(user.email)||!user.providerData?.some(item=>['google.com','password'].includes(item.providerId)))throw Error('VERIFIED_FIREBASE_USER_REQUIRED');
+  return {uid:user.uid,email:user.email};
 }
 export function createFirebaseProvisioner({auth,portal}) {
   if(typeof auth?.getUser!=='function'||typeof portal?.provisionAccess!=='function')throw Error('INVALID_CONFIGURATION');

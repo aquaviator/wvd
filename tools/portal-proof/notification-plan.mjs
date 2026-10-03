@@ -27,7 +27,8 @@ export function planNotification(state,intentId,policy) {
 export function createNotificationPlanner({portal,productId}) {
   if(typeof portal?.snapshot!=='function'||typeof productId!=='string'||!/^[a-z][a-z0-9-]{1,62}$/.test(productId))throw Error('INVALID_CONFIGURATION');
   return async(intentId,policy)=>{
-    if(policy?.productId!==productId)throw Error('NOTIFICATION_PRODUCT_MISMATCH');
-    return planNotification(await portal.snapshot(),intentId,policy);
+    const bound=structuredClone(policy);
+    if(bound?.productId!==productId)throw Error('NOTIFICATION_PRODUCT_MISMATCH');
+    return planNotification(await portal.snapshot(),intentId,bound);
   };
 }
