@@ -14,7 +14,7 @@ async function api(path,body,method='POST'){
   if(!response.ok){if(response.status===401&&path.startsWith('/api/portal/'))signedOut();throw new Error(messages[data.error]??'The request could not be completed.');}return data;
 }
 function node(tag,text){const result=document.createElement(tag);result.textContent=text;return result;}
-async function busy(form,fn){const button=form.querySelector('button');button.disabled=true;try{await fn();}catch(error){status(error.message);}finally{button.disabled=false;}}
+async function busy(form,fn){status('');const button=form.querySelector('button');button.disabled=true;try{await fn();}catch(error){status(error.message);}finally{button.disabled=false;}}
 const projectId=()=>el('projects').value;
 const read=(action,params)=>api(`/api/portal/${action}?${new URLSearchParams(params)}`,null,'GET');
 async function administration(){
