@@ -615,3 +615,19 @@ Do not offer slots using only the currently granted named WVD calendar. Connecte
 primary calendars, plus two additional personal-account diaries. Confirm inclusion
 of those diaries and service-account free/busy grants;
 calendar labels or owner profile alone do not establish the complete conflict set.
+
+
+### Expanded conflict-calendar access check — 4 October 2026
+
+Founder reported the personal and WVD primary sharing steps completed. The
+development binding now checks the named WVD calendar, WVD primary and personal
+primary together. Missing or denied evidence from any required calendar blocks
+the combined preflight. Tests cover a single omitted/denied required calendar
+and diagnostics contain opaque target ordinals only, never event data.
+
+Live run 37199371099 authenticated successfully and reported named WVD calendar
+PASS, personal primary PASS, WVD primary TARGET_NOT_FOUND_OR_NOT_SHARED. Founder
+was asked to repeat the free/busy grant on the WVD primary calendar. Do not remove
+that required calendar or declare the combined grant set verified to bypass it.
+Nine focused checks passed locally; native/container runs for the diagnostic
+source remain pending at this checkpoint. Production booking remains disabled.
