@@ -4,8 +4,9 @@ import {validBankHolidayEvidence} from './availability.mjs';
 // Optional public read boundary. Trusted composition supplies calendars, policy
 // and holiday evidence; callers can select candidates but cannot replace them.
 // This does not register an account, reserve a slot or create a Calendar event.
-export function createCallAvailabilityHandler({screen,allowedOrigin,holidayEvidence,readHolidayEvidence,maxConcurrentRequests}) {
+export function createCallAvailabilityHandler({screen,allowedOrigin,holidayEvidence,readHolidayEvidence,maxConcurrentRequests,admit}) {
   let origin;try{origin=new URL(allowedOrigin);}catch{throw Error('INVALID_CONFIGURATION');}
+  if(admit!==undefined&&typeof admit!=='function')throw Error('INVALID_CONFIGURATION');
   if(origin.origin!==allowedOrigin||!(origin.protocol==='https:'||(origin.protocol==='http:'&&['localhost','127.0.0.1'].includes(origin.hostname)))||typeof screen!=='function'||(readHolidayEvidence===undefined?!validBankHolidayEvidence(holidayEvidence):typeof readHolidayEvidence!=='function'||holidayEvidence!==undefined)||!Number.isSafeInteger(maxConcurrentRequests)||maxConcurrentRequests<1||maxConcurrentRequests>100)throw Error('INVALID_CONFIGURATION');
   const holidays=holidayEvidence===undefined?undefined:structuredClone(holidayEvidence);let active=0;
   return async(request,response)=>{
@@ -22,6 +23,7 @@ export function createCallAvailabilityHandler({screen,allowedOrigin,holidayEvide
       if(active>=maxConcurrentRequests)return send(503,{error:'SERVICE_UNAVAILABLE'});
       active++;
       try{
+        if(admit&&await admit({peer:request.socket.remoteAddress})!==true)return send(429,{error:'RATE_LIMITED'});
         let input;try{input=JSON.parse(await readJsonBody(request,8192));}catch(error){if(error instanceof SyntaxError)return send(400,{error:'INVALID_REQUEST'});throw error;}
         if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).join(',')!=='starts')return send(400,{error:'INVALID_REQUEST'});
         const starts=normaliseIntroCallCandidates(input.starts);

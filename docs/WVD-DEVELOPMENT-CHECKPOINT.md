@@ -1093,3 +1093,26 @@ Focused booking/HTTP/application checks: 48 passing. Real browser scenarios now
 exercise interrupted replacement and revocation, and emulator backup preserves
 replacement/revocation metadata and a claimed encrypted delivery intent.
 Next active work: compose the live booking runtime from these existing adapters.
+
+### Standalone runtime and unattended authentication
+
+Composed the existing booking modules into a standalone HTTP runtime; preview
+portal restrictions remain intact. Added shared Firestore admission for every
+public booking route, fixed-purpose Google list/freebusy clients, keyless IAM
+signing/OAuth refresh and a non-root hosting package with explicit candidate
+configuration. Synthetic HTTP coverage books, self-overlap reschedules and cancels
+while preserving personal-work-day blocking. Auth coverage checks concurrent
+refresh, scope separation, target denial and no request replay. The real emulator
+scenario checks admission across workers in addition to lifecycle/queue durability.
+
+Read-only runtime permission/database discovery is now part of the existing
+Google access workflow; it grants no permissions and makes no hosting changes.
+The prepared self-signing admin script is not executed. The runtime contains no
+customer email sender or new Workspace scope. See WVD-BOOKING-RUNTIME.md.
+
+Fixed an existing factory cache test's undersized fixture budget after the fuller
+1.3.1 standard was added. Only that product-plan fixture has a 16 KiB allocation;
+runtime budgets and refusal to truncate remain unchanged. All 14 cache/factory
+checks pass locally. Earlier source 469f302 and b2c382 passed their isolated booking
+containers, but their general CI exposed this fixture failure; the fix is included
+with the runtime source, not hidden as a successful earlier general CI result.

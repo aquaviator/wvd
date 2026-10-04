@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {initializeApp,deleteApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
+import {createFirestoreBookingAdmission} from '../booking-admission.mjs';
 import {createBookingDeliveryCipher} from '../booking-delivery-envelope.mjs';
 import {FirestoreBookingReservations} from '../booking-reservations.mjs';
 import {googleBookingEventId} from '../google-booking-event.mjs';
@@ -12,6 +13,8 @@ test('real Firestore transactions serialize competing bookings and preserve dura
   const app=initializeApp({projectId:'demo-wvd-portal'},'booking-'+randomUUID()),db=getFirestore(app);
   t.after(async()=>{await db.terminate();await deleteApp(app);});
   const productId='booking-'+randomUUID(),calendarId=randomUUID()+'@example.test';
+  const admissionConfig={db,productId,calendarId,clock:()=> '2026-10-04T12:00:00.000Z',windowMs:60000,maxRequests:2};const admit=createFirestoreBookingAdmission(admissionConfig),admitAgain=createFirestoreBookingAdmission(admissionConfig);
+  assert.equal((await Promise.all([admit(),admitAgain(),admit()])).filter(Boolean).length,2);assert.equal(await createFirestoreBookingAdmission(admissionConfig)(),false);
   const backupBinding={projectId:'demo-wvd-portal',productId,calendarId,databaseId:'(default)',mode:'emulator'};
   const config={db,productId,calendarId,backupBinding},first=new FirestoreBookingReservations(config),second=new FirestoreBookingReservations(config);
   const value=id=>({productId,reservationId:id,start:'2026-10-06T12:00:00.000Z',end:'2026-10-06T12:30:00.000Z'});

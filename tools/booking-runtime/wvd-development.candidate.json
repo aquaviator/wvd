@@ -1,0 +1,35 @@
+{
+  "authentication": {
+    "serviceAccount": "wvd-development@wvd-development.iam.gserviceaccount.com",
+    "subject": "admin@wearvalleydigital.com"
+  },
+  "runtime": {
+    "firebase": {
+      "projectId": "wvd-development",
+      "productId": "wvd",
+      "databaseId": "(default)",
+      "mode": "live"
+    },
+    "calendarId": "c_3ecbc004918864ddf97f56a0dde644e19d7d18d1175a51832e29d2d28a3ff67f@group.calendar.google.com",
+    "calendarIds": [
+      "c_3ecbc004918864ddf97f56a0dde644e19d7d18d1175a51832e29d2d28a3ff67f@group.calendar.google.com",
+      "admin@wearvalleydigital.com",
+      "leatfield@gmail.com"
+    ],
+    "origin": "https://wearvalleydigital.com",
+    "policy": {
+      "ref": "wvd-intro-call-runtime-v1",
+      "bufferBoundary": "between-events",
+      "maxEvidenceAgeMs": 60000,
+      "holidayMaxEvidenceAgeMs": 3600000
+    },
+    "maxQueryWindowMs": 86400000,
+    "requestTimeoutMs": 10000,
+    "linkLifetimeMs": 2592000000,
+    "maxConcurrentRequests": 4,
+    "admission": {
+      "windowMs": 60000,
+      "maxRequests": 120
+    }
+  }
+}

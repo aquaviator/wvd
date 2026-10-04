@@ -80,7 +80,11 @@ test('product target changes invalidate cached context',async t=>{
   const config=JSON.parse(await readFile(new URL('../product.example.json',import.meta.url),'utf8'));
   config.productId=f.manifest.projectId;config.bindings.dataNamespace=f.manifest.projectId;
   f.manifest.productConfig=config;
+  // A product plan plus the complete standard needs a larger explicit fixture
+  // budget than the context-only cases. Runtime budget enforcement is unchanged.
+  f.manifest.tasks[0].maxBytes=16000;
   const first=await run(f.manifest,f.root,f.state);
+  assert.equal(first.tasks.context.status,'PREPARED');
   config.bindings.googleProjectId='verified-development-project';
   const second=await run(f.manifest,f.root,f.state);
   assert.equal(second.tasks.context.reused,false);

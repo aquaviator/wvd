@@ -1,3 +1,4 @@
+import {bookingAssets,renderBookingPage} from './booking-assets.mjs';
 import {createServer} from 'node:http';
 import {readFileSync} from 'node:fs';
 import {firebaseConfiguration} from './firebase-config.mjs';
@@ -13,11 +14,6 @@ const assets = new Map([
   ['/app.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/app.js',import.meta.url))]],
   ['/auth-client.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/auth-client.js',import.meta.url))]],
   ['/style.css', ['text/css; charset=utf-8',readFileSync(new URL('./ui/style.css',import.meta.url))]]
-]);
-const bookingAssets=new Map([
-  ['/book',['text/html; charset=utf-8',readFileSync(new URL('./ui/booking.html',import.meta.url))]],
-  ['/booking.js',['text/javascript; charset=utf-8',readFileSync(new URL('./ui/booking.js',import.meta.url))]],
-  ['/booking.css',['text/css; charset=utf-8',readFileSync(new URL('./ui/booking.css',import.meta.url))]]
 ]);
 export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,invitations,callAvailability,callBooking,callManagement,deliverableReader,deliverableCatalogue}) {
   if (new URL(allowedOrigin).origin!==allowedOrigin) throw new Error('INVALID_CONFIGURATION');
@@ -55,7 +51,7 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
       if (url.pathname.startsWith('/api/portal/')) return portalHandler(request,response);
       if(url.pathname==='/auth-config.json'&&!url.search&&request.method==='GET')return send(200,authConfig);
       if(callBooking!==undefined&&callAvailability!==undefined&&(bookingAssets.has(url.pathname)||url.pathname==='/book/manage'&&managementHandler)&&!url.search&&request.method==='GET'){
-        const [type,body]=bookingAssets.get(url.pathname==='/book/manage'?'/book':url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(['/book','/book/manage'].includes(url.pathname)?body.toString().replace('data-cancellation-enabled="false"',`data-cancellation-enabled="${typeof callBooking.cancel==='function'}"`).replace('data-rescheduling-enabled="false"',`data-rescheduling-enabled="${typeof callBooking.reschedule==='function'}"`).replace('data-management-enabled="false"',`data-management-enabled="${Boolean(managementHandler)}"`).replace('data-link-lifecycle="false"',`data-link-lifecycle="${typeof callManagement?.management?.replace==='function'&&typeof callManagement?.management?.revoke==='function'}"`).replace('data-managed-availability="false"',`data-managed-availability="${typeof callManagement?.management?.availability==='function'}"`).replace('data-managed-mode="false"',`data-managed-mode="${url.pathname==='/book/manage'}"`):body);return;
+        const [type,body]=bookingAssets.get(url.pathname==='/book/manage'?'/book':url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(['/book','/book/manage'].includes(url.pathname)?renderBookingPage({managed:url.pathname==='/book/manage',booking:callBooking,management:callManagement?.management,mode:'emulator'}):body);return;
       }
       if (assets.has(url.pathname) && !url.search && request.method==='GET') {
         const [type,body]=assets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(body);return;
