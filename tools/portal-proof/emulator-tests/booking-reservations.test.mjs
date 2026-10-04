@@ -1,0 +1,28 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {initializeApp,deleteApp} from 'firebase-admin/app';
+import {getFirestore} from 'firebase-admin/firestore';
+import {FirestoreBookingReservations} from '../booking-reservations.mjs';
+import {googleBookingEventId} from '../google-booking-event.mjs';
+test('real Firestore transactions serialize competing bookings and preserve durable ownership',async t=>{
+  if(!/^127\.0\.0\.1:\d+$/.test(process.env.FIRESTORE_EMULATOR_HOST??''))throw Error('ISOLATED_EMULATOR_REQUIRED');
+  const app=initializeApp({projectId:'demo-wvd-portal'},'booking-'+randomUUID()),db=getFirestore(app);
+  t.after(async()=>{await db.terminate();await deleteApp(app);});
+  const productId='booking-'+randomUUID(),calendarId=randomUUID()+'@example.test';
+  const config={db,productId,calendarId},first=new FirestoreBookingReservations(config),second=new FirestoreBookingReservations(config);
+  const value=id=>({productId,reservationId:id,start:'2026-10-06T12:00:00.000Z',end:'2026-10-06T12:30:00.000Z'});
+  const attempts=await Promise.allSettled([first.reserve(value('a')),second.reserve(value('b'))]);
+  assert.equal(attempts.filter(x=>x.status==='fulfilled').length,1);
+  assert.match(attempts.find(x=>x.status==='rejected').reason.message,/BOOKING_SLOT_RESERVED/);
+  const held=attempts.find(x=>x.status==='fulfilled').value;
+  const claims=await Promise.all([first.beginWrite(held.reservationId),second.beginWrite(held.reservationId)]);
+  assert.equal(claims.filter(x=>x.claimed).length,1);
+  const claim=claims.find(x=>x.claimed).reservation;
+  const result={eventId:googleBookingEventId(productId,calendarId,held.reservationId),status:'EVENT_AND_MEET_READY',meetUrl:'https://meet.google.com/abc-defg-hij'};
+  await first.confirm(held.reservationId,claim.claimId,result);
+  const reopened=new FirestoreBookingReservations(config);
+  assert.equal((await reopened.reserve(value(held.reservationId))).phase,'CONFIRMED');
+  const foreign=new FirestoreBookingReservations({...config,productId:'foreign'});
+  await assert.rejects(foreign.reserve({...value('foreign'),productId:'foreign'}),/SCHEDULE_OWNERSHIP_CONFLICT/);
+});
