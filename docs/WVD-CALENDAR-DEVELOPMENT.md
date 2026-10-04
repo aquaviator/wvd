@@ -57,3 +57,22 @@ The emulator application can opt in explicitly. No live endpoint is enabled.
 
 Production release still needs exact-release approval. Unknown cost is not zero;
 no billing or additional provider spend was enabled by these checks.
+
+
+## Keyless development integration — 4 October 2026
+
+Founder granted the dedicated WVD service account free/busy access to the named
+WVD calendar. Google development access run 37196863698 passed keyless
+impersonation and Drive/Calendar probes. This does not prove access to every
+calendar needed for conflict prevention.
+
+The workflow now includes `tools/google-development-access/calendar-contract.mjs`,
+which supplies the existing portal evidence reader with a fixed free/busy REST
+bridge and the workflow's explicit short-lived token. It queries one hour and
+prints only PASS/BLOCKED, changesMade=false and bookingReady=false. The synthetic
+holiday fixture is solely for adapter contract verification and never reaches
+slot screening. No provider busy intervals, file content or credential is saved
+in CI evidence. The common bounded transport is reused from access preflight;
+no provider, SDK dependency or ambient credential discovery was introduced.
+The offline container includes the same code but its tests use mocked responses
+and never receive live credentials.

@@ -1,5 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
+import {readGoogleJson} from './google-json.mjs';
 
 export function validateBinding(b) {
   if (!b || b.projectId !== 'wvd-development' || b.projectNumber !== '6616382131' || b.serviceAccount !== 'wvd-development@wvd-development.iam.gserviceaccount.com' || b.repositoryId !== '1347788556' || b.ownerId !== '78605956' || b.repository !== 'aquaviator/wvd' || b.branch !== 'development/shared-factory-bootstrap' || b.workflow !== '.github/workflows/google-development-access.yml' || b.poolId !== 'wvd-github-development' || b.providerId !== 'github') throw Error('INVALID_ACCESS_BINDING');
@@ -17,14 +18,12 @@ export async function accessPreflight(binding, token, {request=fetch, now=Date.n
   const results=[];
   const probe=async (label,url,options,check)=>{
     try {
-      const response=await request(url,{...options,headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},redirect:'error',signal:AbortSignal.timeout(15000)});
-      if(!response.ok){results.push({check:label,status:response.status===401?'CREDENTIAL_REJECTED':response.status===403?'ACCESS_DENIED_OR_API_DISABLED':response.status===404?'TARGET_NOT_FOUND_OR_NOT_SHARED':'PROVIDER_ERROR'});return;}
-      if(!response.body) throw Error('INVALID_RESPONSE');
-      const reader=response.body.getReader(); const chunks=[];let bytes=0;
-      try{while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>65536)throw Error('RESPONSE_TOO_LARGE');chunks.push(Buffer.from(value));}}finally{await reader.cancel().catch(()=>{});}
-      const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));
+      const value=await readGoogleJson(url,options,token,{request});
       results.push({check:label,status:check(value)?'PASS':'INVALID_OR_INCOMPLETE_RESPONSE'});
-    } catch {results.push({check:label,status:'REQUEST_FAILED'});}
+    } catch(error) {
+      const allowed=['CREDENTIAL_REJECTED','ACCESS_DENIED_OR_API_DISABLED','TARGET_NOT_FOUND_OR_NOT_SHARED','PROVIDER_ERROR'];
+      results.push({check:label,status:allowed.includes(error?.message)?error.message:'REQUEST_FAILED'});
+    }
   };
   for(let i=0;i<b.driveFileIds.length;i++){
     const id=b.driveFileIds[i];

@@ -53,12 +53,14 @@ emulator tests does not establish production readiness.
 
 ## Access dependencies
 
-Scoped Google access is founder-approved but the runtime credential connection
-is unactivated. Project ownership and billing-disabled status were verified by
-founder CLI output. Do not require the founder's laptop for independent emulator,
-domain, UI or container work. Live connection, hosting cost or production release
-steps must wait for their actual access/approval prerequisites; do not invent
-credentials, enable billing or mutate another product to bypass them.
+Scoped Google development access is now activated. Founder CLI evidence confirms
+project `wvd-development`, billing enabled, the intended service account and
+GitHub federation binding. Founder enabled Drive/Calendar APIs and granted brand
+folder Viewer and named WVD Calendar free/busy access. Keyless workflow run
+37196863698 passed authentication and both read-only probes on 4 October 2026.
+This is development CI access, not a deployed app credential connection or
+production readiness. Continue independent emulator/domain/UI/container work;
+production release and new external spend still require separate approval.
 
 ## Verification references
 
@@ -565,3 +567,20 @@ baseline, unknown uncommitted state and reconciled intended Google account/provi
 The new read-only Cloud Shell discovery reports actual IAM/API/billing setup before
 any activation or duplicate creation. Prior PR #3 CI and offline container checks
 passed; live access remains unverified. Continue independent work within the brief.
+
+
+### Live Calendar adapter contract — 4 October 2026
+
+Reused the existing portal `google-calendar-evidence.mjs` reader and extracted
+preflight's bounded JSON transport rather than adding another SDK or credential
+system. The keyless workflow now follows its access preflight with a live,
+read-only provider-contract check through the portal adapter. Explicit calendar
+IDs, one-hour window, 15-second timeout, 64 KiB response cap, no redirects/retries
+and static results preserve its scope. Tokens and busy intervals are never logged.
+The contract fixture uses clearly synthetic holiday evidence only to exercise
+adaptation; no slot screening runs and output explicitly says bookingReady=false.
+The complete founder conflict-calendar set and authoritative holiday policy are
+still required before real slots can be offered. No event creation, Meet, customer
+intake, hosting or production deployment is activated. Fourteen focused checks
+passed locally; exact-source CI, live contract and offline container verification
+are required before declaring this slice verified.

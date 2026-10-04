@@ -46,5 +46,7 @@ jobs:
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: node tools/google-development-access/preflight.mjs tools/google-development-access/binding.json
-      # Add bounded read-only integration tests here; never inject live credentials
-      # into the offline development container or ordinary PR/test jobs.
+      - name: Verify portal Calendar adapter against the live provider
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: node tools/google-development-access/calendar-contract.mjs tools/google-development-access/binding.json
