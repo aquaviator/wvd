@@ -603,3 +603,15 @@ set, authoritative England/Wales holiday coverage and freshness/buffer policies,
 and reservation/Meet/delivery permissions. Current successful access establishes
 only the named WVD calendar, so it cannot establish whole-founder availability.
 Independent portal and notification development remains available within the brief.
+
+
+Dependency review refreshed on 4 October: current Firebase direct packages are
+already the latest releases. Audits remain eleven overall chain entries and
+two moderate runtime entries; no supported direct upgrade or braces patch was
+available. See WVD-PORTAL-DEPENDENCY-REVIEW.md. No pins or lockfiles changed.
+
+Founder selected WVD and personal calendars for conflict prevention on 4 October.
+Do not offer slots using only the currently granted named WVD calendar. Connected-account calendar inventories identify the WVD primary and personal
+primary calendars, plus two additional personal-account diaries. Confirm inclusion
+of those diaries and service-account free/busy grants;
+calendar labels or owner profile alone do not establish the complete conflict set.

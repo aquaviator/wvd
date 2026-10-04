@@ -1,5 +1,22 @@
 # Portal dependency review — 2 October 2026
 
+## Refresh — 4 October 2026
+
+Rechecked the current lockfile with non-forced `npm audit --json` and
+`npm audit --omit=dev --json`. Counts remain eleven overall (seven high,
+four moderate, zero critical) and two moderate runtime-chain entries (zero
+high/critical). `npm view` and the official Firebase release pages confirm
+that pinned Firebase CLI 15.32.1 and Admin SDK 14.5.0 are the latest releases.
+The braces advisory still lists no patched version. No supported direct
+upstream update was available in this check; no package/lockfile change,
+forced downgrade or warning suppression was made. These findings remain
+unresolved release acceptance rather than a claim of a clean dependency audit.
+
+Official release/advisory references:
+https://github.com/firebase/firebase-tools/releases
+https://github.com/firebase/firebase-admin-node/releases
+https://github.com/advisories/GHSA-vfj7-8cjw-p6xm
+
 ## Refresh — 3 October 2026
 
 A fresh non-forced, package-lock-only audit dry run reports eleven dependency
