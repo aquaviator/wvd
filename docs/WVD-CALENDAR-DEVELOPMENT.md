@@ -239,3 +239,14 @@ is forcibly interrupted. Workflow concurrency does not cancel an active run.
 This is not a durable booking reservation, final conflict check, public booking
 endpoint, invitation-delivery implementation or production readiness claim.
 Live event/Meet outcome is pending until this exact source is exercised.
+
+### Live outcome
+
+Diagnostic source 6bd87fa9e4237f81731ddca3b122f0885229e786 passed 14 focused
+tests in live run 37201986418 before event credentials were used. Google rejected
+the Meet event request with HTTP400 and CONFERENCE_TYPE_NOT_SUPPORTED.
+The cleanup read found ABSENT. No attendees or invitations were sent.
+CI runs 37201986425 and 37201988858 passed. Container verification remains
+pending at this checkpoint; current screenshots have not been inspected because
+the local execution environment disconnected.
+See WVD-BOOKING-IDENTITY-DECISION.md before changing Workspace identity authority.

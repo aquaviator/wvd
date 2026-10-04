@@ -725,3 +725,26 @@ workflow remains read-only. Durable slot locking/final recheck, Workspace
 invitation authorisation, delivery, rescheduling/cancellation and hosted runtime
 remain unimplemented. No real events, invitations or production endpoints were
 created by these development changes.
+
+### Writer grant verified; live Meet blocked — 4 October 2026
+
+Writer source c36df9ee62f59fcb1bd636c296e3da1f95abc9a6 passed keyless live
+access 37201352001, CI 37201352020/37201354769 and offline container37201352144.
+Grant was WRITER_VERIFIED and tagged CalendarList cleanup REMOVED. All three
+selected free/busy calendars and the official holiday adapter passed again.
+
+Bounded rehearsal source 6bd87fa9e4237f81731ddca3b122f0885229e786 passed
+14 focused tests before live writes in 37201986418. Google returned HTTP400,
+CONFERENCE_TYPE_NOT_SUPPORTED for the Meet event request. Cleanup found ABSENT;
+no synthetic event remained and no attendees/invitations were emitted.
+Ordinary non-conference insertion is still unverified. This is a provider
+configuration/identity blocker, not a missing writer ACL or a production booking.
+
+See WVD-BOOKING-IDENTITY-DECISION.md for the concrete pending choice and required
+access changes. Workspace delegation and IAM Token Creator are NOT enabled by
+this slice. No keys, production release or new external spend were introduced.
+The local execution environment disconnected during this slice; repository
+connector commits and Actions remain usable. Exact-source container/CI results
+must be reconciled before complete handover; current screenshot inspection is
+not claimed. Existing scratch changes match the earlier writer-probe source;
+fetch/compare them before any reset when local execution reconnects.
