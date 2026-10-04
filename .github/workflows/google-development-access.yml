@@ -1,0 +1,50 @@
+name: Google development access
+on:
+  workflow_dispatch:
+  push:
+    branches: [development/shared-factory-bootstrap]
+    paths:
+      - '.github/workflows/google-development-access.yml'
+      - 'tools/google-development-access/**'
+permissions:
+  contents: read
+concurrency:
+  group: google-development-access
+  cancel-in-progress: true
+jobs:
+  access:
+    if: github.repository_id == '1347788556' && github.repository_owner_id == '78605956' && github.ref == 'refs/heads/development/shared-factory-bootstrap'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Check explicit access activation
+        env:
+          ENABLED: ${{ vars.WVD_GOOGLE_ACCESS_ENABLED }}
+        run: |
+          if [ "$ENABLED" != "true" ]; then
+            echo 'BLOCKED: Google IAM/API prerequisites and resource grants have not been activated.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+      - id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/drive.readonly,https://www.googleapis.com/auth/calendar.freebusy
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Verify granted Drive and Calendar access before live tests
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: node tools/google-development-access/preflight.mjs tools/google-development-access/binding.json
+      # Add bounded read-only integration tests here; never inject live credentials
+      # into the offline development container or ordinary PR/test jobs.
