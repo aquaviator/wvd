@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync,writeFileSync,readFileSync,existsSync,rmSync,symlinkSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {boundEvidence} from '../../development-container/evidence-budget.mjs';
+const directory=t=>{const path=mkdtempSync(join(tmpdir(),'wvd-evidence-'));t.after(()=>rmSync(path,{recursive:true,force:true}));return path;};
+test('over-budget video is explicitly omitted while required screenshot and test receipt survive',t=>{const path=directory(t);writeFileSync(join(path,'booking.png'),Buffer.alloc(400));writeFileSync(join(path,'results.json'),'{}');writeFileSync(join(path,'optional.webm'),Buffer.alloc(900));const result=boundEvidence(path,{limit:2048,reserve:1024});assert.equal(existsSync(join(path,'booking.png')),true);assert.equal(readFileSync(join(path,'results.json'),'utf8'),'{}');assert.equal(existsSync(join(path,'optional.webm')),false);assert.equal(result.omitted[0].name,'optional.webm');assert.deepEqual(JSON.parse(readFileSync(join(path,'evidence-budget.json'),'utf8')),result);});
+test('small supplementary video is retained and screenshots cannot be silently dropped',t=>{const path=directory(t);writeFileSync(join(path,'small.webm'),Buffer.alloc(20));assert.deepEqual(boundEvidence(path,{limit:1024,reserve:512}).omitted,[]);writeFileSync(join(path,'required.png'),Buffer.alloc(1100));assert.throws(()=>boundEvidence(path,{limit:1024,reserve:512}),/REQUIRED_EVIDENCE_EXCEEDS_BUDGET/);assert.equal(existsSync(join(path,'required.png')),true);});
+test('artifact cap cannot be increased and unexpected entries are rejected',t=>{const path=directory(t);assert.throws(()=>boundEvidence(path,{limit:5242881}),/INVALID_EVIDENCE_BUDGET/);if(process.platform!=='win32'){symlinkSync('/tmp',join(path,'unexpected'));assert.throws(()=>boundEvidence(path),/UNEXPECTED_EVIDENCE_ENTRY/);}});

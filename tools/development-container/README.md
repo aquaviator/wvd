@@ -27,6 +27,12 @@ artifact mechanism. No paid/larger runner, remote container host, image storage
 service or new subscription is provisioned. Existing £0 authority applies; do
 not change account billing or enable paid artifact capacity to bypass a quota.
 
+Screenshots and test receipts are required evidence. If the bundle would exceed
+the cap, the runner omits supplementary WebM recordings, largest first, and
+records their names, sizes and reasons in `evidence-budget.json`. Required evidence
+is never silently removed; if that alone exceeds the budget, verification fails.
+Video is available only when it fits alongside the required screenshots.
+
 View runs, job summaries and logs:
 https://github.com/aquaviator/wvd/actions/workflows/development-container.yml
 Open a completed run and download its `portal-container-evidence-<run-id>`

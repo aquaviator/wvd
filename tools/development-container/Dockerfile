@@ -12,6 +12,7 @@ COPY tools/portal-proof/ ./tools/portal-proof/
 COPY tools/google-development-access/*.mjs tools/google-development-access/binding.json ./tools/google-development-access/
 COPY src/assets/brand/horizontal-logo.png ./src/assets/brand/horizontal-logo.png
 COPY tools/development-container/run-tests.mjs ./tools/development-container/run-tests.mjs
+COPY tools/development-container/evidence-budget.mjs ./tools/development-container/evidence-budget.mjs
 # Browser and emulator downloads are build-time only. Test runs have no network.
 RUN ./tools/portal-proof/node_modules/.bin/firebase setup:emulators:firestore
 CMD ["node", "tools/development-container/run-tests.mjs"]

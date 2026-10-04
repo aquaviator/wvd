@@ -1,5 +1,6 @@
 import {spawnSync} from 'node:child_process';
 import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
+import {boundEvidence} from './evidence-budget.mjs';
 // The container runner never loads live bindings, ADC, SDK profiles or secrets.
 for(const key of ['GOOGLE_APPLICATION_CREDENTIALS','GOOGLE_CLOUD_PROJECT','GCLOUD_PROJECT','FIREBASE_TOKEN'])if(process.env[key])throw Error('LIVE_CREDENTIAL_ENVIRONMENT_FORBIDDEN');
 const evidence='/evidence';mkdirSync(evidence,{recursive:true});
@@ -14,5 +15,6 @@ for(const [name,args] of [['portal-unit',['--prefix','tools/portal-proof','test'
 }
 const report={schemaVersion:1,sourceCommit:process.env.WVD_SOURCE_COMMIT??'local',node:process.version,playwright:version,projectId:'demo-wvd-portal',liveAccess:false,results};
 writeFileSync(evidence+'/results.json',JSON.stringify(report,null,2));
+const budget=boundEvidence(evidence);console.log(JSON.stringify({evidenceBudget:budget}));
 console.log(JSON.stringify(report,null,2));
 if(results.length!==2||results.some(result=>!result.passed))process.exitCode=1;
