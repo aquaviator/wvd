@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {FirestoreBookingReservations,createReservedIntroCallBooking,createIntroCallBookingReconciler,createReservedIntroCallCancellation} from '../booking-reservations.mjs';
 import {googleBookingEventId,createGoogleBookingEventWriter} from '../google-booking-event.mjs';
+import {createBookingManagement} from '../booking-management.mjs';
+import {createBookingConfirmationPreparation} from '../booking-confirmation.mjs';
 import {createReservedIntroCallRescheduler} from '../booking-reschedule.mjs';
 import {createIntroCallScreening} from '../call-screening.mjs';
 const productId='wvd-booking-test',calendarId='calendar@example.test';
@@ -231,4 +233,53 @@ test('target unavailability preserves original confirmation and malformed eviden
   const move=createReservedIntroCallRescheduler({store:s.store,productId,screen:async()=>evidence,provider:{move:async()=>assert.fail(),read:async()=>assert.fail()}});
   const result=await move({reservation:old,change});assert.equal(result.status,evidence?.provisional===true&&evidence.slots.length===0?'UNAVAILABLE':'PENDING');assert.equal((await s.store.read('first')).start,old.start);
  }
+});
+
+function managementSetup(s,patch={}){return createBookingManagement({store:s.store,productId,calendarId,managementOrigin:'https://example.test',clock:()=> '2026-10-04T12:00:00.000Z',linkLifetimeMs:86400000,cancel:createReservedIntroCallCancellation({store:s.store,productId,clock:()=> '2026-10-04T12:00:00.000Z',cancelEvent:async({confirmation})=>({status:'EVENT_ABSENT',eventId:confirmation.eventId})}),reschedule:createReservedIntroCallRescheduler({store:s.store,productId,screen:async({target})=>({provisional:true,slots:[target]}),provider:{move:async({target,confirmation})=>({...confirmation,start:target.start,end:target.end}),read:async()=>({status:'RESCHEDULE_PENDING'})}}),...patch});}
+test('management issuance persists only a bound digest, retries without extending expiry and rejects replacement secrets',async()=>{
+ const s=setup(),value=reservation();await s.book(value);const management=managementSetup(s),managementKey='a'.repeat(64);
+ const link=await management.issue({reservation:value,managementKey});assert.equal(link.managementUrl,'https://example.test/book/manage#first.'+managementKey);assert.equal(link.expiresAt,'2026-10-05T12:00:00.000Z');assert.equal(JSON.stringify([...s.db.rows.values()]).includes(managementKey),false);
+ const later=managementSetup(s,{clock:()=> '2026-10-04T13:00:00.000Z'});assert.deepEqual(await later.issue({reservation:value,managementKey}),link);
+ await assert.rejects(management.issue({reservation:value,managementKey:'b'.repeat(64)}),/MANAGEMENT_ALREADY_ISSUED/);
+ const view=await management.read('first.'+managementKey);assert.equal(view.status,'CONFIRMED');assert.equal(view.revision,0);assert.equal(Object.hasOwn(view,'reservationId'),false);assert.equal(Object.hasOwn(view,'management'),false);
+});
+test('management denies guessed, expired and foreign scope capabilities without writes',async()=>{
+ const s=setup();await s.book(reservation());const management=managementSetup(s);await management.issue({reservation:reservation(),managementKey:'a'.repeat(64)});const before=structuredClone(s.db.rows);
+ for(const token of ['first.'+'b'.repeat(64),'missing.'+'a'.repeat(64),'first.a','first.'+'a'.repeat(65)])await assert.rejects(management.read(token),/MANAGEMENT_DENIED/);
+ for(const patch of [{productId:'foreign'},{calendarId:'foreign@example.test'},{managementOrigin:'https://foreign.test'},{clock:()=> '2026-10-05T12:00:00.000Z'}])await assert.rejects(managementSetup(s,patch).read('first.'+'a'.repeat(64)),/MANAGEMENT_DENIED/);
+ assert.deepEqual(s.db.rows,before);
+});
+test('same private link follows a reschedule, rejects stale cancellation and reports cancellation without Meet',async()=>{
+ const s=setup(),value=reservation();await s.book(value);const management=managementSetup(s),key='a'.repeat(64),token='first.'+key;await management.issue({reservation:value,managementKey:key});
+ const input={token,start:value.start,revision:0,targetStart:'2026-10-06T14:00:00.000Z',changeId:'managed-move'};assert.equal((await management.reschedule(input)).status,'RESCHEDULED');assert.equal((await management.reschedule(input)).status,'RESCHEDULED');
+ const current=await management.read(token);assert.equal(current.start,input.targetStart);assert.equal(current.revision,1);
+ await assert.rejects(management.cancel({token,start:value.start,revision:0}),/RESERVATION_BINDING_CONFLICT/);
+ assert.equal((await management.cancel({token,start:current.start,revision:current.revision})).status,'CANCELLED');const cancelled=await management.read(token);assert.equal(cancelled.status,'CANCELLED');assert.equal(Object.hasOwn(cancelled,'meetUrl'),false);
+});
+test('cancellation precondition is enforced atomically after the earlier read',async()=>{
+ const s=setup();await s.book(reservation());const original=s.store.beginCancellation.bind(s.store);
+ s.store.beginCancellation=async(id,expected)=>{await s.store.beginReschedule(reservation(),{expectedRevision:0,changeId:'race',start:'2026-10-06T14:00:00.000Z'});await s.store.rejectRescheduleBeforeWrite('first','race');return original(id,expected);};
+ const cancel=createReservedIntroCallCancellation({store:s.store,productId,clock:()=> '2026-10-04T12:00:00.000Z',cancelEvent:async()=>assert.fail('no provider delete after stale revision')});
+ await assert.rejects(cancel(reservation(),{revision:0}),/RESERVATION_BINDING_CONFLICT/);assert.equal((await s.store.read('first')).phase,'CONFIRMED');
+});
+test('confirmation preparation uses current managed state and UK time, never sends or claims recipient verification',async()=>{
+ const s=setup();await s.book(reservation());const management=managementSetup(s),link=await management.issue({reservation:reservation(),managementKey:'a'.repeat(64)});
+ const prepare=createBookingConfirmationPreparation({management,managementOrigin:'https://example.test',clock:()=> '2026-10-04T12:00:00.000Z'});
+ const draft=await prepare({recipientEmail:'synthetic@example.test',managementUrl:link.managementUrl});assert.equal(draft.sent,false);assert.equal(draft.recipientVerified,false);assert.match(draft.text,/Tuesday, 6 October 2026 at 13:00/);assert.equal(draft.bookingVersion.revision,0);assert.match(draft.text,/Change or cancel your booking:/);
+ await assert.rejects(prepare({recipientEmail:'a@example.test\r\nBcc: hidden@example.test',managementUrl:link.managementUrl}),/INVALID_CONFIRMATION/);
+ await assert.rejects(prepare({recipientEmail:'synthetic@example.test',managementUrl:link.managementUrl.replace('example.test','foreign.test')}),/INVALID_CONFIRMATION/);
+ await management.cancel({token:link.managementUrl.split('#')[1],start:reservation().start,revision:0});await assert.rejects(prepare({recipientEmail:'synthetic@example.test',managementUrl:link.managementUrl}),/CONFIRMATION_NOT_READY/);
+});
+
+test('a second device can recover the existing uncertain action without its original change key',async()=>{
+ const s=setup(),value=reservation();await s.book(value);let fail=true,moves=0;
+ const proof={status:'EVENT_AND_MEET_READY',eventId:googleBookingEventId(productId,calendarId,'first'),meetUrl:'https://meet.google.com/abc-defg-hij',start:'2026-10-06T14:00:00.000Z',end:'2026-10-06T14:30:00.000Z'};
+ const reschedule=createReservedIntroCallRescheduler({store:s.store,productId,screen:async({target})=>({provisional:true,slots:[target]}),provider:{move:async()=>{moves++;return {status:'RESCHEDULE_PENDING'};},read:async()=>fail?{status:'RESCHEDULE_PENDING'}:proof}});
+ const management=managementSetup(s,{reschedule}),token='first.'+'a'.repeat(64);await management.issue({reservation:value,managementKey:'a'.repeat(64)});
+ assert.equal((await management.reschedule({token,start:value.start,revision:0,targetStart:proof.start,changeId:'existing-change'})).status,'PENDING');const pending=await management.read(token);assert.deepEqual(pending.pendingAction,{kind:'reschedule',id:'existing-change'});
+ await assert.rejects(management.recover({token,revision:0,actionId:'other-change'}),/RESERVATION_BINDING_CONFLICT/);fail=false;const recovered=await management.recover({token,revision:0,actionId:pending.pendingAction.id});assert.equal(recovered.status,'CONFIRMED');assert.equal(recovered.start,proof.start);assert.equal(moves,1);
+});
+test('corrupt capability metadata cannot survive journal validation',async()=>{
+ const s=setup();await s.book(reservation());const management=managementSetup(s);await management.issue({reservation:reservation(),managementKey:'a'.repeat(64)});const before=structuredClone(s.db.rows);
+ for(const corrupt of [m=>m.tokenHash='raw-secret',m=>m.expiresAt='tomorrow',m=>m.secret='extra']){s.db.rows=structuredClone(before);corrupt([...s.db.rows.values()][0].reservations[0].management);await assert.rejects(s.store.read('first'),/CORRUPT_BOOKING_SCHEDULE/);}
 });

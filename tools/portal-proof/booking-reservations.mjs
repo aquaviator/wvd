@@ -1,4 +1,4 @@
-import {createHash,randomUUID} from 'node:crypto';
+import {createHash,randomUUID,timingSafeEqual} from 'node:crypto';
 import {googleBookingEventId,googleBookingReservation,inspectGoogleBookingEvent} from './google-booking-event.mjs';
 import {normaliseIntroCallCandidates} from './booking.mjs';
 const ref=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(v);
@@ -35,7 +35,7 @@ export class FirestoreBookingReservations {
     for(const row of data.reservations){
       try{bookingReservation({productId:row.productId,reservationId:row.reservationId,start:row.start,end:row.end},this.#binding.productId);}catch{throw Error('CORRUPT_BOOKING_SCHEDULE');}
       const confirmed=['CONFIRMED','CANCELLING','CANCELLED','RESCHEDULING'].includes(row.phase);
-      if(seen.has(row.reservationId)||!phases.includes(row.phase)||Object.keys(row).some(k=>!['productId','reservationId','start','end','phase','claimId','eventId','meetUrl','cancelledAt','change','revision'].includes(k))||(row.phase==='RESERVED'||row.phase==='REJECTED')&&(row.claimId!==undefined||row.eventId!==undefined||row.meetUrl!==undefined)||(row.phase==='WRITING'||confirmed)&&!ref(row.claimId)||row.phase==='WRITING'&&(row.eventId!==undefined||row.meetUrl!==undefined)||confirmed&&(row.eventId!==googleBookingEventId(row.productId,this.#binding.calendarId,row.reservationId)||!meet(row.meetUrl))||(row.phase==='CANCELLED'?!instant(row.cancelledAt):row.cancelledAt!==undefined))throw Error('CORRUPT_BOOKING_SCHEDULE');
+      if(seen.has(row.reservationId)||!phases.includes(row.phase)||Object.keys(row).some(k=>!['productId','reservationId','start','end','phase','claimId','eventId','meetUrl','cancelledAt','change','revision','management'].includes(k))||(row.phase==='RESERVED'||row.phase==='REJECTED')&&(row.claimId!==undefined||row.eventId!==undefined||row.meetUrl!==undefined)||(row.phase==='WRITING'||confirmed)&&!ref(row.claimId)||row.phase==='WRITING'&&(row.eventId!==undefined||row.meetUrl!==undefined)||confirmed&&(row.eventId!==googleBookingEventId(row.productId,this.#binding.calendarId,row.reservationId)||!meet(row.meetUrl))||(row.phase==='CANCELLED'?!instant(row.cancelledAt):row.cancelledAt!==undefined))throw Error('CORRUPT_BOOKING_SCHEDULE');
       if(row.change!==undefined){
         const c=row.change;
         try{
@@ -45,6 +45,10 @@ export class FirestoreBookingReservations {
           if(!Number.isSafeInteger(c.revision)||c.revision<0||!Number.isSafeInteger(row.revision)||row.revision!==c.revision+(['COMPLETED','REJECTED'].includes(c.phase)?1:0)||c.start===c.fromStart||!confirmed||(['HELD','WRITING'].includes(c.phase))!==(row.phase==='RESCHEDULING')||row.start!==(c.phase==='COMPLETED'?c.start:c.fromStart)||row.end!==(c.phase==='COMPLETED'?c.end:c.fromEnd))throw Error();
         }catch{throw Error('CORRUPT_BOOKING_SCHEDULE');}
       }else if(row.phase==='RESCHEDULING'||row.revision!==undefined)throw Error('CORRUPT_BOOKING_SCHEDULE');
+      if(row.management!==undefined){
+        const m=row.management;
+        if(!confirmed||!m||Object.keys(m).sort().join(',')!=='expiresAt,tokenHash'||typeof m.tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(m.tokenHash)||!instant(m.expiresAt))throw Error('CORRUPT_BOOKING_SCHEDULE');
+      }
       seen.add(row.reservationId);
     }
     const active=data.reservations.filter(x=>!['REJECTED','CANCELLED'].includes(x.phase));
@@ -160,11 +164,35 @@ export class FirestoreBookingReservations {
       row.start=c.start;row.end=c.end;row.phase='CONFIRMED';c.phase='COMPLETED';row.revision=c.revision+1;return row;
     });
   }
-  beginCancellation(reservationId) {
+  attachManagement(value,{tokenHash,expiresAt}) {
+    const bound=bookingReservation(value,this.#binding.productId);
+    if(typeof tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(tokenHash)||!instant(expiresAt))throw Error('INVALID_MANAGEMENT_CAPABILITY');
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===bound.reservationId);
+      if(!row||row.productId!==bound.productId)throw Error('MANAGEMENT_DENIED');
+      if(row.management){
+        if(!timingSafeEqual(Buffer.from(row.management.tokenHash,'hex'),Buffer.from(tokenHash,'hex')))throw Error('MANAGEMENT_ALREADY_ISSUED');
+        // Exact retry returns the original expiry; it cannot extend the link.
+        return {expiresAt:row.management.expiresAt};
+      }
+      if(!same(row,bound)||row.phase!=='CONFIRMED')throw Error('MANAGEMENT_DENIED');
+      row.management={tokenHash,expiresAt};return {expiresAt};
+    });
+  }
+  readManaged(reservationId,tokenHash,now) {
+    if(!ref(reservationId)||typeof tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(tokenHash)||!instant(now))throw Error('MANAGEMENT_DENIED');
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===reservationId),m=row?.management;
+      if(!m||!timingSafeEqual(Buffer.from(m.tokenHash,'hex'),Buffer.from(tokenHash,'hex'))||Date.parse(now)>=Date.parse(m.expiresAt))throw Error('MANAGEMENT_DENIED');
+      return row;
+    });
+  }
+  beginCancellation(reservationId,expected) {
     if(!ref(reservationId))throw Error('INVALID_BOOKING_RESERVATION');
     return this.#transaction(state=>{
       const row=state.reservations.find(x=>x.reservationId===reservationId);
       if(!row||!['CONFIRMED','CANCELLING','CANCELLED'].includes(row.phase))throw Error('CANCELLATION_NOT_READY');
+      if(expected&&(row.start!==expected.start||row.end!==expected.end||expected.revision!==undefined&&(row.revision??0)!==expected.revision))throw Error('RESERVATION_BINDING_CONFLICT');
       if(row.phase==='CONFIRMED')row.phase='CANCELLING';return row;
     });
   }
@@ -240,11 +268,12 @@ export function createIntroCallBookingReconciler({store,calendar,calendarId,prod
 // competing bookings until provider absence and the final commit both succeed.
 export function createReservedIntroCallCancellation({store,cancelEvent,productId,clock}) {
   if(!ref(productId)||['read','beginCancellation','confirmCancellation'].some(k=>typeof store?.[k]!=='function')||typeof cancelEvent!=='function'||typeof clock!=='function')throw Error('INVALID_CONFIGURATION');
-  return async value=>{
+  return async(value,precondition)=>{
+    if(precondition!==undefined&&(!precondition||Object.keys(precondition).join(',')!=='revision'||!Number.isSafeInteger(precondition.revision)||precondition.revision<0))throw Error('RESERVATION_BINDING_CONFLICT');
     const requested=bookingReservation(value,productId),reservationId=requested.reservationId;
     const before=await store.read(reservationId);
     if(!before||!same(before,requested))throw Error('RESERVATION_BINDING_CONFLICT');
-    const row=await store.beginCancellation(reservationId);
+    const row=await store.beginCancellation(reservationId,{start:requested.start,end:requested.end,...precondition});
     if(row.productId!==productId)throw Error('RESERVATION_BINDING_CONFLICT');
     if(row.phase==='CANCELLED')return {status:'CANCELLED',reservationId,cancelledAt:row.cancelledAt};
     const pending={status:'PENDING',reservationId};

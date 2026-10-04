@@ -4,6 +4,7 @@ import {firebaseConfiguration} from './firebase-config.mjs';
 import {createPortalHandler} from './http.mjs';
 import {createInvitationHandler} from './invitation-http.mjs';
 import {createCallAvailabilityHandler} from './call-http.mjs';
+import {createBookingManagementHandler} from './booking-management-http.mjs';
 import {createBookingHandler} from './booking-http.mjs';
 
 const assets = new Map([
@@ -18,7 +19,7 @@ const bookingAssets=new Map([
   ['/booking.js',['text/javascript; charset=utf-8',readFileSync(new URL('./ui/booking.js',import.meta.url))]],
   ['/booking.css',['text/css; charset=utf-8',readFileSync(new URL('./ui/booking.css',import.meta.url))]]
 ]);
-export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,invitations,callAvailability,callBooking,deliverableReader,deliverableCatalogue}) {
+export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,invitations,callAvailability,callBooking,callManagement,deliverableReader,deliverableCatalogue}) {
   if (new URL(allowedOrigin).origin!==allowedOrigin) throw new Error('INVALID_CONFIGURATION');
   let authConfig={mode:'local'},authConnect='';
   if(firebaseEmulator!==undefined) {
@@ -30,11 +31,13 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
   if(invitations!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
   if(callAvailability!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
   if(callBooking!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
+  if(callManagement!==undefined&&(firebaseEmulator===undefined||callBooking===undefined||callManagement.productId!==callBooking.productId||callManagement.calendarId!==callBooking.calendarId))throw Error('ISOLATED_EMULATORS_REQUIRED');
   if(deliverableReader!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
   if(deliverableCatalogue!==undefined&&firebaseEmulator===undefined)throw Error('ISOLATED_EMULATORS_REQUIRED');
   if(deliverableReader!==undefined)authConfig.deliverablesEnabled=true;
   const callHandler=callAvailability===undefined?null:createCallAvailabilityHandler({...callAvailability,allowedOrigin});
   const bookingHandler=callBooking===undefined?null:createBookingHandler({...callBooking,allowedOrigin});
+  const managementHandler=callManagement===undefined?null:createBookingManagementHandler({...callManagement,allowedOrigin});
   const invitationHandler=invitations===undefined?null:createInvitationHandler({invitations,allowedOrigin});
   if(invitationHandler)authConfig.invitationsEnabled=true;
   const portalHandler=createPortalHandler({portal,allowedOrigin,resolveSession:raw=>auth.resolveSession(raw),deliverableReader,deliverableCatalogue});
@@ -45,13 +48,14 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
     try {
       if (typeof request.url!=='string' || request.url.length>4096) return send(400,{error:'INVALID_REQUEST'});
       const url=new URL(request.url,'http://localhost');
+      if(url.pathname.startsWith('/api/calls/manage/')&&managementHandler)return managementHandler(request,response);
       if(['/api/calls/book','/api/calls/cancel','/api/calls/reschedule'].includes(url.pathname)&&bookingHandler)return bookingHandler(request,response);
       if(url.pathname.startsWith('/api/calls/')&&callHandler)return callHandler(request,response);
       if(url.pathname.startsWith('/api/invitations/')&&invitationHandler)return invitationHandler(request,response);
       if (url.pathname.startsWith('/api/portal/')) return portalHandler(request,response);
       if(url.pathname==='/auth-config.json'&&!url.search&&request.method==='GET')return send(200,authConfig);
-      if(callBooking!==undefined&&callAvailability!==undefined&&bookingAssets.has(url.pathname)&&!url.search&&request.method==='GET'){
-        const [type,body]=bookingAssets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(url.pathname==='/book'?body.toString().replace('data-cancellation-enabled="false"',`data-cancellation-enabled="${typeof callBooking.cancel==='function'}"`).replace('data-rescheduling-enabled="false"',`data-rescheduling-enabled="${typeof callBooking.reschedule==='function'}"`):body);return;
+      if(callBooking!==undefined&&callAvailability!==undefined&&(bookingAssets.has(url.pathname)||url.pathname==='/book/manage'&&managementHandler)&&!url.search&&request.method==='GET'){
+        const [type,body]=bookingAssets.get(url.pathname==='/book/manage'?'/book':url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(['/book','/book/manage'].includes(url.pathname)?body.toString().replace('data-cancellation-enabled="false"',`data-cancellation-enabled="${typeof callBooking.cancel==='function'}"`).replace('data-rescheduling-enabled="false"',`data-rescheduling-enabled="${typeof callBooking.reschedule==='function'}"`).replace('data-management-enabled="false"',`data-management-enabled="${Boolean(managementHandler)}"`).replace('data-managed-mode="false"',`data-managed-mode="${url.pathname==='/book/manage'}"`):body);return;
       }
       if (assets.has(url.pathname) && !url.search && request.method==='GET') {
         const [type,body]=assets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(body);return;

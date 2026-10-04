@@ -36,11 +36,13 @@ test('real Firestore transactions serialize competing bookings and preserve dura
   const moving={...value('moving'),start:'2026-10-07T12:00:00.000Z',end:'2026-10-07T12:30:00.000Z'};
   await first.reserve(moving);const movingClaim=await first.beginWrite('moving');
   await first.confirm('moving',movingClaim.reservation.claimId,{...result,eventId:googleBookingEventId(productId,calendarId,'moving')});
+  await first.attachManagement(moving,{tokenHash:'a'.repeat(64),expiresAt:'2026-10-10T12:00:00.000Z'});
   const move={expectedRevision:0,changeId:'move',start:'2026-10-07T14:00:00.000Z'};
   await first.beginReschedule(moving,move);
   for(const start of [moving.start,move.start])await assert.rejects(second.reserve({...value('move-competitor'),start,end:new Date(Date.parse(start)+1800000).toISOString()}),/BOOKING_SLOT_RESERVED/);
   const movingClaims=await Promise.all([first.claimReschedule('moving','move'),second.claimReschedule('moving','move')]);assert.equal(movingClaims.filter(x=>x.claimed).length,1);
-  assert.equal((await reopened.read('moving')).change.phase,'WRITING');
+  assert.equal((await reopened.readManaged('moving','a'.repeat(64),'2026-10-04T12:00:00.000Z')).change.phase,'WRITING');
+  await assert.rejects(reopened.readManaged('moving','b'.repeat(64),'2026-10-04T12:00:00.000Z'),/MANAGEMENT_DENIED/);
   const before=await second.backupSnapshot(),raw=await exportBookingBackup(second,backupBinding,()=> '2026-10-04T12:00:00.000Z');
   const proof=await rehearseFirestoreBookingBackup(raw,backupBinding);assert.deepEqual(proof,await rehearseBookingBackup(raw,backupBinding));assert.equal(proof.reservations,4);assert.equal(proof.activeHolds,3);assert.equal(proof.cancelled,1);assert.deepEqual(await second.backupSnapshot(),before);
 });
