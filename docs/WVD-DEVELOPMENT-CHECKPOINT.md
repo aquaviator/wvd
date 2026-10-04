@@ -675,3 +675,28 @@ with bookingReady=false: no reservation, event, Meet or hosted endpoint exists.
 Explicit evidence-age settings are still required in a future live composition.
 Focused synthetic checks passed locally; exact-source CI/container and live
 provider checks must pass before this source is declared verified.
+
+
+### Booking event provider contract — 4 October 2026
+
+Prepared a trusted-server Google Calendar event writer using the existing fixed
+Google Auth client pattern and no additional dependencies. Product/calendar/
+reservation bindings yield a deterministic event ID; a private opaque 30-minute
+event requests a unique Meet conference. Exact retries read the same event.
+Ambiguous insert errors and same-reservation races recover the deterministic
+event instead of issuing a blind retry or overwriting foreign/changed events.
+Meet pending/failure and untrusted URLs cannot become ready confirmations.
+No attendees or invitations are emitted by this adapter. Eight focused tests
+passed, including timeout-after-write recovery and same-reservation collision.
+
+This adapter is not yet wired into a booking route. Different reservations still
+need a durable atomic slot lock and final complete-calendar conflict recheck;
+provider event-ID uniqueness is not a slot reservation. No live Calendar write
+was run, and the existing workflow token still has free/busy scope only. Live
+event/Meet verification needs event-write scope and a writer grant on the named
+WVD calendar, preserving free/busy-only access to personal/primary calendars.
+Google's Events.insert documentation says service accounts need domain-wide
+delegation to populate attendee lists. Customer invitations/delivery therefore
+need a separately approved Workspace user authorisation/delivery composition;
+this adapter must not claim invitations from an internal event/Meet result.
+Source reference: https://developers.google.com/workspace/calendar/api/v3/reference/events/insert
