@@ -895,3 +895,27 @@ public discovery metadata are part of it; infographics are optional where useful
 This record does not claim existing articles have completed reels or guarantee
 AI indexing. Founder asked to record the rule and resume booking development;
 article/media retrofit is tracked future work, not the immediate booking task.
+
+
+### Booking journal backup and recovery verified — 4 October 2026
+
+Runtime source fdb98134d72d5e32207bbc7c8779ce6960495304 adds explicit-bound,
+private journal export, integrity and ownership validation, and isolated real
+Firestore emulator restoration. Every journal phase and uncertain hold survives;
+rehearsal does not mutate the source or contact Calendar. Live restore is refused.
+
+Push CI 37207747826 and PR CI 37207750830 passed. Offline container 37207747852
+passed 437 unit tests (zero failures, one Windows-only skip) and all four real
+emulator/browser tests. Downloaded artifact 11305228193 matches the exact source,
+uses demo-wvd-portal and records liveAccess=false. Artifact digest:
+sha256:d89fb4ef3ebdc1430246f347a50e2871ecfafa1595a8b2953d0c1e4a73de5767.
+Image sha256:2e7c45814d2f148c672fa76c9551c05e0c41e6ea5b45c96252cfbc418323b517.
+Mobile cancellation evidence inspected; required screenshots and receipts remain
+within the 5 MiB cap, with one supplementary video omission explicitly recorded.
+
+See WVD-BOOKING-BACKUP.md for scope and recovery limits. Remaining booking work:
+customer management/confirmation delivery and rescheduling, reviewed hosted
+admission/runtime integration, and operational encrypted backup/retention and
+provider reconciliation. No production deployment or new spend was performed.
+The shared creative-content standard is recorded; article/video retrofit remains
+separate future work. These test results apply to the runtime source above.

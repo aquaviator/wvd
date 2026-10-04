@@ -45,6 +45,24 @@ Tests cover all phase preservation, explicit export, immutable returned snapshot
 foreign project/database/product/calendar denial, checksum tampering, recomputed
 corrupt data, capacity bounds and live-rehearsal rejection. The real emulator test
 restores cancelled plus unresolved reservations into an isolated named database
-and confirms the source is unchanged. Exact-source CI results must be inspected
-before recording this as verified. Scheduled encrypted backups, retention/pruning,
+and confirms the source is unchanged. Exact-source CI and downloaded evidence were verified as recorded below. Scheduled encrypted backups, retention/pruning,
 operational restore and provider reconciliation acceptance remain unfinished.
+
+
+## Verified development evidence — 4 October 2026
+
+Runtime source `fdb98134d72d5e32207bbc7c8779ce6960495304` passed push CI
+37207747826 and PR CI 37207750830. Offline container 37207747852 passed
+437 unit tests, zero failures and one Windows-only skip, plus all four real
+Firebase emulator/browser tests. The reservation emulator test exported and
+restored three journal records (two active holds and one cancelled reservation)
+in an isolated named database and checked that the source was unchanged.
+
+Downloaded artifact 11305228193 matches that source in results.json and records
+`liveAccess: false`. Its SHA-256 is
+`d89fb4ef3ebdc1430246f347a50e2871ecfafa1595a8b2953d0c1e4a73de5767`.
+Container image: `sha256:2e7c45814d2f148c672fa76c9551c05e0c41e6ea5b45c96252cfbc418323b517`.
+The mobile cancellation screenshot was inspected. Required screenshots and
+receipts were retained; one supplementary video was explicitly omitted to keep
+the existing 5 MiB evidence budget. This verifies development recovery, not an
+operational production backup service.
