@@ -3,8 +3,10 @@
 WVD services, product information and synthetic demonstrations built with Astro.
 The existing manifest-driven commerce/marketing engine remains part of the site.
 Google/Firebase is the selected application platform; development pushes are
-permitted, while production deployment and new external spend need separate
-founder approval. See [the development standard](docs/WVD-DEVELOPMENT-STANDARD.md).
+permitted. Follow [WVD project authority](docs/WVD-PROJECT-AUTHORITY.md): continue
+routine work without founder gates; request input only for missing user data,
+elevated admin/configuration authority or additional spend. See also
+[the development standard](docs/WVD-DEVELOPMENT-STANDARD.md).
 
 The public enquiry page prepares a visitor-reviewed email draft using the fields
 in the brief. It does not submit, persist, qualify or send enquiries. Timing,

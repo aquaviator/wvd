@@ -99,3 +99,25 @@ Primary API references used for these adapters:
 - https://developers.google.com/identity/protocols/oauth2/service-account
 - https://docs.cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts/testIamPermissions
 - https://cloud.google.com/run/pricing
+
+## Observed activation requirements — 4 October 2026
+
+Read-only Google workflow run 37222217821, source
+820c7210d67f41ce99be2538a9fe8e8addf8e64c, confirmed:
+
+- Existing `(default)` Firestore database: accessible, native mode, location `eur3`.
+- Runtime self-signing: `ADMIN_GRANT_REQUIRED`.
+- Cloud Run create/update/get authority: `ADMIN_GRANT_REQUIRED`.
+
+`tools/booking-runtime/enable-runtime-access.sh` is the concrete elevated setup
+prepared for founder approval. It grants Token Creator and Service Account User
+to the existing service account on itself, plus Cloud Run Developer on the
+existing development project. The latter permits creating/updating services in
+that project; it does not grant IAM administration. The narrower signing-only
+script remains available if only runtime signing is approved. Neither has run.
+
+Image-repository access, Cloud Run/Firebase/domain configuration and any usage
+spend authority are still separate from these grants. No repository, host, API,
+public IAM binding, billing setting or customer message is created by the access
+script. The existing WIF condition and Workspace Calendar-only delegation remain
+unchanged. New Gmail authority is not included.

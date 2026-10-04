@@ -1116,3 +1116,29 @@ runtime budgets and refusal to truncate remain unchanged. All 14 cache/factory
 checks pass locally. Earlier source 469f302 and b2c382 passed their isolated booking
 containers, but their general CI exposed this fixture failure; the fix is included
 with the runtime source, not hidden as a successful earlier general CI result.
+
+### Exact runtime result and genuine activation boundary
+
+Runtime source 820c7210d67f41ce99be2538a9fe8e8addf8e64c passed push CI
+37222217810, PR CI 37222219944 and isolated container 37222217830.
+The container built the standalone production package and confirmed it refuses
+startup without an attached runtime identity. It passed 489 unit tests, zero
+failures, one Windows-only skip, and four real Firebase/browser tests.
+Artifact 11309809869 matched the source and liveAccess=false; digest:
+sha256:95f2fca8e63545bb51af6b34d62fe6920ce82bde801ac65984ef44ce7da9d679.
+Isolated image: sha256:a8af8b056f847e66517f014852908350b3cb8a56df37d03cde28555a311c4d89.
+The mobile management screenshot was inspected with original WVD branding,
+change/cancel controls, link-security controls and the contact CTA. A subsequent
+CSS-only adjustment spaces the adjacent security buttons and bounds the replacement
+URL input; it does not change booking behaviour.
+
+Read-only Google workflow 37222217821 succeeded and established the actual gap:
+Firestore `(default)` is accessible/native in `eur3`; runtime self-signing and
+Cloud Run deployment permissions both report ADMIN_GRANT_REQUIRED. The prepared
+`tools/booking-runtime/enable-runtime-access.sh` grants the two account-scoped
+roles plus Cloud Run Developer on the existing project. It has not run and does
+not enable APIs, create hosting, change billing or send messages. Hosting usage
+still needs an explicit extra-spend allowance before resources are activated.
+This is a genuine elevated-access/spending boundary, not a request to approve a
+completed development slice. After those inputs, continue activation and the
+remaining sender/contact, abuse-control, operator recovery and retention work.
