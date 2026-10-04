@@ -700,3 +700,28 @@ delegation to populate attendee lists. Customer invitations/delivery therefore
 need a separately approved Workspace user authorisation/delivery composition;
 this adapter must not claim invitations from an internal event/Meet result.
 Source reference: https://developers.google.com/workspace/calendar/api/v3/reference/events/insert
+
+
+### Verified holiday/event adapter sources — 4 October 2026
+
+Holiday source `efb4b0690a838402dbaf51c5f016f845198ee149` passed live GOV.UK
+and Calendar contract run 37200297128, all four CI jobs in run 37200297127
+and offline container run 37200297121. Downloaded results matched the source;
+the mobile Owner pinned-image screenshot was inspected. Local portal tests:
+379 passed, zero failed, one Windows-only skip.
+
+Event adapter source `8ccbb56135ad9420cc9e29eb99d43432275c5d23` passed all four
+CI jobs in run 37200579617 and offline container run 37200579584. Downloaded
+results matched that source and the mobile Member approval-denied screenshot
+was inspected. Synthetic event tests cover eight meaningful failure/retry/
+isolation cases; live event/Meet writes remain unverified. All container evidence
+is isolated demo data and liveAccess=false.
+
+Next live prerequisite is a writer grant (Make changes to events) for the existing
+service account on the named WVD calendar only. Do not widen personal/primary
+calendar grants. Event-write OAuth scope and any bounded live rehearsal must
+be explicitly composed after that prerequisite; the existing Google access
+workflow remains read-only. Durable slot locking/final recheck, Workspace
+invitation authorisation, delivery, rescheduling/cancellation and hosted runtime
+remain unimplemented. No real events, invitations or production endpoints were
+created by these development changes.
