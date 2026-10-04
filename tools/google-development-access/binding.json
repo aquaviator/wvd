@@ -9,6 +9,12 @@
   "repository": "aquaviator/wvd",
   "branch": "development/shared-factory-bootstrap",
   "workflow": ".github/workflows/google-development-access.yml",
-  "driveFileIds": ["14zXOECtPzSOP5OOqN1wmDtvk4dXsH6c4"],
-  "calendarIds": ["c_3ecbc004918864ddf97f56a0dde644e19d7d18d1175a51832e29d2d28a3ff67f@group.calendar.google.com"]
+  "driveFileIds": [
+    "14zXOECtPzSOP5OOqN1wmDtvk4dXsH6c4"
+  ],
+  "calendarIds": [
+    "c_3ecbc004918864ddf97f56a0dde644e19d7d18d1175a51832e29d2d28a3ff67f@group.calendar.google.com",
+    "admin@wearvalleydigital.com",
+    "leatfield@gmail.com"
+  ]
 }

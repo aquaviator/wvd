@@ -7,13 +7,13 @@ const response=(data,status=200)=>new Response(JSON.stringify(data),{status});
 function mock(calls=[],calendarError=false){return async(url,options)=>{
  calls.push({url,options});
  if(url.includes('/drive/'))return response({id:b.driveFileIds[0],trashed:false});
- const body=JSON.parse(options.body);return response({timeMin:body.timeMin,timeMax:body.timeMax,calendars:{[b.calendarIds[0]]:calendarError?{errors:[{reason:'notFound'}]}:{busy:[]}}});
+ const body=JSON.parse(options.body);return response({timeMin:body.timeMin,timeMax:body.timeMax,calendars:Object.fromEntries(b.calendarIds.map(id=>[id,calendarError?{errors:[{reason:'notFound'}]}:{busy:[]}]))});
 };}
 test('uses explicit targets and scopes; returns no private data or bearer token',async()=>{
  const calls=[],r=await accessPreflight(b,'private-token',{request:mock(calls)});
  assert.equal(r.status,'PASS');assert.equal(r.changesMade,false);assert.equal(calls.length,2);
  assert.equal(calls[0].options.redirect,'error');assert.equal(calls[1].options.method,'POST');
- assert.deepEqual(JSON.parse(calls[1].options.body).items,[{id:b.calendarIds[0]}]);
+ assert.deepEqual(JSON.parse(calls[1].options.body).items,b.calendarIds.map(id=>({id})));
  for(const value of ['private-token',...b.driveFileIds,...b.calendarIds])assert.ok(!JSON.stringify(r).includes(value));
 });
 test('denied/missing Drive access and Calendar item errors block integration',async()=>{
@@ -34,5 +34,17 @@ test('malformed, oversized and failed provider responses cannot pass or leak err
 test('mismatched Drive identity, trashed files and incomplete coverage fail closed',async()=>{
  for(const value of [{id:'foreign',trashed:false},{id:b.driveFileIds[0],trashed:true}]){
   const r=await accessPreflight(b,'token',{request:async()=>response(value)});assert.equal(r.status,'BLOCKED');
+ }
+});
+
+test('one missing or denied required calendar blocks the whole conflict set',async()=>{
+ for(const failure of ['missing','denied']){
+  const r=await accessPreflight(b,'token',{request:async(url,options)=>{
+   if(url.includes('/drive/'))return response({id:b.driveFileIds[0],trashed:false});
+   const body=JSON.parse(options.body),calendars=Object.fromEntries(b.calendarIds.map(id=>[id,{busy:[]}]));
+   if(failure==='missing')delete calendars[b.calendarIds.at(-1)];
+   else calendars[b.calendarIds.at(-1)]={errors:[{reason:'forbidden'}]};
+   return response({timeMin:body.timeMin,timeMax:body.timeMax,calendars});
+  }});assert.equal(r.status,'BLOCKED');
  }
 });

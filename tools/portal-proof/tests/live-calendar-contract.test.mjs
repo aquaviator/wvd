@@ -10,7 +10,7 @@ test('live-shaped responses traverse the portal adapter without exposing calenda
  let calls=0;
  const result=await calendarContractCheck(binding,'private-token',{now,request:async(url,options)=>{
   calls++;assert.equal(url,'https://www.googleapis.com/calendar/v3/freeBusy');assert.equal(options.redirect,'error');assert.equal(options.headers.Authorization,'Bearer private-token');assert.ok(options.signal instanceof AbortSignal);
-  const body=JSON.parse(options.body);assert.equal(body.timeZone,'UTC');assert.deepEqual(body.items,binding.calendarIds.map(id=>({id})));
+  const body=JSON.parse(options.body);assert.equal(body.timeZone,'UTC');assert.deepEqual(body.items,[...binding.calendarIds].sort().map(id=>({id})));
   const value=reply(body);value.calendars[binding.calendarIds[0]].busy=[{start:'2026-10-04T23:40:00Z',end:'2026-10-04T23:50:00Z'}];return response(value);
  }});
  assert.equal(calls,1);assert.deepEqual(result,{check:'portal-calendar-provider-contract',status:'PASS',changesMade:false,bookingReady:false});
