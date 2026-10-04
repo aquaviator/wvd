@@ -919,3 +919,55 @@ admission/runtime integration, and operational encrypted backup/retention and
 provider reconciliation. No production deployment or new spend was performed.
 The shared creative-content standard is recorded; article/video retrofit remains
 separate future work. These test results apply to the runtime source above.
+
+
+### Booking rescheduling — 4 October 2026
+
+The development flow now supports changing an existing booking while preserving
+its Calendar event and Meet link. A revision-bound journal operation holds both
+old and target times; only one worker claims a conditional Calendar PATCH.
+Uncertain results retain both holds and use read-only recovery. Cancellation and
+competing changes cannot race an unresolved move. Exact-event screening excludes
+only the original owned event and retains other busy events, personal work days,
+all-day blockers and existing notice/hours/holiday/buffer checks.
+
+The optional private POST boundary validates both random capabilities, original
+and target time, revision, origin, admission and body size. The branded emulator
+preview adds Change booking time, Keep current time, Confirm new time and Check
+new time status. A lost response after a successful move survives reload without
+another PATCH. Cancellation after moving uses the new time. A retained current
+booking is not cancelled to attempt a replacement. There is no production route,
+customer email or cross-device management link in this development slice.
+
+Initial runtime source 5f0bc41c9d8772aaa54a96af6462486208e746b0 passed push CI
+37209409389, PR CI 37209411446 and offline container 37209409399. The container
+passed 459 unit tests (zero failures, one Windows-only skip) and four real
+Firebase/browser tests. Its downloaded artifact 11306095541 matched the source
+and recorded liveAccess=false; rescheduled and interrupted-change mobile
+screenshots were inspected. A subsequent CSS-only change adds management-control
+spacing; its final evidence is recorded below after verification.
+
+Earlier source 361a06e0e3439f277a090081b458f04f2e46d381 passed the existing live
+Google access rehearsal 37208745015. That checked event/Meet creation and cleanup,
+not live rescheduling, attendee delivery or live event-list screening.
+
+Remaining: live listing/move acceptance, exclusion-aware availability discovery
+in the picker, cross-device customer management and confirmation delivery,
+reviewed hosted admission/runtime integration, and operational backup/retention.
+The picker can conservatively omit times overlapping the original booking; the
+bound change screening supports exact self-exclusion. Production and new-spend
+approvals remain separate. See WVD-BOOKING-RESCHEDULING.md for the full contract.
+
+
+Final runtime source 5a5f198bce0ade922a5e9642411ae5ca2977678f passed push CI
+37209707694, PR CI 37209710561 and offline container 37209707711. Results remain
+459 unit passes, zero failures, one Windows-only skip and four real emulator/
+browser passes. Downloaded artifact 11306585336 matches the source and records
+liveAccess=false. Artifact digest:
+sha256:c56eed257db5e677391243d666a99f5510bd22db84ba6e9ee761dd061ff03b07.
+Container image:
+sha256:c35d14750c41009fe73c1f26cde99e0a63a61ce10c3ddde282c4262b80ec4365.
+The final mobile rescheduled screenshot was inspected: original WVD branding,
+correct confirmed UK date/time, unchanged Meet link and separated management
+controls. Required screenshots/receipts were retained; one supplementary video
+was explicitly omitted to retain the existing 5 MiB evidence budget.

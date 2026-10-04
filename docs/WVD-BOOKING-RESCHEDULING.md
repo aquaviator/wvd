@@ -76,3 +76,19 @@ Primary references checked on 4 October 2026:
 - https://developers.google.com/workspace/calendar/api/v3/reference/events/patch
 
 - https://developers.google.com/workspace/calendar/api/v3/reference/events/list
+
+## Verified development evidence — 4 October 2026
+
+
+Final runtime source 5a5f198bce0ade922a5e9642411ae5ca2977678f passed push CI
+37209707694, PR CI 37209710561 and offline container 37209707711. Results remain
+459 unit passes, zero failures, one Windows-only skip and four real emulator/
+browser passes. Downloaded artifact 11306585336 matches the source and records
+liveAccess=false. Artifact digest:
+sha256:c56eed257db5e677391243d666a99f5510bd22db84ba6e9ee761dd061ff03b07.
+Container image:
+sha256:c35d14750c41009fe73c1f26cde99e0a63a61ce10c3ddde282c4262b80ec4365.
+The final mobile rescheduled screenshot was inspected: original WVD branding,
+correct confirmed UK date/time, unchanged Meet link and separated management
+controls. Required screenshots/receipts were retained; one supplementary video
+was explicitly omitted to retain the existing 5 MiB evidence budget.
