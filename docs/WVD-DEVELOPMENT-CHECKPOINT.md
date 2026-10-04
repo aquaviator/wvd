@@ -779,3 +779,28 @@ connection has repository access but no Google administrator mutation capability
 Workspace grant was applied by this commit and live delegated auth remains
 unverified. Local execution is reconnected; historical local changes were
 compared against their original committed source before checkout reconciliation.
+
+### Delegated event and Meet verified — 4 October 2026
+
+Source 31f2b7ee4cc86781981ec24a3a6f64a460b26865 passed Google development
+access run37203097963 on its rerun after founder administrator grants. Non-
+delegated Drive/three-calendar free-busy/GOV.UK/CalendarList checks passed.
+The approved admin@wearvalleydigital.com event token authenticated keylessly;
+the synthetic past event produced EVENT_AND_MEET_READY and cleanup REMOVED.
+No attendees, invitations, customer bookings or production deployment occurred.
+The private Meet URL was not emitted in the diagnostic output.
+The workflow now verifies these prerequisites on authorised development runs;
+routine tests do not require a founder login or a service-account key.
+
+The earlier strict mapping comparison was corrected to verify required mappings
+while preserving additional owner/ref/event mappings. Four synthetic setup
+tests passed on Linux. Their fake executable assumes POSIX process launching;
+Windows CI discovered them and failed. They are now explicitly Linux-only while
+the existing native Windows integration checks remain in place. Exact-source
+CI must verify this correction; it does not alter the live booking adapter.
+Historical container37201986430 results and Member approval-denied screenshot
+were downloaded and inspected after local execution reconnected: correct brand,
+mobile layout, Owner-only approval disabled for Member.
+Durable slot reservation, final conflict recheck, attendee delivery and hosted
+booking composition remain unimplemented. Live Meet verification is not a
+booking-system release.

@@ -20,6 +20,7 @@ PROVIDER = {
 }
 
 
+@unittest.skipIf(os.name == "nt", "Cloud Shell Bash script; verified on Linux, not Windows")
 class DelegationScriptTests(unittest.TestCase):
     def run_script(self, provider):
         with tempfile.TemporaryDirectory() as folder:
