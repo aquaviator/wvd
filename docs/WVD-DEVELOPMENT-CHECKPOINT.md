@@ -1026,3 +1026,13 @@ link are hidden, with clear cancelled status and the contact CTA. Cross-device
 management, interrupted rescheduling/reload and cancellation at the changed time
 passed in the real browser/emulator scenario. Required receipts and screenshots
 were retained; one supplementary video omission is explicit within the 5 MiB cap.
+
+
+## Controller authority correction — 4 October 2026
+
+Founder explicitly narrowed stops to user-supplied data, elevated admin/configuration
+approval and extra money. Persisted in AGENTS.md and WVD-PROJECT-AUTHORITY.md;
+WVD override added to the shared development standard. Older blanket WVD production
+approval and generic decision gates are superseded. Automated engineering checks
+continue without founder review. Next active work: booking management recovery UX
+when another device changes the booking or a private link expires mid-action.

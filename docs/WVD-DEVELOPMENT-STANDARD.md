@@ -4,6 +4,14 @@ Authority: founder instructions on 2 October 2026. Applies to WVD development
 and new product/project onboarding. Existing product constitutions remain
 authoritative for product behaviour and customer deployment.
 
+## WVD project authority override — 4 October 2026
+
+For WVD itself, `WVD-PROJECT-AUTHORITY.md` and the latest `AGENTS.md` rule
+supersede the older approval defaults below: request founder input only for
+missing user data, elevated admin/configuration approval, or extra money.
+Routine verification and completed development slices are not stopping points.
+Other products retain their own constitutions and explicit release authority.
+
 ## One platform, growing reuse
 
 Founder instructions on 4 October 2026 establish the shared web creative-content

@@ -3,7 +3,8 @@
 The development worker owns the loop: push an authorised development change,
 inspect CI results and bounded synthetic evidence, correct failures, repeat,
 then report the tested source commit. A founder-local pull is optional review,
-not a prerequisite for development verification. Production approval is separate.
+not a prerequisite for development verification. WVD release authority follows
+`docs/WVD-PROJECT-AUTHORITY.md`; checks are not founder approval gates.
 
 ## Current consumer
 

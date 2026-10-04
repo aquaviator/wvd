@@ -6,7 +6,17 @@ Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
   standard in `docs/WVD-WEB-CONTENT-STANDARD.md`. Every page needs a relevant CTA.
   Keep media, factual claims, sources and review dates consistent across formats.
 
-- Continue authorised development from the agreed brief and current backlog without waiting for another continue instruction. After each verified slice, select and implement the next in-scope item; progress updates and completed slices are not permission gates. Ask the founder only when missing information, access or a decision genuinely blocks the next action, and continue independent in-scope work while awaiting an answer. Do not invent requirements or broaden the brief. Stop when the brief is complete, the founder asks to stop, or no authorised work can proceed without founder input. Production deployment and new external spend still require separate approval.
+- WVD project authority, updated 4 October 2026: continue the agreed brief and
+  outstanding backlog without asking for another continue instruction. Routine
+  development, configuration within existing authority, automated checks and
+  completed slices are not founder approval gates. Ask only when the next action
+  requires user-supplied data, elevated admin/configuration approval, or extra
+  money. Continue independent authorised work while any such input is outstanding.
+  Make routine implementation decisions yourself; do not broaden the brief.
+  Stop when the brief is complete, the user asks to stop, or no authorised work
+  remains possible. This supersedes older WVD blanket production-approval and
+  generic decision gates; it does not grant new privileges, spending authority or
+  permission to message third parties. See `docs/WVD-PROJECT-AUTHORITY.md`.
 
 - Use the established Google/Firebase platform and existing service connections.
 - Do not add another provider or service subscription as a shortcut.
@@ -22,8 +32,8 @@ Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
 - Run relevant shared and consumer tests; do not claim integration from a
   configuration template alone.
 - Development commits/pushes to the authorised development branch are permitted.
-  Production deployment still needs separate founder approval. New external
-  spend remains £0 without separate authority.
+  Apply the project authority above to releases; new external spend remains £0
+  without separate authority.
 
 - Use the unattended container verification process in
   `tools/development-container/README.md` for supported development checks.

@@ -1,0 +1,31 @@
+# WVD project authority
+
+Updated 4 October 2026 from the founder's explicit instruction. This file is
+persistent project memory and must be carried into future controller handoffs.
+
+Continue development against the agreed brief and outstanding work. Do not stop
+for routine approval, review, verification, completed slices or a new “continue”.
+Select the next in-scope task and make ordinary implementation decisions.
+
+Request specific authorisation only when:
+
+- The user must supply missing data.
+- The action needs elevated admin or configuration approval.
+- The action costs extra money beyond existing authority.
+
+Complete available preparation first so any request concerns a concrete action.
+Continue independent authorised work while input is outstanding. Automated tests
+and engineering checks run unattended; they are not requests for founder review.
+Report failures honestly and fix them rather than requesting routine permission.
+
+This WVD-specific correction supersedes older blanket production-release and
+“decision required” gates in checkpoints and shared factory defaults. It does not
+change another product's constitution, grant missing account permissions, approve
+new spending, or authorise unsolicited messages to third parties. Existing
+isolated test environments remain isolated; production authority does not turn a
+test runner into a live deployment environment.
+
+Stop only when the brief is complete, the user asks to stop, or every remaining
+in-scope action depends on one of the three requirements above. Maintain a current
+checkpoint for interrupted sessions. A saved instruction is not an always-running
+background worker.
