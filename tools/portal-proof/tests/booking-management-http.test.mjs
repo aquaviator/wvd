@@ -21,3 +21,10 @@ test('managed picker is optional, bounded and whitelists only requested replacem
  for(const slots of [[slot,slot],[{...slot,start}],[{...slot,timeZone:'UTC'}],[{...slot,end:start}]])assert.equal((await invoke(make({management:{availability:async()=>({provisional:true,slots})}}),'/availability',body)).status,503);
  assert.equal((await invoke(handler,'/availability',{...body,starts:[target,target]})).status,400);assert.equal((await invoke(handler,'/availability',{...body,calendarId:'foreign'})).status,400);
 });
+test('link lifecycle routes are optional, schema-bound and expose no internal operation metadata',async()=>{
+ const token='booking.'+'a'.repeat(64),body={token,managementKey:'b'.repeat(64),rotationKey:'af30500f-8a91-4eec-8d89-fbd0cd3e9d45'};let received;
+ assert.equal((await invoke(make(),'/replace',body)).status,404);
+ const handler=make({management:{replace:async value=>{received=value;return {managementUrl:origin+'/book/manage#booking.'+value.managementKey,expiresAt,internal:'hidden'};},revoke:async()=>({status:'REVOKED',internal:'hidden'})}});
+ const replaced=await invoke(handler,'/replace',body);assert.equal(replaced.status,200);assert.match(received.operationId,/^[a-f0-9]{64}$/);assert.deepEqual(Object.keys(replaced.body).sort(),['expiresAt','managementUrl']);
+ assert.deepEqual((await invoke(handler,'/revoke',{token})).body,{status:'REVOKED'});assert.equal((await invoke(handler,'/replace',{...body,expiresAt})).status,400);assert.equal((await invoke(handler,'/revoke',{token,calendarId:'foreign'})).status,400);
+});

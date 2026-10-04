@@ -1,4 +1,4 @@
-// Isolated preview only. No capability appears in a URL, analytics or console.
+// Isolated preview only. Private fragments are removed before API requests.
 const byId=id=>document.getElementById(id);
 const managedMode=document.body.dataset.managedMode==='true',managementEnabled=document.body.dataset.managementEnabled==='true';
 const storageSuffix=managedMode?'-managed':'';
@@ -15,7 +15,17 @@ let selected=null,pending=null,management=null,cancelling=false,busy=false,chang
 const changeStorage='wvd-development-booking-change-v1'+storageSuffix,revisionStorage='wvd-development-booking-revision-v1'+storageSuffix;
 const storageKey='wvd-development-booking-retry-v1'+storageSuffix;
 const managementKey='wvd-development-booking-management-v1'+storageSuffix,cancelModeKey='wvd-development-booking-cancel-v1'+storageSuffix;
-const lock=()=>{byId('refresh-booking').disabled=busy;day.disabled=managedMode&&!management||busy||pending!==null||changePending!==null||(management!==null&&!changing);find.disabled=day.disabled;confirm.disabled=busy;retry.disabled=busy;byId('cancel').disabled=busy||pending!==null||changing||changePending!==null;byId('change').disabled=busy||pending!==null||changing||changePending!==null;byId('keep-time').disabled=busy||changePending!==null;byId('cancel-agree').disabled=busy;byId('keep').disabled=busy;byId('share-link').disabled=busy||pending!==null||changing||changePending!==null;byId('share-controls').hidden=!managementEnabled||managedMode||!management;for(const button of slots.querySelectorAll('button'))button.disabled=busy||pending!==null||changePending!==null||(management!==null&&!changing);};
+let linkAction=null,linkQuestion=null;
+const linkActionStorage='wvd-private-link-action';
+try{const saved=JSON.parse(sessionStorage.getItem(linkActionStorage));if(managedMode&&saved?.body?.token===activeToken&&['replace','revoke'].includes(saved.kind)&&Object.keys(saved.body).sort().join(',')===(saved.kind==='replace'?'managementKey,rotationKey,token':'token')&&(saved.kind==='revoke'||/^[a-f0-9]{64}$/.test(saved.body.managementKey)&&/^[a-f0-9-]{36}$/.test(saved.body.rotationKey)))linkAction=saved;}catch{}
+const lock=()=>{
+ byId('link-controls').hidden=!(managedMode&&document.body.dataset.linkLifecycle==='true'&&(management||linkAction));
+ byId('replace-link').disabled=busy||Boolean(linkAction&&linkAction.kind!=='replace')||!linkAction&&Boolean(pending||changing||changePending);
+ byId('revoke-link').disabled=busy||Boolean(linkAction&&linkAction.kind!=='revoke')||!linkAction&&Boolean(pending||changing||changePending);
+ byId('replace-link').textContent=linkAction?.kind==='replace'?'Check replacement link':'Replace private link';
+ byId('revoke-link').textContent=linkAction?.kind==='revoke'?'Retry link revocation':'Disable private link';
+ byId('link-agree').disabled=busy;byId('link-keep').disabled=busy;
+byId('refresh-booking').disabled=busy;day.disabled=managedMode&&!management||busy||pending!==null||changePending!==null||(management!==null&&!changing);find.disabled=day.disabled;confirm.disabled=busy;retry.disabled=busy;byId('cancel').disabled=busy||pending!==null||changing||changePending!==null;byId('change').disabled=busy||pending!==null||changing||changePending!==null;byId('keep-time').disabled=busy||changePending!==null;byId('cancel-agree').disabled=busy;byId('keep').disabled=busy;byId('share-link').disabled=busy||pending!==null||changing||changePending!==null;byId('share-controls').hidden=!managementEnabled||managedMode||!management;for(const button of slots.querySelectorAll('button'))button.disabled=busy||pending!==null||changePending!==null||(management!==null&&!changing);};
 const say=text=>{message.textContent=text;};
 async function post(path,body){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);try{const response=await fetch(path,{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal,cache:'no-store',redirect:'error'});return {code:response.status,data:await response.json()};}finally{clearTimeout(timer);}}
 function remember(){try{sessionStorage.setItem(storageKey,JSON.stringify(pending));}catch{/* The current page retains the capability if tab storage is unavailable. */}}
@@ -92,4 +102,47 @@ byId('refresh-booking').addEventListener('click',()=>{
  byId('selection').textContent='';confirm.hidden=true;meet.hidden=true;
  byId('availability').hidden=false;retry.hidden=true;
  pending={token:activeToken};submit();
+});
+
+async function performLinkAction(){
+ if(busy||!linkAction)return;
+ busy=true;lock();byId('link-question').hidden=true;byId('replacement-value').hidden=true;byId('replacement-label').hidden=true;
+ byId('link-message').textContent=linkAction.kind==='replace'?'Preparing your replacement link…':'Disabling this private link…';
+ let refresh=false;
+ try{
+  const {code,data}=await post('/api/calls/manage/'+linkAction.kind,linkAction.body);
+  if(code!==200)throw Error();
+  if(linkAction.kind==='replace'){
+   const url=new URL(data.managementUrl),expected='#'+linkAction.body.token.split('.')[0]+'.'+linkAction.body.managementKey;
+   if(url.origin!==location.origin||url.pathname!=='/book/manage'||url.search||url.hash!==expected)throw Error();
+   activeToken=url.hash.slice(1);
+   try{sessionStorage.setItem('wvd-management-token',activeToken);}catch{}
+   byId('replacement-value').value=url.href;byId('replacement-value').hidden=false;byId('replacement-label').hidden=false;
+   byId('link-message').textContent='Your old link no longer works. Save this replacement link; it has not been emailed.';
+   refresh=true;
+  }else{
+   if(data.status!=='REVOKED')throw Error();
+   activeToken=null;try{sessionStorage.removeItem('wvd-management-token');}catch{}
+   meet.hidden=true;byId('availability').hidden=true;
+   say('This private link is disabled. Your booking is still in place. Contact us if you need to manage it.');
+  }
+  linkAction=null;try{sessionStorage.removeItem(linkActionStorage);}catch{}
+  clear();clearManagement();slots.replaceChildren();selected=null;confirm.hidden=true;retry.hidden=true;byId('selection').textContent='';
+ }catch{byId('link-message').textContent='The link change is not confirmed here. Use the retry button to recover the same action, or contact us for help.';}
+ finally{busy=false;lock();}
+ if(refresh){pending={token:activeToken};submit();}
+}
+for(const kind of ['replace','revoke'])byId(kind+'-link').addEventListener('click',()=>{
+ if(busy)return;if(linkAction){if(linkAction.kind===kind)performLinkAction();return;}
+ if(!management||pending||changing||changePending)return;
+ linkQuestion=kind;byId('link-question').hidden=false;
+ byId('link-question-text').textContent=kind==='replace'?'Replace this private link? All previous copies will stop working. Your booking stays in place.':'Disable this private link? You will need to contact us for further booking changes. This does not cancel your booking.';
+ byId('link-agree').textContent=kind==='replace'?'Replace link now':'Disable link now';byId('link-agree').focus();
+});
+byId('link-keep').addEventListener('click',()=>{if(busy)return;linkQuestion=null;byId('link-question').hidden=true;});
+byId('link-agree').addEventListener('click',()=>{
+ if(busy||!linkQuestion||!activeToken)return;
+ const kind=linkQuestion,body=kind==='replace'?{token:activeToken,managementKey:Array.from(crypto.getRandomValues(new Uint8Array(32)),v=>v.toString(16).padStart(2,'0')).join(''),rotationKey:crypto.randomUUID()}:{token:activeToken};
+ try{sessionStorage.setItem(linkActionStorage,JSON.stringify({kind,body}));}catch{byId('link-message').textContent='This browser cannot retain recovery details. The link was not changed. Contact us for help.';return;}
+ linkAction={kind,body};linkQuestion=null;performLinkAction();
 });

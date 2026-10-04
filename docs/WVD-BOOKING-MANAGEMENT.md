@@ -114,3 +114,39 @@ events, holidays, notice and buffer policy remain in force. This reuses the
 existing screening implementation; there is no second availability policy.
 The private management picker uses this route when composed. The original
 booking page retains its existing general availability route.
+
+## Link replacement and revocation
+
+Private management pages now offer explicit **Replace private link** and
+**Disable private link** actions. Both explain that the booking remains in place.
+The browser persists recovery details before making either request; if tab
+storage fails it does not start the mutation. A lost response can be recovered
+using the same request, including after reload with the old link already invalid.
+Replacement displays the new private URL for the customer to retain. It is not
+emailed automatically and is not included in browser evidence screenshots.
+
+Optional lifecycle routes (present only when both service methods are composed):
+
+- POST `/api/calls/manage/replace`: exactly `{token,managementKey,rotationKey}`.
+  The new key is 32 random bytes represented as lowercase hex and the rotation key
+  is a UUIDv4. The server derives the operation ID and binds the new key to the
+  same product, calendar, origin and reservation. The old link stops authorising
+  reads or booking actions atomically. Only the immediately preceding link with
+  the exact new secret and operation may recover that replacement's response;
+  it cannot extend the expiry or choose another replacement secret.
+- POST `/api/calls/manage/revoke`: exactly `{token}`. Returns `REVOKED`, including
+  exact retry after revocation. It does not cancel the booking or release a slot.
+
+Replacement requires a still-valid link and a confirmed or cancelled booking;
+pending booking mutations cannot start a fresh replacement. Revocation permits
+an already-authorised holder to disable their link even while an action is
+pending; it does not roll back that booking action. Expired links cannot extend
+their own authority. Contact-assisted recovery needs a separately authenticated
+operator path; knowing an email address is not sufficient authority.
+
+The journal retains only the active digest, expiry, optional previous digest and
+replacement operation ID, and optional revocation timestamp. Backups preserve
+these fields. Normal reads deny revoked links. Queued confirmations tied to an
+old or revoked digest are suppressed; replacement can create a new encrypted
+confirmation intent without changing the booking revision. Already claimed sends
+remain uncertain/accepted according to their provider receipt state.

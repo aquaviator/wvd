@@ -48,7 +48,8 @@ export class FirestoreBookingReservations {
       }else if(row.phase==='RESCHEDULING'||row.revision!==undefined)throw Error('CORRUPT_BOOKING_SCHEDULE');
       if(row.management!==undefined){
         const m=row.management;
-        if(!confirmed||!m||Object.keys(m).sort().join(',')!=='expiresAt,tokenHash'||typeof m.tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(m.tokenHash)||!instant(m.expiresAt))throw Error('CORRUPT_BOOKING_SCHEDULE');
+        if(!confirmed||!m||Object.keys(m).some(k=>!['expiresAt','tokenHash','replacement','revokedAt'].includes(k))||typeof m.tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(m.tokenHash)||!instant(m.expiresAt)||m.revokedAt!==undefined&&!instant(m.revokedAt))throw Error('CORRUPT_BOOKING_SCHEDULE');
+        if(m.replacement!==undefined&&(!m.replacement||Object.keys(m.replacement).sort().join(',')!=='operationId,previousTokenHash'||!ref(m.replacement.operationId)||typeof m.replacement.previousTokenHash!=='string'||!/^[a-f0-9]{64}$/.test(m.replacement.previousTokenHash)||m.replacement.previousTokenHash===m.tokenHash))throw Error('CORRUPT_BOOKING_SCHEDULE');
       }
       if(!validBookingDeliveries(row,this.#binding.calendarId)||row.deliveries!==undefined&&!confirmed)throw Error('CORRUPT_BOOKING_SCHEDULE');
       seen.add(row.reservationId);
@@ -173,6 +174,7 @@ export class FirestoreBookingReservations {
       const row=state.reservations.find(x=>x.reservationId===bound.reservationId);
       if(!row||row.productId!==bound.productId)throw Error('MANAGEMENT_DENIED');
       if(row.management){
+        if(row.management.revokedAt!==undefined)throw Error('MANAGEMENT_DENIED');
         if(!timingSafeEqual(Buffer.from(row.management.tokenHash,'hex'),Buffer.from(tokenHash,'hex')))throw Error('MANAGEMENT_ALREADY_ISSUED');
         // Exact retry returns the original expiry; it cannot extend the link.
         return {expiresAt:row.management.expiresAt};
@@ -185,8 +187,31 @@ export class FirestoreBookingReservations {
     if(!ref(reservationId)||typeof tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(tokenHash)||!instant(now))throw Error('MANAGEMENT_DENIED');
     return this.#transaction(state=>{
       const row=state.reservations.find(x=>x.reservationId===reservationId),m=row?.management;
-      if(!m||!timingSafeEqual(Buffer.from(m.tokenHash,'hex'),Buffer.from(tokenHash,'hex'))||Date.parse(now)>=Date.parse(m.expiresAt))throw Error('MANAGEMENT_DENIED');
+      if(!m||m.revokedAt!==undefined||!timingSafeEqual(Buffer.from(m.tokenHash,'hex'),Buffer.from(tokenHash,'hex'))||Date.parse(now)>=Date.parse(m.expiresAt))throw Error('MANAGEMENT_DENIED');
       return row;
+    });
+  }
+  replaceManagement(reservationId,{tokenHash,nextTokenHash,operationId,expiresAt,checkedAt}) {
+    if(!ref(reservationId)||![tokenHash,nextTokenHash].every(v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v))||tokenHash===nextTokenHash||!ref(operationId)||!instant(expiresAt)||!instant(checkedAt)||Date.parse(expiresAt)<=Date.parse(checkedAt)||Date.parse(expiresAt)-Date.parse(checkedAt)>2592000000)throw Error('INVALID_MANAGEMENT_CAPABILITY');
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===reservationId),m=row?.management;
+      if(!m||m.revokedAt!==undefined||Date.parse(checkedAt)>=Date.parse(m.expiresAt))throw Error('MANAGEMENT_DENIED');
+      // Exact retry of the most recent replacement may use its now-invalid old
+      // link, but only with the same new secret and operation. It cannot rotate again.
+      if(m.tokenHash===nextTokenHash&&m.replacement?.previousTokenHash===tokenHash&&m.replacement.operationId===operationId)return {expiresAt:m.expiresAt};
+      if(!timingSafeEqual(Buffer.from(m.tokenHash,'hex'),Buffer.from(tokenHash,'hex'))||!['CONFIRMED','CANCELLED'].includes(row.phase))throw Error('MANAGEMENT_DENIED');
+      row.management={tokenHash:nextTokenHash,expiresAt,replacement:{previousTokenHash:tokenHash,operationId}};
+      return {expiresAt};
+    });
+  }
+  revokeManagement(reservationId,tokenHash,checkedAt) {
+    if(!ref(reservationId)||typeof tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(tokenHash)||!instant(checkedAt))throw Error('MANAGEMENT_DENIED');
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===reservationId),m=row?.management;
+      if(!m||!timingSafeEqual(Buffer.from(m.tokenHash,'hex'),Buffer.from(tokenHash,'hex')))throw Error('MANAGEMENT_DENIED');
+      if(m.revokedAt!==undefined)return {status:'REVOKED'};
+      if(Date.parse(checkedAt)>=Date.parse(m.expiresAt))throw Error('MANAGEMENT_DENIED');
+      m.revokedAt=checkedAt;return {status:'REVOKED'};
     });
   }
   // Confirmation intents share the booking transaction. Ciphertext only; keys,
@@ -200,7 +225,7 @@ export class FirestoreBookingReservations {
       if(!row)throw Error('RESERVATION_BINDING_CONFLICT');
       const existing=row.deliveries?.find(x=>x.id===id);
       if(existing){if(existing.payloadHash!==intent.payloadHash||existing.managementHash!==intent.managementHash||existing.start!==bound.start||existing.end!==bound.end)throw Error('DELIVERY_BINDING_CONFLICT');return existing;}
-      if(!same(row,bound)||row.phase!=='CONFIRMED'||(row.revision??0)!==intent.revision||row.management?.tokenHash!==intent.managementHash||Date.parse(intent.createdAt)>=Date.parse(row.management.expiresAt))throw Error('DELIVERY_NOT_READY');
+      if(!same(row,bound)||row.phase!=='CONFIRMED'||(row.revision??0)!==intent.revision||row.management?.tokenHash!==intent.managementHash||row.management.revokedAt!==undefined||Date.parse(intent.createdAt)>=Date.parse(row.management.expiresAt))throw Error('DELIVERY_NOT_READY');
       if((row.deliveries?.length??0)>=16)throw Error('BOOKING_CAPACITY');
       const delivery={id,...intent,start:bound.start,end:bound.end,status:'QUEUED'};
       (row.deliveries??=[]).push(delivery);return delivery;
@@ -214,7 +239,7 @@ export class FirestoreBookingReservations {
       if(!d)throw Error('DELIVERY_NOT_FOUND');
       if(d.status!=='QUEUED')return {claimed:false,intent:d};
       if(Date.parse(checkedAt)<Date.parse(d.createdAt))throw Error('INVALID_BOOKING_DELIVERY');
-      if(row.phase!=='CONFIRMED'||(row.revision??0)!==d.revision||row.start!==d.start||row.end!==d.end||row.management?.tokenHash!==d.managementHash||Date.parse(checkedAt)>=Date.parse(row.management.expiresAt)){d.status='SUPERSEDED';return {claimed:false,intent:d};}
+      if(row.phase!=='CONFIRMED'||(row.revision??0)!==d.revision||row.start!==d.start||row.end!==d.end||row.management?.tokenHash!==d.managementHash||row.management.revokedAt!==undefined||Date.parse(checkedAt)>=Date.parse(row.management.expiresAt)){d.status='SUPERSEDED';return {claimed:false,intent:d};}
       d.status='CLAIMED';d.claimId=claimId;d.claimedAt=checkedAt;return {claimed:true,intent:d};
     });
   }

@@ -1080,3 +1080,16 @@ The real emulator scenario now retains an uncertain encrypted delivery through
 backup/restore alongside an uncertain booking move. See WVD-BOOKING-DELIVERY.md.
 Next work proceeds directly into management-link replacement/revocation and live
 runtime composition. No actual sender, live email or new permission is enabled.
+
+### Private link lifecycle
+
+Continued without a founder gate: transactional replacement and revocation,
+optional bounded HTTP routes and explicit customer controls. Replacement/revocation
+recovery details are saved before mutation; lost responses can retry after reload.
+The previous token is valid only for exact replacement-response recovery, never
+for reading or changing the booking. Revocation keeps the booking in place.
+Stale encrypted confirmation intents are suppressed after either change.
+Focused booking/HTTP/application checks: 48 passing. Real browser scenarios now
+exercise interrupted replacement and revocation, and emulator backup preserves
+replacement/revocation metadata and a claimed encrypted delivery intent.
+Next active work: compose the live booking runtime from these existing adapters.

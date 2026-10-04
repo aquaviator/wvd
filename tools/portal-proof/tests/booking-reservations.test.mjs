@@ -331,3 +331,19 @@ test('encrypted envelope is bound to its booking and corrupted payload cannot cl
  assert.equal((await f.worker.dispatch(queued)).status,'RETRYABLE');assert.equal(f.sends,0);assert.equal((await s.store.read('first')).deliveries[0].status,'QUEUED');
  [...s.db.rows.values()][0].reservations[0].deliveries[0].status='ACCEPTED';await assert.rejects(s.store.read('first'),/CORRUPT_BOOKING_SCHEDULE/);
 });
+test('link replacement denies old access but permits only an exact lost-response retry',async()=>{
+ const s=setup(),f=await deliverySetup(s),old=f.link.managementUrl.split('#')[1],key='b'.repeat(64),input={token:old,managementKey:key,operationId:'rotation-one'};
+ const queued=await f.worker.queue({recipientEmail:'customer@example.test',managementUrl:f.link.managementUrl});
+ const replaced=await f.management.replace(input),token=replaced.managementUrl.split('#')[1];assert.equal((await f.management.read(token)).status,'CONFIRMED');await assert.rejects(f.management.read(old),/MANAGEMENT_DENIED/);
+ assert.deepEqual(await f.management.replace(input),replaced);await assert.rejects(f.management.replace({...input,operationId:'different'}),/MANAGEMENT_DENIED/);await assert.rejects(f.management.replace({...input,managementKey:'c'.repeat(64)}),/MANAGEMENT_DENIED/);
+ assert.equal((await f.worker.dispatch(queued)).status,'SUPERSEDED');assert.equal(f.sends,0);
+ const next=await f.worker.queue({recipientEmail:'customer@example.test',managementUrl:replaced.managementUrl});assert.notEqual(next.intentId,queued.intentId);
+ assert.equal((await f.management.revoke({token})).status,'REVOKED');assert.equal((await f.management.revoke({token})).status,'REVOKED');await assert.rejects(f.management.read(token),/MANAGEMENT_DENIED/);await assert.rejects(f.management.replace(input),/MANAGEMENT_DENIED/);assert.equal((await f.worker.dispatch(next)).status,'SUPERSEDED');assert.equal((await s.store.read('first')).phase,'CONFIRMED');
+});
+test('concurrent replacement accepts one new secret and expired links cannot extend their authority',async()=>{
+ const s=setup(),f=await deliverySetup(s),token=f.link.managementUrl.split('#')[1];
+ const attempts=await Promise.allSettled(['b','c'].map((c,i)=>f.management.replace({token,managementKey:c.repeat(64),operationId:'rotation-'+i})));assert.equal(attempts.filter(x=>x.status==='fulfilled').length,1);
+ const next=attempts.find(x=>x.status==='fulfilled').value.managementUrl.split('#')[1],expired=managementSetup(s,{clock:()=> '2026-10-05T12:00:00.000Z'});
+ await assert.rejects(expired.replace({token:next,managementKey:'d'.repeat(64),operationId:'expired'}),/MANAGEMENT_DENIED/);await assert.rejects(expired.revoke({token:next}),/MANAGEMENT_DENIED/);
+ const row=[...s.db.rows.values()][0].reservations[0];row.management.replacement.previousTokenHash=row.management.tokenHash;await assert.rejects(s.store.read('first'),/CORRUPT_BOOKING_SCHEDULE/);
+});

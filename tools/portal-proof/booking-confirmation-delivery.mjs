@@ -30,7 +30,7 @@ export function createBookingConfirmationDelivery({store,management,productId,ca
    if(!d||row.productId!==productId)throw Error('DELIVERY_NOT_FOUND');
    if(d.status!=='QUEUED')return result(d);
    const checkedAt=now();
-   if(row.phase!=='CONFIRMED'||(row.revision??0)!==d.revision||row.start!==d.start||row.end!==d.end||row.management?.tokenHash!==d.managementHash||Date.parse(checkedAt)>=Date.parse(row.management.expiresAt))return result(await store.suppressConfirmationDelivery(reservationId,intentId));
+   if(row.phase!=='CONFIRMED'||(row.revision??0)!==d.revision||row.start!==d.start||row.end!==d.end||row.management?.tokenHash!==d.managementHash||row.management.revokedAt!==undefined||Date.parse(checkedAt)>=Date.parse(row.management.expiresAt))return result(await store.suppressConfirmationDelivery(reservationId,intentId));
    let payload,draft;
    try{
     payload=JSON.parse(await cipher.open(d.envelope,context(reservationId,intentId)));

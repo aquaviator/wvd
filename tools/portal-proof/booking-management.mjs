@@ -13,9 +13,13 @@ export function createBookingManagement({store,productId,calendarId,managementOr
  if(screenReschedule!==undefined&&typeof screenReschedule!=='function')throw Error('INVALID_CONFIGURATION');
  const hash=(id,secret)=>createHash('sha256').update(JSON.stringify([productId,calendarId,managementOrigin,id,secret])).digest('hex');
  const now=()=>{const value=clock();if(!instant(value))throw Error('INVALID_CONFIGURATION');return value;};
- const resolve=async token=>{
+ const tokenParts=token=>{
   if(typeof token!=='string'||token.length>194)throw Error('MANAGEMENT_DENIED');
   const pieces=token.split('.');if(pieces.length!==2||!ref(pieces[0])||!key(pieces[1]))throw Error('MANAGEMENT_DENIED');
+  return pieces;
+ };
+ const resolve=async token=>{
+  const pieces=tokenParts(token);
   const row=await store.readManaged(pieces[0],hash(pieces[0],pieces[1]),now());
   if(row.productId!==productId||row.reservationId!==pieces[0])throw Error('MANAGEMENT_DENIED');return row;
  };
@@ -39,6 +43,15 @@ export function createBookingManagement({store,productId,calendarId,managementOr
    if(!instant(result?.expiresAt)||Date.parse(result.expiresAt)<=Date.parse(checkedAt))throw Error('MANAGEMENT_DENIED');
    return {managementUrl:managementOrigin+'/book/manage#'+value.reservationId+'.'+managementKey,expiresAt:result.expiresAt};
   },
+  ...(typeof store.replaceManagement==='function'&&typeof store.revokeManagement==='function'?{
+   async replace({token,managementKey,operationId}){
+    const [id,secret]=tokenParts(token);if(!key(managementKey)||managementKey===secret||!ref(operationId))throw Error('INVALID_MANAGEMENT_CAPABILITY');
+    const checkedAt=now(),expiresAt=new Date(Date.parse(checkedAt)+linkLifetimeMs).toISOString();
+    const result=await store.replaceManagement(id,{tokenHash:hash(id,secret),nextTokenHash:hash(id,managementKey),operationId,expiresAt,checkedAt});
+    return {managementUrl:managementOrigin+'/book/manage#'+id+'.'+managementKey,expiresAt:result.expiresAt};
+   },
+   async revoke({token}){const [id,secret]=tokenParts(token);return store.revokeManagement(id,hash(id,secret),now());}
+  }:{}),
   async read(token){return publicView(await resolve(token));},
   async recover({token,revision,actionId}){
    const row=await resolve(token);

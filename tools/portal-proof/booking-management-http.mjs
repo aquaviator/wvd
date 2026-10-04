@@ -13,7 +13,7 @@ export function createBookingManagementHandler({management,productId,calendarId,
   const send=(status,body)=>{response.writeHead(status,{'Cache-Control':'no-store','Content-Type':'application/json; charset=utf-8','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});response.end(JSON.stringify(body));};
   try{
    if(typeof request.url!=='string'||request.url.length>4096)return send(400,{error:'INVALID_REQUEST'});
-   const url=new URL(request.url,'http://localhost'),routes={...(typeof management.availability==='function'?{'/api/calls/manage/availability':'revision,start,starts,token'}:{}),'/api/calls/manage/issue':'managementKey,requestKey,start','/api/calls/manage/read':'token','/api/calls/manage/recover':'actionId,revision,token','/api/calls/manage/cancel':'revision,start,token','/api/calls/manage/reschedule':'changeKey,revision,start,targetStart,token'};
+   const url=new URL(request.url,'http://localhost'),routes={...(typeof management.replace==='function'&&typeof management.revoke==='function'?{'/api/calls/manage/replace':'managementKey,rotationKey,token','/api/calls/manage/revoke':'token'}:{}),...(typeof management.availability==='function'?{'/api/calls/manage/availability':'revision,start,starts,token'}:{}),'/api/calls/manage/issue':'managementKey,requestKey,start','/api/calls/manage/read':'token','/api/calls/manage/recover':'actionId,revision,token','/api/calls/manage/cancel':'revision,start,token','/api/calls/manage/reschedule':'changeKey,revision,start,targetStart,token'};
    if(!Object.hasOwn(routes,url.pathname))return send(404,{error:'NOT_FOUND'});
    if(request.method!=='POST')return send(405,{error:'METHOD_NOT_ALLOWED'});
    if(request.headers.origin!==allowedOrigin)return send(403,{error:'ORIGIN_DENIED'});
@@ -33,6 +33,16 @@ export function createBookingManagementHandler({management,productId,calendarId,
      return send(200,{managementUrl:result.managementUrl,expiresAt:result.expiresAt});
     }
     if(typeof body.token!=='string'||body.token.length>194)return send(403,{error:'MANAGEMENT_DENIED'});
+    if(url.pathname.endsWith('/replace')){
+     if(!uuid(body.rotationKey)||typeof body.managementKey!=='string'||!/^[a-f0-9]{64}$/.test(body.managementKey))return send(400,{error:'INVALID_REQUEST'});
+     const operationId=createHash('sha256').update(JSON.stringify([productId,calendarId,body.token,body.rotationKey])).digest('hex');
+     const result=await management.replace({token:body.token,managementKey:body.managementKey,operationId});
+     if(result?.managementUrl!==allowedOrigin+'/book/manage#'+body.token.split('.')[0]+'.'+body.managementKey||typeof result.expiresAt!=='string'||new Date(result.expiresAt).toISOString()!==result.expiresAt)throw Error('INVALID_BOOKING_RESULT');
+     return send(200,{managementUrl:result.managementUrl,expiresAt:result.expiresAt});
+    }
+    if(url.pathname.endsWith('/revoke')){
+     const result=await management.revoke({token:body.token});if(result?.status!=='REVOKED')throw Error('INVALID_BOOKING_RESULT');return send(200,{status:'REVOKED'});
+    }
     if(url.pathname.endsWith('/read')||url.pathname.endsWith('/recover')){
      if(url.pathname.endsWith('/recover')&&(!revision(body.revision)||typeof body.actionId!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(body.actionId)))return send(400,{error:'INVALID_REQUEST'});
      const result=await (url.pathname.endsWith('/read')?management.read(body.token):management.recover({token:body.token,revision:body.revision,actionId:body.actionId}));

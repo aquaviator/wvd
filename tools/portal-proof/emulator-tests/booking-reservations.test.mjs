@@ -28,6 +28,7 @@ test('real Firestore transactions serialize competing bookings and preserve dura
   assert.equal((await reopened.reserve(value(held.reservationId))).phase,'CONFIRMED');
   const foreign=new FirestoreBookingReservations({...config,productId:'foreign',backupBinding:undefined});
   await assert.rejects(foreign.reserve({...value('foreign'),productId:'foreign'}),/SCHEDULE_OWNERSHIP_CONFLICT/);
+  await first.attachManagement(value(held.reservationId),{tokenHash:'d'.repeat(64),expiresAt:'2026-10-10T12:00:00.000Z'});await reopened.revokeManagement(held.reservationId,'d'.repeat(64),'2026-10-04T12:00:00.000Z');await assert.rejects(second.readManaged(held.reservationId,'d'.repeat(64),'2026-10-04T12:00:00.000Z'),/MANAGEMENT_DENIED/);
   await reopened.beginCancellation(held.reservationId);
   await assert.rejects(second.reserve(value('replacement')),/BOOKING_SLOT_RESERVED/);
   await reopened.confirmCancellation(held.reservationId,{status:'EVENT_ABSENT',eventId:result.eventId},'2026-10-02T12:00:00.000Z');
@@ -38,14 +39,15 @@ test('real Firestore transactions serialize competing bookings and preserve dura
   await first.reserve(moving);const movingClaim=await first.beginWrite('moving');
   await first.confirm('moving',movingClaim.reservation.claimId,{...result,eventId:googleBookingEventId(productId,calendarId,'moving')});
   await first.attachManagement(moving,{tokenHash:'a'.repeat(64),expiresAt:'2026-10-10T12:00:00.000Z'});
+  const replacement={tokenHash:'a'.repeat(64),nextTokenHash:'c'.repeat(64),operationId:'rotation',expiresAt:'2026-10-11T12:00:00.000Z',checkedAt:'2026-10-04T12:00:00.000Z'};await first.replaceManagement('moving',replacement);assert.deepEqual(await reopened.replaceManagement('moving',replacement),{expiresAt:replacement.expiresAt});
   const envelope=await createBookingDeliveryCipher({keyRef:'synthetic-key',readKey:async()=>Buffer.alloc(32,9)}).seal('synthetic message','synthetic context');
-  const queued=await first.queueConfirmationDelivery(moving,{revision:0,managementHash:'a'.repeat(64),payloadHash:'b'.repeat(64),createdAt:'2026-10-04T12:00:00.000Z',envelope});
+  const queued=await first.queueConfirmationDelivery(moving,{revision:0,managementHash:'c'.repeat(64),payloadHash:'b'.repeat(64),createdAt:'2026-10-04T12:00:00.000Z',envelope});
   const deliveryClaims=await Promise.all([first.claimConfirmationDelivery('moving',queued.id,'2026-10-04T12:00:00.000Z'),second.claimConfirmationDelivery('moving',queued.id,'2026-10-04T12:00:00.000Z')]);assert.equal(deliveryClaims.filter(x=>x.claimed).length,1);assert.equal((await reopened.read('moving')).deliveries[0].status,'CLAIMED');
   const move={expectedRevision:0,changeId:'move',start:'2026-10-07T14:00:00.000Z'};
   await first.beginReschedule(moving,move);
   for(const start of [moving.start,move.start])await assert.rejects(second.reserve({...value('move-competitor'),start,end:new Date(Date.parse(start)+1800000).toISOString()}),/BOOKING_SLOT_RESERVED/);
   const movingClaims=await Promise.all([first.claimReschedule('moving','move'),second.claimReschedule('moving','move')]);assert.equal(movingClaims.filter(x=>x.claimed).length,1);
-  assert.equal((await reopened.readManaged('moving','a'.repeat(64),'2026-10-04T12:00:00.000Z')).change.phase,'WRITING');
+  assert.equal((await reopened.readManaged('moving','c'.repeat(64),'2026-10-04T12:00:00.000Z')).change.phase,'WRITING');
   await assert.rejects(reopened.readManaged('moving','b'.repeat(64),'2026-10-04T12:00:00.000Z'),/MANAGEMENT_DENIED/);
   const before=await second.backupSnapshot(),raw=await exportBookingBackup(second,backupBinding,()=> '2026-10-04T12:00:00.000Z');
   const proof=await rehearseFirestoreBookingBackup(raw,backupBinding);assert.deepEqual(proof,await rehearseBookingBackup(raw,backupBinding));assert.equal(proof.reservations,4);assert.equal(proof.activeHolds,3);assert.equal(proof.cancelled,1);assert.deepEqual(await second.backupSnapshot(),before);
