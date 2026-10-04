@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {initializeApp,deleteApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
+import {createBookingDeliveryCipher} from '../booking-delivery-envelope.mjs';
 import {FirestoreBookingReservations} from '../booking-reservations.mjs';
 import {googleBookingEventId} from '../google-booking-event.mjs';
 import {exportBookingBackup,rehearseBookingBackup,rehearseFirestoreBookingBackup} from '../booking-backup.mjs';
@@ -37,6 +38,9 @@ test('real Firestore transactions serialize competing bookings and preserve dura
   await first.reserve(moving);const movingClaim=await first.beginWrite('moving');
   await first.confirm('moving',movingClaim.reservation.claimId,{...result,eventId:googleBookingEventId(productId,calendarId,'moving')});
   await first.attachManagement(moving,{tokenHash:'a'.repeat(64),expiresAt:'2026-10-10T12:00:00.000Z'});
+  const envelope=await createBookingDeliveryCipher({keyRef:'synthetic-key',readKey:async()=>Buffer.alloc(32,9)}).seal('synthetic message','synthetic context');
+  const queued=await first.queueConfirmationDelivery(moving,{revision:0,managementHash:'a'.repeat(64),payloadHash:'b'.repeat(64),createdAt:'2026-10-04T12:00:00.000Z',envelope});
+  const deliveryClaims=await Promise.all([first.claimConfirmationDelivery('moving',queued.id,'2026-10-04T12:00:00.000Z'),second.claimConfirmationDelivery('moving',queued.id,'2026-10-04T12:00:00.000Z')]);assert.equal(deliveryClaims.filter(x=>x.claimed).length,1);assert.equal((await reopened.read('moving')).deliveries[0].status,'CLAIMED');
   const move={expectedRevision:0,changeId:'move',start:'2026-10-07T14:00:00.000Z'};
   await first.beginReschedule(moving,move);
   for(const start of [moving.start,move.start])await assert.rejects(second.reserve({...value('move-competitor'),start,end:new Date(Date.parse(start)+1800000).toISOString()}),/BOOKING_SLOT_RESERVED/);

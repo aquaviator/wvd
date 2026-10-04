@@ -1066,3 +1066,17 @@ Booking picker source: df3e79ff5c7ee047dfbe2e11232ca756cd1c1145. Build runs
 37218806565, including the browser scenarios for stale cancellation, read-only
 refresh and expired-link help. No production deployment or actual email delivery
 is claimed by these results.
+
+## Continued controller development — confirmation queue
+
+Implemented version-bound encrypted confirmation intents within the booking
+transaction, one send claim across workers, stale-message suppression and durable
+provider acceptance receipts. Unknown sends are never automatically retried.
+The trusted dispatcher reuses current management preparation and exact Calendar
+inspection before claiming; no provider operation runs inside a transaction.
+Real AES-GCM tests cover context binding/corruption; booking tests cover reopen,
+concurrent dispatch, stale cancellation, response/receipt failure and no resend.
+The real emulator scenario now retains an uncertain encrypted delivery through
+backup/restore alongside an uncertain booking move. See WVD-BOOKING-DELIVERY.md.
+Next work proceeds directly into management-link replacement/revocation and live
+runtime composition. No actual sender, live email or new permission is enabled.

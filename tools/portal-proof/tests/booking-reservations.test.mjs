@@ -4,6 +4,8 @@ import {AsyncLocalStorage} from 'node:async_hooks';
 import {FirestoreBookingReservations,createReservedIntroCallBooking,createIntroCallBookingReconciler,createReservedIntroCallCancellation} from '../booking-reservations.mjs';
 import {googleBookingEventId,createGoogleBookingEventWriter} from '../google-booking-event.mjs';
 import {createBookingManagement} from '../booking-management.mjs';
+import {createBookingConfirmationDelivery} from '../booking-confirmation-delivery.mjs';
+import {createBookingDeliveryCipher} from '../booking-delivery-envelope.mjs';
 import {createBookingConfirmationPreparation} from '../booking-confirmation.mjs';
 import {createReservedIntroCallRescheduler} from '../booking-reschedule.mjs';
 import {createIntroCallScreening} from '../call-screening.mjs';
@@ -290,4 +292,42 @@ test('managed availability is read-only, revision-bound and excludes the unchang
  assert.deepEqual(await management.availability(input),{provisional:true,slots:[]});assert.deepEqual(s.db.rows,before);
  await assert.rejects(management.availability({...input,revision:1}),/RESERVATION_BINDING_CONFLICT/);await assert.rejects(management.availability({...input,token:'first.'+'b'.repeat(64)}),/MANAGEMENT_DENIED/);assert.equal(calls,1);
  race=true;await assert.rejects(management.availability(input),/RESERVATION_BINDING_CONFLICT/);
+});
+async function deliverySetup(s,patch={}){
+ const value=reservation();await s.book(value);const management=managementSetup(s),link=await management.issue({reservation:value,managementKey:'a'.repeat(64)});let event,sends=0;
+ await createGoogleBookingEventWriter({productId,calendarId,requestTimeoutMs:1000,calendar:{events:{get:async()=>{if(!event)throw {response:{status:404}};return {data:event};},insert:async({requestBody})=>{event={...requestBody,status:'confirmed',conferenceData:{createRequest:{status:{statusCode:'success'}},conferenceSolution:{key:{type:'hangoutsMeet'}},entryPoints:[{entryPointType:'video',uri:'https://meet.google.com/abc-defg-hij'}]}};return {data:event};}}}})(value);
+ const cipher=createBookingDeliveryCipher({keyRef:'synthetic-key-v1',readKey:async()=>Buffer.alloc(32,7)});
+ const options={store:s.store,management,productId,calendarId,managementOrigin:'https://example.test',clock:()=> '2026-10-04T12:00:00.000Z',cipher,calendar:{events:{get:async()=>{assert.equal(s.db.active,false);return {data:structuredClone(event)};}}},requestTimeoutMs:1000,sender:{send:async(message,options)=>{assert.equal(s.db.active,false);assert.equal(options.retry,false);assert.equal(message.recipientEmail,'customer@example.test');sends++;return {status:'ACCEPTED',receipt:'provider-receipt'};}},...patch};
+ return {worker:createBookingConfirmationDelivery(options),options,management,link,get sends(){return sends;}};
+}
+test('confirmation queue encrypts private data, survives reopening and claims a concurrent send once',async()=>{
+ const s=setup(),f=await deliverySetup(s),input={recipientEmail:'customer@example.test',managementUrl:f.link.managementUrl};
+ const a=await f.worker.queue(input),b=await f.worker.queue(input);assert.equal(a.intentId,b.intentId);assert.equal(a.status,'QUEUED');
+ const raw=JSON.stringify([...s.db.rows.values()]);assert.equal(raw.includes(input.recipientEmail),false);assert.equal(raw.includes('a'.repeat(64)),false);assert.equal(raw.includes('Change or cancel'),false);
+ const reopened=new FirestoreBookingReservations({db:s.db,productId,calendarId}),worker=createBookingConfirmationDelivery({...f.options,store:reopened});
+ const results=await Promise.all([worker.dispatch(a),worker.dispatch(a)]);assert.equal(f.sends,1);assert.ok(results.some(x=>x.status==='ACCEPTED'));assert.equal((await worker.dispatch(a)).providerAccepted,true);assert.equal(f.sends,1);assert.equal((await reopened.read('first')).deliveries[0].status,'ACCEPTED');
+ await assert.rejects(f.worker.queue({...input,recipientEmail:'other@example.test'}),/DELIVERY_BINDING_CONFLICT/);
+});
+test('unknown send and receipt commit failure never automatically resend',async()=>{
+ for(const mode of ['send-error','commit-error']){
+  const s=setup(),f=await deliverySetup(s);let sends=0;
+  const worker=createBookingConfirmationDelivery({...f.options,sender:{send:async()=>{sends++;if(mode==='send-error')throw Error('timeout after acceptance');s.db.failConfirmation=true;return {status:'ACCEPTED',receipt:'receipt'};}}});
+  const queued=await worker.queue({recipientEmail:'customer@example.test',managementUrl:f.link.managementUrl});assert.equal((await worker.dispatch(queued)).status,'UNKNOWN');s.db.failConfirmation=false;
+  assert.equal((await worker.dispatch(queued)).status,'UNKNOWN');assert.equal(sends,1);
+ }
+});
+test('stale confirmations and a booking changed during provider read are suppressed without sending',async()=>{
+ for(const race of [false,true]){
+  const s=setup(),f=await deliverySetup(s),queued=await f.worker.queue({recipientEmail:'customer@example.test',managementUrl:f.link.managementUrl});
+  const original=f.options.calendar.events.get;
+  if(race)f.options.calendar.events.get=async()=>{const result=await original();await s.store.beginCancellation('first');return result;};else await s.store.beginCancellation('first');
+  assert.equal((await f.worker.dispatch(queued)).status,'SUPERSEDED');assert.equal(f.sends,0);
+ }
+});
+test('encrypted envelope is bound to its booking and corrupted payload cannot claim delivery',async()=>{
+ const s=setup(),f=await deliverySetup(s),queued=await f.worker.queue({recipientEmail:'customer@example.test',managementUrl:f.link.managementUrl});
+ const d=(await s.store.read('first')).deliveries[0];await assert.rejects(f.options.cipher.open(d.envelope,'foreign-context'),/INVALID_DELIVERY_PAYLOAD/);
+ const row=[...s.db.rows.values()][0].reservations[0];row.deliveries[0].envelope.tag=Buffer.alloc(16,9).toString('base64');
+ assert.equal((await f.worker.dispatch(queued)).status,'RETRYABLE');assert.equal(f.sends,0);assert.equal((await s.store.read('first')).deliveries[0].status,'QUEUED');
+ [...s.db.rows.values()][0].reservations[0].deliveries[0].status='ACCEPTED';await assert.rejects(s.store.read('first'),/CORRUPT_BOOKING_SCHEDULE/);
 });

@@ -1,5 +1,6 @@
 import {createHash,randomUUID,timingSafeEqual} from 'node:crypto';
 import {googleBookingEventId,googleBookingReservation,inspectGoogleBookingEvent} from './google-booking-event.mjs';
+import {bookingDeliveryId,validBookingDeliveries,validQueuedDelivery} from './booking-delivery-state.mjs';
 import {normaliseIntroCallCandidates} from './booking.mjs';
 const ref=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(v);
 const instant=v=>typeof v==='string'&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString()===v;
@@ -35,7 +36,7 @@ export class FirestoreBookingReservations {
     for(const row of data.reservations){
       try{bookingReservation({productId:row.productId,reservationId:row.reservationId,start:row.start,end:row.end},this.#binding.productId);}catch{throw Error('CORRUPT_BOOKING_SCHEDULE');}
       const confirmed=['CONFIRMED','CANCELLING','CANCELLED','RESCHEDULING'].includes(row.phase);
-      if(seen.has(row.reservationId)||!phases.includes(row.phase)||Object.keys(row).some(k=>!['productId','reservationId','start','end','phase','claimId','eventId','meetUrl','cancelledAt','change','revision','management'].includes(k))||(row.phase==='RESERVED'||row.phase==='REJECTED')&&(row.claimId!==undefined||row.eventId!==undefined||row.meetUrl!==undefined)||(row.phase==='WRITING'||confirmed)&&!ref(row.claimId)||row.phase==='WRITING'&&(row.eventId!==undefined||row.meetUrl!==undefined)||confirmed&&(row.eventId!==googleBookingEventId(row.productId,this.#binding.calendarId,row.reservationId)||!meet(row.meetUrl))||(row.phase==='CANCELLED'?!instant(row.cancelledAt):row.cancelledAt!==undefined))throw Error('CORRUPT_BOOKING_SCHEDULE');
+      if(seen.has(row.reservationId)||!phases.includes(row.phase)||Object.keys(row).some(k=>!['productId','reservationId','start','end','phase','claimId','eventId','meetUrl','cancelledAt','change','revision','management','deliveries'].includes(k))||(row.phase==='RESERVED'||row.phase==='REJECTED')&&(row.claimId!==undefined||row.eventId!==undefined||row.meetUrl!==undefined)||(row.phase==='WRITING'||confirmed)&&!ref(row.claimId)||row.phase==='WRITING'&&(row.eventId!==undefined||row.meetUrl!==undefined)||confirmed&&(row.eventId!==googleBookingEventId(row.productId,this.#binding.calendarId,row.reservationId)||!meet(row.meetUrl))||(row.phase==='CANCELLED'?!instant(row.cancelledAt):row.cancelledAt!==undefined))throw Error('CORRUPT_BOOKING_SCHEDULE');
       if(row.change!==undefined){
         const c=row.change;
         try{
@@ -49,6 +50,7 @@ export class FirestoreBookingReservations {
         const m=row.management;
         if(!confirmed||!m||Object.keys(m).sort().join(',')!=='expiresAt,tokenHash'||typeof m.tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(m.tokenHash)||!instant(m.expiresAt))throw Error('CORRUPT_BOOKING_SCHEDULE');
       }
+      if(!validBookingDeliveries(row,this.#binding.calendarId)||row.deliveries!==undefined&&!confirmed)throw Error('CORRUPT_BOOKING_SCHEDULE');
       seen.add(row.reservationId);
     }
     const active=data.reservations.filter(x=>!['REJECTED','CANCELLED'].includes(x.phase));
@@ -185,6 +187,48 @@ export class FirestoreBookingReservations {
       const row=state.reservations.find(x=>x.reservationId===reservationId),m=row?.management;
       if(!m||!timingSafeEqual(Buffer.from(m.tokenHash,'hex'),Buffer.from(tokenHash,'hex'))||Date.parse(now)>=Date.parse(m.expiresAt))throw Error('MANAGEMENT_DENIED');
       return row;
+    });
+  }
+  // Confirmation intents share the booking transaction. Ciphertext only; keys,
+  // recipient addresses, message text and raw management links stay outside it.
+  queueConfirmationDelivery(value,input) {
+    const bound=bookingReservation(value,this.#binding.productId);
+    if(!validQueuedDelivery(input))throw Error('INVALID_BOOKING_DELIVERY');
+    const intent=structuredClone(input),id=bookingDeliveryId(bound.productId,this.#binding.calendarId,bound.reservationId,intent.revision,intent.managementHash);
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===bound.reservationId);
+      if(!row)throw Error('RESERVATION_BINDING_CONFLICT');
+      const existing=row.deliveries?.find(x=>x.id===id);
+      if(existing){if(existing.payloadHash!==intent.payloadHash||existing.managementHash!==intent.managementHash||existing.start!==bound.start||existing.end!==bound.end)throw Error('DELIVERY_BINDING_CONFLICT');return existing;}
+      if(!same(row,bound)||row.phase!=='CONFIRMED'||(row.revision??0)!==intent.revision||row.management?.tokenHash!==intent.managementHash||Date.parse(intent.createdAt)>=Date.parse(row.management.expiresAt))throw Error('DELIVERY_NOT_READY');
+      if((row.deliveries?.length??0)>=16)throw Error('BOOKING_CAPACITY');
+      const delivery={id,...intent,start:bound.start,end:bound.end,status:'QUEUED'};
+      (row.deliveries??=[]).push(delivery);return delivery;
+    });
+  }
+  claimConfirmationDelivery(reservationId,intentId,checkedAt) {
+    if(!ref(reservationId)||!ref(intentId)||!instant(checkedAt))throw Error('INVALID_BOOKING_DELIVERY');
+    const claimId=randomUUID();
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===reservationId),d=row?.deliveries?.find(x=>x.id===intentId);
+      if(!d)throw Error('DELIVERY_NOT_FOUND');
+      if(d.status!=='QUEUED')return {claimed:false,intent:d};
+      if(Date.parse(checkedAt)<Date.parse(d.createdAt))throw Error('INVALID_BOOKING_DELIVERY');
+      if(row.phase!=='CONFIRMED'||(row.revision??0)!==d.revision||row.start!==d.start||row.end!==d.end||row.management?.tokenHash!==d.managementHash||Date.parse(checkedAt)>=Date.parse(row.management.expiresAt)){d.status='SUPERSEDED';return {claimed:false,intent:d};}
+      d.status='CLAIMED';d.claimId=claimId;d.claimedAt=checkedAt;return {claimed:true,intent:d};
+    });
+  }
+  suppressConfirmationDelivery(reservationId,intentId) {
+    if(!ref(reservationId)||!ref(intentId))throw Error('INVALID_BOOKING_DELIVERY');
+    return this.#transaction(state=>{const row=state.reservations.find(x=>x.reservationId===reservationId),d=row?.deliveries?.find(x=>x.id===intentId);if(!d)throw Error('DELIVERY_NOT_FOUND');if(d.status==='QUEUED')d.status='SUPERSEDED';return d;});
+  }
+  acceptConfirmationDelivery(reservationId,intentId,claimId,receipt,acceptedAt) {
+    if(![reservationId,intentId,claimId,receipt].every(ref)||!instant(acceptedAt))throw Error('INVALID_BOOKING_DELIVERY');
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===reservationId),d=row?.deliveries?.find(x=>x.id===intentId);
+      if(!d||!['CLAIMED','ACCEPTED'].includes(d.status)||d.claimId!==claimId||Date.parse(acceptedAt)<Date.parse(d.claimedAt))throw Error('DELIVERY_CLAIM_CONFLICT');
+      if(d.status==='ACCEPTED'){if(d.providerReceipt!==receipt)throw Error('DELIVERY_BINDING_CONFLICT');return d;}
+      d.status='ACCEPTED';d.providerReceipt=receipt;d.acceptedAt=acceptedAt;return d;
     });
   }
   beginCancellation(reservationId,expected) {
