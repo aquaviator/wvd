@@ -828,3 +828,26 @@ delivery, hosted runtime, reservation backup/retention or cancellation UI is
 claimed. Each calendar needs one authoritative database/writer. External calendar
 edits can race a free/busy check because Google and Firestore are separate systems.
 See WVD-BOOKING-RESERVATIONS.md for the contract and remaining production work.
+
+### Verified reservation/recovery slice — 4 October 2026
+
+Exact sourcec62f1686d4cf9e21fba6dde8db12e1a8646ca7b0 passed all CI jobs in
+37204456656/37204460527, including native Windows. Offline container37204456694
+passed411unit tests with0failures and1Windows-only skip, plus3real emulator/
+browser tests. The Firestore test proved competing reserve/claim transactions,
+durable confirmation after reopening, and foreign schedule ownership denial.
+
+Downloaded artifact11304361592 results.json matches the exact source and uses
+demo-wvd-portal with liveAccess=false. Image identity:
+sha256:ef6c20ee2390e4bde3a82d78ca4a9ed7dd7c1482dea0e6d21f42deb922c5f34f.
+Artifact digest:
+sha256:1958662479861833d0c18273728f1aaea67ef2d55faab4586ade83026e2679da.
+The mobile Owner milestone-approved screenshot was inspected: original WVD
+brand, readable approved review/history/feedback and scoped project controls.
+
+Live keyless Google run37204456652 also passed: event/Meet READY, cleanup REMOVED,
+no attendees or invitations. This live probe tested the refactored shared event
+writer, not live Firestore reservation writes. No production endpoint or customer
+booking is claimed. Next product work is the public booking request/pending/
+confirmation UX and bounded server boundary, followed by delivery and hosting
+acceptance. Reservation backup/retention and safe cancellation remain open.

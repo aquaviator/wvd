@@ -70,14 +70,14 @@ combining those two systems. Do not promise absolute prevention of external edit
 
 ## Verification and remaining work
 
-Nine synthetic contract tests cover competing reservations, exact retries,
+Thirteen synthetic contract tests cover competing reservations, exact retries,
 restart persistence, final busy conflicts, provider/evidence/commit failures,
 buffer edges, foreign ownership and corrupt state. A real Firestore emulator
 test covers concurrent reserve/claim transactions and reopening the journal.
 No live Firestore journal or customer booking is created by these tests.
 
 This is an internal development composition. Hosted/public request controls,
-customer-facing pending/retry UX, reconciliation, attendee delivery, schedule
+customer-facing pending/retry UX, operator recovery controls, attendee delivery, schedule
 backup/retention and production deployment remain required. CI/container results
 must verify this exact source before the slice is described as verified.
 
@@ -100,3 +100,13 @@ synthetic and removed.
 Thirteen synthetic reservation/recovery tests now cover the above behaviours.
 The provider workflow also runs on changes to the shared event adapter, so
 future provider refactors cannot bypass the automated live contract check.
+
+## Verified source
+
+Source c62f1686d4cf9e21fba6dde8db12e1a8646ca7b0 passed CI37204456656/
+37204460527, offline container37204456694 (411unit passes,0failures,1Windows-
+only skip and3emulator/browser passes), and live Google contract37204456652
+(event/Meet ready, cleanup removed, no invitations). Downloaded container
+results match that source and its mobile Owner approved-review screenshot was
+inspected. This proves the development composition and provider contract;
+it does not activate a public booking endpoint or live reservation database.
