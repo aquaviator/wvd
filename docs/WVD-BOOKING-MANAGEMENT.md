@@ -44,7 +44,7 @@ so an intervening change cannot turn an old confirmation into a different action
 Rescheduling keeps the existing dual holds and exact-operation replay semantics.
 A fresh device can inspect and resume an already-pending operation using its
 stored operation ID; WRITING recovery reads Calendar without another PATCH.
-Opening a link performs a read only. Recovery requires the visible status action.
+Opening a link in a fresh tab performs a read only. Recovery requires the visible status action.
 
 Backups include capability digests/expiry and unresolved operations, never raw
 link secrets. Old backups are not a production recovery authority; active provider
@@ -56,7 +56,9 @@ revocation and renewal are not yet available.
 createBookingConfirmationPreparation produces a plain-text draft from the current
 confirmed managed booking: UK date/time, duration, Meet link, private management
 link and expiry. It refuses non-confirmed or expired state, foreign links and
-malformed recipients. It records the booking revision and preparation time.
+malformed recipients. It records the booking revision and preparation time. This is journal-based
+preparation; it does not independently refresh Calendar. Delivery acceptance must
+recheck current booking/provider state and suppress superseded drafts.
 It explicitly returns sent=false and recipientVerified=false. Email shape is
 not evidence of ownership, consent or deliverability. No customer email is stored
 in the journal by this feature; no sender, outbox acknowledgement or delivery
