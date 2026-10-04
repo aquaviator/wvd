@@ -34,7 +34,14 @@ screening function and provider. Screening must cover every required calendar,
 personal work days, booking hours, notice, buffer and holidays. If the original
 event is excluded, that exclusion must be proved against its exact event identity;
 subtracting a merged free/busy range can hide another conflict and is forbidden.
-The existing general free/busy screen is not yet an exclusion-aware live adapter.
+The rescheduling screen reuses the general timing/holiday rules and complete
+free/busy evidence, then reconstructs the owned calendar from a bounded, fully
+paginated event listing. Only the exact verified original event is excluded.
+Other calendars remain unchanged, including personal work-day conflicts.
+Recurring instances are expanded; an opaque all-day event conservatively blocks
+the one-candidate query window. Missing pages, missing original events within
+the window, insufficient access and malformed data fail closed. This adapter
+is tested with synthetic Calendar responses; live listing acceptance remains.
 Google Calendar and Firestore remain separate systems, so external calendar edits
 can race a final check. One authoritative journal/writer is still required.
 
@@ -44,7 +51,7 @@ the source. Existing schema-1 records without a change remain accepted; older
 code that does not recognise RESCHEDULING must fail closed and must not be used
 for rollback while these records exist.
 
-Next integration requirements: exact-event-aware live screening, private HTTP
+Next integration requirements: live screening acceptance, private HTTP
 management capabilities and revisions, customer change/recovery controls,
 confirmation delivery and hosted admission. None is implied by this internal
 adapter. No live rescheduling or production deployment is claimed.
@@ -52,3 +59,5 @@ adapter. No live rescheduling or production deployment is claimed.
 Primary references checked on 4 October 2026:
 - https://developers.google.com/workspace/calendar/api/guides/version-resources
 - https://developers.google.com/workspace/calendar/api/v3/reference/events/patch
+
+- https://developers.google.com/workspace/calendar/api/v3/reference/events/list
