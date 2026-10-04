@@ -52,3 +52,10 @@ isolation, and an offline mobile browser scenario backed by real Firestore:
 selection, pending, reload, read-only confirmation and a competing customer.
 The new browser evidence is synthetic and does not verify invitation delivery
 or a live hosted booking service. CI results must be checked before handover.
+
+
+The isolated preview now optionally supports rescheduling, as described in
+WVD-BOOKING-RESCHEDULING.md. Customer change selection, explicit confirmation,
+unchanged Meet links and pending reload recovery use private tab capabilities
+and expected revisions. Real customer delivery and production hosting remain
+separate acceptance work.

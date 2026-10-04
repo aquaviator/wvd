@@ -58,3 +58,19 @@ test('booking route is isolated and remains separate from protected portal route
  const response=await fetch(base+'/api/calls/book',{method:'POST',headers:{Origin:allowedOrigin,'Content-Type':'application/json'},body:JSON.stringify({requestKey,start})});assert.equal(response.status,200);assert.equal((await response.json()).status,'CONFIRMED');
  assert.equal((await fetch(base+'/api/portal/projects')).status,401);
 });
+
+test('optional reschedule route binds both capabilities and revision without exposing private identifiers',async()=>{
+ const body={requestKey,start,changeKey:'bd7a589d-c542-4ff2-bca5-a28feb234b10',targetStart:'2026-10-06T11:00:00.000Z',revision:0},patch={url:'/api/calls/reschedule'};
+ assert.equal((await invoke(configure(),body,patch)).status,404);
+ const calls=[],handler=configure({book:async()=>assert.fail(),reschedule:async value=>{calls.push(value);return {status:'RESCHEDULED',reservationId:value.reservation.reservationId,changeId:value.change.changeId,revision:1,start:body.targetStart,end:'2026-10-06T11:30:00.000Z',meetUrl:'https://meet.google.com/abc-defg-hij',private:'secret'};}});
+ const result=await invoke(handler,body,patch);assert.equal(result.status,200);assert.deepEqual(result.body,{status:'RESCHEDULED',start:body.targetStart,end:'2026-10-06T11:30:00.000Z',timeZone:'Europe/London',meetUrl:'https://meet.google.com/abc-defg-hij',revision:1});
+ await invoke(handler,body,patch);assert.deepEqual(calls[0],calls[1]);assert.equal(calls[0].change.expectedRevision,0);assert.match(calls[0].change.changeId,/^[a-f0-9]{64}$/);
+ for(const alter of [{revision:-1},{revision:0.5},{changeKey:'guess'},{targetStart:start},{targetStart:'invalid'},{productId:'foreign'}])assert.equal((await invoke(handler,{...body,...alter},patch)).status,400);assert.equal(calls.length,2);
+});
+test('reschedule uncertainty, unavailable and stale revisions stay distinct and invalid proofs never confirm',async()=>{
+ const body={requestKey,start,changeKey:'bd7a589d-c542-4ff2-bca5-a28feb234b10',targetStart:'2026-10-06T11:00:00.000Z',revision:0},patch={url:'/api/calls/reschedule'};
+ const base=value=>({status:'RESCHEDULED',reservationId:value.reservation.reservationId,changeId:value.change.changeId,revision:1,start:body.targetStart,end:'2026-10-06T11:30:00.000Z',meetUrl:'https://meet.google.com/abc-defg-hij'});
+ for(const [change,status,expected] of [[{status:'PENDING'},202,{status:'PENDING'}],[{status:'UNAVAILABLE'},409,{status:'UNAVAILABLE',revision:1}],[{status:'CANCELLED'},409,{status:'CANCELLED'}]]){const result=await invoke(configure({reschedule:async value=>({...base(value),...change})}),body,patch);assert.equal(result.status,status);assert.deepEqual(result.body,expected);}
+ for(const change of [{revision:0},{changeId:'foreign'},{start},{meetUrl:'https://evil.test'}])assert.equal((await invoke(configure({reschedule:async value=>({...base(value),...change})}),body,patch)).status,503);
+ const result=await invoke(configure({reschedule:async()=>{throw Error('RESERVATION_BINDING_CONFLICT');}}),body,patch);assert.equal(result.status,409);assert.deepEqual(result.body,{error:'REQUEST_CONFLICT'});
+});

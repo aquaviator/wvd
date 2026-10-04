@@ -5,7 +5,7 @@ Google Auth bridge and private backup codec from source
 49f9d7de52c09333217085aaf91bcf85449e952f. Separate bookings followed by cancellation
 would risk losing the original time or creating two appointments. This adapter
 moves the existing event and keeps its Meet link; it does not create or delete an
-event, add attendees, send invitations or activate a public rescheduling route.
+event, add attendees, send invitations or activate a production rescheduling route.
 
 The journal records one current change with an explicit expected revision and
 operation ID. Its RESCHEDULING phase protects the original and target intervals,
@@ -51,10 +51,25 @@ the source. Existing schema-1 records without a change remain accepted; older
 code that does not recognise RESCHEDULING must fail closed and must not be used
 for rollback while these records exist.
 
-Next integration requirements: live screening acceptance, private HTTP
-management capabilities and revisions, customer change/recovery controls,
-confirmation delivery and hosted admission. None is implied by this internal
-adapter. No live rescheduling or production deployment is claimed.
+The optional POST /api/calls/reschedule boundary derives the reservation and change
+IDs from private UUID capabilities in the request body. It binds original/target
+times and expected revision, applies the existing origin/admission/body bounds,
+and returns only validated public result fields. The route remains inside the
+isolated emulator host. It is unavailable unless explicitly configured.
+
+The branded development page offers Change booking time, Keep current time and
+Confirm new time. An uncertain change locks further actions and retains its
+private capability in tab session storage; reload offers Check new time status.
+Confirmation updates the current management time/revision and preserves Meet.
+Unavailability retains the original booking. No capability enters a URL or log.
+The general availability picker can conservatively omit times overlapping the
+original booking; the bound change screen supports exact self-event exclusion.
+
+Next integration requirements: live listing/move acceptance, exclusion-aware
+availability discovery in the picker, cross-device management/confirmation
+delivery and hosted admission. No live rescheduling or production deployment is
+claimed. Synthetic browser tests cover keeping the original time, an interrupted
+successful move, reload without a second PATCH, and cancellation at the new time.
 
 Primary references checked on 4 October 2026:
 - https://developers.google.com/workspace/calendar/api/guides/version-resources

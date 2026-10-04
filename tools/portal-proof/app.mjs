@@ -45,13 +45,13 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
     try {
       if (typeof request.url!=='string' || request.url.length>4096) return send(400,{error:'INVALID_REQUEST'});
       const url=new URL(request.url,'http://localhost');
-      if(['/api/calls/book','/api/calls/cancel'].includes(url.pathname)&&bookingHandler)return bookingHandler(request,response);
+      if(['/api/calls/book','/api/calls/cancel','/api/calls/reschedule'].includes(url.pathname)&&bookingHandler)return bookingHandler(request,response);
       if(url.pathname.startsWith('/api/calls/')&&callHandler)return callHandler(request,response);
       if(url.pathname.startsWith('/api/invitations/')&&invitationHandler)return invitationHandler(request,response);
       if (url.pathname.startsWith('/api/portal/')) return portalHandler(request,response);
       if(url.pathname==='/auth-config.json'&&!url.search&&request.method==='GET')return send(200,authConfig);
       if(callBooking!==undefined&&callAvailability!==undefined&&bookingAssets.has(url.pathname)&&!url.search&&request.method==='GET'){
-        const [type,body]=bookingAssets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(url.pathname==='/book'?body.toString().replace('data-cancellation-enabled="false"',`data-cancellation-enabled="${typeof callBooking.cancel==='function'}"`):body);return;
+        const [type,body]=bookingAssets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(url.pathname==='/book'?body.toString().replace('data-cancellation-enabled="false"',`data-cancellation-enabled="${typeof callBooking.cancel==='function'}"`).replace('data-rescheduling-enabled="false"',`data-rescheduling-enabled="${typeof callBooking.reschedule==='function'}"`):body);return;
       }
       if (assets.has(url.pathname) && !url.search && request.method==='GET') {
         const [type,body]=assets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(body);return;
