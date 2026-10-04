@@ -13,6 +13,11 @@ const assets = new Map([
   ['/auth-client.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/auth-client.js',import.meta.url))]],
   ['/style.css', ['text/css; charset=utf-8',readFileSync(new URL('./ui/style.css',import.meta.url))]]
 ]);
+const bookingAssets=new Map([
+  ['/book',['text/html; charset=utf-8',readFileSync(new URL('./ui/booking.html',import.meta.url))]],
+  ['/booking.js',['text/javascript; charset=utf-8',readFileSync(new URL('./ui/booking.js',import.meta.url))]],
+  ['/booking.css',['text/css; charset=utf-8',readFileSync(new URL('./ui/booking.css',import.meta.url))]]
+]);
 export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,invitations,callAvailability,callBooking,deliverableReader,deliverableCatalogue}) {
   if (new URL(allowedOrigin).origin!==allowedOrigin) throw new Error('INVALID_CONFIGURATION');
   let authConfig={mode:'local'},authConnect='';
@@ -45,6 +50,9 @@ export function createApplication({portal,auth,allowedOrigin,firebaseEmulator,in
       if(url.pathname.startsWith('/api/invitations/')&&invitationHandler)return invitationHandler(request,response);
       if (url.pathname.startsWith('/api/portal/')) return portalHandler(request,response);
       if(url.pathname==='/auth-config.json'&&!url.search&&request.method==='GET')return send(200,authConfig);
+      if(callBooking!==undefined&&callAvailability!==undefined&&bookingAssets.has(url.pathname)&&!url.search&&request.method==='GET'){
+        const [type,body]=bookingAssets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(body);return;
+      }
       if (assets.has(url.pathname) && !url.search && request.method==='GET') {
         const [type,body]=assets.get(url.pathname);response.writeHead(200,{...headers,'Content-Type':type});response.end(body);return;
       }
