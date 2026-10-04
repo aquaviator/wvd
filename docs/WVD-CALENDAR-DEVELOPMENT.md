@@ -83,3 +83,20 @@ all four CI jobs in run 37198247105 and the offline container in run 37198247106
 Downloaded results matched that source; mobile pinned-image evidence was inspected.
 These results supersede the earlier app-credential blocker for read-only CI checks;
 application runtime credential composition and booking dependencies remain open.
+
+
+## Founder conflict rule — 4 October 2026
+
+Personal work commitments overlapping the booking system's operating hours must
+block the affected introductory-call slots. An all-day personal work commitment
+blocks every slot on that day; a timed commitment blocks overlapping slots,
+including the established 15-minute conflict margins. Commitments outside the
+booking hours cannot create bookable times outside those hours.
+
+Reuse the existing busy-interval assessor; do not infer work status from event
+titles or obtain event descriptions. Work commitments must be represented as
+Busy in the included personal calendar so free/busy evidence can enforce the
+rule. The personal calendar's service-account grant is still unverified. Missing
+required-calendar evidence must fail closed rather than ignore personal work.
+This rule does not independently select the two additional personal-account
+diaries for conflict checks.
