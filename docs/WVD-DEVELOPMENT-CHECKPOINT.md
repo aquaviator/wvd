@@ -971,3 +971,58 @@ The final mobile rescheduled screenshot was inspected: original WVD branding,
 correct confirmed UK date/time, unchanged Meet link and separated management
 controls. Required screenshots/receipts were retained; one supplementary video
 was explicitly omitted to retain the existing 5 MiB evidence budget.
+
+
+### Cross-device booking management and confirmation preparation — 4 October 2026
+
+Added optional isolated management-link issuance, current-state reads, cancellation,
+rescheduling and pending-operation recovery. Issuance uses the original private
+booking capability plus a client-generated 256-bit secret retained before the
+request. The journal stores only its product/calendar/origin/reservation-bound
+digest and explicit expiry. Exact issuance replay does not extend expiry or
+replace another link. Raw secrets never enter journal backups.
+
+A customer can open the private fragment link in a separate browser context,
+read the latest booking, move it while preserving Meet, reload an interrupted
+move without another PATCH, and cancel at the current time. The page removes
+the fragment from its visible URL and uses private tab storage. Server request
+URLs do not contain the capability. An authenticated pending operation can be
+recovered without the original tab's change key. Expired/foreign/unknown links
+are denied; reads expose no internal IDs or digests. Cancellation now checks
+its expected time and revision inside the transaction, closing a read/write race.
+
+Plain-text confirmation preparation reuses the shared email shape validator and
+reads current confirmed managed state. Its output includes UK date/time, Meet,
+private management link, expiry and booking revision. It explicitly marks
+sent=false and recipientVerified=false. This is journal-based draft preparation,
+not Calendar refresh, actual delivery, an outbox receipt or recipient verification.
+No email was sent and no additional Google scopes were granted. The existing
+Calendar-only delegation remains unchanged.
+
+Initial source 7e4a390d539a1f2c3e906b8eea17e3fe12113ae2 passed push CI
+37210992427, PR CI 37210995550 and offline container 37210992434: 472 unit
+passes, zero failures, one Windows-only skip and four real Firebase/browser
+passes. Downloaded artifact 11306772251 matched the exact source and recorded
+liveAccess=false. Screenshots were inspected. A subsequent UI fix keeps the
+recovered cancellation date accurate and hides the closed management form;
+its final verification is recorded below.
+
+Remaining: version-bound durable delivery intents and sender/recipient acceptance,
+management-link renewal/revocation and production lifetime policy, live Calendar
+listing/move acceptance, hosted admission/runtime, backup retention/reconciliation.
+No production route or customer message is enabled. See WVD-BOOKING-MANAGEMENT.md.
+
+
+Final runtime source 5cfa37f486d7630a860521c1ef23e680c405c734 passed push CI
+37211309341, PR CI 37211312281 and offline container 37211309321. The container
+passed 472 unit tests, zero failures and one Windows-only skip, plus four real
+Firebase/browser tests. Downloaded artifact 11306821745 matches the exact source
+and records liveAccess=false. Artifact digest:
+sha256:e856ce33b6e619f7026b0c34c04401bfa2527c5bbea2b75efe85cc1c7cbf6067.
+Container image:
+sha256:02f3e3aa9b9171f0f7cfaf9a66b8912eba40f16381c33d1e04705e72aeb1d7d8.
+The final cancelled management screenshot was inspected: the closed form and Meet
+link are hidden, with clear cancelled status and the contact CTA. Cross-device
+management, interrupted rescheduling/reload and cancellation at the changed time
+passed in the real browser/emulator scenario. Required receipts and screenshots
+were retained; one supplementary video omission is explicit within the 5 MiB cap.

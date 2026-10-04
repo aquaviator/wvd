@@ -71,3 +71,20 @@ approved by the existing Calendar-only grant. Neither additional OAuth scopes
 nor live messages were introduced here. Production hosting/admission, lifecycle
 policy, live Calendar listing/move acceptance and operational backup retention
 remain separate acceptance work.
+
+## Verified development evidence — 4 October 2026
+
+
+Final runtime source 5cfa37f486d7630a860521c1ef23e680c405c734 passed push CI
+37211309341, PR CI 37211312281 and offline container 37211309321. The container
+passed 472 unit tests, zero failures and one Windows-only skip, plus four real
+Firebase/browser tests. Downloaded artifact 11306821745 matches the exact source
+and records liveAccess=false. Artifact digest:
+sha256:e856ce33b6e619f7026b0c34c04401bfa2527c5bbea2b75efe85cc1c7cbf6067.
+Container image:
+sha256:02f3e3aa9b9171f0f7cfaf9a66b8912eba40f16381c33d1e04705e72aeb1d7d8.
+The final cancelled management screenshot was inspected: the closed form and Meet
+link are hidden, with clear cancelled status and the contact CTA. Cross-device
+management, interrupted rescheduling/reload and cancellation at the changed time
+passed in the real browser/emulator scenario. Required receipts and screenshots
+were retained; one supplementary video omission is explicit within the 5 MiB cap.
