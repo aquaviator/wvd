@@ -35,5 +35,13 @@ test('mobile booking: pending reload recovers one durable booking and competing 
  await page.getByRole('button',{name:'Check booking status'}).click();await page.getByRole('link',{name:'Open Google Meet'}).waitFor();assert.match(await page.locator('#message').textContent(),/^Confirmed:/);assert.equal(inserts,1);assert.equal(await page.evaluate(()=>sessionStorage.getItem('wvd-development-booking-retry-v1')),null);await capture('booking-mobile-confirmed');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  const secondContext=await browser.newContext({viewport:{width:1280,height:800}}),second=await secondContext.newPage();await second.goto(origin+'/book');await second.getByLabel('Choose a date').fill('2026-10-06');await second.getByRole('button',{name:'Find available times'}).click();await second.getByRole('button',{name:'09:00',exact:true}).click();await second.getByRole('button',{name:'Confirm this time'}).click();await second.waitForFunction(()=>document.getElementById('message').textContent.startsWith('That time is no longer available.'));assert.equal(inserts,1);assert.equal(await second.getByLabel('Choose a date').isDisabled(),false);
+ if(evidence)await second.screenshot({path:join(evidence,'booking-desktop-unavailable.png'),fullPage:true,scale:'css',animations:'disabled'});
+ // Simulate a connection lost after the server has created the event. The UI
+ // must retain its capability and recover without another insert.
+ await second.getByLabel('Choose a date').fill('2026-10-07');await second.getByRole('button',{name:'Find available times'}).click();await second.getByRole('button',{name:'09:00',exact:true}).click();
+ await second.route('**/api/calls/book',async route=>{await route.fetch();await route.abort('failed');},{times:1});
+ await second.getByRole('button',{name:'Confirm this time'}).click();await second.waitForFunction(()=>document.getElementById('message').textContent.startsWith('The connection was interrupted.'));assert.equal(inserts,2);assert.equal(await second.getByLabel('Choose a date').isDisabled(),true);
+ for(const value of records.values())value.conferenceData={createRequest:{status:{statusCode:'success'}},conferenceSolution:{key:{type:'hangoutsMeet'}},entryPoints:[{entryPointType:'video',uri:'https://meet.google.com/abc-defg-hij'}]};
+ await second.getByRole('button',{name:'Check booking status'}).click();await second.getByRole('link',{name:'Open Google Meet'}).waitFor();assert.equal(inserts,2);
  assert.deepEqual(errors,[]);await secondContext.close();await context.close();
 });
