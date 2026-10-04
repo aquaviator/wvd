@@ -1,4 +1,4 @@
-# WVD development standard 1.3.0
+# WVD development standard 1.3.1
 
 Authority: founder instructions on 2 October 2026. Applies to WVD development
 and new product/project onboarding. Existing product constitutions remain
@@ -11,6 +11,9 @@ supersede the older approval defaults below: request founder input only for
 missing user data, elevated admin/configuration approval, or extra money.
 Routine verification and completed development slices are not stopping points.
 Other products retain their own constitutions and explicit release authority.
+The machine-readable standard carries this as the WVD-only project authority
+override, included in generated WVD plans and the standard hash. It grants no
+account permissions and does not enable live deployment inside test containers.
 
 ## One platform, growing reuse
 

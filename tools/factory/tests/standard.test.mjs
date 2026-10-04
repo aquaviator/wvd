@@ -39,3 +39,17 @@ test('web projects inherit creative bundles and every-page CTA without allowing 
  plan.webContentStandard.articleBundle.pop();assert.equal(projectPlan(fixture()).webContentStandard.articleBundle.length,3);
  assert.throws(()=>projectPlan({...fixture(),webContentStandard:{cta:false}}),/Invalid product\/flavour/);
 });
+
+test('WVD plans inherit the founder authority correction without changing other products or isolated runners',()=>{
+ const config=fixture();config.productId='wvd';config.bindings.dataNamespace='wvd';
+ const plan=projectPlan(config);
+ assert.equal(plan.productionApprovalRequired,false);
+ assert.equal(plan.developmentContinuation.productionApprovalRequired,false);
+ assert.deepEqual(plan.projectAuthority.specificAuthorisationTriggers,['user-supplied-data','elevated-admin-or-configuration','additional-cost']);
+ assert.equal(plan.projectAuthority.grantsNewPermissions,false);
+ assert.equal(plan.developmentVerification.productionDeploymentAllowed,false);
+ assert.equal(plan.provisioning,false);
+ plan.projectAuthority.specificAuthorisationTriggers.length=0;
+ assert.equal(projectPlan(config).projectAuthority.specificAuthorisationTriggers.length,3);
+ assert.equal(projectPlan(fixture()).productionApprovalRequired,true);
+});

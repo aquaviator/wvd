@@ -1,6 +1,6 @@
 {
   "id": "WVD-DEVELOPMENT-STANDARD",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "authority": "Founder instructions, 2 and 4 October 2026",
   "platform": "google",
   "newServiceSubscriptionsAllowed": false,
@@ -120,5 +120,21 @@
     "discovery": "truthful-public-metadata-no-indexing-guarantee",
     "privacy": "private-content-excluded-from-public-search",
     "reference": "docs/WVD-WEB-CONTENT-STANDARD.md"
+  },
+  "projectAuthorityOverrides": {
+    "wvd": {
+      "authority": "Founder instruction, 4 October 2026",
+      "reference": "docs/WVD-PROJECT-AUTHORITY.md",
+      "routineApprovalGates": false,
+      "verificationRequiresFounderReview": false,
+      "productionApprovalRequired": false,
+      "specificAuthorisationTriggers": [
+        "user-supplied-data",
+        "elevated-admin-or-configuration",
+        "additional-cost"
+      ],
+      "whileAwaitingInput": "continue-independent-authorised-work",
+      "grantsNewPermissions": false
+    }
   }
 }

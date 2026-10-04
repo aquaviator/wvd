@@ -26,9 +26,11 @@ export function projectPlan(config) {
   const flavour=standard.flavours[config.flavour];
   if(flavour.reuseAssetIds.some(assetId=>!seen.has(assetId)))throw Error('Assess all baseline reuse candidates for this flavour');
   const missing=['googleProjectId',...(flavour.googleCapabilities.includes('hosting')?['hostingTarget']:[]),'credentialRef'].filter(key=>!bindings[key]);
-  return {schemaVersion:1,productId:config.productId,flavour:config.flavour,standardId:standard.id,standardVersion:standard.version,standardHash,developmentVerification:structuredClone(standard.developmentVerification),developmentContinuation:structuredClone(standard.developmentContinuation),
+  const projectAuthority=standard.projectAuthorityOverrides?.[config.productId];
+  const continuation={...structuredClone(standard.developmentContinuation),...(projectAuthority?{founderInput:'only-specific-authorisation-triggers',productionApprovalRequired:projectAuthority.productionApprovalRequired,specificAuthorisationTriggers:structuredClone(projectAuthority.specificAuthorisationTriggers)}:{})};
+  return {schemaVersion:1,productId:config.productId,flavour:config.flavour,standardId:standard.id,standardVersion:standard.version,standardHash,developmentVerification:structuredClone(standard.developmentVerification),developmentContinuation:continuation,...(projectAuthority?{projectAuthority:structuredClone(projectAuthority)}:{}),
     platform:'google',newServiceSubscriptionsAllowed:false,newExternalSpendGBP:0,webContentStandard:structuredClone(standard.webContentStandard),
     bindings:structuredClone(bindings),reuseDecisions:structuredClone(config.reuseDecisions),
     discovery:missing.map(key=>`Verify existing Google ${key}`),
-    readiness:'NOT_DEPLOYMENT_VERIFIED',provisioning:false,productionApprovalRequired:true};
+    readiness:'NOT_DEPLOYMENT_VERIFIED',provisioning:false,productionApprovalRequired:projectAuthority?.productionApprovalRequired??true};
 }

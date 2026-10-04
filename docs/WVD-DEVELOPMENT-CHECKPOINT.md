@@ -1050,3 +1050,19 @@ when another device changes the booking or a private link expires mid-action.
   Google rescheduling evidence. Browser coverage now exercises a stale device,
   read-only refresh, expired-link response and the composed availability route.
 - No live customer messages, new scopes, elevated configuration or extra spend.
+
+### Factory memory propagation
+
+The standard is now 1.3.1. WVD project plans carry the explicit three-trigger
+founder authority and remove the blanket production-approval flag. Other product
+constitutions/defaults remain intact, and isolated test runners gain no live
+permissions. The override participates in the standard hash and is copied into
+WVD plans so a subsequent controller receives it in machine-readable form too.
+All 17 focused factory-standard checks passed.
+
+Booking picker source: df3e79ff5c7ee047dfbe2e11232ca756cd1c1145. Build runs
+37219022902 and 37219025096 passed. The preceding stale-device recovery source
+3353879b917ae3df44a91f218696bb2ab7fe9df0 also passed isolated container run
+37218806565, including the browser scenarios for stale cancellation, read-only
+refresh and expired-link help. No production deployment or actual email delivery
+is claimed by these results.
