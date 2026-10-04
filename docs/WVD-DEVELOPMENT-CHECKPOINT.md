@@ -553,10 +553,12 @@ after its first build rejected the logo. Downloaded results match the source;
 the mobile signed-out screen was visually inspected. Evidence stayed below the
 existing 5 MiB cap. The public-site palette is unchanged.
 
-Live Google access remains unactivated. Google's deployment-pipeline federation
+Historical status at the 3 October brand slice (superseded by the verified
+4 October keyless-access result below): live Google access was unactivated.
+Google's deployment-pipeline federation
 guide lists enabled project billing as a prerequisite, while IAM pricing describes
-Workload Identity Federation itself as no additional cost. The development project
-was last verified on Spark with billing disabled; no billing change is authorised.
+Workload Identity Federation itself as no additional cost. At that earlier checkpoint the development project
+was on Spark with billing disabled; the founder subsequently activated billing.
 Continue independent development without claiming an app credential connection.
 
 ### Controller recovery — 4 October 2026
@@ -584,3 +586,20 @@ still required before real slots can be offered. No event creation, Meet, custom
 intake, hosting or production deployment is activated. Fourteen focused checks
 passed locally; exact-source CI, live contract and offline container verification
 are required before declaring this slice verified.
+
+
+Verified source: `cfb67ada8139dd90154ece1aa0100b96f9604dbb`.
+Live Google adapter check: https://github.com/aquaviator/wvd/actions/runs/37198247121.
+All four native/build CI jobs passed in run 37198247105, including Windows.
+Offline container run 37198247106 passed. Downloaded results match the exact
+source, Node 22.23.3/Playwright 1.62.1, isolated `demo-wvd-portal` and liveAccess=false.
+The mobile pinned-image review screenshot was inspected; preview, Owner approval
+and feedback controls remain readable within the viewport. Local portal suite:
+373 passed, zero failed, one Windows-only skip. Live credentials were present only
+in the separate read-only Google workflow, never in the offline container.
+
+Next booking integration prerequisites: the full explicit founder conflict-calendar
+set, authoritative England/Wales holiday coverage and freshness/buffer policies,
+and reservation/Meet/delivery permissions. Current successful access establishes
+only the named WVD calendar, so it cannot establish whole-founder availability.
+Independent portal and notification development remains available within the brief.

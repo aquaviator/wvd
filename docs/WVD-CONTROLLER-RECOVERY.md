@@ -58,3 +58,20 @@ Brand originals: Drive folder `14zXOECtPzSOP5OOqN1wmDtvk4dXsH6c4`, eight assets.
 No asset redesign or production branding acceptance is inferred from storage.
 Controller coordination is now recorded in repository checkpoints and PR comments;
 there is no direct cross-chat wake or always-running background worker.
+
+
+## Recovery completed and live read access verified
+
+The recovery/discovery sequence above is historical. Founder CLI output confirmed
+the intended project/account/pool/provider, billing active and existing federation
+principal binding. Drive and Calendar APIs were enabled, brand-folder Viewer and
+named Calendar free/busy grants were made, and the GitHub activation variable
+was set. No duplicated account/provider or service-account key was created.
+
+On 4 October 2026, source `cfb67ada8139dd90154ece1aa0100b96f9604dbb` passed
+keyless authentication, both access probes and the portal's live Calendar
+adapter contract (run 37198247121). All four CI jobs passed (37198247105), as did
+the offline container (37198247106); downloaded evidence matched that source.
+The exact grant scope remains read-only, and these results do not activate a
+hosted application, production release, calendar writes or new external spend.
+Current next work and remaining booking inputs are recorded in the checkpoint.

@@ -76,3 +76,10 @@ in CI evidence. The common bounded transport is reused from access preflight;
 no provider, SDK dependency or ambient credential discovery was introduced.
 The offline container includes the same code but its tests use mocked responses
 and never receive live credentials.
+
+Verified source `cfb67ada8139dd90154ece1aa0100b96f9604dbb` passed the live
+adapter workflow https://github.com/aquaviator/wvd/actions/runs/37198247121,
+all four CI jobs in run 37198247105 and the offline container in run 37198247106.
+Downloaded results matched that source; mobile pinned-image evidence was inspected.
+These results supersede the earlier app-credential blocker for read-only CI checks;
+application runtime credential composition and booking dependencies remain open.
