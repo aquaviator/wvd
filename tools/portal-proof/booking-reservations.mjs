@@ -4,12 +4,14 @@ import {normaliseIntroCallCandidates} from './booking.mjs';
 const ref=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(v);
 const instant=v=>typeof v==='string'&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString()===v;
 const meet=v=>typeof v==='string'&&/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(v);
-const phases=['RESERVED','WRITING','CONFIRMED','REJECTED','CANCELLING','CANCELLED'];
+const phases=['RESERVED','WRITING','CONFIRMED','REJECTED','CANCELLING','CANCELLED','RESCHEDULING'];
 export function bookingReservation(value,productId) {
   if(!value||Object.keys(value).sort().join(',')!=='end,productId,reservationId,start'||value.productId!==productId||!ref(value.reservationId)||!instant(value.start)||!instant(value.end)||Date.parse(value.end)-Date.parse(value.start)!==1800000)throw Error('INVALID_BOOKING_RESERVATION');
   try{normaliseIntroCallCandidates([value.start]);}catch{throw Error('INVALID_BOOKING_RESERVATION');}
   return googleBookingReservation(value,productId);
 }
+const overlaps=(a,b)=>Date.parse(a.start)<Date.parse(b.end)+900000&&Date.parse(a.end)+900000>Date.parse(b.start);
+const holds=row=>row.phase==='RESCHEDULING'?[row,{start:row.change.start,end:row.change.end}]:['REJECTED','CANCELLED'].includes(row.phase)?[]:[row];
 const same=(a,b)=>['productId','reservationId','start','end'].every(k=>a[k]===b[k]);
 // Trusted backend only. One calendar has one owner product in this database.
 // Calendar-derived path prevents a second product creating an independent lock
@@ -32,12 +34,21 @@ export class FirestoreBookingReservations {
     const seen=new Set();
     for(const row of data.reservations){
       try{bookingReservation({productId:row.productId,reservationId:row.reservationId,start:row.start,end:row.end},this.#binding.productId);}catch{throw Error('CORRUPT_BOOKING_SCHEDULE');}
-      const confirmed=['CONFIRMED','CANCELLING','CANCELLED'].includes(row.phase);
-      if(seen.has(row.reservationId)||!phases.includes(row.phase)||Object.keys(row).some(k=>!['productId','reservationId','start','end','phase','claimId','eventId','meetUrl','cancelledAt'].includes(k))||(row.phase==='RESERVED'||row.phase==='REJECTED')&&(row.claimId!==undefined||row.eventId!==undefined||row.meetUrl!==undefined)||(row.phase==='WRITING'||confirmed)&&!ref(row.claimId)||row.phase==='WRITING'&&(row.eventId!==undefined||row.meetUrl!==undefined)||confirmed&&(row.eventId!==googleBookingEventId(row.productId,this.#binding.calendarId,row.reservationId)||!meet(row.meetUrl))||(row.phase==='CANCELLED'?!instant(row.cancelledAt):row.cancelledAt!==undefined))throw Error('CORRUPT_BOOKING_SCHEDULE');
+      const confirmed=['CONFIRMED','CANCELLING','CANCELLED','RESCHEDULING'].includes(row.phase);
+      if(seen.has(row.reservationId)||!phases.includes(row.phase)||Object.keys(row).some(k=>!['productId','reservationId','start','end','phase','claimId','eventId','meetUrl','cancelledAt','change','revision'].includes(k))||(row.phase==='RESERVED'||row.phase==='REJECTED')&&(row.claimId!==undefined||row.eventId!==undefined||row.meetUrl!==undefined)||(row.phase==='WRITING'||confirmed)&&!ref(row.claimId)||row.phase==='WRITING'&&(row.eventId!==undefined||row.meetUrl!==undefined)||confirmed&&(row.eventId!==googleBookingEventId(row.productId,this.#binding.calendarId,row.reservationId)||!meet(row.meetUrl))||(row.phase==='CANCELLED'?!instant(row.cancelledAt):row.cancelledAt!==undefined))throw Error('CORRUPT_BOOKING_SCHEDULE');
+      if(row.change!==undefined){
+        const c=row.change;
+        try{
+          if(!c||Object.keys(c).sort().join(',')!=='end,fromEnd,fromStart,id,phase,revision,start'||!ref(c.id)||!['HELD','WRITING','COMPLETED','REJECTED'].includes(c.phase))throw Error();
+          bookingReservation({productId:row.productId,reservationId:row.reservationId,start:c.start,end:c.end},this.#binding.productId);
+          bookingReservation({productId:row.productId,reservationId:row.reservationId,start:c.fromStart,end:c.fromEnd},this.#binding.productId);
+          if(!Number.isSafeInteger(c.revision)||c.revision<0||!Number.isSafeInteger(row.revision)||row.revision!==c.revision+(['COMPLETED','REJECTED'].includes(c.phase)?1:0)||c.start===c.fromStart||!confirmed||(['HELD','WRITING'].includes(c.phase))!==(row.phase==='RESCHEDULING')||row.start!==(c.phase==='COMPLETED'?c.start:c.fromStart)||row.end!==(c.phase==='COMPLETED'?c.end:c.fromEnd))throw Error();
+        }catch{throw Error('CORRUPT_BOOKING_SCHEDULE');}
+      }else if(row.phase==='RESCHEDULING'||row.revision!==undefined)throw Error('CORRUPT_BOOKING_SCHEDULE');
       seen.add(row.reservationId);
     }
     const active=data.reservations.filter(x=>!['REJECTED','CANCELLED'].includes(x.phase));
-    for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++)if(Date.parse(active[i].start)<Date.parse(active[j].end)+900000&&Date.parse(active[i].end)+900000>Date.parse(active[j].start))throw Error('CORRUPT_BOOKING_SCHEDULE');
+    for(let i=0;i<active.length;i++)for(let j=i+1;j<active.length;j++)if(holds(active[i]).some(a=>holds(active[j]).some(b=>overlaps(a,b))))throw Error('CORRUPT_BOOKING_SCHEDULE');
     return structuredClone(data);
   }
   async #transaction(operation) {
@@ -56,7 +67,7 @@ export class FirestoreBookingReservations {
     return this.#transaction(state=>{
       const existing=state.reservations.find(x=>x.reservationId===bound.reservationId);
       if(existing){if(!same(existing,bound))throw Error('RESERVATION_BINDING_CONFLICT');return existing;}
-      if(state.reservations.some(x=>!['REJECTED','CANCELLED'].includes(x.phase)&&Date.parse(bound.start)<Date.parse(x.end)+900000&&Date.parse(bound.end)+900000>Date.parse(x.start)))throw Error('BOOKING_SLOT_RESERVED');
+      if(state.reservations.some(x=>holds(x).some(h=>overlaps(bound,h))))throw Error('BOOKING_SLOT_RESERVED');
       if(state.reservations.length>=400)throw Error('BOOKING_CAPACITY');
       const row={...bound,phase:'RESERVED'};state.reservations.push(row);return row;
     });
@@ -97,6 +108,56 @@ export class FirestoreBookingReservations {
       if(!row||row.claimId!==claimId||!['WRITING','CONFIRMED'].includes(row.phase))throw Error('RESERVATION_CLAIM_CONFLICT');
       if(row.phase==='CONFIRMED'&&(row.eventId!==bound.eventId||row.meetUrl!==bound.meetUrl))throw Error('RESERVATION_BINDING_CONFLICT');
       row.phase='CONFIRMED';row.eventId=bound.eventId;row.meetUrl=bound.meetUrl;return row;
+    });
+  }
+  // Internal rescheduling journal: hold both times until the provider outcome is
+  // proved. Provider calls and availability screening must remain outside TXs.
+  beginReschedule(value,{changeId,start,expectedRevision}) {
+    const bound=bookingReservation(value,this.#binding.productId);
+    if(!ref(changeId)||!Number.isSafeInteger(expectedRevision)||expectedRevision<0||expectedRevision>=Number.MAX_SAFE_INTEGER)throw Error('INVALID_BOOKING_CHANGE');
+    const target=bookingReservation({...bound,start,end:new Date(Date.parse(start)+1800000).toISOString()},this.#binding.productId);
+    if(target.start===bound.start)throw Error('INVALID_BOOKING_CHANGE');
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===bound.reservationId);
+      if(!row)throw Error('RESERVATION_BINDING_CONFLICT');
+      // Exact operation replay is checked against its original binding, including
+      // after completion has moved the row. Older superseded requests fail closed.
+      if(row.change?.id===changeId){
+        if(row.change.revision!==expectedRevision||row.change.fromStart!==bound.start||row.change.fromEnd!==bound.end||row.change.start!==target.start||row.change.end!==target.end||row.productId!==bound.productId)throw Error('RESERVATION_BINDING_CONFLICT');
+        return row;
+      }
+      if(!same(row,bound)||(row.revision??0)!==expectedRevision)throw Error('RESERVATION_BINDING_CONFLICT');
+      if(row.phase!=='CONFIRMED')throw Error('RESCHEDULE_NOT_READY');
+      if(state.reservations.some(x=>x.reservationId!==bound.reservationId&&holds(x).some(h=>overlaps(target,h))))throw Error('BOOKING_SLOT_RESERVED');
+      row.phase='RESCHEDULING';row.revision=expectedRevision;row.change={id:changeId,revision:expectedRevision,phase:'HELD',fromStart:bound.start,fromEnd:bound.end,start:target.start,end:target.end};return row;
+    });
+  }
+  claimReschedule(reservationId,changeId) {
+    if(!ref(reservationId)||!ref(changeId))throw Error('INVALID_BOOKING_CHANGE');
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===reservationId);
+      if(!row||row.change?.id!==changeId)throw Error('RESERVATION_CLAIM_CONFLICT');
+      if(row.phase!=='RESCHEDULING'||row.change.phase!=='HELD')return {claimed:false,reservation:row};
+      row.change.phase='WRITING';return {claimed:true,reservation:row};
+    });
+  }
+  rejectRescheduleBeforeWrite(reservationId,changeId) {
+    if(!ref(reservationId)||!ref(changeId))throw Error('INVALID_BOOKING_CHANGE');
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===reservationId);
+      if(!row||row.change?.id!==changeId)throw Error('RESERVATION_CLAIM_CONFLICT');
+      if(row.phase==='RESCHEDULING'&&row.change.phase==='HELD'){row.phase='CONFIRMED';row.change.phase='REJECTED';row.revision++;}
+      return row;
+    });
+  }
+  confirmReschedule(reservationId,changeId,result) {
+    if(!ref(reservationId)||!ref(changeId)||!result||Object.keys(result).sort().join(',')!=='end,eventId,meetUrl,start,status'||result.status!=='EVENT_AND_MEET_READY'||result.eventId!==googleBookingEventId(this.#binding.productId,this.#binding.calendarId,reservationId)||!meet(result.meetUrl))throw Error('INVALID_EVENT_CONFIRMATION');
+    const bound=structuredClone(result);
+    return this.#transaction(state=>{
+      const row=state.reservations.find(x=>x.reservationId===reservationId),c=row?.change;
+      if(!c||c.id!==changeId||!['WRITING','COMPLETED'].includes(c.phase)||!['RESCHEDULING','CONFIRMED'].includes(row.phase))throw Error('RESERVATION_CLAIM_CONFLICT');
+      if(c.start!==bound.start||c.end!==bound.end||row.eventId!==bound.eventId||row.meetUrl!==bound.meetUrl)throw Error('RESERVATION_BINDING_CONFLICT');
+      row.start=c.start;row.end=c.end;row.phase='CONFIRMED';c.phase='COMPLETED';row.revision=c.revision+1;return row;
     });
   }
   beginCancellation(reservationId) {

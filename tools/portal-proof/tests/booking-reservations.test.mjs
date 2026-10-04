@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {FirestoreBookingReservations,createReservedIntroCallBooking,createIntroCallBookingReconciler,createReservedIntroCallCancellation} from '../booking-reservations.mjs';
 import {googleBookingEventId,createGoogleBookingEventWriter} from '../google-booking-event.mjs';
+import {createReservedIntroCallRescheduler} from '../booking-reschedule.mjs';
 import {createIntroCallScreening} from '../call-screening.mjs';
 const productId='wvd-booking-test',calendarId='calendar@example.test';
 const reservation=(reservationId='first',start='2026-10-06T12:00:00.000Z')=>({productId,reservationId,start,end:new Date(Date.parse(start)+1800000).toISOString()});
@@ -151,4 +152,83 @@ test('unconfirmed and foreign product cancellation cannot mutate or call the pro
  const s=setup();await s.store.reserve(reservation());await assert.rejects(s.store.beginCancellation('first'),/CANCELLATION_NOT_READY/);await s.book(reservation());
  const before=structuredClone(s.db.rows);const cancel=createReservedIntroCallCancellation({store:s.store,productId:'foreign-product',clock:()=> '2026-10-02T12:00:00.000Z',cancelEvent:async()=>assert.fail()});await assert.rejects(cancel({...reservation(),productId:'foreign-product'}),/RESERVATION_BINDING_CONFLICT/);assert.deepEqual(s.db.rows,before);
  const own=createReservedIntroCallCancellation({store:s.store,productId,clock:()=> '2026-10-02T12:00:00.000Z',cancelEvent:async()=>assert.fail()});await assert.rejects(own(reservation('first','2026-10-06T13:00:00.000Z')),/RESERVATION_BINDING_CONFLICT/);assert.deepEqual(s.db.rows,before);
+});
+
+test('rescheduling holds both times, blocks cancellation and competing changes, and claims a provider write once',async()=>{
+ const s=setup(),old=reservation(),start='2026-10-06T14:00:00.000Z';await s.book(old);
+ const request={expectedRevision:0,changeId:'change-a',start};await s.store.beginReschedule(old,request);
+ assert.deepEqual(await s.store.beginReschedule(old,request),await s.store.read('first'));
+ for(const time of [old.start,start,'2026-10-06T14:44:00.000Z'])await assert.rejects(s.store.reserve(reservation('competitor',time)),/BOOKING_SLOT_RESERVED/);
+ await assert.rejects(s.store.beginCancellation('first'),/CANCELLATION_NOT_READY/);
+ await assert.rejects(s.store.beginReschedule(old,{expectedRevision:0,changeId:'other',start:'2026-10-06T15:00:00.000Z'}),/RESCHEDULE_NOT_READY/);
+ const claims=await Promise.all([s.store.claimReschedule('first','change-a'),s.store.claimReschedule('first','change-a')]);assert.equal(claims.filter(x=>x.claimed).length,1);
+ assert.equal((await s.store.rejectRescheduleBeforeWrite('first','change-a')).phase,'RESCHEDULING');
+ assert.equal((await s.book(old)).status,'PENDING');assert.equal(s.writes,1);
+});
+test('successful rescheduling retains event and Meet identity, releases only the old time and supports exact replay',async()=>{
+ const s=setup(),old=reservation(),request={expectedRevision:0,changeId:'move',start:'2026-10-06T14:00:00.000Z'};await s.book(old);await s.store.beginReschedule(old,request);await s.store.claimReschedule('first','move');
+ const proof={status:'EVENT_AND_MEET_READY',eventId:googleBookingEventId(productId,calendarId,'first'),meetUrl:'https://meet.google.com/abc-defg-hij',start:request.start,end:'2026-10-06T14:30:00.000Z'};
+ const done=await s.store.confirmReschedule('first','move',proof);assert.equal(done.phase,'CONFIRMED');assert.equal(done.start,request.start);
+ assert.deepEqual(await s.store.beginReschedule(old,request),done);assert.deepEqual(await s.store.confirmReschedule('first','move',proof),done);
+ assert.equal((await s.store.reserve(reservation('old-time'))).phase,'RESERVED');await assert.rejects(s.store.reserve(reservation('new-time',request.start)),/BOOKING_SLOT_RESERVED/);
+ const reopened=new FirestoreBookingReservations({db:s.db,productId,calendarId});assert.deepEqual(await reopened.read('first'),done);
+ await assert.rejects(s.store.beginReschedule(old,{...request,start:'2026-10-06T15:00:00.000Z'}),/RESERVATION_BINDING_CONFLICT/);
+});
+test('unavailable replacement preserves the original and an overlapping move only ignores its own hold',async()=>{
+ const s=setup(),old=reservation();await s.book(old);await s.store.reserve(reservation('other','2026-10-06T14:00:00.000Z'));
+ await assert.rejects(s.store.beginReschedule(old,{expectedRevision:0,changeId:'busy',start:'2026-10-06T14:00:00.000Z'}),/BOOKING_SLOT_RESERVED/);assert.equal((await s.store.read('first')).phase,'CONFIRMED');
+ await s.store.beginReschedule(old,{expectedRevision:0,changeId:'overlap',start:'2026-10-06T12:15:00.000Z'});
+ const released=await s.store.rejectRescheduleBeforeWrite('first','overlap');assert.equal(released.phase,'CONFIRMED');assert.equal(released.start,old.start);
+ await assert.rejects(s.store.reserve(reservation('collision',old.start)),/BOOKING_SLOT_RESERVED/);
+ assert.equal((await s.store.claimReschedule('first','overlap')).claimed,false);
+});
+test('reschedule confirmation failure, wrong proof and foreign operation keep both holds',async()=>{
+ const s=setup(),old=reservation(),target='2026-10-06T14:00:00.000Z';await s.book(old);await s.store.beginReschedule(old,{expectedRevision:0,changeId:'move',start:target});await s.store.claimReschedule('first','move');
+ const proof={status:'EVENT_AND_MEET_READY',eventId:googleBookingEventId(productId,calendarId,'first'),meetUrl:'https://meet.google.com/abc-defg-hij',start:target,end:'2026-10-06T14:30:00.000Z'};
+ for(const patch of [{start:old.start},{meetUrl:'https://meet.google.com/xxx-yyyy-zzz'}])await assert.rejects(s.store.confirmReschedule('first','move',{...proof,...patch}),/RESERVATION_BINDING_CONFLICT/);
+ await assert.rejects(s.store.confirmReschedule('first','foreign',proof),/RESERVATION_CLAIM_CONFLICT/);
+ s.db.failConfirmation=true;await assert.rejects(s.store.confirmReschedule('first','move',proof),/disk failure/);s.db.failConfirmation=false;
+ for(const time of [old.start,target])await assert.rejects(s.store.reserve(reservation('competitor',time)),/BOOKING_SLOT_RESERVED/);
+ assert.equal((await s.store.read('first')).change.phase,'WRITING');
+});
+test('corrupt reschedule metadata and target overlaps fail closed on reopening',async()=>{
+ const s=setup(),old=reservation();await s.book(old);await s.store.beginReschedule(old,{expectedRevision:0,changeId:'move',start:'2026-10-06T14:00:00.000Z'});
+ const saved=structuredClone(s.db.rows);
+ for(const corrupt of [r=>delete r.change,r=>r.change.start='invalid',r=>r.change.phase='COMPLETED',r=>r.change.extra=true,r=>r.change.fromStart='2026-10-06T11:00:00.000Z']){
+  s.db.rows=structuredClone(saved);corrupt([...s.db.rows.values()][0].reservations[0]);await assert.rejects(s.store.read('first'),/CORRUPT_BOOKING_SCHEDULE/);
+ }
+ s.db.rows=structuredClone(saved);[...s.db.rows.values()][0].reservations.push({...reservation('foreign','2026-10-06T14:00:00.000Z'),phase:'RESERVED'});await assert.rejects(s.store.read('first'),/CORRUPT_BOOKING_SCHEDULE/);
+});
+test('reschedule binding checks run before mutation and cancellation remains possible after completion',async()=>{
+ const s=setup(),old=reservation();await s.book(old);const before=structuredClone(s.db.rows);
+ await assert.rejects(s.store.beginReschedule(reservation('first','2026-10-06T11:00:00.000Z'),{expectedRevision:0,changeId:'move',start:'2026-10-06T14:00:00.000Z'}),/RESERVATION_BINDING_CONFLICT/);
+ assert.throws(()=>s.store.beginReschedule({...old,productId:'foreign'},{expectedRevision:0,changeId:'move',start:'2026-10-06T14:00:00.000Z'}),/INVALID_BOOKING_RESERVATION/);assert.deepEqual(s.db.rows,before);
+ const start='2026-10-06T14:00:00.000Z';await s.store.beginReschedule(old,{expectedRevision:0,changeId:'move',start});await s.store.claimReschedule('first','move');await s.store.confirmReschedule('first','move',{status:'EVENT_AND_MEET_READY',eventId:googleBookingEventId(productId,calendarId,'first'),meetUrl:'https://meet.google.com/abc-defg-hij',start,end:'2026-10-06T14:30:00.000Z'});
+ await s.store.beginCancellation('first');await s.store.confirmCancellation('first',{status:'EVENT_ABSENT',eventId:googleBookingEventId(productId,calendarId,'first')},'2026-10-04T12:00:00.000Z');assert.equal((await s.store.read('first')).phase,'CANCELLED');
+});
+
+test('revision prevents an old change from replaying when a later change returns to the original time',async()=>{
+ const s=setup(),old=reservation();await s.book(old);
+ const apply=async(value,change)=>{await s.store.beginReschedule(value,change);await s.store.claimReschedule('first',change.changeId);return s.store.confirmReschedule('first',change.changeId,{status:'EVENT_AND_MEET_READY',eventId:googleBookingEventId(productId,calendarId,'first'),meetUrl:'https://meet.google.com/abc-defg-hij',start:change.start,end:new Date(Date.parse(change.start)+1800000).toISOString()});};
+ const first={expectedRevision:0,changeId:'out',start:'2026-10-06T14:00:00.000Z'};await apply(old,first);
+ const next=reservation('first',first.start);await apply(next,{expectedRevision:1,changeId:'back',start:old.start});
+ await assert.rejects(s.store.beginReschedule(old,first),/RESERVATION_BINDING_CONFLICT/);assert.equal((await s.store.read('first')).revision,2);
+});
+
+test('reschedule composition screens outside the transaction, claims one move, and recovers commit failure read-only',async()=>{
+ const s=setup(),old=reservation(),change={expectedRevision:0,changeId:'move',start:'2026-10-06T14:00:00.000Z'};await s.book(old);let moves=0,reads=0,ready=false;
+ const proof={status:'EVENT_AND_MEET_READY',eventId:googleBookingEventId(productId,calendarId,'first'),meetUrl:'https://meet.google.com/abc-defg-hij',start:change.start,end:'2026-10-06T14:30:00.000Z'};
+ const move=createReservedIntroCallRescheduler({store:s.store,productId,screen:async({target})=>{assert.equal(s.db.active,false);return {provisional:true,slots:[target]};},provider:{move:async()=>{assert.equal(s.db.active,false);moves++;ready=true;return proof;},read:async()=>{assert.equal(s.db.active,false);reads++;return ready?proof:{status:'RESCHEDULE_PENDING'};}}});
+ s.db.failConfirmation=true;const initial=await Promise.all([move({reservation:old,change}),move({reservation:old,change})]);assert.equal(initial.every(x=>x.status==='PENDING'),true);assert.equal(moves,1);
+ s.db.failConfirmation=false;assert.equal((await move({reservation:old,change})).status,'RESCHEDULED');assert.equal(moves,1);assert.ok(reads>=1);
+ const count=reads;assert.equal((await move({reservation:old,change})).status,'RESCHEDULED');assert.equal(reads,count);
+ await s.store.beginCancellation('first');assert.equal((await move({reservation:old,change})).status,'PENDING');
+ await s.store.confirmCancellation('first',{status:'EVENT_ABSENT',eventId:proof.eventId},'2026-10-04T12:00:00.000Z');assert.equal((await move({reservation:old,change})).status,'CANCELLED');
+});
+test('target unavailability preserves original confirmation and malformed evidence holds without provider writes',async()=>{
+ for(const evidence of [{provisional:true,slots:[]},{provisional:false,slots:[]},{provisional:true,slots:[{start:'foreign'}]},null]){
+  const s=setup(),old=reservation(),change={expectedRevision:0,changeId:'move',start:'2026-10-06T14:00:00.000Z'};await s.book(old);
+  const move=createReservedIntroCallRescheduler({store:s.store,productId,screen:async()=>evidence,provider:{move:async()=>assert.fail(),read:async()=>assert.fail()}});
+  const result=await move({reservation:old,change});assert.equal(result.status,evidence?.provisional===true&&evidence.slots.length===0?'UNAVAILABLE':'PENDING');assert.equal((await s.store.read('first')).start,old.start);
+ }
 });

@@ -22,8 +22,9 @@ identifiers and Meet links, so they require restricted storage and a separately
 reviewed encryption/retention policy before operational use. Never put them in
 public artifacts, logs, analytics or a customer download route.
 
-All phases remain intact. RESERVED, WRITING, CONFIRMED and CANCELLING remain
-active holds; verified CANCELLED and REJECTED rows do not block new reservations.
+All phases remain intact. RESERVED, WRITING, CONFIRMED, RESCHEDULING and CANCELLING remain
+active holds; RESCHEDULING also preserves its target interval and operation revision.
+Verified CANCELLED and REJECTED rows do not block new reservations.
 Export/rehearsal never creates an event, sends an invitation, cancels a booking
 or releases an uncertain hold. Restoring a journal snapshot is not evidence of
 current Calendar state; provider reconciliation and a controlled single-writer
