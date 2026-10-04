@@ -14,7 +14,9 @@ client_id="$(gcloud iam service-accounts describe "$account" --project="$project
 gcloud iam workload-identity-pools providers describe "$provider" --project="$project" --location=global --workload-identity-pool="$pool" --format=json |
 python3 -c 'import json,sys
 p=json.load(sys.stdin)
-if p.get("disabled") or p.get("state")!="ACTIVE" or p.get("oidc")!={"issuerUri":"https://token.actions.githubusercontent.com"} or p.get("attributeMapping")!={"google.subject":"assertion.sub","attribute.repository_id":"assertion.repository_id"}:
+required={"google.subject":"assertion.sub","attribute.repository_id":"assertion.repository_id"}
+mapping=p.get("attributeMapping",{})
+if p.get("disabled") or p.get("state")!="ACTIVE" or p.get("oidc",{}).get("issuerUri")!="https://token.actions.githubusercontent.com" or not isinstance(mapping,dict) or any(mapping.get(k)!=v for k,v in required.items()):
     sys.exit("PROVIDER_BINDING_DRIFT_REVIEW_REQUIRED")
 '
 condition="assertion.repository_id=='1347788556' && assertion.repository_owner_id=='78605956' && assertion.ref=='refs/heads/development/shared-factory-bootstrap' && assertion.workflow_ref=='aquaviator/wvd/.github/workflows/google-development-access.yml@refs/heads/development/shared-factory-bootstrap' && (assertion.event_name=='push' || assertion.event_name=='workflow_dispatch')"

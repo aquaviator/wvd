@@ -68,6 +68,8 @@ jobs:
         run: node tools/google-development-access/calendar-writer-preflight.mjs tools/google-development-access/binding.json
       - name: Verify synthetic event cleanup contracts before live writes
         run: node --test tools/portal-proof/tests/google-booking-event.test.mjs tools/portal-proof/tests/booking-event-rehearsal.test.mjs
+      - name: Verify delegation setup preserves existing provider mappings
+        run: python3 tools/google-development-access/test_delegation.py
       - id: calendar_event_auth
         name: Authorise approved Workspace booking organiser
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
