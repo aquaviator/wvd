@@ -631,3 +631,21 @@ was asked to repeat the free/busy grant on the WVD primary calendar. Do not remo
 that required calendar or declare the combined grant set verified to bypass it.
 Nine focused checks passed locally; native/container runs for the diagnostic
 source remain pending at this checkpoint. Production booking remains disabled.
+
+
+### Combined calendar access verified — 4 October 2026
+
+After the founder shared the WVD primary calendar, rerun 37199371099 passed
+keyless authentication, Drive preflight, all three required calendars and the
+portal's live Calendar adapter contract. The previously missing primary grant
+is resolved. Source `38db88ae53bab3d0ea6571696a07100d2159be90` also passed all
+four CI jobs (37199371147) and the offline container (37199371078). Downloaded
+container results match that source, isolated demo project and liveAccess=false;
+the mobile Member-approval-denied screenshot was inspected.
+
+The verified conflict set is named WVD, WVD primary and personal primary. Busy
+personal work commitments can now be read by the development integration; no
+event titles or private details were requested. This resolves read-access only.
+Holiday coverage/freshness and buffer-boundary policy, concurrency-safe booking,
+Meet creation, delivery and hosted application composition remain unfinished.
+There is still no live booking endpoint or production booking acceptance.
