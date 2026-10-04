@@ -39,7 +39,7 @@ CONFIRMED only after that durable commit. It is not an invitation-delivery recei
 Provider ambiguity, pending/failed Meet, process interruption and confirmation
 commit failure retain WRITING. There is no TTL or automatic release: the event
 may already exist. These cases require an ownership-checked read/reconciliation
-implementation before an operator can safely resolve them. Evidence outages
+operation before an operator can safely resolve them. Evidence outages
 retain RESERVED and allow a later final recheck.
 
 The journal is bounded to 400 records and 128 KiB. No implicit archive/deletion
@@ -80,3 +80,23 @@ This is an internal development composition. Hosted/public request controls,
 customer-facing pending/retry UX, reconciliation, attendee delivery, schedule
 backup/retention and production deployment remain required. CI/container results
 must verify this exact source before the slice is described as verified.
+
+## Recovery extension
+
+createIntroCallBookingReconciler reads the durable WRITING reservation and the
+existing deterministic Google event only. It reuses inspectGoogleBookingEvent,
+the exact same private ownership/content/Meet validation used by the writer.
+A ready matching event can complete the original durable claim without another
+insert. Missing, unavailable or pending events retain their hold. Changed,
+cancelled, guest-bearing or foreign events report a fixed binding conflict;
+no automatic event deletion, insertion or reservation release occurs.
+
+Event binding hashing now canonicalises the four reservation fields, so an exact
+retry with a different JSON property order has the same identity. This changes
+the binding hash for earlier non-canonical development inputs; no existing
+customer booking is migrated or overwritten. All prior live rehearsals were
+synthetic and removed.
+
+Thirteen synthetic reservation/recovery tests now cover the above behaviours.
+The provider workflow also runs on changes to the shared event adapter, so
+future provider refactors cannot bypass the automated live contract check.

@@ -804,3 +804,27 @@ mobile layout, Owner-only approval disabled for Member.
 Durable slot reservation, final conflict recheck, attendee delivery and hosted
 booking composition remain unimplemented. Live Meet verification is not a
 booking-system release.
+
+### Durable reservation and recovery development — 4 October 2026
+
+Initial reservation source6bca4974cdc68e0b0edba6efadf98d50f39a7a5b passed CI
+37204222001/37204225824 and offline container37204222070, including the real
+Firestore emulator's concurrent reserve/claim and journal reopen checks.
+The separate private calendar schedule binds one product owner per calendar
+in the supplied database; other products cannot create a parallel lock.
+The established fifteen-minute gap, shared final screening and event adapter
+are reused. No customer details or live Firestore bookings were written.
+
+The follow-on recovery extension adds a read-only Google event reconciler. A
+ready exact-owned event can commit the original claim after an interrupted
+confirmation; absent/pending/foreign outcomes cannot release the uncertain hold
+or create a second event. Thirteen local reservation/recovery tests passed.
+Event inspection is shared with the writer, and binding field order is now
+canonical. The live provider workflow runs when that shared adapter changes.
+Exact-source CI/container/live results for this extension remain pending.
+
+The server composition is internal: no public booking endpoint, attendees or
+delivery, hosted runtime, reservation backup/retention or cancellation UI is
+claimed. Each calendar needs one authoritative database/writer. External calendar
+edits can race a free/busy check because Google and Firestore are separate systems.
+See WVD-BOOKING-RESERVATIONS.md for the contract and remaining production work.

@@ -1,5 +1,5 @@
 import {createHash,randomUUID} from 'node:crypto';
-import {googleBookingEventId} from './google-booking-event.mjs';
+import {googleBookingEventId,googleBookingReservation,inspectGoogleBookingEvent} from './google-booking-event.mjs';
 import {normaliseIntroCallCandidates} from './booking.mjs';
 const ref=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(v);
 const instant=v=>typeof v==='string'&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString()===v;
@@ -8,7 +8,7 @@ const phases=['RESERVED','WRITING','CONFIRMED','REJECTED'];
 export function bookingReservation(value,productId) {
   if(!value||Object.keys(value).sort().join(',')!=='end,productId,reservationId,start'||value.productId!==productId||!ref(value.reservationId)||!instant(value.start)||!instant(value.end)||Date.parse(value.end)-Date.parse(value.start)!==1800000)throw Error('INVALID_BOOKING_RESERVATION');
   try{normaliseIntroCallCandidates([value.start]);}catch{throw Error('INVALID_BOOKING_RESERVATION');}
-  return structuredClone(value);
+  return googleBookingReservation(value,productId);
 }
 const same=(a,b)=>['productId','reservationId','start','end'].every(k=>a[k]===b[k]);
 // Trusted backend only. One calendar has one owner product in this database.
@@ -57,6 +57,10 @@ export class FirestoreBookingReservations {
       if(state.reservations.length>=400)throw Error('BOOKING_CAPACITY');
       const row={...bound,phase:'RESERVED'};state.reservations.push(row);return row;
     });
+  }
+  read(reservationId) {
+    if(!ref(reservationId))throw Error('INVALID_BOOKING_RESERVATION');
+    return this.#transaction(state=>state.reservations.find(x=>x.reservationId===reservationId)??null);
   }
   beginWrite(reservationId) {
     if(!ref(reservationId))throw Error('INVALID_BOOKING_RESERVATION');
@@ -119,5 +123,30 @@ export function createReservedIntroCallBooking({store,screen,writeEvent,productI
       if(event.status!=='EVENT_AND_MEET_READY')return reply(claim.reservation);
       return reply(await store.confirm(bound.reservationId,claim.reservation.claimId,event));
     }catch{return reply(claim.reservation);}
+  };
+}
+
+// Recover only by reading the existing deterministic event. A missing event is
+// not enough to release an uncertain hold, and recovery never inserts/deletes.
+export function createIntroCallBookingReconciler({store,calendar,calendarId,productId,requestTimeoutMs}) {
+  if(typeof store?.read!=='function'||typeof store?.confirm!=='function'||typeof calendar?.events?.get!=='function'||!ref(productId)||!Number.isSafeInteger(requestTimeoutMs)||requestTimeoutMs<1||requestTimeoutMs>15000)throw Error('INVALID_CONFIGURATION');
+  googleBookingEventId(productId,calendarId,'configuration-check');
+  const options=Object.freeze({timeout:requestTimeoutMs,retry:false});
+  return async reservationId=>{
+    const row=await store.read(reservationId);
+    if(!row)throw Error('RESERVATION_NOT_FOUND');
+    if(row.productId!==productId)throw Error('RESERVATION_BINDING_CONFLICT');
+    const pending={status:'PENDING',reservationId};
+    const confirmed=value=>({status:'CONFIRMED',reservationId,start:value.start,end:value.end,meetUrl:value.meetUrl});
+    if(row.phase==='CONFIRMED')return confirmed(row);
+    if(row.phase!=='WRITING')return {...pending,status:row.phase==='REJECTED'?'UNAVAILABLE':'PENDING'};
+    let data;
+    try{({data}=await calendar.events.get({calendarId,eventId:googleBookingEventId(productId,calendarId,reservationId)},options));}catch{return pending;}
+    let result;
+    try{result=inspectGoogleBookingEvent({productId,calendarId,reservation:{productId,reservationId,start:row.start,end:row.end}},data);}catch{
+      return {status:'BLOCKED',reservationId,reason:'EVENT_BINDING_CONFLICT'};
+    }
+    if(result.status!=='EVENT_AND_MEET_READY')return pending;
+    try{return confirmed(await store.confirm(reservationId,row.claimId,result));}catch{return pending;}
   };
 }

@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {AsyncLocalStorage} from 'node:async_hooks';
-import {FirestoreBookingReservations,createReservedIntroCallBooking} from '../booking-reservations.mjs';
-import {googleBookingEventId} from '../google-booking-event.mjs';
+import {FirestoreBookingReservations,createReservedIntroCallBooking,createIntroCallBookingReconciler} from '../booking-reservations.mjs';
+import {googleBookingEventId,createGoogleBookingEventWriter} from '../google-booking-event.mjs';
 import {createIntroCallScreening} from '../call-screening.mjs';
 const productId='wvd-booking-test',calendarId='calendar@example.test';
 const reservation=(reservationId='first',start='2026-10-06T12:00:00.000Z')=>({productId,reservationId,start,end:new Date(Date.parse(start)+1800000).toISOString()});
@@ -90,4 +90,45 @@ test('foreign owner and corrupt persisted state fail closed without replacement'
 test('malformed screening cannot release or write a held slot',async()=>{
   const s=setup(),book=createReservedIntroCallBooking({store:s.store,screen:async()=>({slots:[{start:'foreign'}],provisional:true}),writeEvent:()=>assert.fail('no provider write'),productId});
   assert.equal((await book(reservation())).status,'PENDING');assert.equal((await s.store.reserve(reservation())).phase,'RESERVED');
+});
+function provider(){
+  let row=null,posts=0,gets=0,unavailable=false;
+  const calendar={events:{
+    get:async()=>{gets++;if(unavailable)throw Error('private provider failure');if(!row)throw Object.assign(Error('missing'),{response:{status:404}});return {data:structuredClone(row)};},
+    insert:async({requestBody})=>{posts++;row={...requestBody,status:'confirmed',conferenceData:{createRequest:{status:{statusCode:'success'}},conferenceSolution:{key:{type:'hangoutsMeet'}},entryPoints:[{entryPointType:'video',uri:'https://meet.google.com/abc-defg-hij'}]}};return {data:structuredClone(row)};}
+  }};
+  return {calendar,get row(){return row;},get posts(){return posts;},get gets(){return gets;},setOutage:value=>unavailable=value};
+}
+test('read-only reconciliation finishes a provider success whose durable confirmation failed',async()=>{
+  const s=setup(),p=provider(),writeEvent=createGoogleBookingEventWriter({calendar:p.calendar,calendarId,productId,requestTimeoutMs:1000});
+  const book=createReservedIntroCallBooking({store:s.store,screen:s.screen,writeEvent,productId});
+  s.db.failConfirmation=true;assert.equal((await book(reservation())).status,'PENDING');assert.equal(p.posts,1);
+  s.db.failConfirmation=false;
+  const reconcile=createIntroCallBookingReconciler({store:s.store,calendar:p.calendar,calendarId,productId,requestTimeoutMs:1000});
+  assert.equal((await reconcile('first')).status,'CONFIRMED');
+  const before=p.gets;assert.equal((await reconcile('first')).status,'CONFIRMED');assert.equal(p.gets,before);assert.equal(p.posts,1);
+});
+test('missing, unavailable or pending Meet events never release uncertain holds',async()=>{
+  const s=setup(),p=provider();await s.store.reserve(reservation());await s.store.beginWrite('first');
+  const reconcile=createIntroCallBookingReconciler({store:s.store,calendar:p.calendar,calendarId,productId,requestTimeoutMs:1000});
+  assert.equal((await reconcile('first')).status,'PENDING');
+  p.setOutage(true);assert.equal((await reconcile('first')).status,'PENDING');p.setOutage(false);
+  const writer=createGoogleBookingEventWriter({calendar:p.calendar,calendarId,productId,requestTimeoutMs:1000});await writer(reservation());
+  p.row.conferenceData.createRequest.status.statusCode='pending';assert.equal((await reconcile('first')).status,'PENDING');
+  assert.equal((await s.store.rejectBeforeWrite('first')).phase,'WRITING');
+  await assert.rejects(s.store.reserve(reservation('second')),/BOOKING_SLOT_RESERVED/);
+  p.row.conferenceData.createRequest.status.statusCode='success';assert.equal((await reconcile('first')).status,'CONFIRMED');
+});
+test('changed event or guest injection blocks reconciliation without mutation',async()=>{
+  const s=setup(),p=provider();await s.store.reserve(reservation());await s.store.beginWrite('first');
+  const writer=createGoogleBookingEventWriter({calendar:p.calendar,calendarId,productId,requestTimeoutMs:1000});await writer(reservation());
+  p.row.attendees=[{email:'foreign@example.test'}];
+  const reconcile=createIntroCallBookingReconciler({store:s.store,calendar:p.calendar,calendarId,productId,requestTimeoutMs:1000});
+  assert.deepEqual(await reconcile('first'),{status:'BLOCKED',reservationId:'first',reason:'EVENT_BINDING_CONFLICT'});
+  assert.equal((await s.store.read('first')).phase,'WRITING');assert.equal(p.posts,1);
+});
+test('event binding identity ignores JSON property order across retries',async()=>{
+  const p=provider(),writer=createGoogleBookingEventWriter({calendar:p.calendar,calendarId,productId,requestTimeoutMs:1000}),a=reservation();
+  const first=await writer({end:a.end,start:a.start,reservationId:a.reservationId,productId:a.productId});
+  assert.deepEqual(await writer(a),first);assert.equal(p.posts,1);
 });

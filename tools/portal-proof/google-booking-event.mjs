@@ -6,18 +6,10 @@ export function googleBookingEventId(productId,calendarId,reservationId) {
   if(!reference(productId)||!reference(reservationId)||typeof calendarId!=='string'||!calendarId.length||calendarId.length>256||/[\s\x00-\x1f\x7f]/.test(calendarId))throw Error('INVALID_CONFIGURATION');
   return digest([productId,calendarId,reservationId]);
 }
-// Trusted server provider adapter only. The caller must already own a durable
-// reservation and perform the final conflict recheck; this is not a public
-// booking endpoint, slot lock or invitation/delivery implementation.
-export function createGoogleBookingEventWriter({calendar,calendarId,productId,requestTimeoutMs}) {
-  if(typeof calendar?.events?.get!=='function'||typeof calendar?.events?.insert!=='function'||typeof calendarId!=='string'||!calendarId.length||calendarId.length>256||/[\s\x00-\x1f\x7f]/.test(calendarId)||!reference(productId)||!Number.isSafeInteger(requestTimeoutMs)||requestTimeoutMs<1||requestTimeoutMs>15000)throw Error('INVALID_CONFIGURATION');
-  const options=Object.freeze({timeout:requestTimeoutMs,retry:false});
-  return async reservation=>{
-    if(!reservation||Object.keys(reservation).sort().join(',')!=='end,productId,reservationId,start'||reservation.productId!==productId||!reference(reservation.reservationId)||!instant(reservation.start)||!instant(reservation.end)||Date.parse(reservation.end)-Date.parse(reservation.start)!==1800000)throw Error('INVALID_BOOKING_RESERVATION');
-    const bound=structuredClone(reservation),eventId=googleBookingEventId(productId,calendarId,bound.reservationId),bindingDigest=digest(bound);
-    const requestId=digest([eventId,bindingDigest,'conference']);
-    const matches=data=>data?.id===eventId&&data.status==='confirmed'&&data.summary==='WVD introductory call'&&Date.parse(data.start?.dateTime)===Date.parse(bound.start)&&Date.parse(data.end?.dateTime)===Date.parse(bound.end)&&data.extendedProperties?.private?.wvdProduct===productId&&data.extendedProperties.private.wvdReservation===bound.reservationId&&data.extendedProperties.private.wvdBinding===bindingDigest&&data.visibility==='private'&&(data.transparency===undefined||data.transparency==='opaque')&&!data.recurrence&&(data.attendees===undefined||Array.isArray(data.attendees)&&data.attendees.length===0);
-    const result=data=>{
+export function inspectGoogleBookingEvent({productId,calendarId,reservation},data) {
+  const bound=googleBookingReservation(reservation,productId),eventId=googleBookingEventId(productId,calendarId,bound.reservationId),bindingDigest=digest(bound);
+  const matches=data=>data?.id===eventId&&data.status==='confirmed'&&data.summary==='WVD introductory call'&&Date.parse(data.start?.dateTime)===Date.parse(bound.start)&&Date.parse(data.end?.dateTime)===Date.parse(bound.end)&&data.extendedProperties?.private?.wvdProduct===productId&&data.extendedProperties.private.wvdReservation===bound.reservationId&&data.extendedProperties.private.wvdBinding===bindingDigest&&data.visibility==='private'&&(data.transparency===undefined||data.transparency==='opaque')&&!data.recurrence&&(data.attendees===undefined||Array.isArray(data.attendees)&&data.attendees.length===0);
+  const result=data=>{
       if(!matches(data))throw Error('BOOKING_EVENT_CONFLICT');
       const conference=data.conferenceData,code=conference?.createRequest?.status?.statusCode;
       if(code==='failure')return {eventId,status:'MEET_FAILED'};
@@ -26,6 +18,22 @@ export function createGoogleBookingEventWriter({calendar,calendarId,productId,re
       if(conference?.conferenceSolution?.key?.type!=='hangoutsMeet'||videos.length!==1||typeof videos[0].uri!=='string'||!/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(videos[0].uri))return {eventId,status:'MEET_FAILED'};
       return {eventId,status:'EVENT_AND_MEET_READY',meetUrl:videos[0].uri};
     };
+  return result(data);
+}
+export function googleBookingReservation(reservation,productId) {
+  if(!reservation||Object.keys(reservation).sort().join(',')!=='end,productId,reservationId,start'||reservation.productId!==productId||!reference(productId)||!reference(reservation.reservationId)||!instant(reservation.start)||!instant(reservation.end)||Date.parse(reservation.end)-Date.parse(reservation.start)!==1800000)throw Error('INVALID_BOOKING_RESERVATION');
+  return {productId,reservationId:reservation.reservationId,start:reservation.start,end:reservation.end};
+}
+// Trusted server provider adapter only. The caller must already own a durable
+// reservation and perform the final conflict recheck; this is not a public
+// booking endpoint, slot lock or invitation/delivery implementation.
+export function createGoogleBookingEventWriter({calendar,calendarId,productId,requestTimeoutMs}) {
+  if(typeof calendar?.events?.get!=='function'||typeof calendar?.events?.insert!=='function'||typeof calendarId!=='string'||!calendarId.length||calendarId.length>256||/[\s\x00-\x1f\x7f]/.test(calendarId)||!reference(productId)||!Number.isSafeInteger(requestTimeoutMs)||requestTimeoutMs<1||requestTimeoutMs>15000)throw Error('INVALID_CONFIGURATION');
+  const options=Object.freeze({timeout:requestTimeoutMs,retry:false});
+  return async reservation=>{
+    const bound=googleBookingReservation(reservation,productId),eventId=googleBookingEventId(productId,calendarId,bound.reservationId),bindingDigest=digest(bound);
+    const requestId=digest([eventId,bindingDigest,'conference']);
+    const result=data=>inspectGoogleBookingEvent({productId,calendarId,reservation:bound},data);
     const read=async()=>{
       try{return (await calendar.events.get({calendarId,eventId},options)).data;}catch(error){if(error?.response?.status===404)return null;throw Error('BOOKING_EVENT_UNAVAILABLE');}
     };

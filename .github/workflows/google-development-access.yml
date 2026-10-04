@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/google-development-access.yml'
       - 'tools/google-development-access/**'
+      - 'tools/portal-proof/google-booking-event.mjs'
 permissions:
   contents: read
 concurrency:
