@@ -1,5 +1,9 @@
 import unittest
-from discover import inspect, PROJECT, NUMBER, ACCOUNT, POOL
+import json
+import base64
+import subprocess
+from types import SimpleNamespace
+from discover import gcloud, inspect, PROJECT, NUMBER, ACCOUNT, POOL
 
 class DiscoveryTests(unittest.TestCase):
     def runner(self, existing=False):
@@ -32,5 +36,30 @@ class DiscoveryTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'PROJECT_NOT_VERIFIED'):inspect(lambda _: {'projectId':'foreign'})
         def denied(_):raise RuntimeError('denied')
         with self.assertRaisesRegex(RuntimeError,'denied'):inspect(denied)
+
+class LauncherTests(unittest.TestCase):
+    def test_windows_wrapper_keeps_arguments_separate(self):
+        args=['iam','service-accounts','get-iam-policy',ACCOUNT,'--format=json']
+        def execute(command, **options):
+            self.assertEqual(command[0],'powershell.exe')
+            script=base64.b64decode(command[-1]).decode('utf-16le')
+            self.assertIn('Get-Command gcloud',script)
+            self.assertNotIn(ACCOUNT,script)
+            self.assertEqual(json.loads(options['env']['WVD_GCLOUD_ARGUMENTS']),args)
+            self.assertNotIn('shell',options)
+            return SimpleNamespace(returncode=0,stdout='{"ok":true}')
+        self.assertEqual(gcloud(args,platform='win32',execute=execute,env={}),{'ok':True})
+    def test_non_windows_uses_direct_sdk(self):
+        def execute(command,**options):
+            self.assertEqual(command,['gcloud','projects','describe',PROJECT])
+            return SimpleNamespace(returncode=0,stdout='{}')
+        self.assertEqual(gcloud(['projects','describe',PROJECT],platform='linux',execute=execute),{})
+    def test_errors_are_specific_and_never_echo_credentials(self):
+        def missing(*args,**kwargs):raise FileNotFoundError('private-data')
+        with self.assertRaisesRegex(RuntimeError,'GCLOUD_LAUNCHER_NOT_AVAILABLE'):gcloud([],execute=missing)
+        def denied(*args,**kwargs):return SimpleNamespace(returncode=1,stdout='private-data')
+        with self.assertRaisesRegex(RuntimeError,'GOOGLE_ADMIN_READ_FAILED_CHECK_GCLOUD_LOGIN_AND_PERMISSIONS'):gcloud([],execute=denied)
+        def invalid(*args,**kwargs):return SimpleNamespace(returncode=0,stdout='private-data')
+        with self.assertRaisesRegex(RuntimeError,'GOOGLE_ADMIN_RESPONSE_NOT_JSON'):gcloud([],execute=invalid)
 
 if __name__=='__main__':unittest.main()

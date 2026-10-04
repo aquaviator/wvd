@@ -2,6 +2,8 @@
 No credential exports, API enabling, IAM edits or Workspace content requests.
 """
 import json
+import base64
+import os
 import subprocess
 import sys
 
@@ -46,10 +48,24 @@ def inspect(run):
       'workspacePermissions':'NOT_CHECKED','applicationIntegration':'NOT_VERIFIED'
     }
 
-def gcloud(args):
-    r=subprocess.run(['gcloud',*args],capture_output=True,text=True,timeout=60)
-    if r.returncode:raise RuntimeError('GOOGLE_ADMIN_READ_FAILED')
-    return json.loads(r.stdout)
+def gcloud(args, platform=sys.platform, execute=subprocess.run, env=None):
+    # Reuses the fixed PowerShell launcher pattern in portal-proof/google-preflight.mjs.
+    # SDK arguments travel as JSON, never as interpolated shell commands.
+    command=['gcloud',*args]
+    options={'capture_output':True,'text':True,'timeout':60}
+    if platform == 'win32':
+        script="$ErrorActionPreference = 'Stop'; $arguments = ConvertFrom-Json $env:WVD_GCLOUD_ARGUMENTS; $command = Get-Command gcloud -CommandType ExternalScript,Application -ErrorAction Stop; & $command.Source @arguments; if ($null -ne $LASTEXITCODE) { exit $LASTEXITCODE }"
+        command=['powershell.exe','-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',base64.b64encode(script.encode('utf-16le')).decode('ascii')]
+        options['env']={**(os.environ if env is None else env),'WVD_GCLOUD_ARGUMENTS':json.dumps(args)}
+    try:
+        r=execute(command,**options)
+    except FileNotFoundError:
+        raise RuntimeError('GCLOUD_LAUNCHER_NOT_AVAILABLE') from None
+    except subprocess.TimeoutExpired:
+        raise RuntimeError('GOOGLE_ADMIN_READ_TIMEOUT') from None
+    if r.returncode:raise RuntimeError('GOOGLE_ADMIN_READ_FAILED_CHECK_GCLOUD_LOGIN_AND_PERMISSIONS')
+    try:return json.loads(r.stdout)
+    except (ValueError,TypeError):raise RuntimeError('GOOGLE_ADMIN_RESPONSE_NOT_JSON') from None
 
 if __name__=='__main__':
     try:
