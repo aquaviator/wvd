@@ -15,7 +15,7 @@ export function validateBinding(b) {
 export async function accessPreflight(binding, token, {request=fetch, now=Date.now()}={}) {
   const b=validateBinding(binding);
   if(typeof token !== 'string' || !token.length || /\s/.test(token)) throw Error('CREDENTIAL_REQUIRED');
-  const results=[];
+  const results=[],calendarResults=[];
   const probe=async (label,url,options,check)=>{
     try {
       const value=await readGoogleJson(url,options,token,{request});
@@ -30,8 +30,16 @@ export async function accessPreflight(binding, token, {request=fetch, now=Date.n
     await probe(`drive-${i+1}`,`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,trashed&supportsAllDrives=true`,{method:'GET'},v=>v.id===id&&v.trashed===false);
   }
   const start=new Date(now).toISOString(),end=new Date(now+3600000).toISOString();
-  await probe('calendar-freebusy','https://www.googleapis.com/calendar/v3/freeBusy',{method:'POST',body:JSON.stringify({timeMin:start,timeMax:end,items:b.calendarIds.map(id=>({id}))})},v=>Date.parse(v.timeMin)===Date.parse(start)&&Date.parse(v.timeMax)===Date.parse(end)&&b.calendarIds.every(id=>v.calendars?.[id]&&(!v.calendars[id].errors||v.calendars[id].errors.length===0)&&Array.isArray(v.calendars[id].busy)&&v.calendars[id].busy.every(x=>Number.isFinite(Date.parse(x.start))&&Number.isFinite(Date.parse(x.end))&&Date.parse(x.start)<Date.parse(x.end))));
-  return {status:results.every(x=>x.status==='PASS')?'PASS':'BLOCKED',changesMade:false,results};
+  await probe('calendar-freebusy','https://www.googleapis.com/calendar/v3/freeBusy',{method:'POST',body:JSON.stringify({timeMin:start,timeMax:end,items:b.calendarIds.map(id=>({id}))})},v=>{
+    const coverage=Date.parse(v.timeMin)===Date.parse(start)&&Date.parse(v.timeMax)===Date.parse(end);
+    for(let i=0;i<b.calendarIds.length;i++){
+      const row=v.calendars?.[b.calendarIds[i]];
+      const valid=coverage&&row&&(!row.errors||row.errors.length===0)&&Array.isArray(row.busy)&&row.busy.every(x=>Number.isFinite(Date.parse(x.start))&&Number.isFinite(Date.parse(x.end))&&Date.parse(x.start)<Date.parse(x.end));
+      calendarResults.push({check:`calendar-${i+1}`,status:valid?'PASS':row?.errors?.length?'TARGET_NOT_FOUND_OR_NOT_SHARED':'INVALID_OR_INCOMPLETE_RESPONSE'});
+    }
+    return calendarResults.every(x=>x.status==='PASS');
+  });
+  return {status:results.every(x=>x.status==='PASS')?'PASS':'BLOCKED',changesMade:false,results,calendarResults};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{

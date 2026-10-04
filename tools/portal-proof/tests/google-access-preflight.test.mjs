@@ -45,6 +45,6 @@ test('one missing or denied required calendar blocks the whole conflict set',asy
    if(failure==='missing')delete calendars[b.calendarIds.at(-1)];
    else calendars[b.calendarIds.at(-1)]={errors:[{reason:'forbidden'}]};
    return response({timeMin:body.timeMin,timeMax:body.timeMax,calendars});
-  }});assert.equal(r.status,'BLOCKED');
+  }});assert.equal(r.status,'BLOCKED');assert.equal(r.calendarResults.at(-1).status,failure==='missing'?'INVALID_OR_INCOMPLETE_RESPONSE':'TARGET_NOT_FOUND_OR_NOT_SHARED');
  }
 });
