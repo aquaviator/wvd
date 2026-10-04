@@ -9,6 +9,7 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm --prefix tools/factory test
+      - run: python -B -m unittest discover -s tools/google-development-access -p "test_*.py"
       - run: npm --prefix tools/portal-proof test
       - run: npm run validate
       - run: npm test

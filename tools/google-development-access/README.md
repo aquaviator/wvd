@@ -7,10 +7,10 @@ This is not an always-on development agent or a production deployment.
 
 ## Reuse and scope
 
-Reuses the service-account proposal and confirmed project from
-`docs/WVD-FIREBASE-DEVELOPMENT.md`: `wvd-portal-development@wvd-development.iam.gserviceaccount.com`,
+Uses the service-account/provider names from the interrupted Controller Cloud Shell instructions. These supersede the earlier proposal in
+`docs/WVD-FIREBASE-DEVELOPMENT.md`: `wvd-development@wvd-development.iam.gserviceaccount.com`,
 project `wvd-development`, number `6616382131`. Assess existing account/pool/provider
-before creation. Existing mismatched providers fail for review rather than being
+before creation. If the alternative previously proposed account/provider is present, stop for reconciliation. Existing mismatched providers fail for review rather than being
 silently widened or replaced. Existing project roles are not altered.
 
 The existing `google-preflight.mjs` verifies Firebase project/billing prerequisites,
@@ -34,28 +34,29 @@ GitHub repository admins able to change this trusted workflow remain trusted.
 
 ## Activation from an already authenticated Google administration terminal
 
-1. Run `python tools/google-development-access/bootstrap.py` to inspect prerequisites
+1. First run `python tools/google-development-access/discover.py` from the authenticated Cloud Shell. This read-only report verifies project/billing, existing service accounts, APIs, pool/provider trust and scoped IAM bindings. It prints no keys/tokens or Workspace content. Treat pasted commands as intent, not proof they succeeded.
+2. Run `python tools/google-development-access/bootstrap.py` to inspect prerequisites
    and planned commands. No credentials are printed. Then `--apply` performs
    only the scoped IAM/API operations. Existing configuration drift blocks it.
    The bootstrap verifies enabled billing, but never attaches a billing account
    or changes its settings. It enables only IAM, IAM Credentials, STS, Drive and
    Calendar APIs; it creates no paid compute/storage resources. Existing spend
    authority remains £0; billing activation alone is not authority for new spend.
-2. The resource owner explicitly shares the supplied brand asset folder as
+3. The resource owner explicitly shares the supplied brand asset folder as
    **Viewer** with the service account. Binding:
    `14zXOECtPzSOP5OOqN1wmDtvk4dXsH6c4` (Previous Development Brand Assets).
    Inherited Viewer access supplies image reading; no Drive root grant or writer
    authority is included. Register additional exact targets only as needed.
-3. Verify the intended WVD development Calendar's ownership and grant
+4. Verify the intended WVD development Calendar's ownership and grant
    **See only free/busy (hide details)** to the service account. The earlier WVD
    Calendar ID is recorded in `binding.json`; it is a proposed target, not proof
    of a current ACL or complete conflict-calendar coverage. No events are read
    or written and no booking authority follows from this grant.
-4. Set repository Actions variable `WVD_GOOGLE_ACCESS_ENABLED=true` only after
+5. Set repository Actions variable `WVD_GOOGLE_ACCESS_ENABLED=true` only after
    those prerequisites are met. No token or JSON service-account key belongs in
    repository variables or secrets. Put the workflow on the trusted development
    branch; a workflow on another branch is denied intentionally.
-5. Inspect the Google development access run. PASS means the listed targets were
+6. Inspect the Google development access run. PASS means the listed targets were
    readable at that moment; BLOCKED stops subsequent live tests. Authentication
    failure before the probe appears in the auth step. Missing-target errors never
    become an empty calendar. Reports contain statuses only, no filenames, bearer

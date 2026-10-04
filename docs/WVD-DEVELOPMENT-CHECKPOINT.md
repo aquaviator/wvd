@@ -556,3 +556,12 @@ guide lists enabled project billing as a prerequisite, while IAM pricing describ
 Workload Identity Federation itself as no additional cost. The development project
 was last verified on Spark with billing disabled; no billing change is authorised.
 Continue independent development without claiming an app credential connection.
+
+### Controller recovery — 4 October 2026
+
+Founder transferred Controller execution to the working chat after the previous
+chat's unrecoverable stream error. `WVD-CONTROLLER-RECOVERY.md` records the recovered
+baseline, unknown uncommitted state and reconciled intended Google account/provider.
+The new read-only Cloud Shell discovery reports actual IAM/API/billing setup before
+any activation or duplicate creation. Prior PR #3 CI and offline container checks
+passed; live access remains unverified. Continue independent work within the brief.

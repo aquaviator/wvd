@@ -35,8 +35,8 @@ jobs:
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           project_id: wvd-development
-          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/wvd-development-workflow
-          service_account: wvd-portal-development@wvd-development.iam.gserviceaccount.com
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
           token_format: access_token
           access_token_lifetime: 600s
           access_token_scopes: https://www.googleapis.com/auth/drive.readonly,https://www.googleapis.com/auth/calendar.freebusy

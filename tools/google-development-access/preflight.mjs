@@ -2,7 +2,7 @@ import {readFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 
 export function validateBinding(b) {
-  if (!b || b.projectId !== 'wvd-development' || b.projectNumber !== '6616382131' || b.serviceAccount !== 'wvd-portal-development@wvd-development.iam.gserviceaccount.com' || b.repositoryId !== '1347788556' || b.ownerId !== '78605956' || b.repository !== 'aquaviator/wvd' || b.branch !== 'development/shared-factory-bootstrap' || b.workflow !== '.github/workflows/google-development-access.yml' || b.poolId !== 'wvd-github-development' || b.providerId !== 'wvd-development-workflow') throw Error('INVALID_ACCESS_BINDING');
+  if (!b || b.projectId !== 'wvd-development' || b.projectNumber !== '6616382131' || b.serviceAccount !== 'wvd-development@wvd-development.iam.gserviceaccount.com' || b.repositoryId !== '1347788556' || b.ownerId !== '78605956' || b.repository !== 'aquaviator/wvd' || b.branch !== 'development/shared-factory-bootstrap' || b.workflow !== '.github/workflows/google-development-access.yml' || b.poolId !== 'wvd-github-development' || b.providerId !== 'github') throw Error('INVALID_ACCESS_BINDING');
   for (const [key, pattern] of [['driveFileIds', /^[A-Za-z0-9_-]{1,256}$/], ['calendarIds', /^[A-Za-z0-9_.@-]{1,256}$/]]) {
     if (!Array.isArray(b[key]) || !b[key].length || b[key].length > 20 || new Set(b[key]).size !== b[key].length || b[key].some(id => typeof id !== 'string' || !pattern.test(id))) throw Error('INVALID_ACCESS_BINDING');
   }

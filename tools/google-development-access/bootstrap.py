@@ -15,7 +15,7 @@ def main():
     apply = sys.argv[1:] == ['--apply']
     b = json.loads(BINDING.read_text())
     project = b['projectId']
-    if (project, b['projectNumber'], b['serviceAccount'], b['repositoryId'], b['ownerId'], b['branch'], b['poolId'], b['providerId']) != ('wvd-development', '6616382131', 'wvd-portal-development@wvd-development.iam.gserviceaccount.com', '1347788556', '78605956', 'development/shared-factory-bootstrap', 'wvd-github-development', 'wvd-development-workflow'):
+    if (project, b['projectNumber'], b['serviceAccount'], b['repositoryId'], b['ownerId'], b['branch'], b['poolId'], b['providerId']) != ('wvd-development', '6616382131', 'wvd-development@wvd-development.iam.gserviceaccount.com', '1347788556', '78605956', 'development/shared-factory-bootstrap', 'wvd-github-development', 'github'):
         raise RuntimeError('BINDING_NOT_VERIFIED')
     def read(*args):
         r = subprocess.run(['gcloud', *args, '--format=json', '--quiet'], capture_output=True, text=True, timeout=60)
@@ -44,8 +44,10 @@ def main():
     account = next((s for s in accounts if s.get('email') == b['serviceAccount']), None)
     if account and account.get('disabled'):
         raise RuntimeError('EXISTING_SERVICE_ACCOUNT_DISABLED')
+    if not account and any(a.get('email') == 'wvd-portal-development@wvd-development.iam.gserviceaccount.com' for a in accounts):
+        raise RuntimeError('ALTERNATE_WVD_ACCOUNT_PRESENT_RECONCILE_BEFORE_CREATION')
     if not account:
-        write('iam', 'service-accounts', 'create', 'wvd-portal-development', '--project='+project, '--display-name=WVD development workflow')
+        write('iam', 'service-accounts', 'create', 'wvd-development', '--project='+project, '--display-name=WVD development workflow')
     pools = read('iam', 'workload-identity-pools', 'list', '--project='+project, '--location=global')
     pool_name = f"projects/{b['projectNumber']}/locations/global/workloadIdentityPools/{b['poolId']}"
     pool = next((p for p in pools if p.get('name') == pool_name), None)
@@ -59,6 +61,8 @@ def main():
     condition = f"assertion.repository_id=='{b['repositoryId']}' && assertion.repository_owner_id=='{b['ownerId']}' && assertion.ref=='{ref}' && assertion.workflow_ref=='{workflow_ref}' && (assertion.event_name=='push' || assertion.event_name=='workflow_dispatch')"
     providers = read('iam', 'workload-identity-pools', 'providers', 'list', '--project='+project, '--location=global', '--workload-identity-pool='+b['poolId']) if pool or apply else []
     provider = next((p for p in providers if p.get('name') == pool_name+'/providers/'+b['providerId']), None)
+    if not provider and providers:
+        raise RuntimeError('ALTERNATE_PROVIDER_PRESENT_RECONCILE_BEFORE_CREATION')
     if provider:
         if provider.get('disabled') or provider.get('state') != 'ACTIVE' or provider.get('attributeMapping') != mapping or provider.get('attributeCondition') != condition or provider.get('oidc') != {'issuerUri':'https://token.actions.githubusercontent.com'}:
             raise RuntimeError('EXISTING_PROVIDER_DRIFT_REVIEW_REQUIRED')
