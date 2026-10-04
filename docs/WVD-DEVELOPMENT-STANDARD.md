@@ -1,10 +1,18 @@
-# WVD development standard 1.2.0
+# WVD development standard 1.3.0
 
 Authority: founder instructions on 2 October 2026. Applies to WVD development
 and new product/project onboarding. Existing product constitutions remain
 authoritative for product behaviour and customer deployment.
 
 ## One platform, growing reuse
+
+Founder instructions on 4 October 2026 establish the shared web creative-content
+standard in `WVD-WEB-CONTENT-STANDARD.md`: feature visual, short contextual video,
+complete written content, and a relevant CTA on every page. Accuracy, sources,
+review dates, accessibility and public search discovery belong to the same
+versioned content bundle. This applies across web-facing projects with creative
+content; private content stays outside public search. Recording the standard
+does not claim existing articles have completed videos or verified indexing.
 
 Use the existing Google/Firebase platform for hosting, authentication, data and
 file storage where its capabilities fit. Do not introduce another provider or

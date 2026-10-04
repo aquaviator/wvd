@@ -1,7 +1,7 @@
 {
   "id": "WVD-DEVELOPMENT-STANDARD",
-  "version": "1.2.0",
-  "authority": "Founder instructions, 2 October 2026",
+  "version": "1.3.0",
+  "authority": "Founder instructions, 2 and 4 October 2026",
   "platform": "google",
   "newServiceSubscriptionsAllowed": false,
   "newExternalSpendGBP": 0,
@@ -26,6 +26,7 @@
     "Keep public search/AI retrieval separate from private product/customer data.",
     "Run reproducible isolated development tests unattended where supported; retain bounded synthetic visual evidence and report verified results before handover. Do not require founder-local pulls as the default verification gate.",
     "Continue authorised development from the agreed brief and current backlog without waiting for another continue instruction. After each verified slice, select and implement the next in-scope item; progress updates and completed slices are not permission gates. Ask the founder only when missing information, access or a decision genuinely blocks the next action, and continue independent in-scope work while awaiting an answer. Do not invent requirements or broaden the brief. Stop when the brief is complete, the founder asks to stop, or no authorised work can proceed without founder input. Production deployment and new external spend still require separate approval.",
+    "All web-facing projects with creative content inherit the visual, short contextual video and complete text bundle. Every page must have a relevant CTA. Keep sources, factual accuracy, review dates, accessibility and truthful public discovery metadata consistent across formats; never expose private content or claim guaranteed AI indexing.",
     "Production deployment requires separate founder approval."
   ],
   "flavours": {
@@ -102,5 +103,22 @@
     ],
     "productionApprovalRequired": true,
     "newSpendApprovalRequired": true
+  },
+  "webContentStandard": {
+    "id": "WVD-WEB-CONTENT-STANDARD",
+    "version": "1.0.0",
+    "scope": "all-web-facing-projects-with-creative-content",
+    "articleBundle": [
+      "feature-visual",
+      "short-context-video",
+      "complete-text"
+    ],
+    "videoAuthoring": "HyperFrames",
+    "infographics": "optional-when-they-clarify",
+    "cta": "relevant-primary-action-on-every-page",
+    "accuracy": "shared-sources-and-versioned-review-across-formats",
+    "discovery": "truthful-public-metadata-no-indexing-guarantee",
+    "privacy": "private-content-excluded-from-public-search",
+    "reference": "docs/WVD-WEB-CONTENT-STANDARD.md"
   }
 }

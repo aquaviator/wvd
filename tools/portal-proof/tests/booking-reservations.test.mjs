@@ -150,4 +150,5 @@ test('cancellation commit failure and wrong absence proof never release an uncer
 test('unconfirmed and foreign product cancellation cannot mutate or call the provider',async()=>{
  const s=setup();await s.store.reserve(reservation());await assert.rejects(s.store.beginCancellation('first'),/CANCELLATION_NOT_READY/);await s.book(reservation());
  const before=structuredClone(s.db.rows);const cancel=createReservedIntroCallCancellation({store:s.store,productId:'foreign-product',clock:()=> '2026-10-02T12:00:00.000Z',cancelEvent:async()=>assert.fail()});await assert.rejects(cancel({...reservation(),productId:'foreign-product'}),/RESERVATION_BINDING_CONFLICT/);assert.deepEqual(s.db.rows,before);
+ const own=createReservedIntroCallCancellation({store:s.store,productId,clock:()=> '2026-10-02T12:00:00.000Z',cancelEvent:async()=>assert.fail()});await assert.rejects(own(reservation('first','2026-10-06T13:00:00.000Z')),/RESERVATION_BINDING_CONFLICT/);assert.deepEqual(s.db.rows,before);
 });

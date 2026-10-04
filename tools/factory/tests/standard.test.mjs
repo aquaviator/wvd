@@ -34,3 +34,8 @@ test('new project plans inherit unattended verification without granting preview
  plan.developmentVerification.liveCredentialsAllowed=true;
  assert.equal(projectPlan(fixture()).developmentVerification.liveCredentialsAllowed,false);
 });
+test('web projects inherit creative bundles and every-page CTA without allowing a project to disable them',()=>{
+ const plan=projectPlan(fixture());assert.deepEqual(plan.webContentStandard.articleBundle,['feature-visual','short-context-video','complete-text']);assert.equal(plan.webContentStandard.cta,'relevant-primary-action-on-every-page');assert.equal(plan.webContentStandard.videoAuthoring,'HyperFrames');assert.equal(plan.webContentStandard.privacy,'private-content-excluded-from-public-search');
+ plan.webContentStandard.articleBundle.pop();assert.equal(projectPlan(fixture()).webContentStandard.articleBundle.length,3);
+ assert.throws(()=>projectPlan({...fixture(),webContentStandard:{cta:false}}),/Invalid product\/flavour/);
+});

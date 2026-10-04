@@ -1,8 +1,8 @@
 # Booking cancellation development
 
 The approved booking brief requires cancellation and rescheduling links. This
-slice provides internal cancellation composition; it does not expose a customer
-cancellation route/link, implement rescheduling or send email notifications.
+slice provides cancellation composition and an optional isolated customer
+cancellation route/control. It does not implement rescheduling or send email notifications.
 The customer flow remains an isolated development preview.
 
 Reuse: reservation journal, deterministic event ownership and the fixed-calendar
@@ -45,5 +45,16 @@ notification handling; it cannot silently weaken the current ownership check.
 Verification covers unchanged conditional deletion, post-timeout absence,
 unavailable reads, ETag conflicts, guest/header/foreign-calendar injection,
 durable commit failure, cross-product denial and real emulator slot release.
-Customer management capability links, confirmation delivery, cancellation UI,
-rescheduling, retention/backup and hosted production admission remain unfinished.
+The optional `POST /api/calls/cancel` accepts the same private request key and
+start as booking. The coordinator verifies the complete stored reservation
+binding before changing state. No customer-supplied provider confirmation is
+accepted. The preview exposes cancellation controls only when trusted composition
+supplies the cancellation adapter. Customers explicitly confirm cancellation,
+or keep the booking. Pending cancellations retain the same capability and action
+across tab reloads; status retries cannot turn into a fresh booking. Only verified
+CANCELLED results unlock date selection. The confirmed booking capability stays
+in tab storage so a reload can recheck and manage that booking; it is cleared
+after cancellation. This preview manages one current booking per tab.
+
+Shareable customer management links and confirmation delivery, rescheduling,
+retention/backup and hosted production admission remain unfinished.

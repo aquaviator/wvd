@@ -2,6 +2,10 @@
 
 Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
 
+- All web-facing projects with creative content inherit the visual/video/text
+  standard in `docs/WVD-WEB-CONTENT-STANDARD.md`. Every page needs a relevant CTA.
+  Keep media, factual claims, sources and review dates consistent across formats.
+
 - Continue authorised development from the agreed brief and current backlog without waiting for another continue instruction. After each verified slice, select and implement the next in-scope item; progress updates and completed slices are not permission gates. Ask the founder only when missing information, access or a decision genuinely blocks the next action, and continue independent in-scope work while awaiting an answer. Do not invent requirements or broaden the brief. Stop when the brief is complete, the founder asks to stop, or no authorised work can proceed without founder input. Production deployment and new external spend still require separate approval.
 
 - Use the established Google/Firebase platform and existing service connections.

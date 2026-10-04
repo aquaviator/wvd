@@ -851,3 +851,47 @@ writer, not live Firestore reservation writes. No production endpoint or custome
 booking is claimed. Next product work is the public booking request/pending/
 confirmation UX and bounded server boundary, followed by delivery and hosting
 acceptance. Reservation backup/retention and safe cancellation remain open.
+
+
+### Customer booking and cancellation UX verified — 4 October 2026
+
+Source 63158264fdca3b6d7d67e1fa0cba45e4c55195f6 adds the branded isolated
+booking page, private retry capability HTTP boundary, pending reload recovery,
+conflict/confirmed states and explicit customer cancellation confirmation.
+Conditional event deletion verifies ownership and ETag, then provider absence.
+The durable CANCELLING hold is released only after CANCELLED commits.
+Cross-product and changed reservation bindings cannot mutate a cancellation.
+No invitation delivery, customer contact collection or production route is enabled.
+
+CI37206816671 and PR37206818911 passed all applicable jobs. Offline container
+37206816643 passed 431 unit checks, zero failures, one Windows-only skip, and
+four real emulator/browser tests. The mobile/desktop selection, pending,
+confirmation, unavailable and cancelled screenshots were inspected. The new
+browser test also simulates a lost response after creation and cancellation
+outage/reload without duplicate inserts or premature slot release.
+Image sha256:a4cd01f9eb510940c72f8415b488f7926236120c8ccc8c7e97e92bd5e41915ae.
+Artifact11304881473 digest
+sha256:0204396d90e1a6875537d826a9e746b2571fa22edcc6574f4a48a491dc11a749.
+Evidence remains capped at5MiB; optional video omissions are explicit and required
+screenshots/receipts cannot be silently dropped.
+
+The earlier cancellation source d0acdd62a0d72f2a9ca74266805f3bde33d3c6a2 also
+passed CI/container and Google access37206450337, including live event/Meet
+creation and cleanup. This was the existing no-attendee rehearsal, not a live
+customer cancellation or notification test.
+
+Next booking work: journal backup/recovery, customer management/confirmation
+delivery and rescheduling, then reviewed hosted admission/runtime integration.
+Production approval and new-spend approval remain separate.
+
+### Shared creative-content rule — founder instruction, 4 October 2026
+
+Founder requires feature visual, short contextual video (HyperFrames) and complete
+text for creative content across all web-facing projects, and a relevant CTA on
+every page. Recorded in WVD-WEB-CONTENT-STANDARD.md, AGENTS.md and development
+standard1.3.0. New factory plans inherit the versioned rule. Captions/transcripts,
+consistent checked sources, genuine review dates, accessible media and truthful
+public discovery metadata are part of it; infographics are optional where useful.
+This record does not claim existing articles have completed reels or guarantee
+AI indexing. Founder asked to record the rule and resume booking development;
+article/media retrofit is tracked future work, not the immediate booking task.

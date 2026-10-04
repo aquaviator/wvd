@@ -28,7 +28,9 @@ cryptographically random UUID v4 generated in the browser; possession is the
 private retry capability. SHA-256 binds it to the configured product and calendar.
 Keys must stay out of URLs, logs, analytics and support screenshots. Anyone
 obtaining a key and its start can retry that request and obtain its confirmation.
-Clearing tab storage loses the capability; no public lookup by email, calendar
+After confirmation it remains in separate private tab storage for management;
+only cancellation clears that management capability. Clearing tab storage loses
+the capability; no public lookup by email, calendar
 ID or reservation ID is provided. No customer details are stored in this flow.
 
 Only trusted composition supplies product, calendar, adapters, concurrency and
