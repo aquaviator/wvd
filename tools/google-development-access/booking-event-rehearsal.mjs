@@ -15,12 +15,20 @@ export async function bookingEventRehearsal(binding,token,{request=fetch,marker=
   const bindingDigest=createHash('sha256').update(JSON.stringify(reservation)).digest('hex');
   const base='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(target)+'/events';
   const single=base+'/'+eventId;
+  let providerFailure=null;
   const authClient={async request(options){
     if(![base,single].includes(options.url)||!['GET','POST'].includes(options.method))throw Error('INVALID_CONFIGURATION');
     const url=new URL(options.url);
     for(const [key,value] of Object.entries(options.params))url.searchParams.set(key,String(value));
     const response=await request(url.toString(),{method:options.method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},...(options.data?{body:JSON.stringify(options.data)}:{}),redirect:'error',signal:AbortSignal.timeout(15000)});
-    if(!response.ok){await response.body?.cancel().catch(()=>{});const error=Error('PROVIDER_REQUEST_FAILED');error.response={status:response.status};throw error;}
+    if(!response.ok){
+      if(options.method==='POST'){
+        let payload;try{payload=await readBoundedProviderJson(response,65536);}catch{}
+        const unsupported=payload?.error?.message==='Invalid conference type value.'||payload?.error?.errors?.some(x=>x.message==='Invalid conference type value.');
+        providerFailure={httpStatus:response.status,reason:unsupported?'CONFERENCE_TYPE_NOT_SUPPORTED':'PROVIDER_REJECTED'};
+      }else await response.body?.cancel().catch(()=>{});
+      const error=Error('PROVIDER_REQUEST_FAILED');error.response={status:response.status};throw error;
+    }
     return {data:await readBoundedProviderJson(response,65536)};
   }};
   const calendar=createGoogleBookingCalendarClient({authClient,calendarId:target});
@@ -54,7 +62,7 @@ export async function bookingEventRehearsal(binding,token,{request=fetch,marker=
       }catch{cleanup='CLEANUP_FAILED';}
     }
   }
-  return {check:'wvd-booking-event-rehearsal',status:provider==='EVENT_AND_MEET_READY'&&cleanup==='REMOVED'?'PASS':'BLOCKED',provider,cleanup,attendeesAdded:false,invitationsSent:false,productionBookingReady:false};
+  return {check:'wvd-booking-event-rehearsal',status:provider==='EVENT_AND_MEET_READY'&&cleanup==='REMOVED'?'PASS':'BLOCKED',provider,cleanup,providerFailure,attendeesAdded:false,invitationsSent:false,productionBookingReady:false};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{

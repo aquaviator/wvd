@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {bookingEventRehearsal} from '../../google-development-access/booking-event-rehearsal.mjs';
 const binding=JSON.parse(readFileSync(new URL('../../google-development-access/binding.json',import.meta.url)));
 const opts={marker:'fixture',pause:async()=>{}};
-function fixture({meet='success',foreign=false,deny=false,ambiguous=false,deleteFails=false,tombstone=false}={}){
+function fixture({meet='success',foreign=false,deny=false,ambiguous=false,deleteFails=false,tombstone=false,unsupported=false}={}){
   let row=null,posts=0,deletes=0;const calls=[];
   return {calls,get posts(){return posts;},get deletes(){return deletes;},async request(url,options){
     calls.push({url,options});
@@ -13,6 +13,7 @@ function fixture({meet='success',foreign=false,deny=false,ambiguous=false,delete
       posts++;const body=JSON.parse(options.body);
       assert.equal(body.start.dateTime,'2020-01-06T12:00:00.000Z');assert.equal(body.attendees,undefined);assert.equal(body.reminders.useDefault,false);
       assert.equal(new URL(url).searchParams.get('sendUpdates'),'none');
+      if(unsupported)return Response.json({error:{message:'Invalid conference type value.'}},{status:400});
       if(deny)return new Response('{}',{status:403});
       row={...body,status:'confirmed',conferenceData:{createRequest:{status:{statusCode:meet}},conferenceSolution:{key:{type:'hangoutsMeet'}},entryPoints:[{entryPointType:'video',uri:'https://meet.google.com/abc-defg-hij'}]}};
       if(foreign)row.extendedProperties.private.wvdBinding='foreign';
@@ -44,4 +45,9 @@ test('foreign event is never removed and failed cleanup is visible',async()=>{
 test('provider denies write and invalid configuration never mutates',async()=>{
   const f=fixture({deny:true});const r=await bookingEventRehearsal(binding,'token',{...opts,request:f.request});assert.equal(r.status,'BLOCKED');assert.equal(r.cleanup,'ABSENT');assert.equal(f.deletes,0);
   const untouched=fixture();await assert.rejects(bookingEventRehearsal(binding,'bad token',{...opts,request:untouched.request}),/INVALID_CONFIGURATION/);assert.equal(untouched.calls.length,0);
+});
+
+test('conference rejection is reported by a fixed code without provider payloads',async()=>{
+  const f=fixture({unsupported:true});const r=await bookingEventRehearsal(binding,'token',{...opts,request:f.request});
+  assert.deepEqual(r.providerFailure,{httpStatus:400,reason:'CONFERENCE_TYPE_NOT_SUPPORTED'});assert.equal(r.cleanup,'ABSENT');assert.equal(f.posts,1);
 });
