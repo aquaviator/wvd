@@ -9,11 +9,12 @@ const response=value=>new Response(JSON.stringify(value));
 test('live-shaped responses traverse the portal adapter without exposing calendars, busy times or credentials',async()=>{
  let calls=0;
  const result=await calendarContractCheck(binding,'private-token',{now,request:async(url,options)=>{
-  calls++;assert.equal(url,'https://www.googleapis.com/calendar/v3/freeBusy');assert.equal(options.redirect,'error');assert.equal(options.headers.Authorization,'Bearer private-token');assert.ok(options.signal instanceof AbortSignal);
+  calls++;if(url==='https://www.gov.uk/bank-holidays.json'){assert.deepEqual(options.headers,{Accept:'application/json'});return response({'england-and-wales':{division:'england-and-wales',events:[{date:'2026-01-01'},{date:'2026-12-28'}]}});}
+  assert.equal(url,'https://www.googleapis.com/calendar/v3/freeBusy');assert.equal(options.redirect,'error');assert.equal(options.headers.Authorization,'Bearer private-token');assert.ok(options.signal instanceof AbortSignal);
   const body=JSON.parse(options.body);assert.equal(body.timeZone,'UTC');assert.deepEqual(body.items,[...binding.calendarIds].sort().map(id=>({id})));
   const value=reply(body);value.calendars[binding.calendarIds[0]].busy=[{start:'2026-10-04T23:40:00Z',end:'2026-10-04T23:50:00Z'}];return response(value);
  }});
- assert.equal(calls,1);assert.deepEqual(result,{check:'portal-calendar-provider-contract',status:'PASS',changesMade:false,bookingReady:false});
+ assert.equal(calls,2);assert.deepEqual(result,{check:'portal-calendar-provider-contract',status:'PASS',changesMade:false,bookingReady:false});
  for(const secret of ['private-token',...binding.calendarIds,'23:40'])assert.ok(!JSON.stringify(result).includes(secret));
 });
 test('provider denial, incomplete calendars, wrong coverage and oversized bodies stay blocked',async()=>{

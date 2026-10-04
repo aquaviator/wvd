@@ -4,10 +4,10 @@ import {validBankHolidayEvidence} from './availability.mjs';
 // Optional public read boundary. Trusted composition supplies calendars, policy
 // and holiday evidence; callers can select candidates but cannot replace them.
 // This does not register an account, reserve a slot or create a Calendar event.
-export function createCallAvailabilityHandler({screen,allowedOrigin,holidayEvidence,maxConcurrentRequests}) {
+export function createCallAvailabilityHandler({screen,allowedOrigin,holidayEvidence,readHolidayEvidence,maxConcurrentRequests}) {
   let origin;try{origin=new URL(allowedOrigin);}catch{throw Error('INVALID_CONFIGURATION');}
-  if(origin.origin!==allowedOrigin||!(origin.protocol==='https:'||(origin.protocol==='http:'&&['localhost','127.0.0.1'].includes(origin.hostname)))||typeof screen!=='function'||!validBankHolidayEvidence(holidayEvidence)||!Number.isSafeInteger(maxConcurrentRequests)||maxConcurrentRequests<1||maxConcurrentRequests>100)throw Error('INVALID_CONFIGURATION');
-  const holidays=structuredClone(holidayEvidence);let active=0;
+  if(origin.origin!==allowedOrigin||!(origin.protocol==='https:'||(origin.protocol==='http:'&&['localhost','127.0.0.1'].includes(origin.hostname)))||typeof screen!=='function'||(readHolidayEvidence===undefined?!validBankHolidayEvidence(holidayEvidence):typeof readHolidayEvidence!=='function'||holidayEvidence!==undefined)||!Number.isSafeInteger(maxConcurrentRequests)||maxConcurrentRequests<1||maxConcurrentRequests>100)throw Error('INVALID_CONFIGURATION');
+  const holidays=holidayEvidence===undefined?undefined:structuredClone(holidayEvidence);let active=0;
   return async(request,response)=>{
     const send=(status,data)=>{response.writeHead(status,{'Cache-Control':'no-store','Content-Type':'application/json; charset=utf-8','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});response.end(JSON.stringify(data));};
     try{
@@ -25,7 +25,10 @@ export function createCallAvailabilityHandler({screen,allowedOrigin,holidayEvide
         let input;try{input=JSON.parse(await readJsonBody(request,8192));}catch(error){if(error instanceof SyntaxError)return send(400,{error:'INVALID_REQUEST'});throw error;}
         if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).join(',')!=='starts')return send(400,{error:'INVALID_REQUEST'});
         const starts=normaliseIntroCallCandidates(input.starts);
-        const result=await screen({starts,holidayEvidence:structuredClone(holidays)});
+        if(!starts.length)return send(200,{slots:[],provisional:true});
+        const currentHolidays=readHolidayEvidence?await readHolidayEvidence():structuredClone(holidays);
+        if(!validBankHolidayEvidence(currentHolidays))throw Error('HOLIDAY_EVIDENCE_UNAVAILABLE');
+        const result=await screen({starts,holidayEvidence:structuredClone(currentHolidays)});
         // Project only the public contract; injected adapters cannot expose
         // calendar IDs, provider errors, titles or internal policy references.
         if(result?.provisional!==true||!Array.isArray(result.slots)||result.slots.length>starts.length)throw Error('INVALID_SCREENING_RESULT');

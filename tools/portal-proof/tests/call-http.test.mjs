@@ -52,3 +52,14 @@ test('real development HTTP endpoint is public while portal routes still require
   assert.equal((await fetch(base+'/api/portal/projects')).status,401);
   assert.equal((await fetch(base+'/api/calls/availability',{method:'POST',headers:{Origin:'http://foreign.example','Content-Type':'application/json'},body:JSON.stringify({starts:[start]})})).status,403);
 });
+
+test('dynamic server holiday reads run inside admission, remain private and cannot be overridden by client fields',async()=>{
+ let reads=0,screens=0;const shared=structuredClone(holidays);
+ const handler=configure({holidayEvidence:undefined,readHolidayEvidence:async()=>{reads++;return shared;},screen:async({holidayEvidence})=>{screens++;holidayEvidence.bankHolidays.push('2026-10-02');return {slots:[slot],provisional:true};}});
+ for(let i=0;i<2;i++)assert.equal((await invoke(handler)).status,200);
+ assert.equal(reads,2);assert.equal(screens,2);assert.deepEqual(shared.bankHolidays,[]);
+ assert.deepEqual((await invoke(handler,{starts:[]})).body,{slots:[],provisional:true});assert.equal(reads,2);assert.equal(screens,2);
+ assert.equal((await invoke(handler,{starts:[start],holidayEvidence:holidays})).status,400);assert.equal(reads,2);
+ for(const readHolidayEvidence of [async()=>{throw Error('private-source-data');},async()=>({})]){const result=await invoke(configure({holidayEvidence:undefined,readHolidayEvidence}));assert.equal(result.status,503);assert.deepEqual(result.body,{error:'SERVICE_UNAVAILABLE'});}
+ assert.throws(()=>configure({readHolidayEvidence:async()=>holidays}),/INVALID_CONFIGURATION/);
+});

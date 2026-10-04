@@ -3,6 +3,7 @@ import {pathToFileURL} from 'node:url';
 import {validateBinding} from './preflight.mjs';
 import {readGoogleJson} from './google-json.mjs';
 import {createGoogleCallEvidenceReader} from '../portal-proof/google-calendar-evidence.mjs';
+import {createGovukHolidayEvidenceReader} from '../portal-proof/govuk-holiday-evidence.mjs';
 
 // A CI-only bridge for the existing portal adapter; the workflow supplies a
 // short-lived token explicitly. No calendar discovery, event reads or writes.
@@ -19,10 +20,10 @@ export function createDevelopmentCalendarClient(binding,token,{request=fetch}={}
 export async function calendarContractCheck(binding,token,{request=fetch,now=Date.now()}={}) {
   const b=validateBinding(binding),start=new Date(now).toISOString(),end=new Date(now+3600000).toISOString();
   const reader=createGoogleCallEvidenceReader({calendar:createDevelopmentCalendarClient(b,token,{request}),calendarIds:b.calendarIds,clock:()=>start,maxQueryWindowMs:3600000,requestTimeoutMs:15000});
-  // Exercise provider adaptation only. This synthetic holiday fixture is never
-  // passed to slot screening and cannot establish an actual booking policy.
-  const day=start.slice(0,10);
-  const evidence=await reader({coveredStart:start,coveredEnd:end,holidayEvidence:{bankHolidayRegion:'england-and-wales',coveredFrom:day,coveredThrough:end.slice(0,10),bankHolidays:[],sourceRef:'synthetic-contract-check-not-booking-policy'}});
+  const readHolidays=createGovukHolidayEvidenceReader({clock:()=>start,requestTimeoutMs:15000,request});
+  let holidayEvidence;
+  try{holidayEvidence=await readHolidays();}catch{return {check:'portal-calendar-provider-contract',status:'BLOCKED',changesMade:false,bookingReady:false,holidaySource:'UNAVAILABLE'};}
+  const evidence=await reader({coveredStart:start,coveredEnd:end,holidayEvidence});
   return {check:'portal-calendar-provider-contract',status:evidence.complete?'PASS':'BLOCKED',changesMade:false,bookingReady:false};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){

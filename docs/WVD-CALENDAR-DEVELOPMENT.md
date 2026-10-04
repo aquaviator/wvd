@@ -134,3 +134,29 @@ event titles or private details were requested. This resolves read-access only.
 Holiday coverage/freshness and buffer-boundary policy, concurrency-safe booking,
 Meet creation, delivery and hosted application composition remain unfinished.
 There is still no live booking endpoint or production booking acceptance.
+
+
+### Authoritative holiday evidence development — 4 October 2026
+
+Founder selected between-appointments conflict buffers: 09:00 first call and
+17:30 last 30-minute call, with the established 15-minute gap around commitments.
+GOV.UK's published bank-holiday JSON feed is the authoritative England/Wales
+data source. The new fixed-endpoint reader projects dates only, bounds time and
+body size, rejects invalid/missing regional data, and keeps coverage within the
+feed's published first/last dates rather than extending boundary years. It never
+falls back to an empty holiday list. No new service subscription was introduced.
+
+The shared screening path can explicitly require holiday evidence freshness; it
+checks source/observation before Calendar reads and again after provider latency.
+The HTTP availability boundary accepts a trusted dynamic holiday reader inside
+its existing admission limit; clients cannot replace the feed or policy. Static
+synthetic composition remains supported for offline emulator tests. Empty or
+invalid candidates do not initiate a holiday read. Shared bounded JSON response
+reading is reused by both Google preflight and the public holiday adapter.
+
+The keyless Calendar integration check now uses the real official holiday feed
+instead of a synthetic holiday fixture. This remains a provider-contract check,
+with bookingReady=false: no reservation, event, Meet or hosted endpoint exists.
+Explicit evidence-age settings are still required in a future live composition.
+Focused synthetic checks passed locally; exact-source CI/container and live
+provider checks must pass before this source is declared verified.
