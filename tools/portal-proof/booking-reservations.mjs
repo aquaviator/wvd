@@ -15,10 +15,12 @@ const same=(a,b)=>['productId','reservationId','start','end'].every(k=>a[k]===b[
 // Calendar-derived path prevents a second product creating an independent lock
 // for the same calendar. No client reads, customer details or provider calls.
 export class FirestoreBookingReservations {
-  #db;#ref;#binding;
-  constructor({db,productId,calendarId}) {
+  #db;#ref;#binding;#backupBinding;
+  constructor({db,productId,calendarId,backupBinding}) {
     if(typeof db?.doc!=='function'||typeof db?.runTransaction!=='function'||!ref(productId)||typeof calendarId!=='string'||!calendarId.length||calendarId.length>256||/[\s\x00-\x1f\x7f]/.test(calendarId))throw Error('INVALID_CONFIGURATION');
     this.#db=db;this.#binding={productId,calendarId};
+    if(backupBinding!==undefined&&(backupBinding?.productId!==productId||backupBinding?.calendarId!==calendarId))throw Error('INVALID_CONFIGURATION');
+    this.#backupBinding=backupBinding===undefined?undefined:structuredClone(backupBinding);
     const id=createHash('sha256').update(calendarId).digest('hex');
     this.#ref=db.doc('wvd_calendar_schedules/'+id);
   }
@@ -62,6 +64,10 @@ export class FirestoreBookingReservations {
   read(reservationId) {
     if(!ref(reservationId))throw Error('INVALID_BOOKING_RESERVATION');
     return this.#transaction(state=>state.reservations.find(x=>x.reservationId===reservationId)??null);
+  }
+  backupSnapshot() {
+    if(this.#backupBinding===undefined)throw Error('BACKUP_BINDING_REQUIRED');
+    return this.#transaction(schedule=>({binding:structuredClone(this.#backupBinding),schedule}));
   }
   beginWrite(reservationId) {
     if(!ref(reservationId))throw Error('INVALID_BOOKING_RESERVATION');
