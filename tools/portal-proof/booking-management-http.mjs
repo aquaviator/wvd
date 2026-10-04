@@ -13,7 +13,7 @@ export function createBookingManagementHandler({management,productId,calendarId,
   const send=(status,body)=>{response.writeHead(status,{'Cache-Control':'no-store','Content-Type':'application/json; charset=utf-8','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});response.end(JSON.stringify(body));};
   try{
    if(typeof request.url!=='string'||request.url.length>4096)return send(400,{error:'INVALID_REQUEST'});
-   const url=new URL(request.url,'http://localhost'),routes={'/api/calls/manage/issue':'managementKey,requestKey,start','/api/calls/manage/read':'token','/api/calls/manage/recover':'actionId,revision,token','/api/calls/manage/cancel':'revision,start,token','/api/calls/manage/reschedule':'changeKey,revision,start,targetStart,token'};
+   const url=new URL(request.url,'http://localhost'),routes={...(typeof management.availability==='function'?{'/api/calls/manage/availability':'revision,start,starts,token'}:{}),'/api/calls/manage/issue':'managementKey,requestKey,start','/api/calls/manage/read':'token','/api/calls/manage/recover':'actionId,revision,token','/api/calls/manage/cancel':'revision,start,token','/api/calls/manage/reschedule':'changeKey,revision,start,targetStart,token'};
    if(!Object.hasOwn(routes,url.pathname))return send(404,{error:'NOT_FOUND'});
    if(request.method!=='POST')return send(405,{error:'METHOD_NOT_ALLOWED'});
    if(request.headers.origin!==allowedOrigin)return send(403,{error:'ORIGIN_DENIED'});
@@ -22,7 +22,7 @@ export function createBookingManagementHandler({management,productId,calendarId,
    active++;
    try{
     if(await admit({peer:request.socket.remoteAddress})!==true)return send(429,{error:'RATE_LIMITED'});
-    let body;try{body=JSON.parse(await readJsonBody(request,1536));}catch(e){if(e instanceof SyntaxError)return send(400,{error:'INVALID_REQUEST'});throw e;}
+    let body;try{body=JSON.parse(await readJsonBody(request,url.pathname.endsWith('/availability')?8192:1536));}catch(e){if(e instanceof SyntaxError)return send(400,{error:'INVALID_REQUEST'});throw e;}
     if(!body||Array.isArray(body)||Object.keys(body).sort().join(',')!==routes[url.pathname])return send(400,{error:'INVALID_REQUEST'});
     if(url.pathname.endsWith('/issue')){
      if(!uuid(body.requestKey)||typeof body.managementKey!=='string'||!/^[a-f0-9]{64}$/.test(body.managementKey))return send(400,{error:'INVALID_REQUEST'});
@@ -42,6 +42,17 @@ export function createBookingManagementHandler({management,productId,calendarId,
      return send(200,{status:result.status,...(result.pendingAction?{pendingAction:{kind:result.pendingAction.kind,id:result.pendingAction.id}}:{}),start,end:result.end,revision:result.revision,timeZone:result.timeZone,expiresAt:result.expiresAt,...(result.status==='CONFIRMED'?{meetUrl:result.meetUrl}:{})});
     }
     const [start]=normaliseIntroCallCandidates([body.start]);if(!revision(body.revision))return send(400,{error:'INVALID_REQUEST'});
+    if(url.pathname.endsWith('/availability')){
+     const starts=normaliseIntroCallCandidates(body.starts);
+     const result=await management.availability({token:body.token,start,revision:body.revision,starts});
+     if(result?.provisional!==true||!Array.isArray(result.slots)||result.slots.length>starts.length)throw Error('INVALID_BOOKING_RESULT');
+     const seen=new Set();
+     const slots=result.slots.map(slot=>{
+      if(!starts.includes(slot?.start)||slot.start===start||seen.has(slot.start)||slot.end!==new Date(Date.parse(slot.start)+1800000).toISOString()||slot.timeZone!=='Europe/London')throw Error('INVALID_BOOKING_RESULT');
+      seen.add(slot.start);return {start:slot.start,end:slot.end,timeZone:slot.timeZone};
+     });
+     return send(200,{provisional:true,slots});
+    }
     if(url.pathname.endsWith('/cancel')){
      const result=await management.cancel({token:body.token,start,revision:body.revision});if(!['PENDING','CANCELLED'].includes(result?.status))throw Error('INVALID_BOOKING_RESULT');return send(result.status==='PENDING'?202:200,{status:result.status});
     }

@@ -37,3 +37,10 @@ test('holiday and notice policy still preflight before provider evidence, and fo
  const s=await fixture();const screen=createGoogleRescheduleScreening({...s.config,readHolidays:async()=>({...holidays,bankHolidays:['2026-10-06']})});assert.deepEqual((await screen(s.input)).slots,[]);assert.equal(s.freeReads,0);
  await assert.rejects(s.screen({...s.input,eventId:'foreign'}),/RESERVATION_BINDING_CONFLICT/);assert.equal(s.freeReads,0);
 });
+test('batch picker reuses one complete evidence read and keeps personal conflicts',async()=>{
+ const s=await fixture(),later='2026-10-06T14:00:00.000Z';
+ const input={reservation,eventId:s.input.eventId,starts:[target.start,later]};
+ assert.deepEqual((await s.screen(input)).slots.map(x=>x.start),[target.start,later]);assert.equal(s.freeReads,1);assert.equal(s.lists,1);
+ s.setPersonal([{start:target.start,end:target.end}]);assert.deepEqual((await s.screen(input)).slots.map(x=>x.start),[later]);
+ await assert.rejects(s.screen({...input,target}),/INVALID_BOOKING_INPUT/);
+});

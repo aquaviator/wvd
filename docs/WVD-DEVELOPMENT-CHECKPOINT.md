@@ -1036,3 +1036,17 @@ WVD override added to the shared development standard. Older blanket WVD product
 approval and generic decision gates are superseded. Automated engineering checks
 continue without founder review. Next active work: booking management recovery UX
 when another device changes the booking or a private link expires mid-action.
+
+### Development continued under corrected authority
+
+- Source 3353879b917ae3df44a91f218696bb2ab7fe9df0 persists the authority override
+  and adds stale-device refresh and explicit expired-link help. Push and PR build
+  runs 37218806559 / 37218808235 passed; isolated container results pending at
+  this checkpoint.
+- Continued immediately into private management replacement-slot availability:
+  batched exact-event exclusion, revision checks around the read, bounded optional
+  HTTP route and picker wiring. Reuses the existing Google screening contract.
+- Focused checks: 47 passing across management HTTP, transactional booking and
+  Google rescheduling evidence. Browser coverage now exercises a stale device,
+  read-only refresh, expired-link response and the composed availability route.
+- No live customer messages, new scopes, elevated configuration or extra spend.

@@ -88,3 +88,29 @@ link are hidden, with clear cancelled status and the contact CTA. Cross-device
 management, interrupted rescheduling/reload and cancellation at the changed time
 passed in the real browser/emulator scenario. Required receipts and screenshots
 were retained; one supplementary video omission is explicit within the 5 MiB cap.
+
+## Current-device recovery and replacement availability
+
+The management page offers **Refresh booking details**, a read-only refresh that
+clears stale local action state and loads the authoritative booking. If a server
+operation remains pending, its existing recovery identifier is offered separately;
+refresh does not repeat a cancellation or reschedule. Revision conflicts explain
+that another change occurred, and expired links show contact help instead of an
+endless retry prompt.
+
+Optional `screenReschedule` composition adds `management.availability` and the
+POST `/api/calls/manage/availability` route. The exact request is
+`{token,start,revision,starts}` (maximum 200 unique canonical minute starts,
+8192-byte body). The route is absent when this capability is not composed.
+The management service verifies a confirmed current revision before and after
+screening, removes the unchanged time and binds the original event itself.
+Only requested, unique 30-minute Europe/London slots are returned; they remain
+provisional until the existing reservation/write path rechecks them.
+
+`createGoogleRescheduleScreening` accepts either the existing single `target` or
+batch `starts`, never both. A bounded batch shares the complete evidence query
+and exact original-event exclusion. Personal calendars, other owned-calendar
+events, holidays, notice and buffer policy remain in force. This reuses the
+existing screening implementation; there is no second availability policy.
+The private management picker uses this route when composed. The original
+booking page retains its existing general availability route.

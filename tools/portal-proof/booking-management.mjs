@@ -1,4 +1,5 @@
 import {createHash} from 'node:crypto';
+import {normaliseIntroCallCandidates} from './booking.mjs';
 import {bookingReservation} from './booking-reservations.mjs';
 const key=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
 const ref=value=>typeof value==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(value);
@@ -6,9 +7,10 @@ const instant=value=>typeof value==='string'&&Number.isFinite(Date.parse(value))
 // Opaque bearer capability. Raw secrets are supplied by the authorised issuing
 // client and never persisted server-side. The caller must retain its issuance
 // key before requesting a link so a lost response can retry without rotation.
-export function createBookingManagement({store,productId,calendarId,managementOrigin,clock,linkLifetimeMs,cancel,reschedule}) {
+export function createBookingManagement({store,productId,calendarId,managementOrigin,clock,linkLifetimeMs,cancel,reschedule,screenReschedule}) {
  let origin;try{origin=new URL(managementOrigin);}catch{throw Error('INVALID_CONFIGURATION');}
  if(origin.origin!==managementOrigin||!(origin.protocol==='https:'||origin.protocol==='http:'&&['localhost','127.0.0.1'].includes(origin.hostname))||!ref(productId)||typeof calendarId!=='string'||!calendarId.length||calendarId.length>256||/[\s\x00-\x1f\x7f]/.test(calendarId)||typeof clock!=='function'||!Number.isSafeInteger(linkLifetimeMs)||linkLifetimeMs<60000||linkLifetimeMs>2592000000||['attachManagement','readManaged'].some(k=>typeof store?.[k]!=='function')||typeof cancel!=='function'||typeof reschedule!=='function')throw Error('INVALID_CONFIGURATION');
+ if(screenReschedule!==undefined&&typeof screenReschedule!=='function')throw Error('INVALID_CONFIGURATION');
  const hash=(id,secret)=>createHash('sha256').update(JSON.stringify([productId,calendarId,managementOrigin,id,secret])).digest('hex');
  const now=()=>{const value=clock();if(!instant(value))throw Error('INVALID_CONFIGURATION');return value;};
  const resolve=async token=>{
@@ -20,6 +22,16 @@ export function createBookingManagement({store,productId,calendarId,managementOr
  const publicView=row=>({status:row.phase==='CANCELLED'?'CANCELLED':row.phase==='CONFIRMED'?'CONFIRMED':'PENDING',start:row.start,end:row.end,revision:row.revision??0,timeZone:'Europe/London',...(row.phase==='CONFIRMED'?{meetUrl:row.meetUrl}:{}),expiresAt:row.management.expiresAt,...(row.phase==='RESCHEDULING'?{pendingAction:{kind:'reschedule',id:row.change.id}}:row.phase==='CANCELLING'?{pendingAction:{kind:'cancel',id:'cancel'}}:{})});
  const bound=row=>bookingReservation({productId,reservationId:row.reservationId,start:row.start,end:row.end},productId);
  return {
+  ...(screenReschedule?{async availability({token,start,revision,starts}){
+   const row=await resolve(token);
+   if(row.phase!=='CONFIRMED'||row.start!==start||(row.revision??0)!==revision)throw Error('RESERVATION_BINDING_CONFLICT');
+   const candidates=normaliseIntroCallCandidates(starts).filter(value=>value!==row.start);
+   const result=await screenReschedule({reservation:bound(row),eventId:row.eventId,starts:candidates});
+   // Do not present a snapshot bound to a booking that changed during the read.
+   const latest=await resolve(token);
+   if(latest.phase!=='CONFIRMED'||latest.start!==start||(latest.revision??0)!==revision)throw Error('RESERVATION_BINDING_CONFLICT');
+   return result;
+  }}:{}),
   async issue({reservation,managementKey}){
    const value=bookingReservation(reservation,productId);if(!key(managementKey))throw Error('INVALID_MANAGEMENT_CAPABILITY');
    const checkedAt=now(),expiresAt=new Date(Date.parse(checkedAt)+linkLifetimeMs).toISOString();

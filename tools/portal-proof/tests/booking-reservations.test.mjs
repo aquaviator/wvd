@@ -283,3 +283,11 @@ test('corrupt capability metadata cannot survive journal validation',async()=>{
  const s=setup();await s.book(reservation());const management=managementSetup(s);await management.issue({reservation:reservation(),managementKey:'a'.repeat(64)});const before=structuredClone(s.db.rows);
  for(const corrupt of [m=>m.tokenHash='raw-secret',m=>m.expiresAt='tomorrow',m=>m.secret='extra']){s.db.rows=structuredClone(before);corrupt([...s.db.rows.values()][0].reservations[0].management);await assert.rejects(s.store.read('first'),/CORRUPT_BOOKING_SCHEDULE/);}
 });
+test('managed availability is read-only, revision-bound and excludes the unchanged time',async()=>{
+ const s=setup(),value=reservation();await s.book(value);let calls=0,race=false;
+ const management=managementSetup(s,{screenReschedule:async input=>{calls++;assert.equal(input.eventId,googleBookingEventId(productId,calendarId,'first'));assert.deepEqual(input.starts,['2026-10-06T12:15:00.000Z']);if(race)await s.store.beginCancellation('first');return {provisional:true,slots:[]};}}),token='first.'+'a'.repeat(64);
+ await management.issue({reservation:value,managementKey:'a'.repeat(64)});const before=structuredClone(s.db.rows),input={token,start:value.start,revision:0,starts:[value.start,'2026-10-06T12:15:00.000Z']};
+ assert.deepEqual(await management.availability(input),{provisional:true,slots:[]});assert.deepEqual(s.db.rows,before);
+ await assert.rejects(management.availability({...input,revision:1}),/RESERVATION_BINDING_CONFLICT/);await assert.rejects(management.availability({...input,token:'first.'+'b'.repeat(64)}),/MANAGEMENT_DENIED/);assert.equal(calls,1);
+ race=true;await assert.rejects(management.availability(input),/RESERVATION_BINDING_CONFLICT/);
+});

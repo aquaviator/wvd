@@ -1,5 +1,6 @@
 import {createGoogleCallEvidenceReader} from './google-calendar-evidence.mjs';
 import {createIntroCallScreening} from './call-screening.mjs';
+import {normaliseIntroCallCandidates} from './booking.mjs';
 import {bookingReservation} from './booking-reservations.mjs';
 import {googleBookingEventId,inspectGoogleBookingEvent} from './google-booking-event.mjs';
 const instant=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(Date.parse(value.slice(0,19)+'Z')).toISOString().slice(0,19)===value.slice(0,19);
@@ -13,9 +14,12 @@ export function createGoogleRescheduleScreening({calendar,calendarIds,calendarId
  const fixedPolicy=structuredClone(policy),options=Object.freeze({timeout:requestTimeoutMs,retry:false});
  // Validate policy at construction, before any provider request.
  createIntroCallScreening({clock,policy:fixedPolicy,readEvidence:freeBusy});
- return async({reservation,target,eventId})=>{
-  const from=bookingReservation(reservation,productId),to=bookingReservation(target,productId);
-  if(from.reservationId!==to.reservationId||eventId!==googleBookingEventId(productId,calendarId,from.reservationId))throw Error('RESERVATION_BINDING_CONFLICT');
+ return async({reservation,target,eventId,starts})=>{
+  const from=bookingReservation(reservation,productId);
+  if((target===undefined)===(starts===undefined))throw Error('INVALID_BOOKING_INPUT');
+  const to=target===undefined?null:bookingReservation(target,productId);
+  const candidates=to?[to.start]:normaliseIntroCallCandidates(starts);
+  if(to&&from.reservationId!==to.reservationId||eventId!==googleBookingEventId(productId,calendarId,from.reservationId))throw Error('RESERVATION_BINDING_CONFLICT');
   const screen=createIntroCallScreening({clock,policy:fixedPolicy,readEvidence:async window=>{
    const evidence=await freeBusy(window);if(!evidence.complete)throw Error('CALL_EVIDENCE_UNAVAILABLE');
    const own=(await calendar.events.get({calendarId,eventId},options)).data;
@@ -32,7 +36,7 @@ export function createGoogleRescheduleScreening({calendar,calendarIds,calendarId
      if(item.transparency==='transparent')continue;
      if(instant(item.start?.dateTime)&&instant(item.end?.dateTime)&&Date.parse(item.end.dateTime)>Date.parse(item.start.dateTime))busy.push({start:new Date(item.start.dateTime).toISOString(),end:new Date(item.end.dateTime).toISOString()});
      else if(date(item.start?.date)&&date(item.end?.date)&&item.end.date>item.start.date){
-      // A listed opaque all-day event intersects this one-candidate query. Keep
+      // A listed opaque all-day event intersects this bounded query. Keep
       // the complete window busy, avoiding a guessed calendar timezone.
       busy.push({start:window.coveredStart,end:window.coveredEnd});
      }else throw Error('CALL_EVIDENCE_UNAVAILABLE');
@@ -46,6 +50,6 @@ export function createGoogleRescheduleScreening({calendar,calendarIds,calendarId
    }
    throw Error('CALL_EVIDENCE_UNAVAILABLE');
   }});
-  return screen({starts:[to.start],holidayEvidence:await readHolidays()});
+  return screen({starts:candidates,holidayEvidence:await readHolidays()});
  };
 }
