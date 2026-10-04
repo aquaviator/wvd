@@ -19,7 +19,9 @@ insert. Pending requests survive reload in this tab using session storage.
 The UI disables changing dates while pending and never announces confirmation
 on a timeout. A taken slot allows another selection. Confirmed results display
 the checked date, time and Google Meet link; the preview explicitly sends no
-email invitation.
+email invitation. When the cancellation adapter is explicitly supplied, a
+confirmed preview booking can be cancelled with a separate confirmation step.
+An uncertain cancellation stays locked and survives reload as that same action.
 
 `POST /api/calls/book` accepts exactly `{requestKey,start}`. The key is a
 cryptographically random UUID v4 generated in the browser; possession is the

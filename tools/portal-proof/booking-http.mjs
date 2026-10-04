@@ -5,16 +5,18 @@ import {normaliseIntroCallCandidates} from './booking.mjs';
 // A random request key is a private retry capability, never a URL or log field.
 // Trusted composition owns the product, calendar and admission policy. This
 // boundary is not enabled in the public site or a production deployment.
-export function createBookingHandler({book,reconcile,admit,productId,calendarId,allowedOrigin,maxConcurrentRequests}) {
+export function createBookingHandler({book,reconcile,cancel,admit,productId,calendarId,allowedOrigin,maxConcurrentRequests}) {
   let origin;try{origin=new URL(allowedOrigin);}catch{throw Error('INVALID_CONFIGURATION');}
   if(origin.origin!==allowedOrigin||!(origin.protocol==='https:'||origin.protocol==='http:'&&['localhost','127.0.0.1'].includes(origin.hostname))||typeof book!=='function'||typeof reconcile!=='function'||typeof admit!=='function'||! /^[A-Za-z0-9_-]{1,128}$/.test(productId)||typeof calendarId!=='string'||!calendarId.length||calendarId.length>256||/[\s\x00-\x1f\x7f]/.test(calendarId)||!Number.isSafeInteger(maxConcurrentRequests)||maxConcurrentRequests<1||maxConcurrentRequests>100)throw Error('INVALID_CONFIGURATION');
+  if(cancel!==undefined&&typeof cancel!=='function')throw Error('INVALID_CONFIGURATION');
   let active=0;
   return async(request,response)=>{
     const send=(status,data)=>{response.writeHead(status,{'Cache-Control':'no-store','Content-Type':'application/json; charset=utf-8','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});response.end(JSON.stringify(data));};
     try{
       if(typeof request.url!=='string'||request.url.length>4096)return send(400,{error:'INVALID_REQUEST'});
       const url=new URL(request.url,'http://localhost');
-      if(url.pathname!=='/api/calls/book')return send(404,{error:'NOT_FOUND'});
+      const cancelling=url.pathname==='/api/calls/cancel'&&cancel!==undefined;
+      if(url.pathname!=='/api/calls/book'&&!cancelling)return send(404,{error:'NOT_FOUND'});
       if(request.method!=='POST')return send(405,{error:'METHOD_NOT_ALLOWED'});
       if(request.headers.origin!==allowedOrigin)return send(403,{error:'ORIGIN_DENIED'});
       if(url.search)return send(400,{error:'INVALID_REQUEST'});
@@ -29,12 +31,14 @@ export function createBookingHandler({book,reconcile,admit,productId,calendarId,
         const [start]=normaliseIntroCallCandidates([input.start]);
         const end=new Date(Date.parse(start)+1800000).toISOString();
         const reservationId=createHash('sha256').update(JSON.stringify([productId,calendarId,input.requestKey])).digest('hex');
-        let result=await book({productId,reservationId,start,end});
-        if(result?.status==='PENDING')result=await reconcile(reservationId);
+        const bound={productId,reservationId,start,end};
+        let result=await (cancelling?cancel(bound):book(bound));
+        if(!cancelling&&result?.status==='PENDING')result=await reconcile(reservationId);
         if(result?.reservationId!==reservationId)throw Error('INVALID_BOOKING_RESULT');
         if(result.status==='UNAVAILABLE')return send(409,{status:'UNAVAILABLE'});
-        if(result.status==='CANCELLED')return send(409,{status:'CANCELLED'});
+        if(result.status==='CANCELLED')return send(cancelling?200:409,{status:'CANCELLED'});
         if(result.status==='PENDING'||result.status==='BLOCKED')return send(202,{status:'PENDING'});
+        if(cancelling)throw Error('INVALID_BOOKING_RESULT');
         if(result.status!=='CONFIRMED'||result.start!==start||result.end!==end||typeof result.meetUrl!=='string'||!/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(result.meetUrl))throw Error('INVALID_BOOKING_RESULT');
         return send(200,{status:'CONFIRMED',start,end,timeZone:'Europe/London',meetUrl:result.meetUrl});
       }finally{active--;}
@@ -45,6 +49,7 @@ export function createBookingHandler({book,reconcile,admit,productId,calendarId,
       if(error?.message==='INVALID_BOOKING_INPUT')return send(400,{error:'INVALID_REQUEST'});
       if(error?.message==='BOOKING_SLOT_RESERVED')return send(409,{status:'UNAVAILABLE'});
       if(error?.message==='RESERVATION_BINDING_CONFLICT')return send(409,{error:'REQUEST_CONFLICT'});
+      if(error?.message==='CANCELLATION_NOT_READY')return send(409,{error:'REQUEST_CONFLICT'});
       return send(503,{error:'SERVICE_UNAVAILABLE'});
     }
   };

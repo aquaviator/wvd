@@ -40,6 +40,13 @@ test('admission runs before body or writes, concurrency releases after failure',
 test('all trusted bindings and shared admission must be explicit',()=>{
  for(const patch of [{admit:undefined},{reconcile:undefined},{allowedOrigin:'http://public.test'},{productId:'a/b'},{calendarId:''},{maxConcurrentRequests:0}])assert.throws(()=>configure(patch),/INVALID_CONFIGURATION/);
 });
+test('cancellation is optional, uses the same private binding and never falls through to booking',async()=>{
+ assert.equal((await invoke(configure(),{requestKey,start},{url:'/api/calls/cancel'})).status,404);
+ let bound,calls=0;const handler=configure({book:async()=>assert.fail(),cancel:async value=>{bound=value;calls++;return {status:'CANCELLED',reservationId:value.reservationId,private:'secret'};}});
+ const result=await invoke(handler,{requestKey,start},{url:'/api/calls/cancel'});assert.equal(result.status,200);assert.deepEqual(result.body,{status:'CANCELLED'});assert.equal(bound.start,start);assert.match(bound.reservationId,/^[a-f0-9]{64}$/);
+ assert.equal((await invoke(handler,{requestKey,start,confirmation:{status:'EVENT_ABSENT'}},{url:'/api/calls/cancel'})).status,400);assert.equal(calls,1);
+ assert.equal((await invoke(configure({cancel:async value=>({status:'PENDING',reservationId:value.reservationId})}),{requestKey,start},{url:'/api/calls/cancel'})).status,202);
+});
 test('booking route is isolated and remains separate from protected portal routes',async t=>{
  assert.throws(()=>createApplication({allowedOrigin:origin,callBooking:{}}),/ISOLATED_EMULATORS_REQUIRED/);
  const saved={auth:process.env.FIREBASE_AUTH_EMULATOR_HOST,firestore:process.env.FIRESTORE_EMULATOR_HOST};

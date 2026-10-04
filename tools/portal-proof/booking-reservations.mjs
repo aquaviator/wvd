@@ -173,9 +173,10 @@ export function createIntroCallBookingReconciler({store,calendar,calendarId,prod
 // competing bookings until provider absence and the final commit both succeed.
 export function createReservedIntroCallCancellation({store,cancelEvent,productId,clock}) {
   if(!ref(productId)||['read','beginCancellation','confirmCancellation'].some(k=>typeof store?.[k]!=='function')||typeof cancelEvent!=='function'||typeof clock!=='function')throw Error('INVALID_CONFIGURATION');
-  return async reservationId=>{
+  return async value=>{
+    const requested=bookingReservation(value,productId),reservationId=requested.reservationId;
     const before=await store.read(reservationId);
-    if(!before||before.productId!==productId)throw Error('RESERVATION_BINDING_CONFLICT');
+    if(!before||!same(before,requested))throw Error('RESERVATION_BINDING_CONFLICT');
     const row=await store.beginCancellation(reservationId);
     if(row.productId!==productId)throw Error('RESERVATION_BINDING_CONFLICT');
     if(row.phase==='CANCELLED')return {status:'CANCELLED',reservationId,cancelledAt:row.cancelledAt};
