@@ -764,3 +764,18 @@ disconnected local runtime. Do not label the visual handover complete.
 Live Calendar run37201986418 remains blocked specifically at conference
 creation; the existing writer/free-busy/holiday checks and14rehearsal contract
 tests passed. No delegation change has been applied.
+
+### Approved Workspace organiser — 4 October 2026
+
+Founder approved admin@wearvalleydigital.com with Workspace delegation. The
+workflow uses a fixed event-token subject; free/busy and CalendarList remain
+non-delegated. Prepared enable-booking-delegation.sh reuses the existing
+bootstrap binding/trust pattern, verifies project/provider identity and returns
+the OAuth client ID; it limits Token Creator to this service account and restricts
+federation to the exact approved workflow. The founder must execute the Cloud
+Shell script and authorise only calendar.events in Workspace Admin because this
+connection has repository access but no Google administrator mutation capability.
+19 focused tests passed locally; bash syntax check passed. No Google IAM or
+Workspace grant was applied by this commit and live delegated auth remains
+unverified. Local execution is reconnected; historical local changes were
+compared against their original committed source before checkout reconciliation.

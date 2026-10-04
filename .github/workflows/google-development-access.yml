@@ -69,7 +69,7 @@ jobs:
       - name: Verify synthetic event cleanup contracts before live writes
         run: node --test tools/portal-proof/tests/google-booking-event.test.mjs tools/portal-proof/tests/booking-event-rehearsal.test.mjs
       - id: calendar_event_auth
-        name: Authorise bounded synthetic event rehearsal
+        name: Authorise approved Workspace booking organiser
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           project_id: wvd-development
@@ -78,6 +78,7 @@ jobs:
           token_format: access_token
           access_token_lifetime: 600s
           access_token_scopes: https://www.googleapis.com/auth/calendar.events
+          access_token_subject: admin@wearvalleydigital.com
           create_credentials_file: false
           export_environment_variables: false
       - name: Rehearse past synthetic event and Meet with verified cleanup

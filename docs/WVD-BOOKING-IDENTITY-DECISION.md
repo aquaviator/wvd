@@ -1,5 +1,32 @@
 # Booking identity decision — 4 October 2026
 
+## Founder approval and prepared implementation
+
+Founder approved the proposed admin@wearvalleydigital.com organiser and
+Workspace delegation on 4 October 2026. The event authentication step now sets
+that exact subject as a literal; no caller-supplied subject is accepted. Existing
+read/free-busy/CalendarList tokens remain non-delegated. Nineteen focused event,
+cleanup and writer-grant tests passed locally, and the Cloud Shell script passed
+bash syntax validation.
+
+Run tools/google-development-access/enable-booking-delegation.sh in an already
+authenticated Google Cloud Shell. It verifies the project number, existing
+service-account OAuth client ID, provider state/issuer/mapping, applies the exact
+approved workflow trust condition and adds Token Creator on this service account
+only. It prints the public OAuth client ID and sole Calendar events scope.
+It does not create users, licences, keys, calendars or domain-wide delegation.
+
+In Workspace Admin, Security → Access and data control → API controls → Manage
+Domain Wide Delegation → Add new, enter the printed client ID and sole scope
+https://www.googleapis.com/auth/calendar.events. Authorise using a super-admin
+account. Existing client entries should be inspected rather than duplicated.
+No extra OAuth scopes are authorised by this approval.
+
+The live workflow will fail safely at delegated authentication until these
+administrator grants are present. Once completed, rerun the failed Google access
+job and verify Meet creation plus cleanup. Approval does not prove the organiser
+has Meet capability or replace that live test.
+
 ## Observed blocker
 
 Source 6bd87fa9e4237f81731ddca3b122f0885229e786 passed 14 focused event/cleanup
