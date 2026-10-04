@@ -50,3 +50,19 @@ jobs:
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: node tools/google-development-access/calendar-contract.mjs tools/google-development-access/binding.json
+      - id: calendar_grant_auth
+        name: Authorise service-account calendar-list grant inspection
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/calendar.calendarlist
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Verify WVD Calendar writer grant without creating events
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.calendar_grant_auth.outputs.access_token }}
+        run: node tools/google-development-access/calendar-writer-preflight.mjs tools/google-development-access/binding.json
