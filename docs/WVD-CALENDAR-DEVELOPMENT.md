@@ -210,3 +210,32 @@ workflow remains read-only. Durable slot locking/final recheck, Workspace
 invitation authorisation, delivery, rescheduling/cancellation and hosted runtime
 remain unimplemented. No real events, invitations or production endpoints were
 created by these development changes.
+
+## Verified writer grant and bounded event rehearsal — 4 October 2026
+
+Source c36df9ee62f59fcb1bd636c296e3da1f95abc9a6 passed live Google access run
+37201352001, build runs 37201352020/37201354769 and development container
+37201352144. Google reported WRITER_VERIFIED on the named WVD calendar and
+the grant probe removed its tagged service-account CalendarList entry.
+All three selected conflict calendars remain included.
+
+The next CI-only rehearsal reuses the event writer and fixed-calendar client
+from source 8ccbb56135ad9420cc9e29eb99d43432275c5d23. It adds the missing
+bounded fetch bridge and ownership-checked cleanup; there was no existing
+event cleanup adapter to reuse. An explicit calendar.events token is separate
+from read/free-busy and CalendarList tokens. No credential files are created.
+Synthetic contract tests run before live event credentials are acquired.
+
+The rehearsal creates at most one uniquely identified private event on
+6 January 2020, with no attendees, reminders or invitations. A pending Meet
+result permits at most two subsequent reads via the idempotent writer.
+Before deleting, it verifies the expected product, reservation, binding hash,
+start/end, private visibility, no recurrence and no attendees. A foreign or
+changed event is preserved and reported BLOCKED. Delete is verified by a
+subsequent read; absence or a matching cancelled tombstone proves removal.
+The synthetic event ID is logged before the insert for recovery if a runner
+is forcibly interrupted. Workflow concurrency does not cancel an active run.
+
+This is not a durable booking reservation, final conflict check, public booking
+endpoint, invitation-delivery implementation or production readiness claim.
+Live event/Meet outcome is pending until this exact source is exercised.

@@ -2,6 +2,10 @@ import {createHash} from 'node:crypto';
 const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const instant=value=>typeof value==='string'&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString()===value;
 const reference=value=>typeof value==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(value);
+export function googleBookingEventId(productId,calendarId,reservationId) {
+  if(!reference(productId)||!reference(reservationId)||typeof calendarId!=='string'||!calendarId.length||calendarId.length>256||/[\s\x00-\x1f\x7f]/.test(calendarId))throw Error('INVALID_CONFIGURATION');
+  return digest([productId,calendarId,reservationId]);
+}
 // Trusted server provider adapter only. The caller must already own a durable
 // reservation and perform the final conflict recheck; this is not a public
 // booking endpoint, slot lock or invitation/delivery implementation.
@@ -10,7 +14,7 @@ export function createGoogleBookingEventWriter({calendar,calendarId,productId,re
   const options=Object.freeze({timeout:requestTimeoutMs,retry:false});
   return async reservation=>{
     if(!reservation||Object.keys(reservation).sort().join(',')!=='end,productId,reservationId,start'||reservation.productId!==productId||!reference(reservation.reservationId)||!instant(reservation.start)||!instant(reservation.end)||Date.parse(reservation.end)-Date.parse(reservation.start)!==1800000)throw Error('INVALID_BOOKING_RESERVATION');
-    const bound=structuredClone(reservation),eventId=digest([productId,calendarId,bound.reservationId]),bindingDigest=digest(bound);
+    const bound=structuredClone(reservation),eventId=googleBookingEventId(productId,calendarId,bound.reservationId),bindingDigest=digest(bound);
     const requestId=digest([eventId,bindingDigest,'conference']);
     const matches=data=>data?.id===eventId&&data.status==='confirmed'&&data.summary==='WVD introductory call'&&Date.parse(data.start?.dateTime)===Date.parse(bound.start)&&Date.parse(data.end?.dateTime)===Date.parse(bound.end)&&data.extendedProperties?.private?.wvdProduct===productId&&data.extendedProperties.private.wvdReservation===bound.reservationId&&data.extendedProperties.private.wvdBinding===bindingDigest&&data.visibility==='private'&&(data.transparency===undefined||data.transparency==='opaque')&&!data.recurrence&&(data.attendees===undefined||Array.isArray(data.attendees)&&data.attendees.length===0);
     const result=data=>{

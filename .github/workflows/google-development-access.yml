@@ -10,12 +10,12 @@ permissions:
   contents: read
 concurrency:
   group: google-development-access
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   access:
     if: github.repository_id == '1347788556' && github.repository_owner_id == '78605956' && github.ref == 'refs/heads/development/shared-factory-bootstrap'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     permissions:
       contents: read
       id-token: write
@@ -66,3 +66,21 @@ jobs:
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.calendar_grant_auth.outputs.access_token }}
         run: node tools/google-development-access/calendar-writer-preflight.mjs tools/google-development-access/binding.json
+      - name: Verify synthetic event cleanup contracts before live writes
+        run: node --test tools/portal-proof/tests/google-booking-event.test.mjs tools/portal-proof/tests/booking-event-rehearsal.test.mjs
+      - id: calendar_event_auth
+        name: Authorise bounded synthetic event rehearsal
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/calendar.events
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Rehearse past synthetic event and Meet with verified cleanup
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.calendar_event_auth.outputs.access_token }}
+        run: node tools/google-development-access/booking-event-rehearsal.mjs tools/google-development-access/binding.json
