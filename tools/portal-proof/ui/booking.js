@@ -25,6 +25,7 @@ async function submit(){
  try{const {code,data}=await post('/api/calls/book',pending);
   if(code===200&&data.status==='CONFIRMED'&&data.start===pending.start&&/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(data.meetUrl)){say('Confirmed: '+fullFormat.format(new Date(data.start))+', UK time. This development preview sends no email invitation.');meet.href=data.meetUrl;meet.hidden=false;clear();slots.replaceChildren();selected=null;byId('selection').textContent='';}
   else if(code===409&&data.status==='UNAVAILABLE'){clear();selected=null;slots.replaceChildren();byId('selection').textContent='';say('That time is no longer available. Choose another date or check the times again.');}
+  else if(code===409&&data.status==='CANCELLED'){clear();selected=null;slots.replaceChildren();byId('selection').textContent='';say('This booking has been cancelled. You can choose a new time.');}
   else{retry.hidden=false;say('Your booking is not confirmed yet. Check its status before choosing another time.');}
  }catch{retry.hidden=false;say('The connection was interrupted. Your booking may still be processing. Check its status before choosing another time.');}finally{busy=false;lock();}
 }

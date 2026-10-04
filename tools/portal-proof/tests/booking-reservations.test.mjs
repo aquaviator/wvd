@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {AsyncLocalStorage} from 'node:async_hooks';
-import {FirestoreBookingReservations,createReservedIntroCallBooking,createIntroCallBookingReconciler} from '../booking-reservations.mjs';
+import {FirestoreBookingReservations,createReservedIntroCallBooking,createIntroCallBookingReconciler,createReservedIntroCallCancellation} from '../booking-reservations.mjs';
 import {googleBookingEventId,createGoogleBookingEventWriter} from '../google-booking-event.mjs';
 import {createIntroCallScreening} from '../call-screening.mjs';
 const productId='wvd-booking-test',calendarId='calendar@example.test';
@@ -131,4 +131,23 @@ test('event binding identity ignores JSON property order across retries',async()
   const p=provider(),writer=createGoogleBookingEventWriter({calendar:p.calendar,calendarId,productId,requestTimeoutMs:1000}),a=reservation();
   const first=await writer({end:a.end,start:a.start,reservationId:a.reservationId,productId:a.productId});
   assert.deepEqual(await writer(a),first);assert.equal(p.posts,1);
+});
+test('cancellation releases a confirmed slot only after verified provider absence and durable commit',async()=>{
+ const s=setup();await s.book(reservation());let absent=false,calls=0;
+ const cancel=createReservedIntroCallCancellation({store:s.store,productId,clock:()=> '2026-10-02T12:00:00.000Z',cancelEvent:async()=>{assert.equal(s.db.active,false);calls++;return {status:absent?'EVENT_ABSENT':'CANCELLATION_PENDING',eventId:googleBookingEventId(productId,calendarId,'first')};}});
+ assert.equal((await cancel('first')).status,'PENDING');assert.equal((await s.store.read('first')).phase,'CANCELLING');await assert.rejects(s.store.reserve(reservation('other')),/BOOKING_SLOT_RESERVED/);
+ absent=true;const result=await cancel('first');assert.deepEqual(result,{status:'CANCELLED',reservationId:'first',cancelledAt:'2026-10-02T12:00:00.000Z'});
+ assert.deepEqual(await cancel('first'),result);assert.equal(calls,2);assert.equal((await s.book(reservation())).status,'CANCELLED');assert.equal((await s.book(reservation('replacement'))).status,'CONFIRMED');
+ const reopened=new FirestoreBookingReservations({db:s.db,productId,calendarId});assert.equal((await reopened.read('first')).phase,'CANCELLED');
+});
+test('cancellation commit failure and wrong absence proof never release an uncertain slot',async()=>{
+ const s=setup();await s.book(reservation());await s.store.beginCancellation('first');const original=s.store.confirmCancellation.bind(s.store);s.store.confirmCancellation=async()=>{throw Error('disk failure');};
+ const cancel=createReservedIntroCallCancellation({store:s.store,productId,clock:()=> '2026-10-02T12:00:00.000Z',cancelEvent:async()=>({status:'EVENT_ABSENT',eventId:googleBookingEventId(productId,calendarId,'first')})});
+ assert.equal((await cancel('first')).status,'PENDING');await assert.rejects(s.store.reserve(reservation('other')),/BOOKING_SLOT_RESERVED/);s.store.confirmCancellation=original;
+ assert.throws(()=>s.store.confirmCancellation('first',{status:'EVENT_ABSENT',eventId:'foreign'},'2026-10-02T12:00:00.000Z'),/INVALID_CANCELLATION_CONFIRMATION/);
+ assert.equal((await cancel('first')).status,'CANCELLED');
+});
+test('unconfirmed and foreign product cancellation cannot mutate or call the provider',async()=>{
+ const s=setup();await s.store.reserve(reservation());await assert.rejects(s.store.beginCancellation('first'),/CANCELLATION_NOT_READY/);await s.book(reservation());
+ const before=structuredClone(s.db.rows);const cancel=createReservedIntroCallCancellation({store:s.store,productId:'foreign-product',clock:()=> '2026-10-02T12:00:00.000Z',cancelEvent:async()=>assert.fail()});await assert.rejects(cancel('first'),/RESERVATION_BINDING_CONFLICT/);assert.deepEqual(s.db.rows,before);
 });

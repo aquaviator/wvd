@@ -53,8 +53,8 @@ export function createGoogleBookingEventWriter({calendar,calendarId,productId,re
 // scope remain the host's responsibility; no ambient login or token discovery.
 export function createGoogleBookingCalendarClient({authClient,calendarId}) {
   if(typeof authClient?.request!=='function'||typeof calendarId!=='string'||!calendarId.length||calendarId.length>256||/[\s\x00-\x1f\x7f]/.test(calendarId))throw Error('INVALID_CONFIGURATION');
-  const fields='id,status,summary,visibility,transparency,start,end,recurrence,attendees,extendedProperties,conferenceData';
-  const call=(method,eventId,body,options)=>authClient.request({url:`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events${eventId?'/'+eventId:''}`,method,params:method==='GET'?{fields}:{fields,conferenceDataVersion:1,sendUpdates:'none'},...(body?{data:structuredClone(body)}:{}),timeout:options.timeout,signal:AbortSignal.timeout(options.timeout),retry:false,maxRedirects:0,maxContentLength:65536,responseType:'json'});
+  const fields='id,etag,status,summary,visibility,transparency,start,end,recurrence,attendees,extendedProperties,conferenceData';
+  const call=(method,eventId,body,options)=>authClient.request({url:`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events${eventId?'/'+eventId:''}`,method,params:method==='GET'?{fields}:method==='DELETE'?{sendUpdates:'none'}:{fields,conferenceDataVersion:1,sendUpdates:'none'},...(body?{data:structuredClone(body)}:{}),...(method==='DELETE'?{headers:{'If-Match':options.headers['If-Match']}}:{}),timeout:options.timeout,signal:AbortSignal.timeout(options.timeout),retry:false,maxRedirects:0,maxContentLength:65536,responseType:'json'});
   const validOptions=options=>options&&Number.isSafeInteger(options.timeout)&&options.timeout>=1&&options.timeout<=15000&&options.retry===false;
   return {events:{
     get(params,options){
@@ -65,6 +65,10 @@ export function createGoogleBookingCalendarClient({authClient,calendarId}) {
       const b=params?.requestBody;
       if(!params||Object.keys(params).sort().join(',')!=='calendarId,conferenceDataVersion,requestBody,sendUpdates'||params.calendarId!==calendarId||params.conferenceDataVersion!==1||params.sendUpdates!=='none'||!validOptions(options)||!b||Object.keys(b).sort().join(',')!=='conferenceData,end,extendedProperties,guestsCanInviteOthers,guestsCanModify,guestsCanSeeOtherGuests,id,reminders,start,summary,transparency,visibility'||!/^([a-v0-9]){5,1024}$/.test(b.id)||b.summary!=='WVD introductory call'||b.visibility!=='private'||b.transparency!=='opaque'||b.guestsCanInviteOthers!==false||b.guestsCanModify!==false||b.guestsCanSeeOtherGuests!==false||JSON.stringify(b).length>8192)throw Error('INVALID_CONFIGURATION');
       return call('POST',undefined,b,options);
+    },
+    delete(params,options){
+      if(!params||Object.keys(params).sort().join(',')!=='calendarId,eventId,sendUpdates'||params.calendarId!==calendarId||params.sendUpdates!=='none'||!/^([a-v0-9]){5,1024}$/.test(params.eventId)||!validOptions(options)||!options.headers||Object.keys(options.headers).join(',')!=='If-Match'||typeof options.headers['If-Match']!=='string'||!/^"[\x21\x23-\x7e]{1,256}"$/.test(options.headers['If-Match']))throw Error('INVALID_CONFIGURATION');
+      return call('DELETE',params.eventId,undefined,options);
     }
   }};
 }

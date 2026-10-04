@@ -33,6 +33,7 @@ export function createBookingHandler({book,reconcile,admit,productId,calendarId,
         if(result?.status==='PENDING')result=await reconcile(reservationId);
         if(result?.reservationId!==reservationId)throw Error('INVALID_BOOKING_RESULT');
         if(result.status==='UNAVAILABLE')return send(409,{status:'UNAVAILABLE'});
+        if(result.status==='CANCELLED')return send(409,{status:'CANCELLED'});
         if(result.status==='PENDING'||result.status==='BLOCKED')return send(202,{status:'PENDING'});
         if(result.status!=='CONFIRMED'||result.start!==start||result.end!==end||typeof result.meetUrl!=='string'||!/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(result.meetUrl))throw Error('INVALID_BOOKING_RESULT');
         return send(200,{status:'CONFIRMED',start,end,timeZone:'Europe/London',meetUrl:result.meetUrl});

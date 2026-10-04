@@ -25,4 +25,9 @@ test('real Firestore transactions serialize competing bookings and preserve dura
   assert.equal((await reopened.reserve(value(held.reservationId))).phase,'CONFIRMED');
   const foreign=new FirestoreBookingReservations({...config,productId:'foreign'});
   await assert.rejects(foreign.reserve({...value('foreign'),productId:'foreign'}),/SCHEDULE_OWNERSHIP_CONFLICT/);
+  await reopened.beginCancellation(held.reservationId);
+  await assert.rejects(second.reserve(value('replacement')),/BOOKING_SLOT_RESERVED/);
+  await reopened.confirmCancellation(held.reservationId,{status:'EVENT_ABSENT',eventId:result.eventId},'2026-10-02T12:00:00.000Z');
+  assert.equal((await second.read(held.reservationId)).phase,'CANCELLED');
+  assert.equal((await second.reserve(value('replacement'))).phase,'RESERVED');
 });
