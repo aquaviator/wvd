@@ -748,3 +748,19 @@ connector commits and Actions remain usable. Exact-source container/CI results
 must be reconciled before complete handover; current screenshot inspection is
 not claimed. Existing scratch changes match the earlier writer-probe source;
 fetch/compare them before any reset when local execution reconnects.
+
+### Exact-source automated verification reconciled
+
+Source 6bd87fa9e4237f81731ddca3b122f0885229e786 passed all jobs in CI
+37201986425/37201988858 and offline container37201986430. Logs report398
+unit tests passed,0failed,1Windows-only skip;2Firebase browser tests passed.
+Results JSON sourceCommit matches exactly, projectId=demo-wvd-portal and
+liveAccess=false. Image identity:
+sha256:692148892952dec7d94c8d3bdca395546b56027536ad8f79071f93ff5c5781f1.
+Synthetic evidence artifact11303700318 was uploaded and listed, digest:
+sha256:3f769abd394f316cc5a61fc3e50da569d5c75563032a6047449f57d78aec4782.
+Artifact screenshots have NOT been downloaded/visually inspected in this
+disconnected local runtime. Do not label the visual handover complete.
+Live Calendar run37201986418 remains blocked specifically at conference
+creation; the existing writer/free-busy/holiday checks and14rehearsal contract
+tests passed. No delegation change has been applied.
