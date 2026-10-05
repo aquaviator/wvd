@@ -59,3 +59,34 @@ RUNTIME_ACCESS_CONFIGURED_NO_HOST_OR_SPEND_CREATED was printed. Record these
 grants as applied by the founder; effective runtime access still requires the
 normal unattended integration check. Do not ask the founder to repeat the script
 without evidence of a remaining permission issue.
+
+## Primary commercial products and demo replacement — 5 October 2026
+
+Founder direction at 17:54 BST: Salon and Wedding are the primary sellable
+products. The reusable automated development flow remains the shared delivery
+system supporting the products and WVD; the older demos are not the commercial
+product baseline.
+
+The founder authorises replacing the current WVD and Hospitality site demos with
+the sites they have built. Use the completed product handoffs to identify the
+exact replacement Sites, source and verified capability before updating WVD's
+product presentation, navigation and CTAs through Sites. Retire the superseded
+demo surfaces while preserving source/history. This does not request deletion of
+repositories or the WVD organisation, or assert commercial release readiness.
+
+Workers are actively updating the WVD Drive records. Monitor changes and consume
+their completed handoffs; do not overwrite in-progress documents or duplicate
+active product work. Preserve product ownership of research, blueprint, backlog,
+implementation and release evidence; WVD coordinates shared delivery and concise
+portfolio status. Keep existing access, spending and message-send boundaries.
+
+Verified Drive destinations:
+- WVD: https://drive.google.com/drive/folders/13mG23q4WgFJJA8p_ZKS2YNi1iVc_rvuB
+- Salon: https://drive.google.com/drive/folders/1FWRwktOHb35OsLnTyQr8ztdjLp3ghvAz
+- Wedding: https://drive.google.com/drive/folders/1Fu8f_rmGV69m41tp-9mrP4gJfscCItdu
+
+Salon source transfer: https://github.com/aquaviator/WVD-Salon/pull/1, observed open
+at 16a5d89be65650e0159ec13f617fc2c992105545. Refresh before use. Its historical
+Drive backlog still says NOT_STARTED; do not treat that as current engineering
+state. Wedding's current pack records specified/not implemented work; discover
+its actual build/repository from the workers' handoff. Do not assume one exists.
