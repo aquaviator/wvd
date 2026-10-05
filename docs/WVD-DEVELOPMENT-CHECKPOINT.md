@@ -1237,3 +1237,29 @@ push CI 37286922121, PR CI 37286930018 and offline container 37286922146.
 Container results: 496 unit passes, zero failures, one Windows-only skip, plus
 four real Firebase/browser passes. This verifies the offline packaging fix;
 the deployed runtime remains image-bound to source 1812c0a above.
+
+## Continued beyond milestone — attached identity and private HTTP
+
+Source 82b619d7edcf45979d08b9f8350343f20720faf3 deployed a provider-verified startup
+revision. Image sha256:120456cea9b0f4c873ae2c24113ff0f235a0593ca592e2bcaa87c0d50aa9891f.
+The new startup reads/validates the Firestore journal, current holiday evidence,
+all required freebusy calendars and the owned-calendar list before listening.
+No event is created. The revision-aware updater binds the exact old image and
+service etag, preserving private access/capacity; ordinary pushes do not replace
+an arbitrary existing revision.
+
+Live service-level discovery established invoke=true, changeAccess=false. No new
+admin grant was needed for authenticated HTTP. The runtime network ingress now
+accepts external traffic but IAM invocation checks remain enabled. Run 37288969404
+proved anonymous denial and authenticated /health with startup provider evidence.
+Run 37289535053 additionally proved wrong-origin denial and real provisional
+availability over authenticated HTTP. This advances the admission counter but
+creates no booking or message. Runtime URL is
+https://wvd-booking-development-v3b6mv7uka-nw.a.run.app.
+This is not an anonymous customer-facing booking link or a connected Sites form.
+
+Continued into the Gmail sender/key-source adapters with synthetic tests. The live
+send-scope probe returned unauthorized_client; a Workspace admin grant is now a
+real dependency. Exact setup and the prepared combined API/secret script are
+recorded in WVD-BOOKING-DELIVERY.md. No customer email was sent; no mail scope,
+secret resource or secret grant has been changed by the controller.

@@ -57,3 +57,41 @@ Backup export/rehearsal includes the ciphertext and receipt state, using the sam
 journal codec. Backups do not contain encryption keys and are not evidence of
 provider delivery. Restoring an old queue into a live writer still requires the
 operational reconciliation process; it must not automatically replay old sends.
+
+## Gmail adapter and key source — 5 October 2026
+
+`google-booking-mail.mjs` implements the trusted sender contract using one fixed
+Gmail messages.send endpoint, one recipient, a fixed booking-confirmation subject,
+UTF-8 MIME/base64url, and a stable Message-ID derived from the existing intent ID.
+It has no automatic retry. A provider error or invalid acknowledgement is UNKNOWN,
+not proof of non-delivery; Message-ID is not a Gmail idempotency guarantee.
+Provider acceptance is not inbox delivery. The injected send-only auth client must
+also honour the no-replay contract. Header injection is denied before requests.
+
+`google-booking-key.mjs` implements the cipher key reader against one configured
+project/secret and an explicit numeric version. It rejects latest/foreign targets,
+checks a canonical 32-byte key and exposes no key/provider bodies in errors.
+Neither adapter is mounted on a public route or activated in the deployed host.
+Recipient ownership/consent, worker activation, approved sender authentication
+and unknown-send reconciliation remain necessary integration work.
+
+Live scope discovery in Google workflow 37289535053 received unauthorized_client
+for the delegated gmail.send token request; no Gmail API call or message occurred.
+The existing calendar scopes remain operational. Founder/admin preparation is
+in tools/booking-runtime/enable-confirmation-services.sh: enable Gmail and Secret
+Manager APIs; create the specifically labelled envelope-key secret/version only
+when absent; grant the existing runtime account Accessor on that secret alone;
+print the OAuth client ID and version references, never the key. It does not
+change Workspace delegation, send mail or enable the public email route.
+
+In Workspace Admin, edit the existing service account's domain-wide delegation
+client and ADD https://www.googleapis.com/auth/gmail.send while preserving every
+existing approved scope (including calendar.events). This is send-only authority,
+not mailbox-read authority. Domain-wide delegation is a Workspace administrative
+grant; the application must still constrain impersonation to the configured
+organiser. It is not an account-specific ACL enforced by the scope itself.
+
+References checked 5 October 2026:
+https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/send
+https://developers.google.com/workspace/gmail/api/guides/sending
+https://cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets.versions/access
