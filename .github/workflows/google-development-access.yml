@@ -109,10 +109,10 @@ jobs:
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
         run: node tools/google-development-access/hosting-discovery.mjs tools/google-development-access/binding.json
-      - name: Test private deployment boundaries before activation
-        run: node --test tools/portal-proof/tests/private-deployment.test.mjs tools/portal-proof/tests/hosting-discovery.test.mjs
+      - name: Test private deployment boundaries and provider readiness before activation
+        run: node --test tools/portal-proof/tests/private-deployment.test.mjs tools/portal-proof/tests/hosting-discovery.test.mjs tools/portal-proof/tests/booking-provider-readiness.test.mjs
       - id: private_host
-        name: Prepare first private runtime within founder hosting authority
+        name: Prepare bounded private runtime deployment within founder authority
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
         run: node tools/booking-runtime/private-deployment.mjs prepare tools/google-development-access/binding.json
@@ -134,7 +134,7 @@ jobs:
           docker push "$image"
           digest="$(docker image inspect "$image" --format '{{index .RepoDigests 0}}')"
           printf 'image=%s\n' "$digest" >> "$GITHUB_OUTPUT"
-      - name: Create private runtime and verify managed startup
+      - name: Deploy private runtime and verify managed startup
         if: steps.private_host.outputs.create == 'true'
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}

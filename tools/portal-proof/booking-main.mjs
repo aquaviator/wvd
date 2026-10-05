@@ -13,7 +13,7 @@ try{
  const credentials=await auth.getCredentials();if(credentials.client_email!==serviceAccount||credentials.private_key)throw Error('RUNTIME_IDENTITY_MISMATCH');
  const signer=await auth.getClient(),clock=()=>new Date().toISOString();
  const clients=createKeylessCalendarAuthClients({signer,serviceAccount,subject,calendarId:document.runtime.calendarId,clock});
- runtime=await createFirestoreBookingRuntime({config:document.runtime,...clients,clock});server=createBookingServer(runtime);
+ runtime=await createFirestoreBookingRuntime({config:document.runtime,...clients,clock});const providerReadiness=await runtime.verifyProviders();console.log(JSON.stringify({event:"BOOKING_PROVIDER_STARTUP",...providerReadiness}));server=createBookingServer({...runtime,providerReadiness});
  const port=Number(process.env.PORT??8080);if(!Number.isSafeInteger(port)||port<1||port>65535)throw Error('INVALID_CONFIGURATION');
  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'0.0.0.0',resolve);});
  console.log('BOOKING_RUNTIME_LISTENING');

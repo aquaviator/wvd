@@ -20,7 +20,7 @@ export function createBookingServer(runtime){
    if(url.pathname==='/api/calls/availability')return await handlers.availability(request,response);
    if(request.method==='GET'&&!url.search){
     if(url.pathname==='/'){response.writeHead(302,{...headers,Location:'/book'});response.end();return;}
-    if(url.pathname==='/health')return send(200,{status:'RUNNING',providerAccessChecked:false});
+    if(url.pathname==='/health')return send(200,{status:'RUNNING',providerAccessChecked:runtime.providerReadiness?.status==='PASS',...(runtime.providerReadiness?.status==='PASS'?{providerCheckedAt:runtime.providerReadiness.observedAt}:{})});
     const asset=bookingAssets.get(url.pathname==='/book/manage'?'/book':url.pathname);
     if(asset){response.writeHead(200,{...headers,'Content-Type':asset[0]});response.end(['/book','/book/manage'].includes(url.pathname)?renderBookingPage({managed:url.pathname==='/book/manage',booking:runtime.callBooking,management:runtime.management,mode}):asset[1]);return;}
    }

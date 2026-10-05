@@ -1,3 +1,4 @@
+import {verifyBookingProviders} from './booking-provider-readiness.mjs';
 import {randomUUID} from 'node:crypto';
 import {firebaseConfiguration} from './firebase-config.mjs';
 import {FirestoreBookingReservations,createReservedIntroCallBooking,createIntroCallBookingReconciler,createReservedIntroCallCancellation} from './booking-reservations.mjs';
@@ -45,6 +46,6 @@ export async function createFirestoreBookingRuntime({config,eventAuthClient,free
  const db=getFirestore(app,firebase.databaseId);
  try{
   const runtime=composeBookingRuntime({db,config,eventAuthClient,freeBusyAuthClient,clock,readHolidays:createGovukHolidayEvidenceReader({clock,requestTimeoutMs:config.requestTimeoutMs})});
-  return {...runtime,close:async()=>{try{await db.terminate();}finally{await deleteApp(app);}}};
+  return {...runtime,verifyProviders:()=>verifyBookingProviders({store:runtime.store,calendar:runtime.calendar,config,clock,readHolidays:runtime.callAvailability.readHolidayEvidence}),close:async()=>{try{await db.terminate();}finally{await deleteApp(app);}}};
  }catch(error){try{await db.terminate();}finally{await deleteApp(app);}throw error;}
 }
