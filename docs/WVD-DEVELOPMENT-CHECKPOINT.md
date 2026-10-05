@@ -1353,3 +1353,15 @@ review remain NOT_RUN. WED-CONT-001 remains partial and all 32 full scenarios re
 NOT_RUN. Existing records preserved. Full evidence, limitations and next steps are
 in the latest Wedding section of `WVD-CONTROLLER-CONTINUATION.md` and the product's
 `handoff/WED-WP-003-UNDECIDED-DATE.md`. No commercial release or new spending.
+
+## Wedding reviewed section order — 5 October 2026
+
+WED-WP-003 now supports validated Story, Travel and FAQ ordering through the
+existing draft/review/publish boundary. Product candidate
+`dfd3987e4a548ed61bc905305c7fe36fad9c88bd` is on
+`development/undecided-date-onboarding`; owner-private Sites source
+`7b799af9a51b8c2eae53316874b476b9abfa2d47` deployed successfully.
+Eight editor-domain, nine onboarding and 12 existing domain checks, TypeScript
+and production build passed. Browser, hosted identity/D1 and distinct verification
+remain NOT_RUN. WED-WP-003 and WED-CONT-001 remain partial; all 32 full scenarios
+remain NOT_RUN. No commercial release, audience change or additional spending.

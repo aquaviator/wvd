@@ -342,3 +342,40 @@ event, then remaining bounded WED-WP-003 editor gaps or independent Salon work.
 Do not repeat successful local checks without changes; do not reset founder data
 to expose onboarding. Product deployment is a private fictional prototype, not
 commercial release. No founder input is needed for other unblocked development.
+
+## Wedding reviewed website section order — 5 October 2026
+
+Fresh state before work: WVD 82e23d9 passed both validation runs; the development
+container correctly skipped its path-filtered documentation change. Salon remained
+722fba5. Wedding branch and draft PR #1 were b2f9c36 with no new owner/worker.
+Wedding Drive START HERE had only the prior controller update at
+2026-10-05T19:16:20.483Z. The Site remained custom owner-only, revision 2, with
+sole allowed owner 0e17b421-97f4-421a-a694-ff56bbd659fb.
+
+Reopened exact Sites source 37b10d5 and implemented the next bounded WED-WP-003 /
+WED-REQ-006 editor gap. Owners can reorder Story, Travel and FAQ before saving.
+The existing reviewed publication snapshot carries that order; empty sections
+stay hidden. API validation rejects missing, duplicate, unknown and surplus
+section entries. New workspaces persist the default; legacy records use a stable
+non-mutating fallback and normalise only on a later owner save. No database
+migration, private-data surface or new dependency was introduced.
+
+Verification passed: TypeScript, production build, eight new editor-domain checks,
+nine onboarding checks and 12 existing domain checks. Historical receipts were
+restored; new evidence is
+`evidence/continuation/editor-section-order-results.json`. Managed browser,
+hosted identity/D1 and distinct independent verification remain NOT_RUN.
+
+Product commit `dfd3987e4a548ed61bc905305c7fe36fad9c88bd` was pushed
+non-forced to `development/undecided-date-onboarding`; draft Wedding PR #1 was
+updated. Exact owner-private Sites source
+`7b799af9a51b8c2eae53316874b476b9abfa2d47` deployed successfully as
+`appgdep_6ac3fd7555f48191b8f9b47236b212c2`. Existing D1/R2 and sole-owner audience
+were retained. The Drive START HERE receipt was revision-guarded and read back.
+
+WED-WP-003 stays PARTIAL, WED-CONT-001 stays partial, and all 14 package acceptance
+states and all 32 full scenarios remain unverified/NOT_RUN. Next: exact-candidate
+independent/browser review across legacy/new workspaces, followed by one remaining
+bounded editor gap. No commercial release, live message, real-data permission,
+schema/provider migration, audience widening or extra spending. No founder input
+is needed for other unblocked work.

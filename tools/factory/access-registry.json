@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T19:14:30.000Z",
+  "updatedAt": "2026-10-05T19:41:51.309Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -59,8 +59,8 @@
       "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T19:14:30.000Z",
-        "source": "Owner-private WVD Site reopened, source d6200202c28c9ee509021c56f649ddaa8d6a5b5e pushed and packaged by Sites helper. Private deployment appgdep_6ac3ecf54d5c8191a4f6813d80498246 succeeded at 2026-10-05T18:31:33.101812+00:00; audience unchanged. docs/WVD-CONTROLLER-CONTINUATION.md. Wedding source recovery and owner-private update verified: project appgprj_6ac3c826d96481919bd4218973832eb2, owner account 0e17b421-97f4-421a-a694-ff56bbd659fb; purpose WED-WP-003 fictional onboarding; source 37b10d5eafcf56649e12a8a5ae2742b3a7b671df, deployment appgdep_6ac3f70a835c8191833a555eac8f5f5c succeeded. Existing DB/R2 only; no audience or spending change. Credential held in session only."
+        "at": "2026-10-05T19:41:51.309Z",
+        "source": "Owner-private WVD Site reopened, source d6200202c28c9ee509021c56f649ddaa8d6a5b5e pushed and packaged by Sites helper. Private deployment appgdep_6ac3ecf54d5c8191a4f6813d80498246 succeeded at 2026-10-05T18:31:33.101812+00:00; audience unchanged. docs/WVD-CONTROLLER-CONTINUATION.md. Wedding project appgprj_6ac3c826d96481919bd4218973832eb2 was reopened as owner account 0e17b421-97f4-421a-a694-ff56bbd659fb for WED-WP-003 fictional onboarding and reviewed section ordering. Sources 37b10d5eafcf56649e12a8a5ae2742b3a7b671df and 7b799af9a51b8c2eae53316874b476b9abfa2d47 deployed successfully as appgdep_6ac3f70a835c8191833a555eac8f5f5c and appgdep_6ac3fd7555f48191b8f9b47236b212c2. Existing DB/R2 and sole-owner custom audience retained; no spending change. Credentials held in session only."
       },
       "limits": [
         "Sites frontend access does not imply access to the private booking service.",
