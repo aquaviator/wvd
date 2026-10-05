@@ -41,3 +41,8 @@ Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
   Founder-local pulls are optional review, not the default verification gate.
   Keep required native platform checks; do not claim a CI job is an interactive
   preview or remote control of the founder's computer.
+
+- Future web-facing development uses Sites for supported website/UX work, with
+  controller-owned integration and extended functionality. Follow
+  `docs/WVD-SITES-HANDOFF.md` for the handoff and handback. This authorises the
+  development workflow, not automatic hosting migration or additional spend.

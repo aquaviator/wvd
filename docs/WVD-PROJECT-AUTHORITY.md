@@ -29,3 +29,10 @@ Stop only when the brief is complete, the user asks to stop, or every remaining
 in-scope action depends on one of the three requirements above. Maintain a current
 checkpoint for interrupted sessions. A saved instruction is not an always-running
 background worker.
+
+## Sites workflow — 5 October 2026
+
+The founder selected Sites for future supported web-facing development, with
+handoff and handback to this controller for integrations and extended
+functionality. Follow `WVD-SITES-HANDOFF.md`. Keep existing platform, access and
+spending boundaries; no new founder review gate is introduced.
