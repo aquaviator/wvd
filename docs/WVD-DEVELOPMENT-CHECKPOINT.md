@@ -1189,3 +1189,15 @@ Push CI 37284636207 and PR CI 37284642129 passed. Google workflow 37284636147
 passed, with all four runtime probes PASS and overall ACCESS_PRESENT, including
 signing, attachment, native Firestore and Cloud Run deployment permission.
 The isolated development container was still running at this handback checkpoint.
+
+### Hosting continuation
+
+Container 37284636202 completed successfully after the preceding handback.
+Added bounded read-only London inventory discovery with negative tests for
+incomplete lists and cross-project results. Both focused tests pass.
+Live Google run 37285436943 succeeded and reports registry/service inventory
+ACCESS_DENIED_OR_API_DISABLED, with no project-wide registry create/upload or
+service IAM policy authority. No resources or permissions changed in that run.
+Prepared tools/booking-runtime/enable-image-repository.sh for the narrow required
+founder/admin API and repository setup; bash syntax check passed. This script
+has not been executed. See WVD-BOOKING-RUNTIME.md for exact scope and limitations.

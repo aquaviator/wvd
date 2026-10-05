@@ -121,3 +121,30 @@ spend authority are still separate from these grants. No repository, host, API,
 public IAM binding, billing setting or customer message is created by the access
 script. The existing WIF condition and Workspace Calendar-only delegation remain
 unchanged. New Gmail authority is not included.
+
+## Observed remaining hosting access — 5 October 2026
+
+Runtime signing, attachment, Firestore and service-deployment permission now pass
+in live workflow 37284636147. The founder authorised £5/month total additional
+hosting spend. The subsequent discovery run 37285436943 confirmed:
+
+- London registry and Cloud Run inventories: ACCESS_DENIED_OR_API_DISABLED.
+  This deliberately does not claim which of API enablement or IAM caused denial.
+- Project-wide repository creation/upload and service IAM changes: absent.
+  Repository-scoped permissions have not yet been tested; project-level absence
+  is not proof that every existing repository denies uploads.
+
+Prepared `enable-image-repository.sh` for founder/admin execution. It enables
+Cloud Run and Artifact Registry APIs, creates a dedicated private Docker repository
+only if its successful lookup finds none, and grants Writer on that repository
+alone to the existing development account. New repositories use immutable tags
+and disable optional billable automatic scanning; existing repositories are not
+reconfigured. It fails on unexpected lookup results or non-Docker format.
+It creates no Cloud Run service, grants no public invocation, changes no billing
+configuration, stores no key and does not grant project-wide registry admin.
+
+The script creates an empty repository; subsequent storage/transfer usage must
+fit the £5 allowance. Existing repository scan/cleanup configuration must be
+inspected before uploading. Public invocation remains a distinct requirement;
+the first runtime deployment can remain private. No new IAM authority is inferred
+from the Sites publication.
