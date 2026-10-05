@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T20:47:49.267Z",
+  "updatedAt": "2026-10-05T21:41:25.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T20:47:49.267Z",
-        "source": "Live profile aquaviator; current WVD branch/CI read (59ad35a; CI 37357119941/37357127604 successful). Salon branch/tree/blob reads and non-forced evidence update 722fba535b79d905477e0f07202a28f9c94c1802 verified; product access detail in WVD-Salon handoff/wvd/access-evidence.json. Shell Salon clone lacks credential; connector works. No administration inferred. Refreshed WVD f8ad444 and product heads/PR ownership. GitHub job rerun capability retried cancelled quality job 111949862864; validation 37365604895 attempt 2 succeeded. Wedding non-forced compatibility fix fb99b6f6aa6f3f4d86888ad0b5f16b2493c1bcbc and handoff 35eaf66f3d9130b21a4ed7729787a55cf747505c pushed to development/undecided-date-onboarding with expected-head guards."
+        "at": "2026-10-05T21:41:25.000Z",
+        "source": "Live profile aquaviator; current WVD branch/CI read (59ad35a; CI 37357119941/37357127604 successful). Salon branch/tree/blob reads and non-forced evidence update 722fba535b79d905477e0f07202a28f9c94c1802 verified; product access detail in WVD-Salon handoff/wvd/access-evidence.json. Shell Salon clone lacks credential; connector works. No administration inferred. Refreshed WVD f8ad444 and product heads/PR ownership. GitHub job rerun capability retried cancelled quality job 111949862864; validation 37365604895 attempt 2 succeeded. Wedding non-forced compatibility fix fb99b6f6aa6f3f4d86888ad0b5f16b2493c1bcbc and handoff 35eaf66f3d9130b21a4ed7729787a55cf747505c pushed to development/undecided-date-onboarding with expected-head guards. Refreshed WVD 9387fed and both product draft PR heads/ownership. Existing ci.rerun capability accepted retry of failed/cancelled jobs in 37372269611 and 37372265521; acceptance of retry is not a passing result."
       },
       "limits": [
         "Development branch only within current project authority.",

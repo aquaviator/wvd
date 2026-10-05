@@ -1,7 +1,7 @@
 {
   "id": "WVD-DEVELOPMENT-STANDARD",
-  "version": "1.4.0",
-  "authority": "Founder instructions, 2 and 4 October 2026",
+  "version": "1.5.0",
+  "authority": "Founder instructions, 2, 4 and 5 October 2026",
   "platform": "google",
   "newServiceSubscriptionsAllowed": false,
   "newExternalSpendGBP": 0,
@@ -121,6 +121,25 @@
     "discovery": "truthful-public-metadata-no-indexing-guarantee",
     "privacy": "private-content-excluded-from-public-search",
     "reference": "docs/WVD-WEB-CONTENT-STANDARD.md"
+  },
+  "publicDiscovery": {
+    "id": "WVD-PUBLIC-DISCOVERY",
+    "version": "1.0.0",
+    "scope": "authorised-public-product-and-business-content",
+    "reference": "docs/WVD-DEVELOPMENT-STANDARD.md#public-search-and-ai-discovery",
+    "privateData": "authenticated-and-excluded-from-public-retrieval",
+    "prototypeAudience": "preserve-existing-access",
+    "crawlerPolicy": "separate-search-retrieval-from-model-training",
+    "claims": "no-guaranteed-indexing-ranking-or-ai-citation",
+    "checks": [
+      "public-private-route-inventory",
+      "crawlable-html-canonicals-links-and-sitemap",
+      "robots-headers-and-hosting-crawler-access",
+      "visible-content-and-structured-data-agree",
+      "publisher-sources-and-actual-review-dates",
+      "private-data-exclusion-and-access-denial",
+      "deployed-url-verification-and-search-observation"
+    ]
   },
   "projectAuthorityOverrides": {
     "wvd": {

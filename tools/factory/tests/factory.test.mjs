@@ -24,6 +24,8 @@ test('assembles version-bound sources, never awards DONE', async t => {
   assert.equal(packet.developmentProfile.standard.platform,'google');
   assert.equal(packet.developmentProfile.standard.newServiceSubscriptionsAllowed,false);
   assert.equal(packet.developmentProfile.standardHash,standardHash);
+  assert.equal(packet.developmentProfile.standard.publicDiscovery.privateData,'authenticated-and-excluded-from-public-retrieval');
+  assert(packet.developmentProfile.standard.publicDiscovery.checks.includes('private-data-exclusion-and-access-denial'));
   assert.equal(receipt.verification, 'NOT_INDEPENDENTLY_VERIFIED');
 });
 test('rerun reuses unchanged output including downstream dependency', async t => {
@@ -92,6 +94,8 @@ test('product target changes invalidate cached context',async t=>{
   const packet=JSON.parse(await readFile(second.tasks.context.output,'utf8'));
   assert.equal(packet.developmentProfile.productPlan.bindings.googleProjectId,'verified-development-project');
   assert.equal(packet.developmentProfile.productPlan.readiness,'NOT_DEPLOYMENT_VERIFIED');
+  assert.equal(packet.developmentProfile.productPlan.publicDiscovery.status,'NOT_VERIFIED');
+  assert(packet.developmentProfile.productPlan.publicDiscovery.checks.every(check=>check.status==='NOT_RUN'&&check.evidenceRef===null));
 });
 test('foreign product configuration cannot be attached to another project',async t=>{
   const f=await fixture(t);

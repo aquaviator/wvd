@@ -424,3 +424,48 @@ when available, then remaining bounded editor work or independent Salon work.
 Do not repeat successful checks without a source change or concrete risk. No
 commercial release, audience widening, live send, real data, migration or extra
 spending. No founder input is required for the remaining unblocked development.
+
+## Inherited public-search/AI discovery — 5 October 2026
+
+Fresh source/ownership: WVD 9387fed; Wedding development 35eaf66 and Salon 722fba5
+were unchanged, both product PRs remained drafts with no named assignee. Drive
+START HERE modification evidence was unchanged: Wedding 20:49:26.839Z, Salon
+18:55:11.206Z; queue 17:02:00.977Z. No product worker was overwritten or dispatched.
+
+Both WVD validation runs at 9387fed had cancelled jobs with no executed steps;
+all jobs that executed passed. Retried failed/cancelled jobs through the existing
+connector: runs 37372269611 and 37372265521, attempt 2, both completed successfully.
+Check the new source's CI before treating the whole branch as validated. No CI
+configuration was changed on the assumption that runner cancellation is a code bug.
+
+Selected the founder's explicit direction that every developed application should
+be discoverable through AI when live. Reused the existing web-content standard,
+factory project planner, exact-standard hash and context assembly. Standard 1.5.0
+now makes all four product flavours inherit public-discovery verification work;
+Android applies it to public companion content. Plans contain seven NOT_RUN
+checks with null evidence references, NOT_VERIFIED status and no audience-change
+authority. Context-only packets carry the same policy. Callers cannot supply a
+discovery-readiness override; returned plans cannot mutate later consumers.
+
+Requirements cover route classification, crawlable public HTML/canonicals/links/
+sitemap, crawler controls, truthful structured data, publisher/source/review dates,
+private-data exclusion and deployed-URL/search observation. They preserve separate
+search and model-training preferences. Current private Salon/Wedding prototypes
+are not made public, and no indexing/ranking/citation result is claimed.
+
+Primary Google Search and OpenAI crawler documentation was read fresh; exact links
+and the checked date are in docs/WVD-DEVELOPMENT-STANDARD.md. Reuse decision: extend
+existing inheritance rather than create a second SEO pipeline, provider or app.
+This slice changes planning and worker context only, not product HTML or hosting.
+
+Verification: all 59 factory checks passed (including three new discovery tests
+and expanded packet/consumer assertions), project CLI output retained all seven
+unrun checks, access inventory validated all eleven routes, and diff checks passed.
+The tests cover all flavours, isolation, forbidden overrides, standard fingerprint,
+context inheritance and existing budget enforcement. No new dependency or spend.
+
+Next: apply these checks to an exact authorised public product/content surface
+through Sites, using existing routing/metadata/privacy tests. Record unavailable
+public indexing as NOT_RUN while a prototype remains private; do not weaken
+access to obtain a search result. Continue remaining Salon/Wedding acceptance and
+native backlog independently. No founder input is needed for this planning slice.

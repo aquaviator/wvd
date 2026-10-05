@@ -10,6 +10,14 @@ export function developmentStandard() {return structuredClone(standard);}
 export function reuseCatalogue() {return structuredClone(catalogue);}
 export const standardHash=createHash('sha256').update(JSON.stringify({standard,catalogue})).digest('hex');
 
+// A plan creates verification work, never evidence of indexing or release authority.
+function publicDiscoveryPlan(flavour) {
+  const {checks,...policy}=structuredClone(standard.publicDiscovery);
+  return {...policy,surface:flavour==='android-application'?'public-companion-content':'public-web-content',
+    status:'NOT_VERIFIED',audienceChangeAllowed:false,
+    checks:checks.map(id=>({id,status:'NOT_RUN',evidenceRef:null}))};
+}
+
 // Planning only: no provider API, account creation, copied secrets or deployment.
 export function projectPlan(config) {
   if(!plain(config)||!allowedKeys(config,['productId','flavour','bindings','reuseDecisions'])||!id(config.productId)||!Object.hasOwn(standard.flavours,config.flavour))throw Error('Invalid product/flavour');
@@ -29,7 +37,7 @@ export function projectPlan(config) {
   const projectAuthority=standard.projectAuthorityOverrides?.[config.productId];
   const continuation={...structuredClone(standard.developmentContinuation),...(projectAuthority?{founderInput:'only-specific-authorisation-triggers',productionApprovalRequired:projectAuthority.productionApprovalRequired,specificAuthorisationTriggers:structuredClone(projectAuthority.specificAuthorisationTriggers)}:{})};
   return {schemaVersion:1,productId:config.productId,flavour:config.flavour,standardId:standard.id,standardVersion:standard.version,standardHash,developmentVerification:structuredClone(standard.developmentVerification),developmentContinuation:continuation,...(projectAuthority?{projectAuthority:structuredClone(projectAuthority)}:{}),
-    platform:'google',newServiceSubscriptionsAllowed:false,newExternalSpendGBP:0,webContentStandard:structuredClone(standard.webContentStandard),accessDiscovery:structuredClone(standard.accessDiscovery),
+    platform:'google',newServiceSubscriptionsAllowed:false,newExternalSpendGBP:0,webContentStandard:structuredClone(standard.webContentStandard),publicDiscovery:publicDiscoveryPlan(config.flavour),accessDiscovery:structuredClone(standard.accessDiscovery),
     bindings:structuredClone(bindings),reuseDecisions:structuredClone(config.reuseDecisions),
     discovery:missing.map(key=>`Verify existing Google ${key}`),
     readiness:'NOT_DEPLOYMENT_VERIFIED',provisioning:false,productionApprovalRequired:projectAuthority?.productionApprovalRequired??true};

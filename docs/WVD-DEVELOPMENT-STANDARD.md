@@ -1,4 +1,4 @@
-# WVD development standard 1.4.0
+# WVD development standard 1.5.0
 
 Authority: founder instructions on 2 October 2026. Applies to WVD development
 and new product/project onboarding. Existing product constitutions remain
@@ -70,6 +70,48 @@ Keep credentials in the approved Google/CI secret mechanisms, referenced by
 product-scoped identifiers. Keep software, schema contracts and data exports
 under WVD control. Public search and AI retrieval must exclude private customer
 data unless an explicitly authorised private retrieval workflow is designed.
+
+## Public search and AI discovery
+
+Founder direction, 5 October 2026: every developed application should support
+discovery through AI when live. Apply this to authorised public product, business
+and help content; native apps use their public companion content. Salon and
+Wedding inherit the requirement without changing their current private audiences
+or commercial release gates. Private workspaces, bookings, guests, invitations,
+tokens and customer records remain authenticated and excluded from public retrieval.
+
+Every generated product plan now carries seven discovery checks, each initially
+NOT_RUN with no evidence reference. Context-only packets inherit the same policy.
+This planning output neither executes those checks nor certifies search readiness.
+Workers must bind evidence to the actual source and deployment before closing work:
+
+- Classify public and private routes, including API and media surfaces.
+- Check public HTML, canonical URLs, internal links and sitemap coverage.
+- Check robots rules, response headers and hosting access for intended crawlers.
+- Match structured data to visible, accurate product and business content.
+- Identify publisher, supporting sources and genuine content review dates.
+- Prove private-data exclusion and unauthorised-access denial with synthetic data.
+- Verify the deployed public URLs, then record observed search/indexing results
+  separately from local technical checks, with engine, URL and observation date.
+
+Public discovery is an eligibility goal, not a promise of indexing, ranking or AI
+citation. Search access and model-training permissions are separate choices; keep
+existing crawler preferences. Do not publish prototypes or weaken authentication
+to satisfy discovery. Robots/noindex controls do not replace authorisation.
+Product contracts and Sites financial/sensitive-data restrictions still apply.
+
+Reuse the existing content standard, metadata, routing and privacy tests before
+adding product-specific checks. No new crawler service, search submission, paid
+tool or subscription is activated by this requirement. Sites implements public
+presentation changes; the controller owns cross-product verification integration.
+
+Primary guidance checked 5 October 2026:
+- https://developers.google.com/search/docs/appearance/ai-features — ordinary Search
+  eligibility and useful crawlable content apply; no special AI schema/file is required.
+- https://developers.google.com/search/docs/crawling-indexing/block-indexing —
+  crawlers must be able to retrieve a page to observe its noindex instruction.
+- https://developers.openai.com/api/docs/bots — search retrieval and training use
+  separate crawler controls. Verify current provider guidance when configuring a deployment.
 
 ## Factory inheritance
 

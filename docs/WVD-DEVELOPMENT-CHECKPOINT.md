@@ -1378,3 +1378,14 @@ Nine route/SQLite-adapter and eight editor checks, TypeScript and production
 build passed. All 32 full scenarios, hosted/browser and distinct review remain
 NOT_RUN. Full evidence and next work are in the latest controller continuation
 and product handoff/WED-WP-003-BRAND-COMPAT.md. No release or spending change.
+
+## Public-search/AI-discovery inheritance — 5 October 2026
+
+Standard 1.5.0 and generated product plans now carry seven explicit public-discovery
+checks, initially NOT_RUN with no evidence, across all product flavours. Existing
+context assembly/hash/budget mechanisms include them. All 59 factory checks passed;
+CLI and access inventory checks passed. This is planning integration, not verified
+indexing or an audience change. See the new standard section and latest controller
+continuation for scope, sources and next implementation work. Salon/Wedding full
+acceptance and commercial release remain open. WVD 9387fed's cancelled CI jobs were
+retried successfully in both attempt-2 runs; check this new source's CI before closure.

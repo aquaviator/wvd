@@ -6,6 +6,11 @@ Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
   standard in `docs/WVD-WEB-CONTENT-STANDARD.md`. Every page needs a relevant CTA.
   Keep media, factual claims, sources and review dates consistent across formats.
 
+- Every product inherits the public-search/AI-discovery work in
+  `docs/WVD-DEVELOPMENT-STANDARD.md#public-search-and-ai-discovery`.
+  Generated plans create unverified acceptance work, not proof of indexing.
+  Preserve private audiences, authenticated data and product release authority.
+
 - WVD project authority, updated 4 October 2026: continue the agreed brief and
   outstanding backlog without asking for another continue instruction. Routine
   development, configuration within existing authority, automated checks and
