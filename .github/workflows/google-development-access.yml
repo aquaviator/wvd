@@ -104,3 +104,7 @@ jobs:
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
         run: node tools/google-development-access/booking-runtime-preflight.mjs tools/google-development-access/binding.json
+      - name: Discover existing London hosting resources without provisioning
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/google-development-access/hosting-discovery.mjs tools/google-development-access/binding.json
