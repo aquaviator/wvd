@@ -30,7 +30,16 @@ export async function verifyPrivateHttp(url,token,{request=fetch}={}){
  if(response.status!==200)throw Error('AUTHENTICATED_HTTP_FAILED');
  const data=await readBoundedProviderJson(response,4096);
  if(data.status!=='RUNNING'||data.providerAccessChecked!==true||typeof data.providerCheckedAt!=='string'||!Number.isFinite(Date.parse(data.providerCheckedAt)))throw Error('PROVIDER_STARTUP_NOT_VERIFIED');
- return {status:'PRIVATE_HTTP_PASS',providerCheckedAt:data.providerCheckedAt,bookingMutationPerformed:false};
+ const headers={Authorization:`Bearer ${token}`,'Content-Type':'application/json'};
+ const denied=await request(url+'/api/calls/availability',{method:'POST',headers:{...headers,Origin:'https://invalid.example'},body:JSON.stringify({starts:[]}),redirect:'error',signal:AbortSignal.timeout(15000)});
+ if(denied.status!==403)throw Error('ORIGIN_DENIAL_NOT_CONFIRMED');
+ const day=new Date();day.setUTCDate(day.getUTCDate()+2);day.setUTCHours(9,0,0,0);while([0,6].includes(day.getUTCDay()))day.setUTCDate(day.getUTCDate()+1);
+ const start=day.toISOString();
+ const availability=await request(url+'/api/calls/availability',{method:'POST',headers:{...headers,Origin:'https://wearvalleydigital.com'},body:JSON.stringify({starts:[start]}),redirect:'error',signal:AbortSignal.timeout(60000)});
+ if(availability.status!==200)throw Error('PRIVATE_AVAILABILITY_FAILED');
+ const slots=await readBoundedProviderJson(availability,4096);
+ if(slots.provisional!==true||!Array.isArray(slots.slots)||slots.slots.length>1||slots.slots.some(s=>s.start!==start||Date.parse(s.end)-Date.parse(s.start)!==1800000))throw Error('PRIVATE_AVAILABILITY_CONTRACT_FAILED');
+ return {status:'PRIVATE_HTTP_PASS',providerCheckedAt:data.providerCheckedAt,availabilityChecked:true,originDenied:true,admissionCounterUpdated:true,bookingMutationPerformed:false};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){try{
  let result;if(process.argv[2]==='prepare'&&process.argv.length===3){result=await preparePrivateHttp(process.env.WVD_GOOGLE_ACCESS_TOKEN);if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,`url=${result.url}\n`);}

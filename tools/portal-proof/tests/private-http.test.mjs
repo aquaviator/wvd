@@ -5,7 +5,7 @@ import {privateService,serviceName,imagePrefix} from '../../booking-runtime/priv
 const url='https://wvd-booking-development-6616382131.europe-west2.run.app';
 const image=imagePrefix+'@sha256:120456cea9b0f4c873ae2c24113ff0f235a0593ca592e2bcaa87c0d50aa9891f';
 test('authenticated HTTP requires provider-checked health and keeps tokens out of reports',async()=>{
- const r=await verifyPrivateHttp(url,'synthetic',{request:async(u,o)=>{assert.equal(u,url+'/health');assert.equal(o.headers.Authorization,'Bearer synthetic');assert.equal(o.redirect,'error');return Response.json({status:'RUNNING',providerAccessChecked:true,providerCheckedAt:'2026-10-05T10:00:00Z'});}});assert.equal(r.status,'PRIVATE_HTTP_PASS');assert.equal(JSON.stringify(r).includes('synthetic'),false);
+ const r=await verifyPrivateHttp(url,'synthetic',{request:async(u,o)=>{assert.equal(o.headers.Authorization,'Bearer synthetic');assert.equal(o.redirect,'error');if(u.endsWith('/availability'))return o.headers.Origin==='https://invalid.example'?new Response('',{status:403}):Response.json({slots:[],provisional:true});return Response.json({status:'RUNNING',providerAccessChecked:true,providerCheckedAt:'2026-10-05T10:00:00Z'});}});assert.equal(r.status,'PRIVATE_HTTP_PASS');assert.equal(JSON.stringify(r).includes('synthetic'),false);
  await assert.rejects(verifyPrivateHttp('https://foreign.example','synthetic'));
  await assert.rejects(verifyPrivateHttp(url,'synthetic',{request:async()=>Response.json({status:'RUNNING',providerAccessChecked:false})}));
 });
