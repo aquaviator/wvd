@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T16:22:06.000Z",
+  "updatedAt": "2026-10-05T16:28:10.000Z",
   "scope": "Development-flow control plane; website is first consumer",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T16:22:06.000Z",
-        "source": "Current connector profile aquaviator (78605956); exact development ref read 0b355a7391f1018ff5828a80eaead048787d39a9 and recent run list confirmed successful push/PR CI 37334274552/37334281074. Repository read verified this session; write authority unchanged, not a grant. docs/WVD-CONTROLLER-CONTINUATION.md."
+        "at": "2026-10-05T16:28:10.000Z",
+        "source": "Current connector profile aquaviator (78605956); created 833ae1647d91219d09e42efd4151566a7b950f84 and advanced authorised development ref without force. Read successful push/PR CI 37340543483/37340549739 and container 37340543462; downloaded artifact 11359115239 and verified its digest and exact source. docs/WVD-CONTROLLER-CONTINUATION.md. No Google permission or mail probe repeated."
       },
       "limits": [
         "Development branch only within current project authority.",

@@ -90,10 +90,28 @@ proof reuses current-account validation and denies revoked/disabled/changed-emai
 identities. The generic host resolver preserves the future guest journey; no new
 registration requirement or public email endpoint is activated.
 
-Local portal suite before final identity adapter refinement: 523 passed, one
-Windows-only skip, zero failures. Focused current-account tests after refinement
-passed; exact final-source CI/container evidence will follow. See
-WVD-BOOKING-DELIVERY.md for configuration and outstanding integration boundaries.
+Implementation source: 833ae1647d91219d09e42efd4151566a7b950f84, advanced to the
+authorised development branch without force. Final focused integration suite: 56
+passed. Push CI 37340543483 and PR CI 37340549739 passed all four jobs, including
+native Windows, database, Firebase and browser checks. Offline container
+37340543462 passed: 523 portal unit passes, one Windows-only skip, zero failures;
+four Firebase/browser passes. The standalone runtime package also built and
+correctly refused startup without attached identity.
+
+Downloaded artifact 11359115239 matched SHA-256
+c22f8c370e26fc5ba7894b01534ca2d99e1609f967fc7d2b8e290e79311d063d.
+Its results.json binds the implementation commit above, Node v22.23.3,
+Playwright 1.62.1, demo-wvd-portal and liveAccess=false. Image identity:
+sha256:61e17181519026b6daee8478aaf74a14bbefd4399b2b41a2054982e653033aa1.
+Inspected the mobile private-management screenshot: branding, management/link
+controls and contact CTA remain intact; the synthetic no-email notice is present.
+One supplementary video was omitted under the existing evidence-size cap; all
+required screenshots were retained. Evidence inspected at 16:28 UTC on 5 October.
+See WVD-BOOKING-DELIVERY.md for integration configuration and limitations.
+
+The final evidence-only follow-up changes documentation and GitHub access evidence;
+it does not change the tested implementation. No live provider probe, email,
+deployment, permission or spending action was performed in this continuation.
 
 Next bounded work: guest recipient verification and explicit host activation
 configuration, preserving no-registration booking and no new live messages without
