@@ -1299,3 +1299,21 @@ live message, public endpoint or deployment activation is implied. Focused suite
 passed 54 tests; full CI/container result remains to be checked for this source.
 The previous checkpoint's accidental output truncation was restored from the
 complete local source in the key-mapping commit.
+
+
+Final confirmation-composition evidence: source
+99ed3e08e1927331ac2cd7c20dc1a145c73544ac passed push CI 37294277877,
+PR CI 37294283788, Google access 37294277769 and offline container 37294277720.
+Container: 512 unit passes, zero failures, one Windows-only skip, plus four
+Firebase/browser passes. Native Windows checks passed in the main workflows.
+The application-owned keyless Gmail signing path passed alongside secret version
+access, private HTTP availability and anonymous/origin denial. No email was sent.
+The screenshot/video evidence bundle is attached to the container run; one
+supplementary video was omitted under the existing 5 MiB evidence budget.
+
+Next live delivery test requires the founder to name/approve a recipient and
+explicitly authorise one development test message. Proposed test body: "WVD
+booking confirmation delivery test. No appointment has been booked. No action
+is required." No customer recipient is assumed. Do not describe provider
+acceptance as actual inbox delivery. The composed worker remains unmounted in
+the deployed runtime pending recipient/admission integration and activation.
