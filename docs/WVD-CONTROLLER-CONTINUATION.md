@@ -379,3 +379,48 @@ independent/browser review across legacy/new workspaces, followed by one remaini
 bounded editor gap. No commercial release, live message, real-data permission,
 schema/provider migration, audience widening or extra spending. No founder input
 is needed for other unblocked work.
+
+## Wedding brand-save compatibility and CI recovery — 5 October 2026
+
+Fresh WVD head f8ad444 had a failed PR validation run 37365604895: quality job
+111949862864 was cancelled with no steps; its log endpoint returned BlobNotFound.
+The same-source push run 37365600074 had passed. Retried the cancelled job through
+the discovered GitHub capability; run attempt 2 completed successfully. No code
+change or speculative CI configuration change was needed for that cancellation.
+
+Wedding branch/draft PR #1 remained dfd3987 with no assignee or changed queue;
+Salon remained 722fba5. Drive modified evidence before execution: Wedding START
+HERE 2026-10-05T19:43:52.406Z, Salon START HERE 18:55:11.206Z, current work queue
+17:02:00.977Z. Sites owner/access read confirmed Wedding version 3, sole owner
+0e17b421-97f4-421a-a694-ff56bbd659fb and no external visitors. No duplicate task
+was dispatched and no other worker's checkout was overwritten.
+
+Found and reproduced a compatibility regression in the preceding WED-WP-003
+section-order change: the original brand-save payload without sections returned
+400 INVALID. Fixed the native validator/route so omission preserves the current
+saved order, defaulting only for legacy records. Explicit malformed orders still
+fail. Existing authority, origin, revision, replay and reviewed-publication checks
+remain enforced. Original contracts, schema, dependencies and UI are unchanged.
+
+Nine new production-route/SQLite-adapter checks passed, including legacy records,
+custom-order preservation, atomic rejection, ownership/origin denial, stale
+revisions, idempotency, publication and rollback. Eight editor checks, TypeScript
+and production build passed. These checks use mocked platform identity and local
+SQLite; they do not certify hosted identity/D1, browser rendering or independent
+review. All 32 complete scenarios remain NOT_RUN; all fourteen package acceptance
+gates remain open. WED-CONT-001 and WED-WP-003 remain partial.
+
+Product fix/evidence commit fb99b6f6aa6f3f4d86888ad0b5f16b2493c1bcbc and subsequent
+handoff commit 35eaf66f3d9130b21a4ed7729787a55cf747505c were pushed non-forced to
+development/undecided-date-onboarding. Draft PR #1 remains unreleased. Read
+handoff/WED-WP-003-BRAND-COMPAT.md and evidence/continuation/brand-compat-results.json.
+Exact Sites source 35034aba9e256b9163c7d630db2c92fc95333b65 deployed successfully
+as appgdep_6ac40ceb11f48191a8ddc7f06752f755 at 2026-10-05T20:47:49.267348Z.
+Existing owner-only audience and D1/R2 retained. Drive START HERE current-source
+paragraph and continuation receipt were revision-guarded and read back.
+
+Next: distinct exact-candidate review, supported browser/hosted identity checks
+when available, then remaining bounded editor work or independent Salon work.
+Do not repeat successful checks without a source change or concrete risk. No
+commercial release, audience widening, live send, real data, migration or extra
+spending. No founder input is required for the remaining unblocked development.

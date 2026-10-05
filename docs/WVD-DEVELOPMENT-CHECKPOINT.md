@@ -1365,3 +1365,16 @@ Eight editor-domain, nine onboarding and 12 existing domain checks, TypeScript
 and production build passed. Browser, hosted identity/D1 and distinct verification
 remain NOT_RUN. WED-WP-003 and WED-CONT-001 remain partial; all 32 full scenarios
 remain NOT_RUN. No commercial release, audience change or additional spending.
+
+## Wedding legacy-client correction and CI recovery — 5 October 2026
+
+WVD PR validation 37365604895 is green on attempt 2 after retrying its cancelled
+quality job; the same-source push validation had already passed. Wedding legacy
+brand saves now preserve the saved section order when the new field is omitted.
+Product fix fb99b6f and handoff head 35eaf66 are on the existing authorised
+development branch/draft PR #1. Owner-private Sites source
+35034aba9e256b9163c7d630db2c92fc95333b65 deployed successfully.
+Nine route/SQLite-adapter and eight editor checks, TypeScript and production
+build passed. All 32 full scenarios, hosted/browser and distinct review remain
+NOT_RUN. Full evidence and next work are in the latest controller continuation
+and product handoff/WED-WP-003-BRAND-COMPAT.md. No release or spending change.

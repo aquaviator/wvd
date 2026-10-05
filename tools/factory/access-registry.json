@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T19:41:51.309Z",
+  "updatedAt": "2026-10-05T20:47:49.267Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T18:56:29.622Z",
-        "source": "Live profile aquaviator; current WVD branch/CI read (59ad35a; CI 37357119941/37357127604 successful). Salon branch/tree/blob reads and non-forced evidence update 722fba535b79d905477e0f07202a28f9c94c1802 verified; product access detail in WVD-Salon handoff/wvd/access-evidence.json. Shell Salon clone lacks credential; connector works. No administration inferred."
+        "at": "2026-10-05T20:47:49.267Z",
+        "source": "Live profile aquaviator; current WVD branch/CI read (59ad35a; CI 37357119941/37357127604 successful). Salon branch/tree/blob reads and non-forced evidence update 722fba535b79d905477e0f07202a28f9c94c1802 verified; product access detail in WVD-Salon handoff/wvd/access-evidence.json. Shell Salon clone lacks credential; connector works. No administration inferred. Refreshed WVD f8ad444 and product heads/PR ownership. GitHub job rerun capability retried cancelled quality job 111949862864; validation 37365604895 attempt 2 succeeded. Wedding non-forced compatibility fix fb99b6f6aa6f3f4d86888ad0b5f16b2493c1bcbc and handoff 35eaf66f3d9130b21a4ed7729787a55cf747505c pushed to development/undecided-date-onboarding with expected-head guards."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -59,8 +59,8 @@
       "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T19:41:51.309Z",
-        "source": "Owner-private WVD Site reopened, source d6200202c28c9ee509021c56f649ddaa8d6a5b5e pushed and packaged by Sites helper. Private deployment appgdep_6ac3ecf54d5c8191a4f6813d80498246 succeeded at 2026-10-05T18:31:33.101812+00:00; audience unchanged. docs/WVD-CONTROLLER-CONTINUATION.md. Wedding project appgprj_6ac3c826d96481919bd4218973832eb2 was reopened as owner account 0e17b421-97f4-421a-a694-ff56bbd659fb for WED-WP-003 fictional onboarding and reviewed section ordering. Sources 37b10d5eafcf56649e12a8a5ae2742b3a7b671df and 7b799af9a51b8c2eae53316874b476b9abfa2d47 deployed successfully as appgdep_6ac3f70a835c8191833a555eac8f5f5c and appgdep_6ac3fd7555f48191b8f9b47236b212c2. Existing DB/R2 and sole-owner custom audience retained; no spending change. Credentials held in session only."
+        "at": "2026-10-05T20:47:49.267Z",
+        "source": "Owner-private WVD Site reopened, source d6200202c28c9ee509021c56f649ddaa8d6a5b5e pushed and packaged by Sites helper. Private deployment appgdep_6ac3ecf54d5c8191a4f6813d80498246 succeeded at 2026-10-05T18:31:33.101812+00:00; audience unchanged. docs/WVD-CONTROLLER-CONTINUATION.md. Wedding project appgprj_6ac3c826d96481919bd4218973832eb2 was reopened as owner account 0e17b421-97f4-421a-a694-ff56bbd659fb for WED-WP-003 fictional onboarding and reviewed section ordering. Sources 37b10d5eafcf56649e12a8a5ae2742b3a7b671df and 7b799af9a51b8c2eae53316874b476b9abfa2d47 deployed successfully as appgdep_6ac3f70a835c8191833a555eac8f5f5c and appgdep_6ac3fd7555f48191b8f9b47236b212c2. Existing DB/R2 and sole-owner custom audience retained; no spending change. Credentials held in session only. Refreshed Wedding owner-only access and exact source; legacy-client repair source 35034aba9e256b9163c7d630db2c92fc95333b65 deployed as appgdep_6ac40ceb11f48191a8ddc7f06752f755 with native succeeded result. Audience, bindings and spending unchanged."
       },
       "limits": [
         "Sites frontend access does not imply access to the private booking service.",
