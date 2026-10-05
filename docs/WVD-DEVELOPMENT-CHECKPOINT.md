@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 20300)
-Total output lines: 1287
-
 # WVD development checkpoint
 
 Authority: agreed founder brief and subsequent instructions in the development
@@ -624,7 +621,27 @@ calendar labels or owner profile alone do not establish the complete conflict se
 
 Founder reported the personal and WVD primary sharing steps completed. The
 development binding now checks the named WVD calendar, WVD primary and personal
-primary together. Missing or denied evidence from any required calend…300 tokens truncated…-denied screenshot was inspected.
+primary together. Missing or denied evidence from any required calendar blocks
+the combined preflight. Tests cover a single omitted/denied required calendar
+and diagnostics contain opaque target ordinals only, never event data.
+
+Live run 37199371099 authenticated successfully and reported named WVD calendar
+PASS, personal primary PASS, WVD primary TARGET_NOT_FOUND_OR_NOT_SHARED. Founder
+was asked to repeat the free/busy grant on the WVD primary calendar. Do not remove
+that required calendar or declare the combined grant set verified to bypass it.
+Nine focused checks passed locally; native/container runs for the diagnostic
+source remain pending at this checkpoint. Production booking remains disabled.
+
+
+### Combined calendar access verified — 4 October 2026
+
+After the founder shared the WVD primary calendar, rerun 37199371099 passed
+keyless authentication, Drive preflight, all three required calendars and the
+portal's live Calendar adapter contract. The previously missing primary grant
+is resolved. Source `38db88ae53bab3d0ea6571696a07100d2159be90` also passed all
+four CI jobs (37199371147) and the offline container (37199371078). Downloaded
+container results match that source, isolated demo project and liveAccess=false;
+the mobile Member-approval-denied screenshot was inspected.
 
 The verified conflict set is named WVD, WVD primary and personal primary. Busy
 personal work commitments can now be read by the development integration; no

@@ -105,6 +105,10 @@ jobs:
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
         run: node tools/google-development-access/booking-runtime-preflight.mjs tools/google-development-access/binding.json
+      - name: Verify explicit confirmation key version without writes or mail
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/google-development-access/confirmation-key-preflight.mjs
       - name: Discover existing London hosting resources without provisioning
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
@@ -164,7 +168,6 @@ jobs:
         run: node tools/booking-runtime/private-http.mjs verify "$RUNTIME_URL"
       - id: mail_scope_probe
         name: Check existing delegated send scope without sending a message
-        continue-on-error: true
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           project_id: wvd-development

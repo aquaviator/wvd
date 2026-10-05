@@ -4,9 +4,9 @@ const base64=(value,max)=>typeof value==='string'&&value.length<=max&&/^[A-Za-z0
 export function validDeliveryEnvelope(value){return Boolean(value&&Object.keys(value).sort().join(',')==='ciphertext,iv,keyRef,tag'&&ref(value.keyRef)&&base64(value.iv,16)&&Buffer.from(value.iv,'base64').length===12&&base64(value.tag,24)&&Buffer.from(value.tag,'base64').length===16&&base64(value.ciphertext,16384)&&value.ciphertext.length>0);}
 // Explicit keys supplied by the runtime's approved secret mechanism. No key
 // generation/defaults, key logging or plaintext persistence in this adapter.
-export function createBookingDeliveryCipher({keyRef,readKey}){
- if(!ref(keyRef)||typeof readKey!=='function')throw Error('INVALID_CONFIGURATION');
- const key=async ref=>{const result=await readKey(ref);if(!Buffer.isBuffer(result)||result.length!==32)throw Error('DELIVERY_KEY_UNAVAILABLE');return Buffer.from(result);};
+export function createBookingDeliveryCipher({keyRef,readKey,consumeKey=false}){
+ if(!ref(keyRef)||typeof readKey!=='function'||typeof consumeKey!=='boolean')throw Error('INVALID_CONFIGURATION');
+ const key=async ref=>{const result=await readKey(ref);if(!Buffer.isBuffer(result)||result.length!==32){if(consumeKey&&Buffer.isBuffer(result))result.fill(0);throw Error('DELIVERY_KEY_UNAVAILABLE');}const copy=Buffer.from(result);if(consumeKey)result.fill(0);return copy;};
  const aad=value=>{if(typeof value!=='string'||!value.length||Buffer.byteLength(value)>1024)throw Error('INVALID_DELIVERY_CONTEXT');return Buffer.from(value);};
  return {
   async seal(plaintext,context){
