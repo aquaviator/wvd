@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 20300)
+Total output lines: 1287
+
 # WVD development checkpoint
 
 Authority: agreed founder brief and subsequent instructions in the development
@@ -621,27 +624,7 @@ calendar labels or owner profile alone do not establish the complete conflict se
 
 Founder reported the personal and WVD primary sharing steps completed. The
 development binding now checks the named WVD calendar, WVD primary and personal
-primary together. Missing or denied evidence from any required calendar blocks
-the combined preflight. Tests cover a single omitted/denied required calendar
-and diagnostics contain opaque target ordinals only, never event data.
-
-Live run 37199371099 authenticated successfully and reported named WVD calendar
-PASS, personal primary PASS, WVD primary TARGET_NOT_FOUND_OR_NOT_SHARED. Founder
-was asked to repeat the free/busy grant on the WVD primary calendar. Do not remove
-that required calendar or declare the combined grant set verified to bypass it.
-Nine focused checks passed locally; native/container runs for the diagnostic
-source remain pending at this checkpoint. Production booking remains disabled.
-
-
-### Combined calendar access verified — 4 October 2026
-
-After the founder shared the WVD primary calendar, rerun 37199371099 passed
-keyless authentication, Drive preflight, all three required calendars and the
-portal's live Calendar adapter contract. The previously missing primary grant
-is resolved. Source `38db88ae53bab3d0ea6571696a07100d2159be90` also passed all
-four CI jobs (37199371147) and the offline container (37199371078). Downloaded
-container results match that source, isolated demo project and liveAccess=false;
-the mobile Member-approval-denied screenshot was inspected.
+primary together. Missing or denied evidence from any required calend…300 tokens truncated…-denied screenshot was inspected.
 
 The verified conflict set is named WVD, WVD primary and personal primary. Busy
 personal work commitments can now be read by the development integration; no
@@ -1263,3 +1246,25 @@ send-scope probe returned unauthorized_client; a Workspace admin grant is now a
 real dependency. Exact setup and the prepared combined API/secret script are
 recorded in WVD-BOOKING-DELIVERY.md. No customer email was sent; no mail scope,
 secret resource or secret grant has been changed by the controller.
+
+
+## Confirmation access resolved — 5 October 2026, 10:54 BST
+
+Founder ran enable-confirmation-services.sh at source f1df950 and supplied
+CONFIRMATION_SERVICES_PREPARED_NO_MESSAGE_SENT: secret key version 1 enabled,
+scoped Secret Accessor grant applied, Workspace client 104947416422178406240.
+The subsequent Workspace screenshot confirms calendar.events and gmail.send
+on that same WVD Development client. Do not request this setup again without
+new evidence of failure. The other client in the screenshot is not used here.
+
+Google access run 37289852007, rerun job 111707899833, verified at
+2026-10-05T09:54:54Z: MAIL_SEND_SCOPE_PRESENT_NO_MESSAGE_SENT and PRIVATE_HTTP_PASS.
+The latter includes provider startup reads, availability and wrong-origin denial;
+no booking mutation or email was performed by that HTTP probe. The established
+past synthetic Calendar rehearsal remains part of this workflow.
+This resolves delegated token issuance; it does not prove email delivery,
+activate customer mail, or connect the static Sites booking journey. Secret
+creation/grant is founder-supplied evidence; runtime key access is not yet probed.
+Next: compose the existing confirmation adapters with explicit configuration,
+prove runtime key access without logging key bytes, and retain the existing
+recipient/admission controls before activating customer delivery.
