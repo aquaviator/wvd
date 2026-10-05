@@ -188,11 +188,3 @@ jobs:
           else
             echo 'MAIL_SEND_SCOPE_UNAVAILABLE_ADMIN_CONFIGURATION_REQUIRED'
           fi
-      - name: Send founder-approved one-time development email
-        if: github.event_name == 'push' && github.event.head_commit.message == 'Run approved WVD mail rehearsal 20261005-130004' && github.run_attempt == 1
-        env:
-          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
-          WVD_MAIL_ACCESS_TOKEN: ${{ steps.mail_scope_probe.outputs.access_token }}
-        run: |
-          node --test tools/portal-proof/tests/confirmation-mail-rehearsal.test.mjs tools/portal-proof/tests/google-booking-mail.test.mjs
-          node tools/google-development-access/confirmation-mail-rehearsal.mjs
