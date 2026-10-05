@@ -1285,3 +1285,17 @@ creation/grant is founder-supplied evidence; runtime key access is not yet probe
 Next: compose the existing confirmation adapters with explicit configuration,
 prove runtime key access without logging key bytes, and retain the existing
 recipient/admission controls before activating customer delivery.
+
+
+## Continued development — composed confirmation worker
+
+Google key/access source passed live run 37293618815: version 1 is readable and
+Gmail delegation works. Added explicit envelope-alias/version mapping and owned
+key-buffer erasure. Composed existing encryption, journal, Calendar proof and
+Gmail MIME sender with shared short-lived IAM token acquisition. The existing
+Calendar client now reuses the extracted token logic; its tests still pass.
+Synthetic end-to-end composition proves one send under competing workers. No
+live message, public endpoint or deployment activation is implied. Focused suite
+passed 54 tests; full CI/container result remains to be checked for this source.
+The previous checkpoint's accidental output truncation was restored from the
+complete local source in the key-mapping commit.

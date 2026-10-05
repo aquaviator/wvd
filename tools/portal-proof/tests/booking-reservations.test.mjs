@@ -1,3 +1,4 @@
+import {composeBookingDeliveryRuntime} from '../booking-delivery-runtime.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {AsyncLocalStorage} from 'node:async_hooks';
@@ -346,4 +347,22 @@ test('concurrent replacement accepts one new secret and expired links cannot ext
  const next=attempts.find(x=>x.status==='fulfilled').value.managementUrl.split('#')[1],expired=managementSetup(s,{clock:()=> '2026-10-05T12:00:00.000Z'});
  await assert.rejects(expired.replace({token:next,managementKey:'d'.repeat(64),operationId:'expired'}),/MANAGEMENT_DENIED/);await assert.rejects(expired.revoke({token:next}),/MANAGEMENT_DENIED/);
  const row=[...s.db.rows.values()][0].reservations[0];row.management.replacement.previousTokenHash=row.management.tokenHash;await assert.rejects(s.store.read('first'),/CORRUPT_BOOKING_SCHEDULE/);
+});
+
+
+test('composed Google delivery encrypts, delegates and sends a confirmed booking once',async()=>{
+ const s=setup(),f=await deliverySetup(s);let sends=0,grants=0;
+ const signer={request:async options=>{
+  if(options.url.startsWith('https://secretmanager.googleapis.com/'))return {data:{name:'projects/6616382131/secrets/booking-key/versions/1',payload:{data:Buffer.alloc(32,7).toString('base64')}}};
+  const claims=JSON.parse(options.data.payload);assert.equal(claims.scope,'https://www.googleapis.com/auth/gmail.send');assert.equal(claims.sub,'admin@example.test');
+  return {data:{signedJwt:Buffer.from('{"alg":"RS256"}').toString('base64url')+'.'+Buffer.from(JSON.stringify(claims)).toString('base64url')+'.signature'}};
+ }};
+ const worker=composeBookingDeliveryRuntime({runtime:{binding:{firebase:{projectId:'wvd-development',productId},calendarId,origin:'https://example.test',requestTimeoutMs:1000},store:s.store,management:f.management,calendar:f.options.calendar},config:{serviceAccount:'wvd-development@wvd-development.iam.gserviceaccount.com',senderEmail:'admin@example.test',secretId:'booking-key',activeKey:'v1',versions:{v1:'1'}},signer,clock:f.options.clock,request:async(url,options)=>{
+  if(url==='https://oauth2.googleapis.com/token'){grants++;return Response.json({token_type:'Bearer',access_token:'synthetic-token',expires_in:120});}
+  assert.equal(url,'https://gmail.googleapis.com/gmail/v1/users/me/messages/send');assert.equal(options.method,'POST');assert.equal(options.redirect,'error');
+  const mime=Buffer.from(JSON.parse(options.body).raw,'base64url').toString('utf8');assert.match(mime,/To: customer@example.test/);assert.match(mime,/From: admin@example.test/);sends++;return Response.json({id:'synthetic-receipt'});
+ }});
+ const intent=await worker.queue({recipientEmail:'customer@example.test',managementUrl:f.link.managementUrl});
+ const results=await Promise.all([worker.dispatch(intent),worker.dispatch(intent)]);
+ assert.ok(results.some(x=>x.providerAccepted));assert.equal(sends,1);assert.equal(grants,1);assert.equal((await worker.dispatch(intent)).status,'ACCEPTED');assert.equal(sends,1);
 });

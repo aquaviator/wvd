@@ -95,3 +95,40 @@ References checked 5 October 2026:
 https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/send
 https://developers.google.com/workspace/gmail/api/guides/sending
 https://cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets.versions/access
+
+
+## Composed Google worker — 5 October 2026
+
+Admin setup is complete. Google run 37293618815 passed explicit secret-version
+access and the delegated Gmail scope. These are permission/read proofs, not a
+message-delivery receipt. Do not repeat the Workspace or secret setup without
+new evidence of failure.
+
+`booking-delivery-runtime.mjs` composes the existing durable worker, Google MIME
+sender and Google-backed envelope cipher. It remains a private integration module;
+it is not mounted in the deployed server and adds no public email route.
+The host supplies the already-bound runtime, attached signer, clock and explicit
+sender/service-account/key configuration. Construction performs no network work.
+`verifyAccess()` reads the active key and mints a delegated send-only token without
+queueing, contacting Gmail messages.send, or changing Calendar/Firestore records.
+
+`google-keyless-token.mjs` extracts the already-tested Calendar IAM signing and
+short-lived token exchange. Calendar and Gmail adapters now reuse it with a fixed
+purpose allowlist, separate caches and no downloaded key. Gmail accepts only the
+messages.send endpoint with no redirects, credential overrides or automatic
+request replay. A 401 invalidates the cache for a later operation, never retries
+the uncertain send. The durable queue remains the send-once boundary.
+
+The Google cipher maps envelope aliases to an explicit allowlist of secret version
+numbers. Rotation can retain old aliases for decryption while selecting one active
+alias for new envelopes. Unknown aliases cannot trigger a Google request. Owned
+key buffers are erased after use; existing shared-key test readers retain their
+previous semantics. The CI preflight only reads the configured version 1 and
+prints a bounded status without key material. Gmail scope acquisition now fails
+CI if revoked rather than reporting an optional setup condition.
+
+Synthetic integration evidence covers the complete Google-backed composition,
+concurrent dispatch, credential refresh, wrong-target denial and key access.
+Actual inbox delivery still requires an explicitly authorised test recipient;
+no test email has been sent. Public contact/admission integration and worker
+activation remain separate from permission readiness.
