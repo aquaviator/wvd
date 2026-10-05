@@ -36,6 +36,10 @@ export async function hostingDiscovery(binding,token,{request=fetch}={}) {
   return {status:'PASS',name:v.name,immutableTags:v.dockerConfig?.immutableTags===true,scanningDisabled:v.vulnerabilityScanningConfig?.enablementConfig==='DISABLED'};
  });
  await probe('booking-image-upload',`https://artifactregistry.googleapis.com/v1/${repository}:testIamPermissions`,{method:'POST',body:JSON.stringify({permissions:['artifactregistry.repositories.uploadArtifacts']})},v=>({status:Array.isArray(v.permissions)&&v.permissions.includes('artifactregistry.repositories.uploadArtifacts')?'PASS':'REPOSITORY_GRANT_REQUIRED'}));
+ await probe('private-runtime-invocation',`https://run.googleapis.com/v2/${parent}/services/wvd-booking-development:testIamPermissions`,{method:'POST',body:JSON.stringify({permissions:['run.routes.invoke','run.services.setIamPolicy']})},v=>{
+  if(v.permissions!==undefined&&!Array.isArray(v.permissions))throw Error('INVALID_PERMISSIONS');
+  return {status:'REPORTED',invoke:v.permissions?.includes('run.routes.invoke')??false,changeAccess:v.permissions?.includes('run.services.setIamPolicy')??false};
+ });
  return {region,changesMade:false,deploymentReady:false,results};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
