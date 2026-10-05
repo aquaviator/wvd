@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "productId": "wvd",
+  "plane": "ci",
+  "principal": "wvd-development@wvd-development.iam.gserviceaccount.com",
+  "commit": "4639ee686819922c87cd91c87546f4c61bcd8fa8",
+  "runId": "37330368559",
+  "attempt": "1",
+  "observedAt": "2026-10-05T15:09:11.742Z",
+  "source": "https://github.com/aquaviator/wvd/actions/runs/37330368559",
+  "results": [
+    {
+      "capabilities": [
+        "drive.read",
+        "calendar.freebusy"
+      ],
+      "status": "PASS"
+    },
+    {
+      "capabilities": [
+        "calendar.writer-grant"
+      ],
+      "status": "PASS"
+    },
+    {
+      "capabilities": [
+        "confirmation-key.read",
+        "email.signing"
+      ],
+      "status": "PASS"
+    },
+    {
+      "capabilities": [
+        "runtime.invoke",
+        "booking.availability"
+      ],
+      "status": "PASS"
+    },
+    {
+      "capabilities": [
+        "email.send-scope"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "allPassed": true,
+  "grantsPermission": false,
+  "mailSentByTheseChecks": false
+}

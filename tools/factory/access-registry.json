@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T15:04:37.000Z",
+  "updatedAt": "2026-10-05T15:10:55.234Z",
   "scope": "Development-flow control plane; website is first consumer",
   "connections": [
     {
@@ -16,9 +16,9 @@
       "credentialRef": "connected-app:gmail",
       "discovery": "Discover current Gmail tools, then verify connected profile before account-specific operations.",
       "evidence": {
-        "status": "OBSERVED",
-        "at": "2026-10-05T15:04:37.000Z",
-        "source": "Live Gmail get_profile resolved admin@wearvalleydigital.com; profile only, not mailbox-operation verification."
+        "status": "VERIFIED",
+        "at": "2026-10-05T15:10:55.234Z",
+        "source": "Live get_profile confirmed admin@wearvalleydigital.com; read_email metadata for authorised test receipt 1a10c28daac6d0c6 confirmed matching subject and INBOX label. No further send authorised."
       },
       "limits": [
         "Controller connection is not available to CI or deployed products.",
@@ -171,23 +171,65 @@
       ]
     },
     {
-      "id": "controller-google-workspace",
+      "id": "controller-wvd-calendar",
+      "plane": "controller",
+      "capabilities": [
+        "calendar.discover",
+        "calendar.read"
+      ],
+      "identityRef": "admin@wearvalleydigital.com",
+      "credentialRef": "connected-app:google-calendar",
+      "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
+      "evidence": {
+        "status": "OBSERVED",
+        "at": "2026-10-05T15:10:55.234Z",
+        "source": "Live WVD Calendar get_profile confirmed account. Event reads/writes not probed."
+      },
+      "limits": [
+        "Profile identity does not establish target resource permissions.",
+        "Controller access cannot be assumed available to CI or service accounts.",
+        "Writes require task authority."
+      ]
+    },
+    {
+      "id": "controller-personal-calendar",
+      "plane": "controller",
+      "capabilities": [
+        "calendar.discover"
+      ],
+      "identityRef": "leatfield@gmail.com",
+      "credentialRef": "connected-app:google-calendar",
+      "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
+      "evidence": {
+        "status": "OBSERVED",
+        "at": "2026-10-05T15:10:55.234Z",
+        "source": "Account listed by current Calendar tool metadata. Profile/resource access not probed."
+      },
+      "limits": [
+        "Profile identity does not establish target resource permissions.",
+        "Controller access cannot be assumed available to CI or service accounts.",
+        "Writes require task authority."
+      ]
+    },
+    {
+      "id": "controller-drive",
       "plane": "controller",
       "capabilities": [
         "drive.discover",
-        "calendar.discover"
+        "drive.read"
       ],
-      "identityRef": "Connected Google Workspace account must be resolved at use",
-      "credentialRef": "connected-app:google-drive / google-calendar",
-      "discovery": "Discover tools, read relevant plugin skill and verify actual connected account and resource before use.",
+      "identityRef": "admin@wearvalleydigital.com",
+      "credentialRef": "connected-app:google-drive",
+      "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "OBSERVED",
-        "at": "2026-10-05T15:04:37.000Z",
-        "source": "Live WVD Calendar get_profile resolved admin@wearvalleydigital.com; Drive account/resource not probed."
+        "at": "2026-10-05T15:10:55.234Z",
+        "source": "Live Drive get_profile confirmed account. File permissions remain target-specific and unprobed."
       },
       "limits": [
-        "Do not equate controller OAuth with service-account grants.",
-        "Tool presence does not prove a particular account or target is accessible."
+        "Profile identity does not establish target resource permissions.",
+        "Controller access cannot be assumed available to CI or service accounts.",
+        "Writes require task authority."
       ]
     }
   ]
