@@ -173,3 +173,10 @@ to startup/authorised internal use with scale-to-zero. These bounds are not a
 hard financial cap; registry transfer, Firestore, logging and shared free-tier
 consumption remain relevant before enabling sustained/customer traffic. No paid
 scanning, load balancer, Cloud Build or always-on instance is introduced.
+
+First activation succeeded in Google workflow 37286620142 from source
+1812c0a7c1b13cd83bb74b46a5076952a2f60d75. Deployed image digest:
+sha256:82b3020bdb98e789c72e4be0823a09dd733ecd3c3cca099548d4cce0b94baebe.
+The service passed managed startup and private-configuration checks. This does
+not verify the deployed identity's live Calendar business flow or establish
+customer-facing readiness. See the current development checkpoint for next work.

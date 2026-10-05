@@ -1201,3 +1201,32 @@ service IAM policy authority. No resources or permissions changed in that run.
 Prepared tools/booking-runtime/enable-image-repository.sh for the narrow required
 founder/admin API and repository setup; bash syntax check passed. This script
 has not been executed. See WVD-BOOKING-RUNTIME.md for exact scope and limitations.
+
+## Private booking runtime deployed — 5 October 2026
+
+Founder supplied IMAGE_REPOSITORY_READY_NO_SERVICE_DEPLOYED after enabling APIs,
+creating the empty private Docker repository and granting its scoped Writer role.
+Source 1812c0a7c1b13cd83bb74b46a5076952a2f60d75 then passed live Google workflow
+37286620142, including exact repository access/configuration checks and creation.
+Service: projects/wvd-development/locations/europe-west2/services/wvd-booking-development.
+Image digest: sha256:82b3020bdb98e789c72e4be0823a09dd733ecd3c3cca099548d4cce0b94baebe.
+Result: PRIVATE_RUNTIME_READY. Managed startup /health succeeded; ingress is
+internal-only, IAM invocation checks remain enabled, zero minimum and one maximum
+instance. First image passed the 400 MiB uncompressed limit. No customer booking,
+email or public IAM grant occurred. The £5/month authority now covers an actual
+private Google runtime/image, not merely a prepared deployment.
+
+Six focused deployment/discovery tests and six composed runtime/auth tests passed
+locally. Push CI 37286620219 and PR CI 37286625344 passed. Container 37286619953
+failed because its file allowlist omitted the new pure deployment module imported
+by the test. The Dockerfile now includes that module; the container remains
+offline and receives no credentials. A new run must verify this packaging fix.
+
+Next integration work: verify the attached runtime's actual Calendar read path;
+provide an authenticated/private end-to-end test path; implement explicit origin
+routing between the website and booking UI; complete admission/abuse controls
+before public invocation; configure approved delivery/key storage and retention.
+The static private Sites frontend remains separate. Do not add public invocation
+or claim a complete customer booking journey from startup readiness. Subsequent
+runtime updates need a revision-aware deployment path; first-creation automation
+intentionally skips existing services, including after uncertain responses.
