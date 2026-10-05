@@ -1341,3 +1341,15 @@ empty local D1 migrations passed. Full checkout recovery (four historical PNGs)
 and distinct verification remain open; Controller acceptance is HOLD. Drive
 continuation/portfolio records are synchronised. WED-CONT-001 is not executed.
 See latest controller continuation for exact source, scope, evidence and next work.
+
+
+## Wedding undecided-date slice — 5 October 2026
+
+WED-WP-003 blank fictional onboarding implemented in WVD-Wedding development branch
+`development/undecided-date-onboarding` at `2c384804a4e4b62ba7bf7aac526c607ceb4279be`.
+Private Site source `37b10d5eafcf56649e12a8a5ae2742b3a7b671df` deployed successfully.
+Build, TypeScript, 12 domain and 9 SQLite-adapter checks passed; browser and distinct
+review remain NOT_RUN. WED-CONT-001 remains partial and all 32 full scenarios remain
+NOT_RUN. Existing records preserved. Full evidence, limitations and next steps are
+in the latest Wedding section of `WVD-CONTROLLER-CONTINUATION.md` and the product's
+`handoff/WED-WP-003-UNDECIDED-DATE.md`. No commercial release or new spending.

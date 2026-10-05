@@ -299,3 +299,46 @@ access or rerun all successful checks without a concrete cause. Independently
 continue WED-CONT-001 or SALON-WVD-002/003. Preserve native stacks, original contracts,
 financial/health restrictions and release boundaries. No founder input is needed
 for this attempt. Keep continuation active: the agreed product work is unfinished.
+
+
+## Wedding undecided-date slice — 5 October 2026
+
+Founder requested continued building. Refreshed product heads, Drive revisions,
+queue ownership and Wedding CI (no workflow runs); no named overlapping worker
+was identified. Recovered the full original app/assets through the existing Sites
+source helper at 19fb840, and compared GitHub afdfa62: later changes were only
+docs/evidence. Native stack/lockfile retained. Original contracts unchanged.
+
+Baseline locked install, build, TypeScript, 12 domain checks and two fresh local
+D1 migrations passed. Implemented the next WED-WP-003 / WED-REQ-006 bounded slice:
+blank fictional onboarding, no invented dates/location/guests, explicit sample
+option, existing-workspace retry preservation, first-event selection and empty-state
+controls, and DATE_UNDECIDED quote response. Nine new disposable SQLite-adapter
+checks, 12 domain checks, TypeScript and production build passed. These are creator
+checks, not full hosted/independent acceptance. Browser QA and original HTTP suites
+were not rerun: managed Sites instructions prohibit an improvised preview server
+without the supported control-browser capability, which is unavailable here.
+
+Product changes pushed non-forced to aquaviator/WVD-Wedding branch
+`development/undecided-date-onboarding` at
+`2c384804a4e4b62ba7bf7aac526c607ceb4279be`.
+Task/evidence: `handoff/WED-WP-003-UNDECIDED-DATE.md`,
+`evidence/continuation/onboarding-results.json`, and updated 14-package overlay.
+Sites source `37b10d5eafcf56649e12a8a5ae2742b3a7b671df` deployed successfully to
+https://wvd-wedding-workspace.leatfield.chatgpt.site at 2026-10-05T19:14:30Z,
+deployment `appgdep_6ac3f70a835c8191833a555eac8f5f5c`.
+Owner-private audience and existing DB/R2 preserved; no reset, schema/provider
+migration, live send, real-data permission, financial operation or extra spending.
+No commercial release. Original hosted source 19fb840 is now historical baseline.
+
+Wedding Drive START HERE received a revision-guarded continuation receipt and
+current-version correction. WED-CONT-001 remains partial: no distinct verifier
+or complete HTTP/browser reproduction. All 32 complete scenarios remain NOT_RUN;
+no package acceptance or Salon intake was closed. Existing owners retain their
+workspaces, so the new starting form appears only before first bootstrap.
+
+Next: exact-candidate independent/browser review of blank creation/reload/first
+event, then remaining bounded WED-WP-003 editor gaps or independent Salon work.
+Do not repeat successful local checks without changes; do not reset founder data
+to expose onboarding. Product deployment is a private fictional prototype, not
+commercial release. No founder input is needed for other unblocked development.
