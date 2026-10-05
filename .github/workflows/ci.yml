@@ -25,6 +25,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p public-evidence
+          du -ah public-evidence
           bytes=$(du -sb public-evidence | cut -f1)
           test "$bytes" -le 5242880
       - name: Save synthetic public page evidence
@@ -32,9 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: public-guide-evidence-${{ github.run_id }}
-          path: |
-            public-evidence/*.png
-            public-evidence/*.jpg
+          path: public-evidence/*.png
           if-no-files-found: warn
           retention-days: 1
       - run: npx playwright test --config tools/portal-proof/playwright.config.mjs
