@@ -9,7 +9,7 @@
     "preview": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "validate": "tsx scripts/validate.ts",
+    "validate": "node --import tsx scripts/validate.ts",
     "marketing:queue": "tsx scripts/generate-marketing-queue.ts"
   },
   "dependencies": {

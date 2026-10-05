@@ -3,7 +3,7 @@ import {join} from 'node:path';
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-for (const route of ['/', '/services/', '/enquire/', '/about/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/', '/insights/ownership-and-handover/', '/insights/when-to-automate/']) {
+for (const route of ['/', '/services/', '/enquire/', '/about/', '/products/', '/products/salon/', '/products/wedding/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/', '/insights/ownership-and-handover/', '/insights/when-to-automate/']) {
   test(`${route} new delivery pages are accessible and fit narrow screens`, async ({page},testInfo) => {
     await page.goto(route);
     await expect(page.getByRole('heading', {level:1})).toBeVisible();
@@ -18,44 +18,37 @@ for (const route of ['/', '/services/', '/enquire/', '/about/', '/demos/', '/dem
     }
   });
 }
-test('Hospitality enquiry stays simulated with no service calls or browser storage', async ({page})=>{
-  const calls:string[]=[];
-  page.on('request',r=>{if(['fetch','xhr'].includes(r.resourceType())) calls.push(r.url());});
-  await page.goto('/demos/hospitality/');
-  await expect(page.getByLabel('Demo notice')).toContainText('No enquiry is sent');
-  await page.getByRole('button',{name:'Simulate enquiry',exact:true}).click();
-  await expect(page.getByRole('status')).toContainText('No booking has been made');
-  await page.getByRole('button',{name:'Show example venue response'}).click();
-  await expect(page.getByRole('status')).toContainText('not an availability check or reservation');
-  expect(calls).toEqual([]);
-  expect(await page.evaluate(()=>({local:localStorage.length,session:sessionStorage.length}))).toEqual({local:0,session:0});
-});
-test('Salon treatment changes invalidate selection and slots fit treatment duration',async({page})=>{
-  const calls:string[]=[];page.on('request',r=>{if(['fetch','xhr'].includes(r.resourceType())) calls.push(r.url());});
-  await page.goto('/demos/salon/');
-  const action=page.getByRole('button',{name:'Simulate appointment request'});
-  await expect(action).toBeDisabled();
-  await page.getByRole('button',{name:'09:00–09:30',exact:true}).click();
-  await expect(action).toBeEnabled();
-  await page.getByLabel('Treatment',{exact:true}).selectOption('90');
-  await expect(action).toBeDisabled();
-  const labels=await page.getByRole('group',{name:'Sample appointment start times'}).getByRole('button').allTextContents();
-  for(const label of labels){const [a,b]=label.split('–').map(t=>{const [h,m]=t.split(':').map(Number);return h*60+m;});expect(b-a).toBe(90);expect(a<780&&b>720).toBe(false);expect(b).toBeLessThanOrEqual(1020);}
-  await page.getByRole('button',{name:'09:00–10:30',exact:true}).click();
-  await action.click();
-  await expect(page.getByRole('status')).toContainText('No appointment was created');
-  expect(calls).toEqual([]);
-  expect(await page.evaluate(()=>({local:localStorage.length,session:sessionStorage.length}))).toEqual({local:0,session:0});
+test('retired demo routes offer current products without simulated booking controls', async ({page, request}) => {
+  for (const route of ['/demos/', '/demos/hospitality/', '/demos/salon/']) {
+    await page.goto(route);
+    await expect(page.getByRole('link', {name: 'Explore current products', exact: true})).toHaveAttribute('href', /\/products\//);
+    await expect(page.locator('main button, main input, main select, main form')).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,follow');
+  }
+  expect(await (await request.get('/sitemap-0.xml')).text()).not.toContain('/demos/');
 });
 
-test('Hospitality controls never submit a request with JavaScript disabled',async({browser})=>{
-  const context=await browser.newContext({javaScriptEnabled:false});
-  const page=await context.newPage();
-  await page.goto('http://127.0.0.1:4321/demos/hospitality/');
-  const calls:string[]=[];page.on('request',r=>calls.push(r.url()));
-  await page.getByRole('button',{name:'Simulate enquiry',exact:true}).click();
-  await expect(page).toHaveURL(/\/demos\/hospitality\/$/);
-  expect(calls).toEqual([]);await context.close();
+test('primary product journeys preserve unavailable commerce and private preview boundaries', async ({page}, testInfo) => {
+  await page.goto('/');
+  await page.getByRole('navigation', {name: 'Primary', exact: true}).getByRole('link', {name: 'Products', exact: true}).click();
+  await expect(page).toHaveURL(/\/products\/$/);
+  await page.getByRole('link', {name: 'Explore Salon Platform', exact: true}).click();
+  await expect(page.locator('main')).toContainText('Not yet available for customer subscriptions');
+  await expect(page.locator('main')).toContainText('A hosted preview is not published yet');
+  await expect(page.getByRole('link', {name: 'Prepare a salon enquiry', exact: true})).toHaveAttribute('href', '/enquire/');
+  await expect(page.locator('main a[href*="chatgpt.site"]')).toHaveCount(0);
+  await page.goto('/products/wedding/');
+  await expect(page.locator('main')).toContainText('Customer hire is not open yet');
+  await expect(page.getByRole('link', {name: 'Open the owner-only prototype →', exact: true})).toHaveAttribute('href', 'https://wvd-wedding-workspace.leatfield.chatgpt.site/');
+  await expect(page.locator('main')).toContainText('Owner sign-in is required');
+  for (const route of ['/products/', '/products/salon/', '/products/wedding/']) {
+    await page.goto(route);
+    await expect(page.locator('main a[href*="checkout"], main a[href*="stripe"], main form')).toHaveCount(0);
+    if (process.env.WVD_PUBLIC_EVIDENCE_DIR) {
+      mkdirSync(process.env.WVD_PUBLIC_EVIDENCE_DIR, {recursive: true});
+      await page.screenshot({path: join(process.env.WVD_PUBLIC_EVIDENCE_DIR, `platform-${testInfo.project.name}-${route.split('/').filter(Boolean).join('-')}.png`), fullPage: true, scale: 'css'});
+    }
+  }
 });
 
 test('enquiry draft is reviewable, optional budget stays optional and changed details invalidate it without network/storage',async({page},testInfo)=>{

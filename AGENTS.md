@@ -48,8 +48,9 @@ Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
   `docs/WVD-SITES-HANDOFF.md` for the handoff and handback. This authorises the
   development workflow, not automatic hosting migration or additional spend.
 
-- The reusable automated development flow is the primary deliverable; the WVD
-  website is its first consumer (founder, 5 October 2026). Read
+- Salon and Wedding are the primary commercial products (founder, 5 October
+  2026). The reusable automated development flow supports these products and
+  the WVD site. Read
   `docs/WVD-ACCESS-AUTOMATION.md` and the access registry before asking the founder
   for access or manual evidence. Discover current controller connectors first:
   their capabilities differ from CI and deployed service permissions. Refresh

@@ -8,6 +8,6 @@ const productUrls = loadProducts().map(({ product, seo }) => ({ url: seo.canonic
 export default defineConfig({
   site: 'https://wearvalleydigital.com',
   output: 'static',
-  integrations: [sitemap({ filter: (page) => !page.includes('/qa/') && !productUrls.some(product => page === product.url && !product.indexable) })],
+  integrations: [sitemap({ filter: (page) => !page.includes('/qa/') && !page.includes('/demos/') && !productUrls.some(product => page === product.url && !product.indexable) })],
   build: { format: 'directory' }
 });

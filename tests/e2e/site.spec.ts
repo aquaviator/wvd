@@ -5,7 +5,7 @@ for (const [path, heading] of [
   ['/', 'Websites, software and automation'],
   ['/services/', 'Build around your business'],
   ['/about/', 'Meet Andy Clarke'],
-  ['/products/', 'Useful tools, clearly explained'],
+  ['/products/', 'Salon and wedding websites, shaped around you'],
   ['/products/property/', 'Property'],
   ['/products/property/uk-landlord-mtd-ledger/', 'Keep your landlord bookkeeping organised'],
   ['/work/', 'Specialist knowledge, shaped into software'],

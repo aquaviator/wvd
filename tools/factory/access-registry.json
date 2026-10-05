@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T16:28:10.000Z",
-  "scope": "Development-flow control plane; website is first consumer",
+  "updatedAt": "2026-10-05T17:25:00.000Z",
+  "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
       "id": "controller-gmail",
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T16:28:10.000Z",
-        "source": "Current connector profile aquaviator (78605956); created 833ae1647d91219d09e42efd4151566a7b950f84 and advanced authorised development ref without force. Read successful push/PR CI 37340543483/37340549739 and container 37340543462; downloaded artifact 11359115239 and verified its digest and exact source. docs/WVD-CONTROLLER-CONTINUATION.md. No Google permission or mail probe repeated."
+        "at": "2026-10-05T17:25:00.000Z",
+        "source": "Live profile aquaviator (78605956); read development ref b13e4679bb5299554d3d64faf5549cb1d1052986, successful push/PR CI 37344600401/37344608651, Salon draft PR and Wedding handoff. GitHub connector used; shell Git transport unavailable. Product reads do not grant product release authority."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -54,13 +54,13 @@
         "website.edit",
         "website.publish"
       ],
-      "identityRef": "wear-valley-digital-development",
+      "identityRef": "appgprj_6ac361a8bfd48191b3bde453565cf2ab",
       "credentialRef": "connected-app:sites",
       "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
       "evidence": {
         "status": "VERIFIED",
-        "at": null,
-        "source": "docs/WVD-SITES-HANDOFF.md; historical Site deployment, recheck current access."
+        "at": "2026-10-05T17:25:00.000Z",
+        "source": "get_site confirmed current user owner and owner-only custom audience; Sites source helper opened a07157c33c4ea8f1493312028704f935118da255. Product Site/version references in docs/WVD-PRODUCT-TRANSFERS.md. No audience changes."
       },
       "limits": [
         "Sites frontend access does not imply access to the private booking service.",
@@ -222,9 +222,9 @@
       "credentialRef": "connected-app:google-drive",
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
-        "status": "OBSERVED",
-        "at": "2026-10-05T15:10:55.234Z",
-        "source": "Live Drive get_profile confirmed account. File permissions remain target-specific and unprobed."
+        "status": "VERIFIED",
+        "at": "2026-10-05T17:25:00.000Z",
+        "source": "Live profile admin@wearvalleydigital.com; read WVD/product folder metadata and both completed START HERE records. Exact file IDs/revisions and read-only scope: docs/WVD-PRODUCT-TRANSFERS.md. No Drive records written."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",

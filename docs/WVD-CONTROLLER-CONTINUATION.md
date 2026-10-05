@@ -140,3 +140,12 @@ or hosting configuration. The existing continuation automation now consumes
 these handoffs. Preserve product-specific draft/release, payment, data and
 independent-verification restrictions; continue monitoring subsequent Drive
 revisions without overwriting active workers.
+
+
+## WVD product presentation slice
+
+Reconciled exact Sites identities and version evidence in WVD-PRODUCT-TRANSFERS.md.
+Prepared through Sites source b30ac0e7787184772979983e93a975f029e3323d; 27 routes
+and content validation passed. Latest a44906f handoff update was preserved before
+pushing this slice; product code and workers' Drive records remain untouched.
+Browser CI and private publication evidence follow after verification.
