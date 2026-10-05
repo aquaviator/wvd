@@ -14,7 +14,7 @@ for (const route of ['/', '/services/', '/enquire/', '/about/', '/products/', '/
     if(route.startsWith('/insights/')&&process.env.WVD_PUBLIC_EVIDENCE_DIR){
       if(originalViewport)await page.setViewportSize(originalViewport);
       const directory=process.env.WVD_PUBLIC_EVIDENCE_DIR;mkdirSync(directory,{recursive:true});
-      await page.screenshot({path:join(directory,`guide-${testInfo.project.name}-${route.split('/').filter(Boolean).join('-')}.png`),fullPage:true,scale:'css'});
+      await page.screenshot({path:join(directory,`guide-${testInfo.project.name}-${route.split('/').filter(Boolean).join('-')}.jpg`),type:'jpeg',quality:85,fullPage:true,scale:'css'});
     }
   });
 }
@@ -46,7 +46,7 @@ test('primary product journeys preserve unavailable commerce and private preview
     await expect(page.locator('main a[href*="checkout"], main a[href*="stripe"], main form')).toHaveCount(0);
     if (process.env.WVD_PUBLIC_EVIDENCE_DIR) {
       mkdirSync(process.env.WVD_PUBLIC_EVIDENCE_DIR, {recursive: true});
-      await page.screenshot({path: join(process.env.WVD_PUBLIC_EVIDENCE_DIR, `platform-${testInfo.project.name}-${route.split('/').filter(Boolean).join('-')}.png`), fullPage: true, scale: 'css'});
+      await page.screenshot({path: join(process.env.WVD_PUBLIC_EVIDENCE_DIR, `platform-${testInfo.project.name}-${route.split('/').filter(Boolean).join('-')}.jpg`), type: 'jpeg', quality: 85, fullPage: true, scale: 'css'});
     }
   }
 });
@@ -56,7 +56,7 @@ test('enquiry draft is reviewable, optional budget stays optional and changed de
  await page.goto('/enquire/');await page.getByLabel('Your name',{exact:true}).fill('Synthetic visitor');await page.getByLabel('Business or organisation',{exact:true}).fill('Synthetic business');await page.getByLabel('Your email',{exact:true}).fill('visitor@example.test');await page.getByLabel('What do you need?',{exact:true}).fill('A clearer website');
  await page.getByRole('button',{name:'Prepare email draft',exact:true}).click();await expect(page.locator('#enquiry-status')).toContainText('Nothing has been sent');await expect(page.getByLabel('Email draft',{exact:true})).toHaveValue(/A clearer website/);const href=await page.getByRole('link',{name:'Open email app',exact:true}).getAttribute('href');expect(new URL(href!).searchParams.get('body')).toContain('Email: visitor@example.test');expect(new URL(href!).searchParams.get('body')).not.toContain('Budget context:');
  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
- if(process.env.WVD_PUBLIC_EVIDENCE_DIR){mkdirSync(process.env.WVD_PUBLIC_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.WVD_PUBLIC_EVIDENCE_DIR,`enquiry-draft-${testInfo.project.name}.png`),fullPage:true,scale:'css'});}
+ if(process.env.WVD_PUBLIC_EVIDENCE_DIR){mkdirSync(process.env.WVD_PUBLIC_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.WVD_PUBLIC_EVIDENCE_DIR,`enquiry-draft-${testInfo.project.name}.jpg`),type:'jpeg',quality:85,fullPage:true,scale:'css'});}
  await page.getByLabel('Timing (optional)',{exact:true}).fill('Flexible');await expect(page.locator('#enquiry-draft-panel')).toBeHidden();await expect(page.locator('#enquiry-draft')).toHaveValue('');await page.getByRole('button',{name:'Prepare email draft',exact:true}).click();await expect(page.locator('#enquiry-draft')).toHaveValue(/Timing: Flexible/);await page.getByRole('button',{name:'Clear details',exact:true}).click();await expect(page.locator('#enquiry-draft')).toHaveValue('');await expect(page.getByLabel('Your email',{exact:true})).toHaveValue('');expect(calls).toEqual([]);expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);
 });
 test('enquiry cannot submit personal fields with JavaScript disabled',async({browser})=>{
@@ -69,7 +69,7 @@ test('enquiry cannot submit personal fields with JavaScript disabled',async({bro
   for (const [name,href] of [['Explore Human V1','/work/human-v1/'],['Explore PECP','/work/performance-engineering-control-plane/'],['Explore Salon Platform','/products/salon/'],['Explore Wedding Platform','/products/wedding/'],['Explore the direction →','/products/hospitality/'],['Website services →','/services/#websites'],['Software services →','/services/#software'],['Automation services →','/services/#automation']] as const) {
     await expect(page.getByRole('link',{name,exact:true})).toHaveAttribute('href',href);
   }
-  if(process.env.WVD_PUBLIC_EVIDENCE_DIR){mkdirSync(process.env.WVD_PUBLIC_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.WVD_PUBLIC_EVIDENCE_DIR,`showcase-${testInfo.project.name}.png`),fullPage:true,scale:'css'});}
+  if(process.env.WVD_PUBLIC_EVIDENCE_DIR){mkdirSync(process.env.WVD_PUBLIC_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.WVD_PUBLIC_EVIDENCE_DIR,`showcase-${testInfo.project.name}.jpg`),type:'jpeg',quality:85,fullPage:true,scale:'css'});}
   await page.goto('/products/hospitality/');
   await expect(page.locator('main')).toContainText('In planning');
   await expect(page.locator('main')).toContainText('pricing and launch timing are not confirmed');

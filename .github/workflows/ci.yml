@@ -32,7 +32,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: public-guide-evidence-${{ github.run_id }}
-          path: public-evidence/*.png
+          path: |
+            public-evidence/*.png
+            public-evidence/*.jpg
           if-no-files-found: warn
           retention-days: 1
       - run: npx playwright test --config tools/portal-proof/playwright.config.mjs
