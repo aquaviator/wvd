@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T15:10:55.234Z",
+  "updatedAt": "2026-10-05T15:30:46.000Z",
   "scope": "Development-flow control plane; website is first consumer",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T13:25:31.000Z",
-        "source": "Authorised development-branch writes and CI reads in this session."
+        "at": "2026-10-05T15:30:46.000Z",
+        "source": "Current GitHub connector read development branch e0ce5cb6143f2ff28c713a839518290127847925 and run/jobs metadata for 37330368559 attempt 1; saved receipt matched executable reconciliation. Current write not yet exercised; recorded capability is not a new grant."
       },
       "limits": [
         "Development branch only within current project authority.",

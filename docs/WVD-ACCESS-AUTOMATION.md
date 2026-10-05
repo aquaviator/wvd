@@ -75,3 +75,27 @@ for one day; controllers must persist important non-secret outcomes in the
 registry/checkpoint before expiry. CI cannot capture controller-session settings.
 Retrieve receipts from the trusted GitHub run; a caller-supplied JSON file is not
 independent proof. This report does not send messages or change permissions.
+
+## Receipt reconciliation
+
+Before using a saved CI receipt, fetch its run and the complete jobs response
+through the current GitHub connector. Use the same run attempt; reject incomplete
+pagination. Retrieve the receipt from that run's artifact, or use an already
+preserved receipt whose artifact provenance is recorded in the handoff.
+
+`node tools/factory/cli.mjs access-receipt <receipt.json> <github-evidence.json>`
+checks a bundle containing `run`, `jobs` and the explicitly selected
+`sourceCommit`. The CLI uses the repository's current Google binding and current
+time, not caller-supplied account bindings or observation time. The WVD adapter
+reuses the version-one report producer; it rejects foreign repository/owner/ref,
+workflow, source, attempt, identity, missing/duplicate steps and changed capability
+claims. Successful access checks and the overall workflow/job outcomes remain
+separate, so a later job failure cannot be hidden by a passing probe.
+
+`RECEIPT_MATCHED` means the JSON agrees with the supplied GitHub evidence. It
+does not authenticate arbitrary local JSON, prove the current service revision,
+refresh old observations, grant access, or write the registry. Freshness is
+computed at execution. Connector retrieval remains the trusted boundary; do not
+feed worker-supplied metadata into this command as independent verification.
+This adapter covers the existing WVD receipt format; other products need their
+own explicit binding and report adapter rather than inheriting WVD's principal.

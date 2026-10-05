@@ -7,3 +7,8 @@ test('access receipt binds run and commit without copying credentials or promoti
  const failed=accessReport({...env,ACCESS_MAIL_RESULT:'failure',ACCESS_RUNTIME_RESULT:'skipped'},at);assert.equal(failed.allPassed,false);assert.equal(failed.results[3].status,'NOT_CHECKED');assert.equal(failed.results[4].status,'FAIL');
  assert.throws(()=>accessReport({...env,GITHUB_SHA:'other'},at));assert.throws(()=>accessReport({...env,ACCESS_MAIL_RESULT:'secret-provider-body'},at));
 });
+test('mutating one receipt cannot change future capability claims',()=>{
+ const at='2026-10-05T15:00:00.000Z',first=accessReport(env,at);
+ first.results[0].capabilities.push('email.read');
+ assert.deepEqual(accessReport(env,at).results[0].capabilities,['drive.read','calendar.freebusy']);
+});
