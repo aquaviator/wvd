@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 for (const [path, heading] of [
-  ['/', 'Websites, software and automation'],
+  ['/', /Built with purpose\.\s*Engineered to perform\./],
   ['/services/', 'Build around your business'],
   ['/about/', 'Meet Andy Clarke'],
-  ['/products/', 'Salon and wedding websites, shaped around you'],
+  ['/products/', 'Products with a purpose.'],
   ['/products/property/', 'Property'],
   ['/products/property/uk-landlord-mtd-ledger/', 'Keep your landlord bookkeeping organised'],
   ['/work/', 'Specialist knowledge, shaped into software'],
@@ -34,7 +34,7 @@ test('case studies expose truthful software structured data', async ({ page }) =
 });
 
 test('portfolio pages have no horizontal overflow at release viewports', async ({ page }) => {
-  for (const route of ['/work/', '/work/human-v1/', '/work/performance-engineering-control-plane/']) {
+  for (const route of ['/', '/products/', '/products/hospitality/', '/work/', '/work/human-v1/', '/work/performance-engineering-control-plane/']) {
     for (const viewport of [{ width: 320, height: 700 }, { width: 390, height: 844 }, { width: 768, height: 1024 }, { width: 1366, height: 768 }]) {
       await page.setViewportSize(viewport);
       await page.goto(route);

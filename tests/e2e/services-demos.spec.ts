@@ -3,7 +3,7 @@ import {join} from 'node:path';
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-for (const route of ['/', '/services/', '/enquire/', '/about/', '/products/', '/products/salon/', '/products/wedding/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/', '/insights/ownership-and-handover/', '/insights/when-to-automate/']) {
+for (const route of ['/', '/services/', '/enquire/', '/about/', '/products/', '/products/salon/', '/products/wedding/', '/products/hospitality/', '/demos/', '/demos/hospitality/', '/demos/salon/', '/insights/', '/insights/website-brief/', '/insights/care-and-development/', '/insights/ownership-and-handover/', '/insights/when-to-automate/']) {
   test(`${route} new delivery pages are accessible and fit narrow screens`, async ({page},testInfo) => {
     await page.goto(route);
     await expect(page.getByRole('heading', {level:1})).toBeVisible();
@@ -62,3 +62,16 @@ test('enquiry draft is reviewable, optional budget stays optional and changed de
 test('enquiry cannot submit personal fields with JavaScript disabled',async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});try{const page=await context.newPage();await page.goto('http://127.0.0.1:4321/enquire/');await expect(page.getByLabel('Your email',{exact:true})).toBeDisabled();await expect(page.getByRole('link',{name:'Email a general enquiry directly',exact:true})).toHaveAttribute('href','mailto:hello@wearvalleydigital.com');}finally{await context.close();}
 });
+
+ test('showcase routes connect every product and the existing services', async ({page},testInfo) => {
+  await page.addInitScript(() => localStorage.setItem('wvd-analytics-consent','declined'));
+  await page.goto('/');
+  for (const [name,href] of [['Explore Human V1','/work/human-v1/'],['Explore PECP','/work/performance-engineering-control-plane/'],['Explore Salon Platform','/products/salon/'],['Explore Wedding Platform','/products/wedding/'],['Explore the direction →','/products/hospitality/'],['Website services →','/services/#websites'],['Software services →','/services/#software'],['Automation services →','/services/#automation']] as const) {
+    await expect(page.getByRole('link',{name,exact:true})).toHaveAttribute('href',href);
+  }
+  if(process.env.WVD_PUBLIC_EVIDENCE_DIR){mkdirSync(process.env.WVD_PUBLIC_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.WVD_PUBLIC_EVIDENCE_DIR,`showcase-${testInfo.project.name}.png`),fullPage:true,scale:'css'});}
+  await page.goto('/products/hospitality/');
+  await expect(page.locator('main')).toContainText('In planning');
+  await expect(page.locator('main')).toContainText('pricing and launch timing are not confirmed');
+  await expect(page.locator('main form, main a[href*="checkout"], main a[href*="stripe"]')).toHaveCount(0);
+ });

@@ -1,0 +1,16 @@
+---
+import '../styles/showcase.css';
+const products = [
+ {id:'human-v1',name:'Human V1',audience:'For athletes & coaches',status:'Private testing',line:'Plan with purpose. Train with confidence.',description:'A connected web and Android training platform for creating workouts, organising plans and recording progress.',tags:['Workout Studio','Android','Connected training'],href:'/work/human-v1/',cta:'Explore Human V1',art:'human',mark:'H¹',words:'CREATE / TRAIN / PROGRESS'},
+ {id:'pecp',name:'PECP',audience:'For performance engineering teams',status:'In development',line:'From business demand to engineering evidence.',description:'The Performance Engineering Control Plane brings requirements, workload models, test preparation and traceable evidence into one governed process.',tags:['Workload modelling','k6','Evidence & governance'],href:'/work/performance-engineering-control-plane/',cta:'Explore PECP',art:'performance',mark:'PECP',words:'INTENT → WORKLOAD → EVIDENCE'},
+ {id:'salon',name:'Salon Platform',audience:'For salon owners',status:'In development',line:'Your brand. Your team. Your appointments.',description:'A modular, owner-brandable workspace for services, staff, resources and booking operations. Customer subscriptions are not open yet.',tags:['Branding','Staff & services','Appointments'],href:'/products/salon/',cta:'Explore Salon Platform',art:'salon',mark:'Salon',words:'MADE TO FEEL LIKE YOU'},
+ {id:'wedding',name:'Wedding Platform',audience:'For couples',status:'Private prototype',line:'One place for a day that is entirely yours.',description:'A personalised wedding website and workspace for events, invitations, replies and photographs. Customer hire is not open yet.',tags:['Your story','Guests & replies','Memories'],href:'/products/wedding/',cta:'Explore Wedding Platform',art:'wedding',mark:'Together.',words:'BEFORE / ON THE DAY / AFTER'}
+];
+---
+<div class="showcase-grid">
+ {[products[2], products[3], products[0], products[1]].map(p=><article class={`product-story ${p.art}`} id={p.id}>
+  <div class="product-art" aria-hidden="true"><span class="art-wordmark">{p.mark}</span><span class="art-caption">{p.words}</span><span class="art-orbit"></span></div>
+  <div class="product-story-copy"><div class="product-meta"><p>{p.audience}</p><span class="stage">{p.status}</span></div><h2>{p.name}</h2><p class="product-line">{p.line}</p><p>{p.description}</p><ul class="product-tags">{p.tags.map(t=><li>{t}</li>)}</ul><a class="product-link" href={p.href}>{p.cta}<span aria-hidden="true">↗</span></a></div>
+ </article>)}
+</div>
+<article class="hospitality-coming" id="hospitality"><div><p class="eyebrow">Next in the portfolio</p><h2>Hospitality</h2><p>A new product direction for pubs, restaurants and hospitality businesses.</p></div><div><span class="stage">Coming soon</span><p>In planning. Features, pricing and launch timing will follow.</p><a class="text-link" href="/products/hospitality/">Explore the direction →</a></div></article>
