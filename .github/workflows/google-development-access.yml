@@ -110,7 +110,7 @@ jobs:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
         run: node tools/google-development-access/hosting-discovery.mjs tools/google-development-access/binding.json
       - name: Test private deployment boundaries and provider readiness before activation
-        run: node --test tools/portal-proof/tests/private-deployment.test.mjs tools/portal-proof/tests/hosting-discovery.test.mjs tools/portal-proof/tests/booking-provider-readiness.test.mjs
+        run: node --test tools/portal-proof/tests/private-deployment.test.mjs tools/portal-proof/tests/hosting-discovery.test.mjs tools/portal-proof/tests/booking-provider-readiness.test.mjs tools/portal-proof/tests/private-http.test.mjs
       - id: private_host
         name: Prepare bounded private runtime deployment within founder authority
         env:
@@ -140,3 +140,25 @@ jobs:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
           RUNTIME_IMAGE: ${{ steps.runtime_image.outputs.image }}
         run: node tools/booking-runtime/private-deployment.mjs create "$RUNTIME_IMAGE" "$GITHUB_SHA"
+      - id: private_http
+        name: Enable authenticated network path and verify anonymous denial
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/booking-runtime/private-http.mjs prepare
+      - id: runtime_id_auth
+        name: Issue short-lived identity token for private runtime only
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: id_token
+          id_token_audience: ${{ steps.private_http.outputs.url }}
+          id_token_include_email: true
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Verify authenticated runtime provider startup over HTTP
+        env:
+          WVD_RUNTIME_ID_TOKEN: ${{ steps.runtime_id_auth.outputs.id_token }}
+          RUNTIME_URL: ${{ steps.private_http.outputs.url }}
+        run: node tools/booking-runtime/private-http.mjs verify "$RUNTIME_URL"

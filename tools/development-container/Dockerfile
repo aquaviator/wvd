@@ -10,7 +10,7 @@ COPY tools/portal-proof/package.json tools/portal-proof/package-lock.json ./tool
 RUN npm ci --ignore-scripts && npm ci --prefix tools/portal-proof --ignore-scripts
 COPY tools/portal-proof/ ./tools/portal-proof/
 COPY tools/google-development-access/*.mjs tools/google-development-access/binding.json ./tools/google-development-access/
-COPY tools/booking-runtime/private-deployment.mjs ./tools/booking-runtime/private-deployment.mjs
+COPY tools/booking-runtime/private-deployment.mjs tools/booking-runtime/private-http.mjs ./tools/booking-runtime/
 COPY src/assets/brand/horizontal-logo.png ./src/assets/brand/horizontal-logo.png
 COPY tools/development-container/run-tests.mjs ./tools/development-container/run-tests.mjs
 COPY tools/development-container/evidence-budget.mjs ./tools/development-container/evidence-budget.mjs

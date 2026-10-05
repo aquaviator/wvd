@@ -13,8 +13,9 @@ export function privateService(image,revision){
 export function canUpdatePrivateService(service){
  if(!service)return false;
  const container=service.template?.containers?.[0];
- if(service.name!==serviceName||service.labels?.product!=='wvd'||service.labels?.environment!=='development'||service.ingress!=='INGRESS_TRAFFIC_INTERNAL_ONLY'||service.invokerIamDisabled===true||service.scaling?.maxInstanceCount!==1||(service.scaling?.minInstanceCount??0)!==0||service.template?.serviceAccount!=='wvd-development@wvd-development.iam.gserviceaccount.com'||service.template?.containers?.length!==1||container?.env?.length||service.template?.volumes?.length)throw Error('EXISTING_SERVICE_DRIFT');
+ if(service.name!==serviceName||service.labels?.product!=='wvd'||service.labels?.environment!=='development'||!['INGRESS_TRAFFIC_INTERNAL_ONLY','INGRESS_TRAFFIC_ALL'].includes(service.ingress)||service.invokerIamDisabled===true||service.scaling?.maxInstanceCount!==1||(service.scaling?.minInstanceCount??0)!==0||service.template?.serviceAccount!=='wvd-development@wvd-development.iam.gserviceaccount.com'||service.template?.containers?.length!==1||container?.env?.length||service.template?.volumes?.length)throw Error('EXISTING_SERVICE_DRIFT');
  if(container.image!==updateFrom)return false;
+ if(service.ingress!=='INGRESS_TRAFFIC_INTERNAL_ONLY')throw Error('EXISTING_SERVICE_DRIFT');
  if(typeof service.etag!=='string'||!service.etag.length||service.etag.length>256)throw Error('SERVICE_REVISION_REQUIRED');
  return true;
 }
