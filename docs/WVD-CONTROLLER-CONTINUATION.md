@@ -189,3 +189,62 @@ fictional prototype. Current Work Queue 16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5v
 was read at modification 2026-10-05T17:02:00.977Z; no named Wedding assignee there.
 Do not duplicate current workers; recheck before dispatch. Existing integration
 backlog remains available where product work is independently blocked.
+
+## Product showcase and asset-led rebrand — 5 October 2026
+
+Founder explicitly requested a WVD showcase for Human V1, PECP, Salon, Wedding,
+forthcoming Hospitality and existing services, then a premium rebrand based on
+existing WVD assets. This supersedes aesthetic preservation for this frontend
+slice; product readiness and release gates are unchanged.
+
+Used the existing WVD Site and recovered its current source through Sites.
+Reused the original horizontal logo and the master primary-logo.png from Drive:
+master folder 1POFy5eK74IanjPy_DHpqLLMPWkIlftWr, file
+1Czw-SxcIq-iN3nvVkYGtcRUoLnTk4zkK, modification
+2026-08-19T11:46:39.348Z. The 25,842-byte WebP is a web-optimised copy of that
+artwork; the master remains unmodified. Read hero.png
+1JgwnYJbPIBGP5l5wXcjbGp4oYzANlAhW as a visual reference only: its baked-in
+navigation and text are not used as a functional webpage. No stock/client
+photographs, testimonials or new product logos were invented.
+
+Introduced the midnight / electric-blue / silver identity across global navigation,
+typography, buttons and footer. Homepage and product directory showcase all four
+products; Salon and Wedding lead the commercial cards. Hospitality has its own
+honest coming-soon page. Service enquiry, case studies, private-prototype boundaries,
+unavailable subscriptions/hire and retired demo surfaces remain intact.
+No live email, product deployments, commerce activation, domain migration or
+spending occurred. No worker Drive record was edited.
+
+Controller implementation: dbdccc61bc67149e5d1728e644bca3ce34c30d29.
+Sites frontend source: d6200202c28c9ee509021c56f649ddaa8d6a5b5e.
+Content validation and 28-route Astro build passed locally.
+
+Final verification commit (same frontend): a25aff6ad501eafee2167d51815adc726ad4025c.
+Push CI 37356706671 and PR CI 37356711546 passed all four jobs. The public
+browser suite passed all 82 checks, including product/CTA routes, accessibility
+and narrow-screen overflow. Local link audit checked 115 internal links/anchors
+on the five changed routes. The first two CI revisions passed browser checks but
+exceeded the screenshot budget; PNG palette optimisation now preserves all 20
+full-page captures within the unchanged 5 MiB cap. No checks were removed.
+Development-container was correctly skipped by existing path filters.
+
+Downloaded public artifact 11364009649 (2,418,512 bytes), verified SHA-256
+7c06bdda2af04809276f0364f92480223f3fe72bbf73860e246415c10dde35c1.
+Inspected desktop and mobile homepage renders: original brand artwork, all four
+products, coming-soon Hospitality, service links and contact CTAs are present;
+no clipping or horizontal overflow observed. Screenshot review deliberately
+declines optional analytics; ordinary consent behaviour remains available.
+
+Private publication succeeded at 2026-10-05T18:31:33.101812+00:00.
+Deployment: appgdep_6ac3ecf54d5c8191a4f6813d80498246.
+Version: appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_aad8d4b68a1481919eaa5978542547d0.
+URL: https://wear-valley-digital-development.leatfield.chatgpt.site
+Owner-only audience preserved. The frontend Source helper committed/pushed and
+packaged the exact deployed source above; only changed frontend files were synced
+to GitHub, preserving the controller backend. No public-domain release is implied.
+
+Next: retain this new founder-authorised brand and complete the existing
+SALON-WVD-001 / WED-CONT-001 baseline handoffs under their actual current owners
+and distinct verification requirements. Refresh Drive modification/ownership
+evidence before product work; this showcase closes no product release gate.
+Continue independent agreed integration work when those tasks are occupied.

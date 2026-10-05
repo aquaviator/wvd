@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T17:32:00.000Z",
+  "updatedAt": "2026-10-05T18:35:36.864Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T17:32:00.000Z",
-        "source": "Live profile aquaviator (78605956); created fe811bae8275defda38443ac6ab44bb4a745a2a4 and advanced authorised development ref without force after preserving concurrent a44906f. Push/PR CI 37348583060/37348588869 and offline container 37348583113 passed. Downloaded public/container artifacts and verified SHA-256 and source. docs/WVD-CONTROLLER-CONTINUATION.md."
+        "at": "2026-10-05T18:35:36.864Z",
+        "source": "Reused aquaviator/wvd connection for current development ref read and non-forced frontend/evidence updates through a25aff6ad501eafee2167d51815adc726ad4025c. Push/PR CI 37356706671/37356711546 passed; artifact 11364009649 downloaded and SHA-256 checked. docs/WVD-CONTROLLER-CONTINUATION.md."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -59,8 +59,8 @@
       "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T17:32:00.000Z",
-        "source": "Current user owner; owner-only custom audience. Exact Sites source b30ac0e7787184772979983e93a975f029e3323d published successfully via private deployment appgdep_6ac3defcf2d481918d7e164a6ce5bcb7. No audience/public-domain changes. docs/WVD-CONTROLLER-CONTINUATION.md."
+        "at": "2026-10-05T18:35:36.864Z",
+        "source": "Owner-private WVD Site reopened, source d6200202c28c9ee509021c56f649ddaa8d6a5b5e pushed and packaged by Sites helper. Private deployment appgdep_6ac3ecf54d5c8191a4f6813d80498246 succeeded at 2026-10-05T18:31:33.101812+00:00; audience unchanged. docs/WVD-CONTROLLER-CONTINUATION.md."
       },
       "limits": [
         "Sites frontend access does not imply access to the private booking service.",
@@ -223,8 +223,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T17:25:00.000Z",
-        "source": "Live profile admin@wearvalleydigital.com; read WVD/product folder metadata and both completed START HERE records. Exact file IDs/revisions and read-only scope: docs/WVD-PRODUCT-TRANSFERS.md. No Drive records written."
+        "at": "2026-10-05T18:35:36.864Z",
+        "source": "Reused recorded controller Drive connection to list master WVD brand folder 1POFy5eK74IanjPy_DHpqLLMPWkIlftWr and download primary-logo.png 1Czw-SxcIq-iN3nvVkYGtcRUoLnTk4zkK (modified 2026-08-19T11:46:39.348Z), hero reference and icon for the authorised rebrand. Master assets and worker records unchanged. Target read/download verified; no new identity/scope grant. docs/WVD-CONTROLLER-CONTINUATION.md."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",
