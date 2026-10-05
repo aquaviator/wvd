@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T18:35:36.864Z",
+  "updatedAt": "2026-10-05T18:56:29.622Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T18:35:36.864Z",
-        "source": "Reused aquaviator/wvd connection for current development ref read and non-forced frontend/evidence updates through a25aff6ad501eafee2167d51815adc726ad4025c. Push/PR CI 37356706671/37356711546 passed; artifact 11364009649 downloaded and SHA-256 checked. docs/WVD-CONTROLLER-CONTINUATION.md."
+        "at": "2026-10-05T18:56:29.622Z",
+        "source": "Live profile aquaviator; current WVD branch/CI read (59ad35a; CI 37357119941/37357127604 successful). Salon branch/tree/blob reads and non-forced evidence update 722fba535b79d905477e0f07202a28f9c94c1802 verified; product access detail in WVD-Salon handoff/wvd/access-evidence.json. Shell Salon clone lacks credential; connector works. No administration inferred."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -216,15 +216,16 @@
       "plane": "controller",
       "capabilities": [
         "drive.discover",
-        "drive.read"
+        "drive.read",
+        "drive.write"
       ],
       "identityRef": "admin@wearvalleydigital.com",
       "credentialRef": "connected-app:google-drive",
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T18:35:36.864Z",
-        "source": "Reused recorded controller Drive connection to list master WVD brand folder 1POFy5eK74IanjPy_DHpqLLMPWkIlftWr and download primary-logo.png 1Czw-SxcIq-iN3nvVkYGtcRUoLnTk4zkK (modified 2026-08-19T11:46:39.348Z), hero reference and icon for the authorised rebrand. Master assets and worker records unchanged. Target read/download verified; no new identity/scope grant. docs/WVD-CONTROLLER-CONTINUATION.md."
+        "at": "2026-10-05T18:56:29.622Z",
+        "source": "Live get_profile admin@wearvalleydigital.com; WVD folder/product handoff/queue reads. Revision-guarded Salon continuation 1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4 and portfolio receipt 1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA updates read back; modified 18:55:11.206Z / 18:55:11.543Z. Targeted authorised receipt writes only, no sharing or provider grants."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",

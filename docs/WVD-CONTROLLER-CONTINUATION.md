@@ -248,3 +248,54 @@ SALON-WVD-001 / WED-CONT-001 baseline handoffs under their actual current owners
 and distinct verification requirements. Refresh Drive modification/ownership
 evidence before product work; this showcase closes no product release gate.
 Continue independent agreed integration work when those tasks are occupied.
+
+## Salon baseline reproduction — 5 October 2026, 18:55 UTC
+
+Current WVD head 59ad35a had successful push/PR CI 37357119941/37357127604;
+container was skipped by its existing path filter. No failed CI required repair.
+Used a clean isolated WVD worktree; previous dirty controller checkouts untouched.
+Fresh product branches and PR ownership were checked: Salon 83b1ebe, draft PR #1
+unassigned, no Actions runs; Wedding afdfa62, unchanged. Drive product entrypoints
+and work queue were unchanged at their recorded modification times. No overlapping
+product worker was identified. Wedding source and its 32 NOT_RUN scenarios remain
+unchanged; WED-CONT-001 has not been executed here.
+
+Completed a bounded Salon reproduction attempt, pushed without force to its
+existing import/salon-foundation branch as 722fba535b79d905477e0f07202a28f9c94c1802.
+Detailed report: handoff/wvd/results/SALON-WVD-001/change-report.json in WVD-Salon.
+All 182 UTF-8 files were retrieved through the authenticated GitHub connector and
+verified against their Git blob hashes at 83b1ebe2e7338535634f0ed52f01c7ac1e8a2273,
+tree 04ff7b8ff20c36e72c816ef0b7483b48e7920906. Original import tree 6efdbc4 was
+verified through GitHub; later changes were 14 documentation/evidence paths only.
+Shell cloning lacked an applicable credential; text-only blob tools cannot retrieve
+four historical PNGs. This is an exact text-source snapshot, not a full Git checkout.
+Remote originals and all protected application/specification paths are preserved.
+
+On Linux / Node v24.19.0 / npm 11.9.0: locked install (687 packages), TypeScript,
+five domain tests, production build, both local Wrangler 4.92.0 D1 migrations
+and database inspection passed. Persistence started absent; zero tenants and
+bookings, no FK violations. Source, command/exit-code records and SHA-256-bound
+logs are committed. Existing cache/registry were used; reuse/download split and
+all-in cost remain UNKNOWN. No dependency or application fix was needed.
+
+SALON-WVD-001 outcome: LOCAL_CHECKS_PASSED_HANDOFF_ACCEPTANCE_HELD. Full clean
+checkout and distinct independent review remain unresolved. The controller authored
+this report and did not self-certify it; verification-report.json is explicitly
+NOT_RUN and hash-binds the submitted report. S4, full SALON-AT-028 and live release
+remain open. No hosted/API/browser acceptance was repeated or promoted. No merge,
+deployment, provider transaction, live message, real data, IAM or spending action.
+The ten-item overlay and task attempt are updated without restarting other tasks.
+
+Salon Drive continuation and portfolio receipt were updated with revision guards
+and read back. New modified times: START HERE 2026-10-05T18:55:11.206Z; portfolio
+receipt 2026-10-05T18:55:11.543Z. Wedding START HERE remains
+2026-10-05T16:59:22.651Z; work queue remains 2026-10-05T17:02:00.977Z.
+Live controller identity reads confirmed aquaviator and admin@wearvalleydigital.com;
+access evidence is in the registries, never credentials.
+
+Next: assign distinct exact-revision Salon review and use an existing supported
+full-source/binary route to resolve the checkout gap. Do not request blanket GitHub
+access or rerun all successful checks without a concrete cause. Independently
+continue WED-CONT-001 or SALON-WVD-002/003. Preserve native stacks, original contracts,
+financial/health restrictions and release boundaries. No founder input is needed
+for this attempt. Keep continuation active: the agreed product work is unfinished.

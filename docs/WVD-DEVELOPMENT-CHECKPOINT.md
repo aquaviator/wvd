@@ -1330,3 +1330,14 @@ with source retained in Git history. No product release or acceptance is implied
 Exact Drive/source pins, constraints and next baseline tasks are in
 WVD-PRODUCT-TRANSFERS.md; hashes, screenshots and publication receipt are in
 WVD-CONTROLLER-CONTINUATION.md. This supersedes extending the old demo surfaces.
+
+
+## Salon intake reproduction evidence
+
+SALON-WVD-001 local setup checks passed against 182 blob-verified text files from
+83b1ebe; evidence/overlay commit 722fba535b79d905477e0f07202a28f9c94c1802 is on
+WVD-Salon import/salon-foundation. Build, typecheck, five domain tests and both
+empty local D1 migrations passed. Full checkout recovery (four historical PNGs)
+and distinct verification remain open; Controller acceptance is HOLD. Drive
+continuation/portfolio records are synchronised. WED-CONT-001 is not executed.
+See latest controller continuation for exact source, scope, evidence and next work.
