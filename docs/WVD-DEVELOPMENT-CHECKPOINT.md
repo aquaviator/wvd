@@ -1389,3 +1389,16 @@ indexing or an audience change. See the new standard section and latest controll
 continuation for scope, sources and next implementation work. Salon/Wedding full
 acceptance and commercial release remain open. WVD 9387fed's cancelled CI jobs were
 retried successfully in both attempt-2 runs; check this new source's CI before closure.
+
+
+## Wedding typography slice — 5 October 2026
+
+WED-WP-003 now offers three safe system-font presets in drafts, preview and reviewed
+publication. Product change 7ba295e3 and handoff 4495c4e8 are on the existing development
+branch; owner-private Sites source 3add1469 deployed successfully. Fourteen route/
+SQLite checks, ten editor checks, TypeScript and build passed. Local public React
+HTML checks cover draft exclusion and rollback; browser/hosted/distinct review and
+all 32 full scenarios remain unrun. Salon binary source recovery remains blocked;
+its existing Sites identity was checked without deployment. Full evidence, exact
+references and next tasks are in the latest controller continuation. WVD 6dc1dac CI
+passed in both push/PR runs. Neither product has commercial release approval.

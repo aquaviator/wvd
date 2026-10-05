@@ -469,3 +469,54 @@ through Sites, using existing routing/metadata/privacy tests. Record unavailable
 public indexing as NOT_RUN while a prototype remains private; do not weaken
 access to obtain a search result. Continue remaining Salon/Wedding acceptance and
 native backlog independently. No founder input is needed for this planning slice.
+
+
+## Wedding typography and Salon recovery boundary — 5 October 2026
+
+Fresh heads were WVD 6dc1dac, Salon 722fba5 and Wedding 35eaf66. Both product PRs
+remained drafts and unassigned; Salon/Wedding entrypoint and queue modification
+values were unchanged before work. WVD validation at 6dc1dac passed in both runs
+37377660492 (push) and 37377667628 (PR); container 37377667607 skipped by path filter.
+No repeated checks or CI changes were needed for that source.
+
+Salon SALON-WVD-001 remains HOLD. Current repository tree confirms the same four
+historical PNGs. GitHub fetch and fetch_blob reject their binary bytes. Existing
+Salon Sites identity appgprj_6ac3bb5b197081919d34810fd6ff9ce0 was verified as version 0,
+no live URL, sole-owner custom audience. Source helper opening, with an existing
+repo-scoped credential, returned exit 1: Unable to prepare the Site. No source was
+changed or published. The error does not establish that the source repository is
+empty. Do not retry this same boundary without new evidence or request blanket
+GitHub access. Drive engineering folders retain the original 86,649-byte handoff
+ZIP, modified 15:15:57.298Z; it was located, not downloaded or proven to contain
+application images. Full binary checkout and distinct Salon verification remain
+open; local setup successes were not rerun or relabelled as full acceptance.
+
+Continued independent native Wedding work from WED-WP-003 / WED-REQ-006 / typography
+and draft/publication portions of WED-AT-011. Frozen task and evidence:
+WVD-Wedding handoff/WED-WP-003-TYPOGRAPHY.md. Reused native brand validation, editor,
+public renderer and actual-route disposable SQLite harness. Three bounded system
+font presets now persist in drafts and immutable reviewed publication. Legacy
+records retain original styling; older clients preserve omitted typography.
+Invalid tokens fail atomically. No external font service, schema or dependency.
+
+Fourteen route/SQLite checks passed, including five new typography and local React
+HTML checks; ten editor-domain checks passed, including two new typography checks.
+TypeScript and production build passed. Tests prove operational/publication
+preservation, malformed input rejection, review-hash binding, draft exclusion from
+rendered HTML and legacy rollback. Platform identity is mocked. Browser CSS/layout,
+accessibility, hosted identity/D1 and distinct verification remain NOT_RUN.
+
+Application/evidence commit 7ba295e3ab5fe5733f0f4cbedce38c569037365b and handoff commit
+4495c4e8f8f0dab867123865c442a12872acf970 were pushed non-forced to the existing
+Wedding development/undecided-date-onboarding branch. Draft PR #1 remains unreleased.
+Exact Sites source 3add146935cd2d1628b6c96d193e88f04ae423dc deployed successfully as
+appgdep_6ac4211a39fc8191a3ed2e592e347799 at 2026-10-05T22:14:07.468074Z. Sole-owner
+access and existing DB/R2 retained. Drive START HERE current source and continuation
+receipt were revision-guarded and read back. No workers were overwritten/dispatched.
+
+Next: distinct exact-candidate review and supported browser verification, then one
+remaining bounded social/logo/hero/crop editor gap; Salon target/identity and
+research tasks remain independently actionable. Both product intake tasks remain
+partial/HOLD; all fourteen Wedding package gates and 32 full scenarios remain open.
+No commercial release, wider audience, live send, real data, migration or extra
+spending. No founder input is needed for remaining unblocked work.
