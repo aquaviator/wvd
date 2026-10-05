@@ -132,3 +132,34 @@ concurrent dispatch, credential refresh, wrong-target denial and key access.
 Actual inbox delivery still requires an explicitly authorised test recipient;
 no test email has been sent. Public contact/admission integration and worker
 activation remain separate from permission readiness.
+
+## Optional confirmation HTTP boundary — 5 October 2026
+
+The one authorised development email test has completed and the founder confirmed
+inbox arrival; see WVD-CONFIRMATION-LIVE-TEST.md. Do not repeat it. The historical
+permission and test prerequisites above describe earlier stages, not new requests.
+
+`createBookingServer` now accepts an optional host-owned `callConfirmation` with
+`delivery` and `resolveRecipient`. With neither supplied, the endpoint is absent.
+The server binds management, origin, admission and request capacity to its existing
+runtime. `POST /api/calls/manage/confirmation` requires exactly `token`,
+`recipientProof` and `consent:true`. No caller-supplied address or target is accepted.
+A current confirmed management capability and host-verified recipient are required
+before queueing. The existing encrypted delivery worker rechecks the booking and
+Calendar event, handles concurrency and preserves the no-resend UNKNOWN outcome.
+Responses contain only bounded status, providerAccepted and delivered:false.
+
+The optional Firebase resolver reuses the portal's fresh verified-account identity
+proof, with explicit project/issuer/subject and no-tenant binding. It checks revoked
+or disabled accounts and denies a token whose email no longer matches the current
+account. It grants no portal access. This is an adapter for customers already
+signed in; it does not introduce mandatory registration for intro bookings or
+complete the anonymous customer's recipient-verification journey.
+
+Recovered the previous controller's unfinished HTTP/resolver code into an isolated
+checkout and strengthened host bindings, current-account checks and negative tests.
+Reused the existing confirmation queue, encryption, admission, HTTP body reader and
+identity proof rather than replacing them. No UI, deployment configuration, live
+sender activation, Google scopes or provider resources changed. Live activation,
+guest recipient verification, public admission, Sites integration and operational
+recovery/retention remain outstanding. Tests use synthetic identities and senders.

@@ -1,3 +1,4 @@
+import {createBookingConfirmationHandler} from './booking-confirmation-http.mjs';
 import {createServer} from 'node:http';
 import {bookingAssets,renderBookingPage} from './booking-assets.mjs';
 import {createCallAvailabilityHandler} from './call-http.mjs';
@@ -9,12 +10,16 @@ export function createBookingServer(runtime){
  const origin=runtime?.binding?.origin,mode=runtime?.binding?.firebase?.mode;
  if(runtime?.management!==runtime?.callManagement?.management||!['live','emulator'].includes(mode)||typeof runtime?.admit!=='function'||runtime.callAvailability?.admit!==runtime.admit||runtime.callBooking?.admit!==runtime.admit||runtime.callManagement?.admit!==runtime.admit||runtime.callBooking?.productId!==runtime.binding.firebase.productId||runtime.callBooking?.calendarId!==runtime.binding.calendarId||runtime.callManagement?.productId!==runtime.callBooking.productId||runtime.callManagement?.calendarId!==runtime.callBooking.calendarId)throw Error('INVALID_CONFIGURATION');
  const handlers={availability:createCallAvailabilityHandler({...runtime.callAvailability,allowedOrigin:origin}),booking:createBookingHandler({...runtime.callBooking,allowedOrigin:origin}),management:createBookingManagementHandler({...runtime.callManagement,allowedOrigin:origin})};
+ // Optional host integration. The host owns recipient proof; callers cannot
+ // replace the runtime's management, admission, origin or capacity controls.
+ const confirmation=runtime.callConfirmation===undefined?null:createBookingConfirmationHandler({delivery:runtime.callConfirmation?.delivery,resolveRecipient:runtime.callConfirmation?.resolveRecipient,management:runtime.management,admit:runtime.admit,maxConcurrentRequests:runtime.binding.maxConcurrentRequests,allowedOrigin:origin});
  const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
  const server=createServer({maxHeaderSize:16384},async(request,response)=>{
   const send=(status,value)=>{response.writeHead(status,{...headers,'Content-Type':'application/json; charset=utf-8'});response.end(JSON.stringify(value));};
   try{
    if(typeof request.url!=='string'||request.url.length>4096)return send(400,{error:'INVALID_REQUEST'});
    const url=new URL(request.url,'http://localhost');
+   if(url.pathname==='/api/calls/manage/confirmation'&&confirmation)return await confirmation(request,response);
    if(url.pathname.startsWith('/api/calls/manage/'))return await handlers.management(request,response);
    if(['/api/calls/book','/api/calls/cancel','/api/calls/reschedule'].includes(url.pathname))return await handlers.booking(request,response);
    if(url.pathname==='/api/calls/availability')return await handlers.availability(request,response);

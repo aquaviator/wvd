@@ -71,3 +71,32 @@ The evidence follow-up also preserves the CLI's prior executable mode (100755),
 which the connector tree creation had flattened to 100644. It changes no JS
 content beyond the verified implementation. Current GitHub read/write evidence
 is recorded in the access registry without credentials or provider response data.
+
+## Subsequent continuation — confirmation HTTP integration
+
+Resumed from remote 0b355a7391f1018ff5828a80eaead048787d39a9. Fresh GitHub
+inspection found push CI 37334274552 and PR CI 37334281074 successful, with no
+active runs among the latest eight and no subsequent development-branch commit.
+Used an isolated worktree; left both previous dirty checkouts intact. Adopted only
+the unfinished booking-confirmation HTTP/resolver files and their tests from the
+older checkout, then independently completed and verified them. The previous
+mail-rehearsal edits were not adopted and no live test was repeated.
+
+Completed the optional server boundary using the runtime's existing admission,
+management, origin and capacity settings. Verified consent, recipient proof,
+current capability, encrypted durable queue, concurrent single send, exact retries,
+changed-recipient conflict and revoked-link denial through HTTP. Firebase recipient
+proof reuses current-account validation and denies revoked/disabled/changed-email
+identities. The generic host resolver preserves the future guest journey; no new
+registration requirement or public email endpoint is activated.
+
+Local portal suite before final identity adapter refinement: 523 passed, one
+Windows-only skip, zero failures. Focused current-account tests after refinement
+passed; exact final-source CI/container evidence will follow. See
+WVD-BOOKING-DELIVERY.md for configuration and outstanding integration boundaries.
+
+Next bounded work: guest recipient verification and explicit host activation
+configuration, preserving no-registration booking and no new live messages without
+specific authority. Public admission, Sites connection and operational backup /
+retention remain open. The existing composed Google worker and optional HTTP route
+are available for reuse; do not rebuild them or repeat the completed email test.

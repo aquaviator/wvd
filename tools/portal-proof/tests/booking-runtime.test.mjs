@@ -5,6 +5,8 @@ import {composeBookingRuntime} from '../booking-runtime.mjs';
 import {createBookingServer} from '../booking-server.mjs';
 import {createGoogleBookingRuntimeCalendar} from '../google-booking-read-client.mjs';
 import {createFirestoreBookingAdmission} from '../booking-admission.mjs';
+import {createBookingConfirmationDelivery} from '../booking-confirmation-delivery.mjs';
+import {createBookingDeliveryCipher} from '../booking-delivery-envelope.mjs';
 function database(){const rows=new Map();let tail=Promise.resolve();return {doc:path=>({path}),runTransaction(fn){const work=tail.then(async()=>{const next=structuredClone(rows),set=(ref,data)=>next.set(ref.path,structuredClone(data));const value=await fn({get:async ref=>({exists:next.has(ref.path),data:()=>structuredClone(next.get(ref.path))}),set,create:set});rows.clear();for(const pair of next)rows.set(...pair);return value;});tail=work.catch(()=>{});return work;}};}
 const clock=()=> '2026-10-04T12:00:00.000Z';
 const config={firebase:{projectId:'wvd-runtime-test',productId:'wvd-test',databaseId:'(default)',mode:'live'},calendarId:'owned@example.test',calendarIds:['owned@example.test','personal@example.test'],origin:'https://booking.example.test',policy:{ref:'runtime-test',bufferBoundary:'between-events',maxEvidenceAgeMs:60000,holidayMaxEvidenceAgeMs:3600000},maxQueryWindowMs:86400000,requestTimeoutMs:1000,linkLifetimeMs:86400000,maxConcurrentRequests:2,admission:{windowMs:60000,maxRequests:100}};
@@ -45,4 +47,36 @@ test('read client rejects caller-selected calendars, windows, fields or credenti
  const params={calendarId:config.calendarId,timeMin:clock(),timeMax:'2026-10-04T13:00:00.000Z',timeZone:'UTC',singleEvents:true,showDeleted:false,showHiddenInvitations:true,maxResults:250},options={timeout:1000,retry:false};
  for(const patch of [{calendarId:'foreign'},{maxResults:2500},{showHiddenInvitations:false},{timeMax:'2027-10-04T13:00:00.000Z'},{fields:'attendees'},{syncToken:'unbounded'}])assert.throws(()=>client.events.list({...params,...patch},options),/INVALID_CONFIGURATION/);
  assert.throws(()=>client.events.list(params,{...options,headers:{Authorization:'foreign'}}),/INVALID_CONFIGURATION/);assert.throws(()=>client.freebusy.query({requestBody:{timeMin:clock(),timeMax:params.timeMax,timeZone:'UTC',items:[{id:'foreign'}]}},options),/INVALID_CONFIGURATION/);assert.equal(requests,0);
+});
+
+test('HTTP confirmation composes durable encrypted delivery, deduplicates retries and denies stale links',async t=>{
+ const f=runtimeFixture();let sends=0,recipient='customer@example.test';
+ const delivery=createBookingConfirmationDelivery({store:f.runtime.store,management:f.runtime.management,productId:config.firebase.productId,calendarId:config.calendarId,managementOrigin:config.origin,clock,calendar:f.runtime.calendar,requestTimeoutMs:1000,cipher:createBookingDeliveryCipher({keyRef:'synthetic',readKey:async()=>Buffer.alloc(32,7)}),sender:{send:async(message,options)=>{sends++;assert.equal(options.retry,false);assert.equal(message.recipientEmail,'customer@example.test');return {status:'ACCEPTED',receipt:'synthetic-receipt'};}}});
+ f.runtime.callConfirmation={delivery,resolveRecipient:async({proof})=>({verified:proof==='verified',email:recipient})};
+ const server=createBookingServer(f.runtime);await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>{server.closeAllConnections();return new Promise(resolve=>server.close(resolve));});
+ const post=async(path,body)=>{const response=await fetch('http://127.0.0.1:'+server.address().port+'/api/calls/'+path,{method:'POST',headers:{Origin:config.origin,'Content-Type':'application/json'},body:JSON.stringify(body)});return {status:response.status,data:await response.json()};};
+ const start='2026-10-06T09:00:00.000Z',requestKey=randomUUID();
+ assert.equal((await post('book',{start,requestKey})).data.status,'CONFIRMED');
+ const link=await post('manage/issue',{start,requestKey,managementKey:'a'.repeat(64)}),token=new URL(link.data.managementUrl).hash.slice(1);
+ const request={token,recipientProof:'verified',consent:true};
+ const results=await Promise.all([post('manage/confirmation',request),post('manage/confirmation',request)]);
+ assert.ok(results.every(x=>[200,202].includes(x.status)));assert.equal(sends,1);
+ assert.deepEqual(await post('manage/confirmation',request),{status:200,data:{status:'ACCEPTED',providerAccepted:true,delivered:false}});assert.equal(sends,1);
+ const journal=JSON.stringify(await f.runtime.store.read(token.split('.')[0]));
+ assert.equal(journal.includes(recipient),false);assert.equal(journal.includes(token),false);assert.equal(journal.includes('Your 30-minute introductory call'),false);
+ recipient='another@example.test';assert.equal((await post('manage/confirmation',request)).status,409);assert.equal(sends,1);
+ assert.equal((await post('manage/revoke',{token})).status,200);
+ assert.equal((await post('manage/confirmation',request)).status,403);assert.equal(sends,1);
+});
+
+test('confirmation is opt-in and cannot override shared host admission',async t=>{
+ for(const enabled of [false,true]){
+  const f=runtimeFixture();let providerCalls=0;
+  const deny=async()=>false;f.runtime.admit=deny;for(const key of ['callAvailability','callBooking','callManagement'])f.runtime[key].admit=deny;
+  if(enabled)f.runtime.callConfirmation={admit:async()=>true,management:{read:async()=>{providerCalls++;}},maxConcurrentRequests:100,allowedOrigin:'https://foreign.example',resolveRecipient:async()=>{providerCalls++;},delivery:{queue:async()=>{providerCalls++;},dispatch:async()=>{providerCalls++;}}};
+  const server=createBookingServer(f.runtime);await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>{server.closeAllConnections();return new Promise(resolve=>server.close(resolve));});
+  const response=await fetch('http://127.0.0.1:'+server.address().port+'/api/calls/manage/confirmation',{method:'POST',headers:{Origin:config.origin,'Content-Type':'application/json'},body:'{}'});
+  assert.equal(response.status,enabled?429:404);assert.equal(providerCalls,0);
+ }
+ assert.throws(()=>createBookingServer({...runtimeFixture().runtime,callConfirmation:{}}),/INVALID_CONFIGURATION/);
 });
