@@ -74,8 +74,8 @@ product presentation, navigation and CTAs through Sites. Retire the superseded
 demo surfaces while preserving source/history. This does not request deletion of
 repositories or the WVD organisation, or assert commercial release readiness.
 
-Workers are actively updating the WVD Drive records. Monitor changes and consume
-their completed handoffs; do not overwrite in-progress documents or duplicate
+Workers have supplied the product handoffs listed below. Monitor subsequent
+changes and consume the current continuation records; do not overwrite in-progress documents or duplicate
 active product work. Preserve product ownership of research, blueprint, backlog,
 implementation and release evidence; WVD coordinates shared delivery and concise
 portfolio status. Keep existing access, spending and message-send boundaries.
@@ -85,8 +85,42 @@ Verified Drive destinations:
 - Salon: https://drive.google.com/drive/folders/1FWRwktOHb35OsLnTyQr8ztdjLp3ghvAz
 - Wedding: https://drive.google.com/drive/folders/1Fu8f_rmGV69m41tp-9mrP4gJfscCItdu
 
-Salon source transfer: https://github.com/aquaviator/WVD-Salon/pull/1, observed open
-at 16a5d89be65650e0159ec13f617fc2c992105545. Refresh before use. Its historical
-Drive backlog still says NOT_STARTED; do not treat that as current engineering
-state. Wedding's current pack records specified/not implemented work; discover
-its actual build/repository from the workers' handoff. Do not assume one exists.
+## Completed product handoffs received — 5 October 2026
+
+Both workers have now supplied continuation records. This supersedes the earlier
+waiting-for-transfer snapshot; receiving a handoff is not accepting its baseline.
+
+- Salon: [Drive continuation](https://docs.google.com/document/d/1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4/edit),
+  [portfolio receipt](https://docs.google.com/document/d/1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA/edit),
+  [START_HERE](https://github.com/aquaviator/WVD-Salon/blob/import/salon-foundation/START_HERE.md).
+  Observed branch head: `83b1ebe2e7338535634f0ed52f01c7ac1e8a2273`.
+  Start with **SALON-WVD-001**, verify and accept the existing handoff, using
+  `handoff/wvd/current-state.json`, `delivery-backlog.json` and its task JSON.
+  The ten-item overlay supersedes historical NOT_STARTED engineering state.
+  Work remains in draft PR #1; live release is not approved. Preserve the
+  payment-readiness restriction, including no financial transactions in Sites.
+- Wedding: [START HERE](https://docs.google.com/document/d/1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs/edit),
+  [repository continuation](https://github.com/aquaviator/WVD-Wedding/blob/master/handoff/WVD-CONTINUATION.md).
+  Observed master head: `afdfa62fc8d3ce297a747ae2522e3318fbb44fb2`.
+  Start with **WED-CONT-001**, reconcile and reproduce the baseline, before
+  selecting a feature from the fourteen-package overlay. Read root HANDOFF.md,
+  `handoff/current-backlog.json` and `handoff/wvd-context.json`.
+  The fictional private prototype exists; deployed application source is
+  `19fb8408366deecf5ac54df3fbbffd53020e0aec`, distinct from later handoff
+  commits. All 32 full acceptance scenarios remain NOT_RUN. Preserve its native
+  stack and original contracts; no commercial release or audience widening.
+
+The Drive [current work queue](https://docs.google.com/document/d/16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5vOHTk/edit)
+records Wedding intake as context registered / next task proposed, with no named
+assignees. Check current ownership before dispatch; bind independent verification
+to the exact submitted revision. These intake tasks are not completed by reading
+their documents. Product application changes belong in their own repositories
+and existing authorised branches; WVD coordination changes belong on
+development/shared-factory-bootstrap. Refresh branch heads and changed Drive
+records before execution. Do not restart immutable original backlogs, duplicate
+workers, or treat WVD's Google platform as authority to migrate either product.
+
+Salon and Wedding take commercial priority over extending superseded demos.
+The existing WVD booking implementation and evidence remain available for reuse.
+Sites presentation replacement remains authorised, with product capabilities
+described according to evidence rather than implying paid-customer readiness.

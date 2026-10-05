@@ -118,3 +118,25 @@ configuration, preserving no-registration booking and no new live messages witho
 specific authority. Public admission, Sites connection and operational backup /
 retention remain open. The existing composed Google worker and optional HTTP route
 are available for reuse; do not rebuild them or repeat the completed email test.
+
+
+## Product handoffs now available — 5 October 2026
+
+Salon and Wedding are the primary commercial products. The next controller
+should use the completed product entrypoints and exact observed source pins in
+WVD-PROJECT-AUTHORITY.md, not the earlier waiting-for-transfer snapshot.
+Start SALON-WVD-001 (existing handoff verification/acceptance) and WED-CONT-001
+(baseline reconciliation/reproduction) according to current ownership and their
+task contracts. Neither intake is complete merely because its documents exist.
+Keep unfinished WVD booking work available for reuse rather than automatically
+prioritising more development of superseded demo surfaces.
+
+Read both Drive continuation records, Salon portfolio receipt, Wedding's updated
+work queue and repository handoff files; resolved Salon head 83b1ebe and Wedding
+head afdfa62 through GitHub. No product acceptance suite was rerun or claimed
+complete. WVD source b13e467 had successful CI runs 37344608651 and 37344600401;
+Google access run 37344608492 was skipped. This update changes no application
+or hosting configuration. The existing continuation automation now consumes
+these handoffs. Preserve product-specific draft/release, payment, data and
+independent-verification restrictions; continue monitoring subsequent Drive
+revisions without overwriting active workers.
