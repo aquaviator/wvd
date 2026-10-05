@@ -1230,3 +1230,10 @@ The static private Sites frontend remains separate. Do not add public invocation
 or claim a complete customer booking journey from startup readiness. Subsequent
 runtime updates need a revision-aware deployment path; first-creation automation
 intentionally skips existing services, including after uncertain responses.
+
+
+Final packaging-fix source ab47a992cfba467f6e2745f92edce0297b52c640 passed
+push CI 37286922121, PR CI 37286930018 and offline container 37286922146.
+Container results: 496 unit passes, zero failures, one Windows-only skip, plus
+four real Firebase/browser passes. This verifies the offline packaging fix;
+the deployed runtime remains image-bound to source 1812c0a above.
