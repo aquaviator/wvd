@@ -21,3 +21,11 @@ The actual customer confirmation worker remains separate from this rehearsal:
 public recipient collection, admission policy and deployed worker activation
 are not established by this single test. Inbox receipt requires founder evidence;
 no Gmail inbox-reading scope has been requested.
+
+## Inbox delivery confirmed
+
+At 14:25 BST on 5 October 2026, Andy confirmed the authorised test arrived in
+Inbox and supplied the matching sender, subject, 14:02 timestamp and message
+body. This establishes inbox arrival for this single test, in addition to the
+provider receipt. No resend or further test recipient is authorised by this
+confirmation. Customer booking delivery activation remains separate work.
