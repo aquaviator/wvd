@@ -149,3 +149,43 @@ Prepared through Sites source b30ac0e7787184772979983e93a975f029e3323d; 27 route
 and content validation passed. Latest a44906f handoff update was preserved before
 pushing this slice; product code and workers' Drive records remain untouched.
 Browser CI and private publication evidence follow after verification.
+
+
+## Verified product presentation — 5 October 2026, 17:32 UTC
+
+WVD implementation commit: fe811bae8275defda38443ac6ab44bb4a745a2a4.
+Non-forced development update preserved the concurrent a44906f handoff commit.
+Push CI 37348583060 and PR CI 37348588869 passed all four jobs. Public-site
+browser suite: 78 passed (mobile/desktop, accessibility, navigation, retired
+routes and unavailable commerce). Site unit suite: 19 passed. Public artifact
+11361162614 was downloaded; SHA-256
+2bacb4163e928d2def7961a11a7fd33a6f541e49342fa9ecc0b8c46095e47dea matched.
+Inspected mobile product catalogue and desktop Wedding screenshots. Existing
+optional analytics consent remains visible; no new consent behaviour was added.
+
+Offline container 37348583113 passed. Artifact 11361082847 SHA-256
+d0a7125356441df93ee51d991d11cbccf4a153844d3a3686458135fdd6206aed matched.
+results.json binds this exact implementation, Node v22.23.3, Playwright 1.62.1,
+demo-wvd-portal and liveAccess=false; portal-unit and firebase-browser passed.
+Image: sha256:10650845e7ba19f069c7e7ac5e6d0077f7ee7d515a6c9d1b43cda052d545cec5.
+One supplementary video was omitted under the existing cap; screenshots retained.
+No live Google access or email test was repeated.
+
+Sites private publication succeeded at 17:31:48 UTC, source
+b30ac0e7787184772979983e93a975f029e3323d, deployment
+appgdep_6ac3defcf2d481918d7e164a6ce5bcb7, version
+appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_65d0d57df764819187c008bbfc7940b2.
+URL: https://wear-valley-digital-development.leatfield.chatgpt.site
+The audience remains owner-only. Public domain and product deployments unchanged.
+Frontend source was synchronised into the controller branch; the Site checkout
+contains only the frontend surface, not the latest controller backend. Reopen this
+same Site before further frontend edits and preserve that separation.
+
+Next: refresh current ownership and complete the scoped product baseline tasks
+SALON-WVD-001 and WED-CONT-001 with their required distinct verifier. No acceptance
+or paid-release gate was closed here. Salon has no deployed preview to link until
+its own permitted deployment work completes. Wedding remains an owner-only
+fictional prototype. Current Work Queue 16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5vOHTk
+was read at modification 2026-10-05T17:02:00.977Z; no named Wedding assignee there.
+Do not duplicate current workers; recheck before dispatch. Existing integration
+backlog remains available where product work is independently blocked.

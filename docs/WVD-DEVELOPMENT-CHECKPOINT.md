@@ -1317,3 +1317,16 @@ booking confirmation delivery test. No appointment has been booked. No action
 is required." No customer recipient is assumed. Do not describe provider
 acceptance as actual inbox delivery. The composed worker remains unmounted in
 the deployed runtime pending recipient/admission integration and activation.
+
+
+## Salon and Wedding presentation — 5 October 2026
+
+Source fe811bae8275defda38443ac6ab44bb4a745a2a4 passed push/PR CI and offline
+container 37348583113. 78 public browser checks passed. Published corresponding
+Sites source b30ac0e7787184772979983e93a975f029e3323d to the existing private WVD
+Site; owner-only audience retained. Home, services, catalogue and navigation now
+prioritise Salon and Wedding. Old demo URLs carry noindex retirement notices,
+with source retained in Git history. No product release or acceptance is implied.
+Exact Drive/source pins, constraints and next baseline tasks are in
+WVD-PRODUCT-TRANSFERS.md; hashes, screenshots and publication receipt are in
+WVD-CONTROLLER-CONTINUATION.md. This supersedes extending the old demo surfaces.
