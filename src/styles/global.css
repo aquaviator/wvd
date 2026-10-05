@@ -5,3 +5,5 @@
 .grid>*,.two-col>*,.architecture>*{min-width:0}h1,h2,h3,.tag-list li,.prose{overflow-wrap:anywhere}
 
 .metric,.quote,.case-kicker{overflow-wrap:anywhere;max-width:100%}
+
+.guide-contents{border-left:3px solid var(--accent);padding:1rem 1.5rem;background:white;margin-bottom:2.5rem}.guide-contents h2{font-size:1.25rem;margin:0 0 .75rem}.guide-contents ol{margin:0;padding-left:1.25rem}.guide-contents li+li{margin-top:.5rem}.guide-contents a{text-underline-offset:.2em}.prose h2[id]{scroll-margin-top:1.5rem}.prose h2[tabindex]:focus-visible{outline:3px solid #3d8bd9;outline-offset:4px}

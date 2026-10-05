@@ -62,6 +62,7 @@ defined in WVD-PROJECT-AUTHORITY.md. Automated engineering checks are unattended
 ## Initial state
 
 This document records the operating decision; no Site has been created,
-published, migrated or handed to another chat by this change. The existing runtime
-permission request and hosting spend question remain outstanding until confirmed.
-The founder's "I will do this" is intent, not evidence that grants are installed.
+published, migrated or handed to another chat by this change. On 5 October the founder supplied successful runtime grant output and authorised
+£5/month total additional hosting spend. See WVD-PROJECT-AUTHORITY.md.
+The existing Astro site is being improved using Sites design guidance while
+preserving its Google deployment direction; no Sites-hosted migration is claimed.

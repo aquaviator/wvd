@@ -1142,3 +1142,26 @@ still needs an explicit extra-spend allowance before resources are activated.
 This is a genuine elevated-access/spending boundary, not a request to approve a
 completed development slice. After those inputs, continue activation and the
 remaining sender/contact, abuse-control, operator recovery and retention work.
+
+
+## 5 October: Sites workflow, hosting authority and guide UX
+
+Founder applied all three runtime IAM grants and authorised £5/month total
+additional hosting spending. Project authority is current; earlier £0/access
+blocker entries above are historical. No paid runtime has been activated.
+
+Using Sites guidance on the existing Astro frontend, removed duplicate guide
+cards and added keyboard-accessible section navigation to all four buyer guides.
+Preserved existing brand, copy, dates and CTAs. Video/visual retrofit remains
+explicitly incomplete; no fictional assets or freshness claims were introduced.
+
+Expanded read-only runtime discovery to check iam.serviceAccounts.actAs as well
+as signing and deployment. A negative test proves that signing/deployment access
+does not mask missing attachment authority. Both focused tests passed locally.
+The source change triggers the existing keyless Google workflow for live evidence.
+
+Cost discovery: Cloud Run is usage-priced after shared billing-account free tier;
+budget notifications do not impose a hard cap. Source checks 5 October 2026:
+https://cloud.google.com/run/pricing and
+https://cloud.google.com/billing/docs/how-to/budgets. The £5 authority is recorded,
+not represented as a configured provider cap. No paid service was created.
