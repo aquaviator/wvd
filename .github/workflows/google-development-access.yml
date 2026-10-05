@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/google-development-access.yml'
       - 'tools/google-development-access/**'
+      - 'tools/booking-runtime/**'
       - 'tools/portal-proof/google-booking-event.mjs'
 permissions:
   contents: read
@@ -16,7 +17,7 @@ jobs:
   access:
     if: github.repository_id == '1347788556' && github.repository_owner_id == '78605956' && github.ref == 'refs/heads/development/shared-factory-bootstrap'
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     permissions:
       contents: read
       id-token: write
@@ -108,3 +109,34 @@ jobs:
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
         run: node tools/google-development-access/hosting-discovery.mjs tools/google-development-access/binding.json
+      - name: Test private deployment boundaries before activation
+        run: node --test tools/portal-proof/tests/private-deployment.test.mjs tools/portal-proof/tests/hosting-discovery.test.mjs
+      - id: private_host
+        name: Prepare first private runtime within founder hosting authority
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/booking-runtime/private-deployment.mjs prepare tools/google-development-access/binding.json
+      - name: Build and upload bounded private runtime image
+        id: runtime_image
+        if: steps.private_host.outputs.create == 'true'
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/booking:${GITHUB_SHA}"
+          docker build -f tools/booking-runtime/Dockerfile -t "$image" .
+          bytes="$(docker image inspect "$image" --format '{{.Size}}')"
+          test "$bytes" -le 419430400
+          export DOCKER_CONFIG="$(mktemp -d)"
+          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+          printf '%s' "$WVD_GOOGLE_ACCESS_TOKEN" | docker login -u oauth2accesstoken --password-stdin https://europe-west2-docker.pkg.dev
+          docker push "$image"
+          digest="$(docker image inspect "$image" --format '{{index .RepoDigests 0}}')"
+          printf 'image=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+      - name: Create private runtime and verify managed startup
+        if: steps.private_host.outputs.create == 'true'
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+          RUNTIME_IMAGE: ${{ steps.runtime_image.outputs.image }}
+        run: node tools/booking-runtime/private-deployment.mjs create "$RUNTIME_IMAGE" "$GITHUB_SHA"
