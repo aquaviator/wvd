@@ -66,3 +66,16 @@ published, migrated or handed to another chat by this change. On 5 October the f
 £5/month total additional hosting spend. See WVD-PROJECT-AUTHORITY.md.
 The existing Astro site is being improved using Sites design guidance while
 preserving its Google deployment direction; no Sites-hosted migration is claimed.
+
+
+## Active frontend handoff
+
+The private development Site is now published:
+https://wear-valley-digital-development.leatfield.chatgpt.site
+Identity: appgprj_6ac361a8bfd48191b3bde453565cf2ab.
+Initial Sites source a07157c33c4ea8f1493312028704f935118da255 maps to controller
+source 4a193dd2f24461722d95f33c17e69e7af9bfcb4a.
+Use this exact Site for future frontend work. Open and synchronize its latest
+source before edits, then return frontend changes and evidence to this controller.
+The initial published version is a private static website, not the live Google
+booking runtime. Backend contracts and secrets remain controller-owned.

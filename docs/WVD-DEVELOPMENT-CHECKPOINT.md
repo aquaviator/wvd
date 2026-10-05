@@ -1165,3 +1165,27 @@ budget notifications do not impose a hard cap. Source checks 5 October 2026:
 https://cloud.google.com/run/pricing and
 https://cloud.google.com/billing/docs/how-to/budgets. The £5 authority is recorded,
 not represented as a configured provider cap. No paid service was created.
+
+
+### Sites handback completed — 5 October 2026
+
+Private Site: https://wear-valley-digital-development.leatfield.chatgpt.site
+Site identity: appgprj_6ac361a8bfd48191b3bde453565cf2ab
+Sites source: a07157c33c4ea8f1493312028704f935118da255
+Deployment: appgdep_6ac3620754748191b3542b61cc56c3a2 (succeeded).
+Controller source: 4a193dd2f24461722d95f33c17e69e7af9bfcb4a.
+
+The existing Astro frontend was copied with its original source, brand assets,
+content and lockfile into the private Sites source repository and rebuilt there.
+All 25 routes built. No public domain change, backend port, new Google host or
+live booking connection is implied. Sites owns this private frontend checkout;
+controller GitHub owns backend and integration work. Before subsequent frontend
+edits, open this exact Site through the Sites workflow and reconcile changed
+source back into GitHub; do not edit both copies independently or overwrite a
+newer Site version with an old controller copy. Preserve the Google canonical
+URLs for the eventual public domain. Do not put backend secrets into the Site.
+
+Push CI 37284636207 and PR CI 37284642129 passed. Google workflow 37284636147
+passed, with all four runtime probes PASS and overall ACCESS_PRESENT, including
+signing, attachment, native Firestore and Cloud Run deployment permission.
+The isolated development container was still running at this handback checkpoint.
