@@ -1,4 +1,4 @@
-# WVD development standard 1.3.1
+# WVD development standard 1.4.0
 
 Authority: founder instructions on 2 October 2026. Applies to WVD development
 and new product/project onboarding. Existing product constitutions remain
@@ -130,3 +130,14 @@ existing project records and code to select the next unmet acceptance criterion.
 Keep a current checkpoint of completed work, verification and remaining work so
 execution can resume from the brief after a session interruption. Do not claim
 that a chat turn creates an always-running background worker.
+
+
+## Access-aware automated development
+
+The reusable development flow is the primary deliverable; the website is its
+first consumer. Follow WVD-ACCESS-AUTOMATION.md before asking for access or manual
+evidence. Generated plans carry the same discovery requirements. The registry
+records controller, CI and service access separately, using non-secret references
+and dated evidence. Existing access must be discovered and refreshed before
+requesting founder intervention. Inventory validation is automated in CI;
+controller-session access must be discovered by the controller at task time.

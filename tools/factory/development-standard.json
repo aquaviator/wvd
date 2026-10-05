@@ -1,6 +1,6 @@
 {
   "id": "WVD-DEVELOPMENT-STANDARD",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "authority": "Founder instructions, 2 and 4 October 2026",
   "platform": "google",
   "newServiceSubscriptionsAllowed": false,
@@ -27,7 +27,8 @@
     "Run reproducible isolated development tests unattended where supported; retain bounded synthetic visual evidence and report verified results before handover. Do not require founder-local pulls as the default verification gate.",
     "Continue authorised development from the agreed brief and current backlog without waiting for another continue instruction. After each verified slice, select and implement the next in-scope item; progress updates and completed slices are not permission gates. Ask the founder only when missing information, access or a decision genuinely blocks the next action, and continue independent in-scope work while awaiting an answer. Do not invent requirements or broaden the brief. Stop when the brief is complete, the founder asks to stop, or no authorised work can proceed without founder input. Production deployment and new external spend still require separate approval.",
     "All web-facing projects with creative content inherit the visual, short contextual video and complete text bundle. Every page must have a relevant CTA. Keep sources, factual accuracy, review dates, accessibility and truthful public discovery metadata consistent across formats; never expose private content or claim guaranteed AI indexing.",
-    "Production deployment requires separate founder approval."
+    "Production deployment requires separate founder approval.",
+    "Before requesting access or manual evidence, inspect the access registry, discover current controller connectors, verify the target identity and try the existing authorised read path. Record verified changes and failures without credentials. The development flow is the primary reusable product; the website is its first consumer."
   ],
   "flavours": {
     "public-website": {
@@ -136,5 +137,24 @@
       "whileAwaitingInput": "continue-independent-authorised-work",
       "grantsNewPermissions": false
     }
+  },
+  "accessDiscovery": {
+    "registry": "tools/factory/access-registry.json",
+    "scope": "per-product; WVD inventory is not inherited as another product grant",
+    "beforeFounderRequest": [
+      "inspect-recorded-access",
+      "discover-current-controller-tools",
+      "verify-connected-identity-and-target",
+      "try-authorised-existing-route",
+      "record-observed-failure"
+    ],
+    "planes": [
+      "controller",
+      "ci",
+      "service"
+    ],
+    "evidence": "historical-until-refreshed; no status upgrades from configuration alone",
+    "storage": "non-secret references, scope, authority, evidence and limitations only",
+    "messagePolicy": "Use authorised read checks for delivery evidence when available; never send an unsolicited test or replay an uncertain send."
   }
 }

@@ -29,7 +29,7 @@ export function projectPlan(config) {
   const projectAuthority=standard.projectAuthorityOverrides?.[config.productId];
   const continuation={...structuredClone(standard.developmentContinuation),...(projectAuthority?{founderInput:'only-specific-authorisation-triggers',productionApprovalRequired:projectAuthority.productionApprovalRequired,specificAuthorisationTriggers:structuredClone(projectAuthority.specificAuthorisationTriggers)}:{})};
   return {schemaVersion:1,productId:config.productId,flavour:config.flavour,standardId:standard.id,standardVersion:standard.version,standardHash,developmentVerification:structuredClone(standard.developmentVerification),developmentContinuation:continuation,...(projectAuthority?{projectAuthority:structuredClone(projectAuthority)}:{}),
-    platform:'google',newServiceSubscriptionsAllowed:false,newExternalSpendGBP:0,webContentStandard:structuredClone(standard.webContentStandard),
+    platform:'google',newServiceSubscriptionsAllowed:false,newExternalSpendGBP:0,webContentStandard:structuredClone(standard.webContentStandard),accessDiscovery:structuredClone(standard.accessDiscovery),
     bindings:structuredClone(bindings),reuseDecisions:structuredClone(config.reuseDecisions),
     discovery:missing.map(key=>`Verify existing Google ${key}`),
     readiness:'NOT_DEPLOYMENT_VERIFIED',provisioning:false,productionApprovalRequired:projectAuthority?.productionApprovalRequired??true};

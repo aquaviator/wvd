@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "productId": "wvd",
+  "updatedAt": "2026-10-05T13:29:07Z",
+  "scope": "Development-flow control plane; website is first consumer",
+  "connections": [
+    {
+      "id": "controller-gmail",
+      "plane": "controller",
+      "capabilities": [
+        "email.search",
+        "email.read",
+        "email.send"
+      ],
+      "identityRef": "admin@wearvalleydigital.com",
+      "credentialRef": "connected-app:gmail",
+      "discovery": "Discover current Gmail tools, then verify connected profile before account-specific operations.",
+      "evidence": {
+        "status": "OBSERVED",
+        "at": "2026-10-05T13:26:52Z",
+        "source": "Founder Gmail connection screenshot and exposed tools; no connector mailbox read performed."
+      },
+      "limits": [
+        "Controller connection is not available to CI or deployed products.",
+        "Sending requires explicit task authority; presence of a tool is not permission."
+      ]
+    },
+    {
+      "id": "controller-github",
+      "plane": "controller",
+      "capabilities": [
+        "repository.read",
+        "repository.write",
+        "ci.read",
+        "ci.rerun"
+      ],
+      "identityRef": "aquaviator/wvd",
+      "credentialRef": "connected-app:github",
+      "discovery": "Discover current GitHub tools and read current branch before writing.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:25:31Z",
+        "source": "Authorised development-branch writes and CI reads in this session."
+      },
+      "limits": [
+        "Development branch only within current project authority.",
+        "No inferred GitHub administration or shell push credentials."
+      ]
+    },
+    {
+      "id": "controller-sites",
+      "plane": "controller",
+      "capabilities": [
+        "website.edit",
+        "website.publish"
+      ],
+      "identityRef": "wear-valley-digital-development",
+      "credentialRef": "connected-app:sites",
+      "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": null,
+        "source": "docs/WVD-SITES-HANDOFF.md; historical Site deployment, recheck current access."
+      },
+      "limits": [
+        "Sites frontend access does not imply access to the private booking service.",
+        "No automatic production-domain migration or extra spend."
+      ]
+    },
+    {
+      "id": "github-google-wif",
+      "plane": "ci",
+      "capabilities": [
+        "google.short-lived-auth"
+      ],
+      "identityRef": "tools/google-development-access/binding.json",
+      "credentialRef": "github-oidc:existing-google-provider",
+      "discovery": "Run existing Google development access workflow; preserve repository/branch/workflow restrictions.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:02:47Z",
+        "source": "Google workflow 37313700651."
+      },
+      "limits": [
+        "No downloaded service-account keys.",
+        "New products require their own explicit bindings and grants."
+      ]
+    },
+    {
+      "id": "google-drive-calendar",
+      "plane": "service",
+      "capabilities": [
+        "drive.read",
+        "calendar.freebusy",
+        "calendar.events"
+      ],
+      "identityRef": "tools/google-development-access/binding.json",
+      "credentialRef": "github-google-wif / attached-service-identity",
+      "discovery": "Use preflight.mjs, calendar-contract.mjs and calendar-writer-preflight.mjs against the binding.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:02:47Z",
+        "source": "Google workflow 37313700651; actual resource scope in binding.json."
+      },
+      "limits": [
+        "Explicit Drive resource grants only; no assumed upload rights.",
+        "Calendar events delegate to admin@wearvalleydigital.com; required personal busy calendars remain mandatory."
+      ]
+    },
+    {
+      "id": "google-booking-mail",
+      "plane": "service",
+      "capabilities": [
+        "email.send"
+      ],
+      "identityRef": "admin@wearvalleydigital.com",
+      "credentialRef": "keyless-workspace-delegation:104947416422178406240",
+      "discovery": "confirmation-key-preflight.mjs verifies application signing without sending mail.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:25:31Z",
+        "source": "docs/WVD-CONFIRMATION-LIVE-TEST.md; founder confirmed Inbox arrival."
+      },
+      "limits": [
+        "gmail.send only; no inbox-read permission.",
+        "Customer confirmation activation remains separate from the authorised one-message rehearsal.",
+        "Never rerun a send to test access."
+      ]
+    },
+    {
+      "id": "google-confirmation-key",
+      "plane": "service",
+      "capabilities": [
+        "confirmation-key.read"
+      ],
+      "identityRef": "projects/wvd-development/secrets/wvd-booking-confirmation-key/versions/1",
+      "credentialRef": "attached-service-identity / github-google-wif",
+      "discovery": "confirmation-key-preflight.mjs; fixed version read, no key logging.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:02:47Z",
+        "source": "Google workflow 37313700651."
+      },
+      "limits": [
+        "Record secret reference only, never key bytes.",
+        "Accessor on this secret does not imply secret administration."
+      ]
+    },
+    {
+      "id": "google-booking-runtime",
+      "plane": "service",
+      "capabilities": [
+        "booking.availability",
+        "runtime.invoke",
+        "runtime.deploy",
+        "image.upload",
+        "booking-journal.read-write"
+      ],
+      "identityRef": "tools/booking-runtime/wvd-development.candidate.json",
+      "credentialRef": "attached-service-identity / github-google-wif",
+      "discovery": "booking-runtime-preflight.mjs, hosting-discovery.mjs and private-http.mjs.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:02:47Z",
+        "source": "Google workflow 37313700651; deployment configuration in tools/booking-runtime."
+      },
+      "limits": [
+        "Private IAM invocation; no anonymous access grant.",
+        "Service IAM administration was unavailable at last check.",
+        "Total additional WVD hosting authority is GBP 5/month, not a hard billing cap."
+      ]
+    },
+    {
+      "id": "controller-google-workspace",
+      "plane": "controller",
+      "capabilities": [
+        "drive.discover",
+        "calendar.discover"
+      ],
+      "identityRef": "Connected Google Workspace account must be resolved at use",
+      "credentialRef": "connected-app:google-drive / google-calendar",
+      "discovery": "Discover tools, read relevant plugin skill and verify actual connected account and resource before use.",
+      "evidence": {
+        "status": "OBSERVED",
+        "at": "2026-10-05T13:29:07Z",
+        "source": "Google Drive plugin and Calendar tools exposed in controller; no fresh account/resource probe."
+      },
+      "limits": [
+        "Do not equate controller OAuth with service-account grants.",
+        "Tool presence does not prove a particular account or target is accessible."
+      ]
+    }
+  ]
+}

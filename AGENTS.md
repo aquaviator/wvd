@@ -47,3 +47,11 @@ Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
   controller-owned integration and extended functionality. Follow
   `docs/WVD-SITES-HANDOFF.md` for the handoff and handback. This authorises the
   development workflow, not automatic hosting migration or additional spend.
+
+- The reusable automated development flow is the primary deliverable; the WVD
+  website is its first consumer (founder, 5 October 2026). Read
+  `docs/WVD-ACCESS-AUTOMATION.md` and the access registry before asking the founder
+  for access or manual evidence. Discover current controller connectors first:
+  their capabilities differ from CI and deployed service permissions. Refresh
+  evidence through an authorised read path; never infer current access from an
+  old success. Record changes and limits using references, never credentials.

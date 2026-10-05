@@ -4,9 +4,12 @@ import {resolve, dirname} from 'node:path';
 import {preflight, run} from './factory.mjs';
 import {assess, createHandoff} from './handoff.mjs';
 import {developmentStandard,reuseCatalogue,projectPlan} from './standard.mjs';
+import {accessInventory,accessPlan,validateAccessInventory} from './access.mjs';
 try {
   const [command, file, stateDirectory = '.factory/runs', extra] = process.argv.slice(2);
-  if (command === 'preflight') console.log(JSON.stringify(await preflight(resolve('.factory/preflight')), null, 2));
+  if (command === 'access-check') console.log(JSON.stringify(validateAccessInventory(accessInventory()),null,2));
+  else if(command === 'access' && file && stateDirectory) console.log(JSON.stringify(accessPlan(accessInventory(),{productId:'wvd',capability:file,plane:stateDirectory}),null,2));
+  else if (command === 'preflight') console.log(JSON.stringify(await preflight(resolve('.factory/preflight')), null, 2));
   else if (command === 'standard') console.log(JSON.stringify({standard:developmentStandard(),catalogue:reuseCatalogue()},null,2));
   else if (command === 'project' && file) console.log(JSON.stringify(projectPlan(JSON.parse(await readFile(resolve(file),'utf8'))),null,2));
   else if (command === 'run' && file) {
