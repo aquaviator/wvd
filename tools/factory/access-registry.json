@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T13:29:07Z",
+  "updatedAt": "2026-10-05T15:04:37.000Z",
   "scope": "Development-flow control plane; website is first consumer",
   "connections": [
     {
@@ -17,8 +17,8 @@
       "discovery": "Discover current Gmail tools, then verify connected profile before account-specific operations.",
       "evidence": {
         "status": "OBSERVED",
-        "at": "2026-10-05T13:26:52Z",
-        "source": "Founder Gmail connection screenshot and exposed tools; no connector mailbox read performed."
+        "at": "2026-10-05T15:04:37.000Z",
+        "source": "Live Gmail get_profile resolved admin@wearvalleydigital.com; profile only, not mailbox-operation verification."
       },
       "limits": [
         "Controller connection is not available to CI or deployed products.",
@@ -39,7 +39,7 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T13:25:31Z",
+        "at": "2026-10-05T13:25:31.000Z",
         "source": "Authorised development-branch writes and CI reads in this session."
       },
       "limits": [
@@ -78,7 +78,7 @@
       "discovery": "Run existing Google development access workflow; preserve repository/branch/workflow restrictions.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T13:02:47Z",
+        "at": "2026-10-05T13:02:47.000Z",
         "source": "Google workflow 37313700651."
       },
       "limits": [
@@ -99,7 +99,7 @@
       "discovery": "Use preflight.mjs, calendar-contract.mjs and calendar-writer-preflight.mjs against the binding.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T13:02:47Z",
+        "at": "2026-10-05T13:02:47.000Z",
         "source": "Google workflow 37313700651; actual resource scope in binding.json."
       },
       "limits": [
@@ -118,7 +118,7 @@
       "discovery": "confirmation-key-preflight.mjs verifies application signing without sending mail.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T13:25:31Z",
+        "at": "2026-10-05T13:25:31.000Z",
         "source": "docs/WVD-CONFIRMATION-LIVE-TEST.md; founder confirmed Inbox arrival."
       },
       "limits": [
@@ -138,7 +138,7 @@
       "discovery": "confirmation-key-preflight.mjs; fixed version read, no key logging.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T13:02:47Z",
+        "at": "2026-10-05T13:02:47.000Z",
         "source": "Google workflow 37313700651."
       },
       "limits": [
@@ -161,7 +161,7 @@
       "discovery": "booking-runtime-preflight.mjs, hosting-discovery.mjs and private-http.mjs.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T13:02:47Z",
+        "at": "2026-10-05T13:02:47.000Z",
         "source": "Google workflow 37313700651; deployment configuration in tools/booking-runtime."
       },
       "limits": [
@@ -182,8 +182,8 @@
       "discovery": "Discover tools, read relevant plugin skill and verify actual connected account and resource before use.",
       "evidence": {
         "status": "OBSERVED",
-        "at": "2026-10-05T13:29:07Z",
-        "source": "Google Drive plugin and Calendar tools exposed in controller; no fresh account/resource probe."
+        "at": "2026-10-05T15:04:37.000Z",
+        "source": "Live WVD Calendar get_profile resolved admin@wearvalleydigital.com; Drive account/resource not probed."
       },
       "limits": [
         "Do not equate controller OAuth with service-account grants.",

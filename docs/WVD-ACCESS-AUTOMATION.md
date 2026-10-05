@@ -51,3 +51,27 @@ Known coverage is nine routes in the WVD registry. Additional discovered access
 must be added with evidence; this inventory does not assert knowledge of unseen
 accounts or every permission in the Google organisation. Observed tool presence,
 verified token issuance, resource access and inbox delivery are different evidence.
+
+## Task handoff integration
+
+Tasks may declare `accessRequirements`, for example
+`[{"capability":"email.read","plane":"controller"}]`. WVD tasks use the WVD
+registry; other products must supply an explicitly product-bound `accessRegistry`
+in their manifest. Registry/product mismatch is rejected. Requirements without
+an existing candidate remain discovery work, not an automatic founder gate.
+
+Task packets include only matching routes and a hash of the inventory. Inventory
+changes invalidate cached packets. Access information counts against the existing
+context budget; it is never silently omitted. The freshness assessor distinguishes
+missing session discovery, stale/future-dated evidence, prior failures and recent
+evidence requiring a target check. No category grants authority or implies live
+access. Check freshness at execution time, not while caching a context packet.
+
+Every Google access run now records `access-evidence.json` with its source commit,
+run/attempt, observation time and bounded outcomes for resource reads, writer
+grant inspection, confirmation key/signing, private runtime and mail scope.
+Failed, cancelled and skipped steps never become PASS. The artifact is retained
+for one day; controllers must persist important non-secret outcomes in the
+registry/checkpoint before expiry. CI cannot capture controller-session settings.
+Retrieve receipts from the trusted GitHub run; a caller-supplied JSON file is not
+independent proof. This report does not send messages or change permissions.

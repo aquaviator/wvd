@@ -98,3 +98,15 @@ test('foreign product configuration cannot be attached to another project',async
   f.manifest.productConfig=JSON.parse(await readFile(new URL('../product.example.json',import.meta.url),'utf8'));
   await assert.rejects(run(f.manifest,f.root,f.state),/Product\/project binding mismatch/);
 });
+
+test('task access requirements are product-bound, budgeted and invalidate cached handoffs on drift',async t=>{
+ const {accessInventory}=await import('../access.mjs');const f=await fixture(t);
+ f.manifest.accessRegistry=accessInventory();f.manifest.accessRegistry.productId=f.manifest.projectId;
+ f.manifest.tasks[0].maxBytes=30000;f.manifest.tasks[0].accessRequirements=[{capability:'email.read',plane:'controller'}];
+ const first=await run(f.manifest,f.root,f.state),packet=JSON.parse(await readFile(first.tasks.context.output,'utf8'));
+ assert.equal(packet.access.length,1);assert.equal(packet.access[0].candidates[0].id,'controller-gmail');assert.equal(packet.access[0].currentlyVerified,false);
+ assert.equal((await run(f.manifest,f.root,f.state)).tasks.context.reused,true);
+ f.manifest.accessRegistry.connections[0].evidence.status='FAILED';const changed=await run(f.manifest,f.root,f.state);assert.equal(changed.tasks.context.reused,false);assert.notEqual(changed.tasks.context.binding,first.tasks.context.binding);
+ f.manifest.accessRegistry.productId='foreign';assert.throws(()=>validate(f.manifest),/Access registry product mismatch/);
+ delete f.manifest.accessRegistry;assert.throws(()=>validate(f.manifest),/Product access registry required/);
+});

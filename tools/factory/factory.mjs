@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 import {mkdir, readFile, writeFile, rename, unlink, realpath} from 'node:fs/promises';
 import {resolve, relative, isAbsolute, join} from 'node:path';
 import {developmentStandard,standardHash,projectPlan} from './standard.mjs';
+import {accessInventory,accessPlan,accessRegistryHash,validateAccessInventory} from './access.mjs';
 
 export const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/;
@@ -13,6 +14,7 @@ export function validate(manifest) {
     const plan=projectPlan(manifest.productConfig);
     if(plan.productId!==manifest.projectId)throw Error('Product/project binding mismatch');
   }
+  if(manifest.accessRegistry!==undefined){validateAccessInventory(manifest.accessRegistry);if(manifest.accessRegistry.productId!==manifest.projectId)throw Error('Access registry product mismatch');}
   const sources = new Set();
   for (const source of manifest.sources) {
     if (!validId(source.id) || sources.has(source.id) || !source.revision || !source.path || !/^[a-f0-9]{64}$/.test(source.sha256)) throw Error('Invalid source binding');
@@ -22,6 +24,10 @@ export function validate(manifest) {
   for (const task of manifest.tasks) {
     if (!validId(task.id) || tasks.has(task.id) || task.adapter !== 'assemble-context' || !Array.isArray(task.dependencies) || !Array.isArray(task.sourceIds) || !task.sourceIds.length || !Number.isSafeInteger(task.maxBytes) || task.maxBytes < 1 || !Array.isArray(task.blockers)) throw Error('Invalid task');
     if (task.sourceIds.some(id => !sources.has(id))) throw Error('Unknown source');
+    if(task.accessRequirements!==undefined){
+      if(!Array.isArray(task.accessRequirements)||task.accessRequirements.length>20||task.accessRequirements.some(r=>!r||Object.keys(r).sort().join(',')!=='capability,plane'||typeof r.capability!=='string'||!r.capability.length||!['controller','ci','service'].includes(r.plane)))throw Error('Invalid access requirement');
+      if(manifest.projectId!=='wvd'&&!manifest.accessRegistry&&task.accessRequirements.length)throw Error('Product access registry required');
+    }
     tasks.set(task.id, task);
   }
   const visited = new Set(), active = new Set();
@@ -55,7 +61,8 @@ async function atomic(path, value) {
 }
 export async function run(manifest, workspace, stateRoot) {
   validate(manifest);
-  const developmentProfile={standard:developmentStandard(),standardHash,
+  const registry=manifest.accessRegistry??(manifest.projectId==='wvd'?accessInventory():null);
+  const developmentProfile={accessRegistryHash:registry?accessRegistryHash(registry):null,standard:developmentStandard(),standardHash,
     productPlan:manifest.productConfig===undefined?null:projectPlan(manifest.productConfig)};
   const directory = join(stateRoot, manifest.projectId);
   await mkdir(directory, {recursive: true, mode: 0o700});
@@ -91,7 +98,7 @@ export async function run(manifest, workspace, stateRoot) {
             if (createHash('sha256').update(content).digest('hex') !== source.sha256) throw Error(`Source changed:${id}`);
             packet.push({id, revision: source.revision, sha256: source.sha256, content});
           }
-          const result = {projectId: manifest.projectId, taskId: task.id, binding, developmentProfile, sources: packet};
+          const result = {projectId: manifest.projectId, taskId: task.id, binding, developmentProfile, access:(task.accessRequirements??[]).map(requirement=>accessPlan(registry,{productId:manifest.projectId,...requirement})), sources: packet};
           const encoded = JSON.stringify(result, null, 2) + '\n';
           if (Buffer.byteLength(encoded) > task.maxBytes) throw Error('Context budget exceeded; select a smaller source slice');
           const output = join(directory, `${task.id}.context.json`);
