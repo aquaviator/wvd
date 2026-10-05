@@ -36,3 +36,26 @@ The founder selected Sites for future supported web-facing development, with
 handoff and handback to this controller for integrations and extended
 functionality. Follow `WVD-SITES-HANDOFF.md`. Keep existing platform, access and
 spending boundaries; no new founder review gate is introduced.
+
+## Hosting budget and access — 5 October 2026
+
+The founder explicitly authorised £5 per month in additional hosting spending
+for WVD. This is the total additional hosting allowance, not £5 per service or
+product. Include associated hosting costs and applicable taxes when assessing
+fit. This supersedes the previous £0 allowance only for this scope; unrelated
+subscriptions and spending remain unauthorised. No repeat approval is needed
+for work within this allowance and existing access.
+
+Before activating paid resources, assess current pricing and expected usage,
+configure available cost controls, and account for storage, build and network
+charges. Do not represent a budget alert or instance limit as a guaranteed
+billing cap. Escalate before exceeding the allowance or committing to a plan
+whose minimum charges exceed it. Recording this authority does not configure a
+provider budget, create hosting, or claim a technical £5 hard cap exists.
+
+The founder supplied successful Cloud Shell output from the pinned
+enable-runtime-access.sh script: all three IAM policy updates completed and
+RUNTIME_ACCESS_CONFIGURED_NO_HOST_OR_SPEND_CREATED was printed. Record these
+grants as applied by the founder; effective runtime access still requires the
+normal unattended integration check. Do not ask the founder to repeat the script
+without evidence of a remaining permission issue.

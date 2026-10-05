@@ -32,8 +32,9 @@ Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
 - Run relevant shared and consumer tests; do not claim integration from a
   configuration template alone.
 - Development commits/pushes to the authorised development branch are permitted.
-  Apply the project authority above to releases; new external spend remains £0
-  without separate authority.
+  Apply the project authority above to releases. The founder authorised £5/month
+  total additional WVD hosting spend on 5 October 2026; see the scope and cost
+  controls in `docs/WVD-PROJECT-AUTHORITY.md`. Other new spend needs authority.
 
 - Use the unattended container verification process in
   `tools/development-container/README.md` for supported development checks.
