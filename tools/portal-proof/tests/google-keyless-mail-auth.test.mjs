@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createKeylessMailAuthClient} from '../google-keyless-mail-auth.mjs';
 import {composeBookingDeliveryRuntime} from '../booking-delivery-runtime.mjs';
+import {verifyConfirmationSigning} from '../../google-development-access/confirmation-key-preflight.mjs';
 const account='wvd-development@wvd-development.iam.gserviceaccount.com';
 function fixture(){
  let at='2026-10-05T10:00:00.000Z',posts=0,grants=0,status=200;const claims=[];
@@ -33,4 +34,18 @@ test('composed worker readiness proves key and delegated token without queue, Ca
  const runtime={binding:{firebase:{projectId:'wvd-development',productId:'wvd'},calendarId:'owned@example.test',origin:'https://booking.example.test',requestTimeoutMs:1000},store:Object.fromEntries(['read','queueConfirmationDelivery','claimConfirmationDelivery','suppressConfirmationDelivery','acceptConfirmationDelivery'].map(k=>[k,deny])),management:{read:deny},calendar:{events:{get:deny}}};
  const worker=composeBookingDeliveryRuntime({runtime,config:{serviceAccount:account,senderEmail:'admin@example.test',secretId:'booking-key',activeKey:'v1',versions:{v1:'1'}},signer:f.options.signer,clock:f.options.clock,request:f.options.request});
  const result=await worker.verifyAccess();assert.equal(result.key.status,'CONFIRMATION_KEY_ACCESS_PASS');assert.equal(result.mail.status,'MAIL_SEND_SCOPE_PRESENT_NO_MESSAGE_SENT');assert.equal(result.messageSent,false);assert.equal(result.writesPerformed,false);assert.equal(f.posts,0);
+});
+
+test('live signing preflight only signs and exchanges, never contacts the Gmail send endpoint',async()=>{
+ const calls=[];
+ const result=await verifyConfirmationSigning('synthetic-cloud-token',{request:async(url,options)=>{
+  calls.push(url);
+  if(url.startsWith('https://iamcredentials.googleapis.com/')){
+   assert.equal(options.headers.Authorization,'Bearer synthetic-cloud-token');const claims=JSON.parse(JSON.parse(options.body).payload);assert.equal(claims.sub,'admin@wearvalleydigital.com');assert.equal(claims.scope,'https://www.googleapis.com/auth/gmail.send');
+   return Response.json({signedJwt:Buffer.from('{"alg":"RS256"}').toString('base64url')+'.'+Buffer.from(JSON.stringify(claims)).toString('base64url')+'.signature'});
+  }
+  assert.equal(url,'https://oauth2.googleapis.com/token');return Response.json({token_type:'Bearer',access_token:'synthetic-mail-token',expires_in:120});
+ }});
+ assert.equal(result.status,'MAIL_SEND_SCOPE_PRESENT_NO_MESSAGE_SENT');assert.equal(calls.length,2);
+ await assert.rejects(verifyConfirmationSigning('synthetic-token',{request:async()=>Response.json({error:'private'},{status:403})}),/^Error: CONFIRMATION_SIGNING_FAILED$/);
 });

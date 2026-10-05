@@ -1,6 +1,7 @@
 import {pathToFileURL} from 'node:url';
 import {createGoogleBookingCipher} from '../portal-proof/google-booking-cipher.mjs';
 import {readBoundedProviderJson} from '../portal-proof/provider-json.mjs';
+import {createKeylessMailAuthClient} from '../portal-proof/google-keyless-mail-auth.mjs';
 
 export async function verifyConfirmationKey(token,{request=fetch}={}) {
  if(typeof token!=='string'||!token.length||token.length>8192||/\s/.test(token))throw Error('CONFIRMATION_KEY_ACCESS_FAILED');
@@ -16,7 +17,20 @@ export async function verifyConfirmationKey(token,{request=fetch}={}) {
   return await cipher.verifyAccess();
  }catch{throw Error('CONFIRMATION_KEY_ACCESS_FAILED');}
 }
+export async function verifyConfirmationSigning(token,{request=fetch}={}) {
+ if(typeof token!=='string'||!token.length||token.length>8192||/\s/.test(token))throw Error('CONFIRMATION_SIGNING_FAILED');
+ const serviceAccount='wvd-development@wvd-development.iam.gserviceaccount.com';
+ const endpoint='https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/'+encodeURIComponent(serviceAccount)+':signJwt';
+ const signer={async request(options){
+  if(options.url!==endpoint||options.method!=='POST')throw Error('CONFIRMATION_SIGNING_FAILED');
+  const response=await request(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(options.data),redirect:'error',signal:AbortSignal.timeout(10000)});
+  if(!response.ok){await response.body?.cancel();throw Error('CONFIRMATION_SIGNING_FAILED');}
+  return {data:await readBoundedProviderJson(response,32768)};
+ }};
+ try{return await createKeylessMailAuthClient({signer,serviceAccount,subject:'admin@wearvalleydigital.com',clock:()=>new Date().toISOString(),request}).verifyAccess();}
+ catch{throw Error('CONFIRMATION_SIGNING_FAILED');}
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
- try{console.log(JSON.stringify(await verifyConfirmationKey(process.env.WVD_GOOGLE_ACCESS_TOKEN)));}
- catch{console.error('CONFIRMATION_KEY_ACCESS_FAILED');process.exitCode=1;}
+ try{console.log(JSON.stringify(await verifyConfirmationKey(process.env.WVD_GOOGLE_ACCESS_TOKEN)));console.log(JSON.stringify(await verifyConfirmationSigning(process.env.WVD_GOOGLE_ACCESS_TOKEN)));}
+ catch{console.error('CONFIRMATION_ACCESS_FAILED');process.exitCode=1;}
 }
