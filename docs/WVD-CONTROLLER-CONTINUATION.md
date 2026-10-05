@@ -31,7 +31,7 @@ no raw metadata. It neither sends mail nor changes permissions or registry state
 Negative tests exposed a shared-array bug in accessReport: mutating one report's
 capability array changed future reports. Each report now owns its capability
 arrays. Local factory suite: 56 passing, zero failures; diff whitespace check
-passed. CI/container evidence for this source is pending until appended below.
+passed. Verified CI/container evidence for this source is recorded below.
 
 The saved receipt for source `4639ee686819922c87cd91c87546f4c61bcd8fa8`, run
 37330368559 attempt 1, matched freshly retrieved GitHub run/jobs metadata at
@@ -40,8 +40,34 @@ resource access or authenticate arbitrary caller-supplied JSON. Original artifac
 provenance is in the access handoff. No live send or new provider probe was needed
 for that reconciliation.
 
-Next: inspect this change's CI and isolated container; fix any relevant failure.
-Then reconcile the outstanding booking-confirmation HTTP/recipient handback and
+Next: reconcile the outstanding booking-confirmation HTTP/recipient handback and
 continue the agreed integration backlog. Customer-mail activation, public
 admission, Sites connection and operational backup/recovery remain outstanding;
 receipt reconciliation does not complete those features.
+
+## Verification and durable evidence
+
+Implementation source: `b3accba8c64e1a135f86f61182ffff0f9a2287c4`.
+Push CI 37333653024 and PR CI 37333661305 passed all four jobs. Google access
+37333652942 passed; its downloaded artifact 11355965408 matched SHA-256
+`c05de9f5492270617a248f2b98d3ff58c53bc2a09af95555e9135eac7bae3d42`.
+The new reconciler matched the receipt against freshly retrieved complete
+run/jobs metadata. Preserve its original observation time, 15:33:17.621 UTC;
+the receipt is saved at `tools/factory/evidence/google-access-37333652942.json`.
+No extra test message was sent. The existing workflow's authorised provider
+checks are unchanged; this is not customer-mail activation.
+
+Offline container 37333652922 passed. Artifact 11355466889 matched SHA-256
+`abfa32a24aefe3b91d083fba60369d496858d109227701e33fb113ac7d734dac`.
+Its results.json binds that exact implementation source, Node v22.23.3,
+Playwright 1.62.1, demo-wvd-portal and liveAccess=false. Portal unit and Firebase
+browser suites passed. Image identity:
+`sha256:0e3834530b07816b051ddd631e3885bc650947265bb90ad1d6b71fcba59d9d00`.
+The mobile private-management screenshot was inspected; original branding,
+private-link controls and contact CTA remain present. One supplementary video
+was omitted under the existing evidence cap; required screenshots were retained.
+
+The evidence follow-up also preserves the CLI's prior executable mode (100755),
+which the connector tree creation had flattened to 100644. It changes no JS
+content beyond the verified implementation. Current GitHub read/write evidence
+is recorded in the access registry without credentials or provider response data.
