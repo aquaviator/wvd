@@ -107,6 +107,12 @@ jobs:
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
         run: node tools/google-development-access/booking-runtime-preflight.mjs tools/google-development-access/binding.json
+      - name: Verify service discovery stays read-only and target-bound
+        run: node --test tools/portal-proof/tests/service-discovery.test.mjs
+      - name: Discover enquiry and Portal configuration without changing access or sending mail
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/google-development-access/service-discovery.mjs tools/google-development-access/binding.json
       - id: confirmation_access
         name: Verify explicit confirmation key version without writes or mail
         env:
