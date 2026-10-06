@@ -1,10 +1,13 @@
-import {mkdirSync} from 'node:fs';
+import {mkdirSync,readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {test,expect,type Page,type Route} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import sharp from 'sharp';
 
 const endpoint='**/api/enquiries';
+const publicHeaders=readFileSync(new URL('../../public/_headers',import.meta.url),'utf8');
+const contentSecurityPolicy=publicHeaders.match(/^\s*Content-Security-Policy:\s*(.+)$/im)?.[1];
+if(!contentSecurityPolicy)throw Error('PUBLIC_CONTENT_SECURITY_POLICY_REQUIRED');
 const fields={name:'Synthetic visitor',business:'Synthetic business',email:'visitor@example.test',need:'A clearer website',website:'',timing:'',budget:''};
 const receipt={status:'RECEIVED',receiptId:'0123456789abcdef'.repeat(4),receivedAt:'2026-10-06T16:00:00.000Z'};
 type Submission={requestId:string;fields:typeof fields;websiteTrap:string};
@@ -18,6 +21,12 @@ async function respond(route:Route,status:number,value:unknown){
 // live enquiry host or send mail. Origins remain independent of deployment URL.
 async function mockEnquiries(page:Page,reply:(route:Route,index:number)=>Promise<void>){
   const posts:RecordedPost[]=[];
+  // The local static server does not apply the production _headers file.
+  // Exercise the actual hosting CSP so a blocked service origin fails here.
+  await page.route('**/enquire/',async route=>{
+    const response=await route.fetch();
+    await route.fulfill({response,headers:{...response.headers(),'content-security-policy':contentSecurityPolicy}});
+  });
   await page.route(endpoint,async route=>{
     if(route.request().method()==='OPTIONS'){
       await route.fulfill({status:204,headers:{'Access-Control-Allow-Origin':route.request().headers().origin??'http://127.0.0.1:4321','Access-Control-Allow-Methods':'POST','Access-Control-Allow-Headers':'Content-Type','Vary':'Origin'}});
