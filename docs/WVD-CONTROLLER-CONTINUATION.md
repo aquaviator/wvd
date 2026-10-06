@@ -520,3 +520,30 @@ research tasks remain independently actionable. Both product intake tasks remain
 partial/HOLD; all fourteen Wedding package gates and 32 full scenarios remain open.
 No commercial release, wider audience, live send, real data, migration or extra
 spending. No founder input is needed for remaining unblocked work.
+
+
+## WVD public service launch — 6 October 2026
+
+Latest founder direction: get WVD live as a service offering for promotion and
+social profiles, independently of Salon/Wedding/other product availability.
+The service Site is now PUBLIC at https://wear-valley-digital.leatfield.chatgpt.site.
+Native audience revision 2 was applied at 2026-10-06T10:27:00.860717+00:00 and read
+back as public/active, version 4. Sites source 5ee9b94a7556476b7c3130f31a075612c441e090
+was mirrored to controller 705592e48444fb78d2694d48906d79603a4b346e; both push/PR CI passed all
+four jobs, including 82 public browser and 19 site unit checks. Home/Enquiry
+mobile/desktop evidence was inspected. Final handback and exact DNS records:
+[WVD-SERVICE-LAUNCH-2026-10-06.md](WVD-SERVICE-LAUNCH-2026-10-06.md).
+
+The public offer is websites, bespoke software and automation. Enquiry is a
+reviewable browser-local email draft to hello@wearvalleydigital.com, sent only
+by the visitor. Optional analytics are disabled. Products remain labelled in
+development/private/paused with no product audience change or commercial release.
+No new subscription, customer mail, social post or repeated email test occurred.
+
+Next launch action: connect wearvalleydigital.com and www through the existing
+Cloudflare DNS zone using the exact Sites records, then verify active TLS and
+update canonical/sitemap origin in the same Site. DNS write access is not exposed
+in the current controller session. The public Site URL can be used meanwhile.
+Keep all mail-related DNS intact. Do not rebuild booking, portals or products
+as a prerequisite for promoting this service offering; continue their separately
+authorised backlog under current ownership and acceptance rules.

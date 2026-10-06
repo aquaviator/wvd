@@ -11,7 +11,7 @@ booking/customer-email activation and private portal authority are separate.
 Use the existing Site identity and existing hosting. No new subscription or
 extra spending was enabled. No social post, customer email or test email was sent.
 
-## Release candidate and current state
+## Live service release
 
 - Site: appgprj_6ac361a8bfd48191b3bde453565cf2ab.
 - Title: Wear Valley Digital — Websites, Software & Automation.
@@ -21,13 +21,13 @@ extra spending was enabled. No social post, customer email or test email was sen
 - Saved version: appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_2c99c17fd9bc81919b31f8b5efb409be.
 - Deployment: appgdep_6ac4cb4e23a08191b1bf019842d4c342.
 - Native deployment succeeded at 2026-10-06T10:20:17.390517+00:00.
-- The new release is staged under the current owner-only audience. Public access
-  is the next authorised release action after the integrated controller checks.
+- Public access enabled at 2026-10-06T10:27:00.860717+00:00, policy revision 2.
+  A subsequent native Site read confirmed access_mode=public, active, version 4.
 - Custom apex and www domains are registered with Sites but still PENDING.
   Cloudflare DNS changes and TLS validation are not complete.
 
-This checkpoint does not yet claim public access or custom-domain delivery.
-Append the actual public access, CI and domain result after those actions finish.
+The service Site is public at the URL above. Custom-domain delivery is still
+unverified/pending; do not describe wearvalleydigital.com as connected yet.
 
 ## User-facing changes
 
@@ -71,7 +71,7 @@ at the prior Sites revision. The 17-file frontend change plus two adapted existi
 browser suites are mirrored onto the full current controller tree; no wholesale
 Sites checkout replacement, workflow edit or lockfile change is required.
 
-## Verification completed before integrated CI
+## Verification
 
 - Official Sites build: content validation passed for 2026-10-06; 28 routes built.
 - Independent generated-output review: 28 HTML routes, 32 parseable JSON-LD
@@ -87,11 +87,30 @@ Sites checkout replacement, workflow edit or lockfile change is required.
   Accessibility, media, no-network/no-storage enquiry and private-product checks
   remain. Their TypeScript syntax checks passed.
 
-Managed local browser preview is unavailable in this environment; no substitute
-preview was started. The existing unattended GitHub CI is the browser verification
-path. Observe its exact commit, all required jobs, screenshots and concrete
-failures before the final launch handback. Existing path filters do not require
-a new live Google probe or standalone portal-container run for this frontend slice.
+Integrated controller source: 705592e48444fb78d2694d48906d79603a4b346e.
+Push CI 37449515567 and PR CI 37449520567 both succeeded on attempt 1, all four
+jobs (quality, portal-database, portal-google, google-windows). Public browser
+suite: 82 passed. Site unit suite: 19 passed. Build: 28 routes. Existing factory
+59, Google utilities 10, portal unit 523 (one Windows-only skip), portal browser 4
+and Firebase emulator 4 also passed. No failing test or workflow required repair.
+
+Public artifact 11406730090, public-guide-evidence-37449515567, is bound to that
+exact commit/run. ZIP 2,493,341 bytes; SHA-256
+bfad47a9f51b4987f4da45f4bc15c53c0fce463914e4d878e83f2921e6dfadd0 matched GitHub.
+Its 20 PNGs total 2,657,551 decoded bytes, within the unchanged 5 MiB cap.
+Reviewed desktop/mobile Home and Enquiry draft screenshots: service-first copy,
+development labels, required/optional fields, explicit not-sent state and usable
+email/copy controls; no clipping/overlap observed. Services has no screenshot in
+the existing bundle, but its desktop/mobile accessibility/narrow-screen checks
+passed. Root also inspected desktop Home and mobile Enquiry.
+
+Managed local preview was unavailable, so no substitute preview was started.
+Existing unattended CI supplied browser evidence. It is not a live hosted-browser
+or mailbox-receipt test. Native hosting confirmed successful deployment and
+public access; the separate web reader could not retrieve this Sites URL, which
+is recorded as a verification limit rather than evidence of an outage.
+Development container 37449520570 was skipped by its existing rules. No live
+Google probe, extra email, product deployment or account permission change ran.
 
 ## Custom domain connection
 
@@ -101,9 +120,25 @@ not replace nameservers. No Cloudflare DNS write connector is currently availabl
 
 Sites apex connection: appgdom_6ac4cab6b89c8191bd1450898cacd9ea.
 Sites www connection: appgdom_6ac4cacd0ac4819187cac3c462c31626.
-Read the native domain connection for exact A/CNAME/TXT requirements; tokens are
-public DNS verification values, not account credentials. After DNS is updated,
-refresh both statuses and require ACTIVE/TLS success. Then change the site's
+Native status refreshed 2026-10-06T10:25:58Z: both connections PENDING;
+SSL pending_validation. These are the exact non-empty returned DNS records,
+shown as relative names within wearvalleydigital.com:
+
+| Type | Name | Value |
+| --- | --- | --- |
+| A | @ | 162.159.143.30 |
+| A | @ | 172.66.3.26 |
+| CNAME | www | custom-domains.chatgpt.site. |
+| TXT | _openai-site-verification | openai-site-verification=GmmizM6GeItCz28hAh1eWyGykiZkt-BtXGUnCTwwLHA |
+| TXT | _cf-custom-hostname | d2abc3cc-2035-4f9d-a74a-e4e8b9f25657 |
+| TXT | _openai-site-verification.www | openai-site-verification=QvJAhFXZoHW22-dsOaOxrGBPNh3sHq_KL6wzOJ_wnuU |
+| TXT | _cf-custom-hostname.www | 9812ef06-3e86-4e04-af58-51335f02f9d1 |
+
+These are public DNS verification values, not account credentials.
+The website's current @/www routing records need reconciling with these targets;
+preserve MX/SPF/DKIM/DMARC and other unrelated records. Native TLS validation
+returned one empty record slot per domain; no missing record value is invented.
+After DNS is updated, refresh both statuses and require ACTIVE/TLS success. Then change the site's
 public canonical origin and robots sitemap to https://wearvalleydigital.com and
 verify/redeploy the same source identity. Until that happens, the Sites URL is
 the truthful canonical origin.
