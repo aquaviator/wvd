@@ -69,7 +69,9 @@ The prepared [administrator helper](../tools/portal-runtime/enable-service-acces
 
 This is an initial owner-null setup. No permanent role is granted; the helper does not alter booking, create accounts, submit enquiries or send messages. TTL enablement can report CREATING or ENABLEMENT_PENDING before ACTIVE; it does not promise immediate deletion.
 
-Open Google Cloud Shell as the administrator for wvd-development and run this source-pinned command:
+The initial command below returned `GOOGLE_HTTP_403` in the founder's Cloud Shell on 6 October. **Do not repeat it until the read-only diagnostic below has identified the failure.** The original helper reports neither the failed API nor Google's structured reason. With no progress line, the denial occurred during its six preflight reads or the first authorised-domain update/readback. TTL activation and public-transport activation had not been reached; an authorised-domain write cannot yet be excluded.
+
+Initial source-pinned setup command, retained for exact incident context:
 
 ```bash
 (
@@ -84,6 +86,28 @@ Open Google Cloud Shell as the administrator for wvd-development and run this so
 ```
 
 Helper SHA-256: `a19732374ffc7d369a1f3617c586acaed18b6b1f82ed3d06eed6f2b75f88e23b`. The script and receipt are pinned to the same immutable commit, with the actual live receipt already retained. A later runtime update invalidates this setup command until its receipt is refreshed. If setup fails, return the final error/output without credentials; do not guess grants or repeat broad changes.
+
+#### Read-only diagnosis of the Cloud Shell 403
+
+[service-access.py](../tools/operator-diagnostics/service-access.py) reads the effective gcloud account, selected project, impersonation and quota-project context. Token/file overrides are reported as presence booleans only. It then repeats the same six named metadata reads. Each denied read is compared once with `X-Goog-User-Project: wvd-development`. Two bounded `testIamPermissions` requests check the exact project and Cloud Run service, using both quota modes. Those POST operations read permissions; they do not update IAM or resources.
+
+This adapts the existing administrator helper's fixed targets, no-redirect HTTP client and token-in-memory pattern. It is separate because diagnosis must not invoke setup or trigger a privileged runtime deployment. It needs no arguments, dependencies, credential files or administrator role grants. It prints only selected context, HTTP status, bounded structured Google ErrorInfo fields, safe state booleans and scoped permission results. It omits raw provider messages, service configuration, access tokens and credential paths.
+
+Google documents that a raw request using `gcloud auth print-access-token` can require an explicit quota-project header; the caller then needs `serviceusage.services.use` on that project. This is a hypothesis for this incident, not a proven diagnosis. The current helper sets no quota header. Earlier gcloud CLI successes and the CI service identity do not establish the current Cloud Shell principal or raw REST quota attribution.
+
+A request recovered by the explicit header is reported by name under `quotaHeaderRecovered`. Failed permission requests remain INCONCLUSIVE; a successful test reports only granted and notReturned permissions at the tested scope. Project-scope results may not capture conditional grants on descendant resources. The diagnostic never claims that permission tests guarantee a later setup PATCH will succeed.
+
+The diagnostic source and its synthetic tests are committed outside the Google deployment trigger paths. Ordinary CI runs the tests. No runtime image, release receipt, public website version, Google configuration or account is changed by this diagnostic addition. The next required evidence is its output from the same Cloud Shell session; controller connectors do not expose that session's effective Google credentials.
+
+Primary API references checked 6 October 2026:
+
+- https://docs.cloud.google.com/sdk/gcloud/reference/auth/print-access-token
+- https://docs.cloud.google.com/docs/quotas/set-quota-project
+- https://docs.cloud.google.com/resource-manager/reference/rest/v3/projects/testIamPermissions
+- https://docs.cloud.google.com/run/docs/reference/rest/v2/projects.locations.services/testIamPermissions
+- https://docs.cloud.google.com/identity-platform/docs/access-control
+- https://docs.cloud.google.com/firestore/native/docs/ttl
+- https://docs.cloud.google.com/run/docs/authenticating/public
 
 ### 2. First Google sign-in
 
