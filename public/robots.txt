@@ -9,4 +9,4 @@ Disallow: /admin/
 User-agent: GPTBot
 Disallow: /
 
-Sitemap: https://wear-valley-digital.leatfield.chatgpt.site/sitemap-index.xml
+Sitemap: https://wearvalleydigital.com/sitemap-index.xml

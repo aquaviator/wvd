@@ -3,8 +3,11 @@
 > Current service-launch scope and release evidence (6 October 2026):
 > [WVD-SERVICE-LAUNCH-2026-10-06.md](WVD-SERVICE-LAUNCH-2026-10-06.md).
 > The founder requested a public WVD service offering independently of product launch.
-> Public Site: https://wear-valley-digital.leatfield.chatgpt.site — version 4,
-> public audience confirmed 6 October 2026. Custom-domain DNS remains pending.
+> Public Site: https://wearvalleydigital.com/ — version 5, public audience.
+> Apex and www DNS, native ACTIVE/TLS status and anonymous HTTPS delivery were
+> verified on 6 October 2026. Branded canonical/sitemap metadata is deployed.
+> Sites source: e1b95d27f8691885964a4cd5579a65e10acba627.
+> Current controller CI is pending; the linked receipt preserves prior evidence.
 
 Authority: founder instruction, 5 October 2026.
 

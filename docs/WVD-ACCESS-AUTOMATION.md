@@ -47,7 +47,7 @@ Existing canonical resource details stay in their referenced binding/configurati
 files to avoid conflicting duplicates. New products instantiate their own registry;
 WVD's identities and grants are never inherited as defaults.
 
-Known coverage is eleven routes in the WVD registry. Additional discovered access
+Known coverage is twelve routes in the WVD registry. Additional discovered access
 must be added with evidence; this inventory does not assert knowledge of unseen
 accounts or every permission in the Google organisation. Observed tool presence,
 verified token issuance, resource access and inbox delivery are different evidence.

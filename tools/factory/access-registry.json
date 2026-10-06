@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-05T22:15:48.337Z",
+  "updatedAt": "2026-10-06T11:21:54.453Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -232,6 +232,28 @@
         "Profile identity does not establish target resource permissions.",
         "Controller access cannot be assumed available to CI or service accounts.",
         "Writes require task authority."
+      ]
+    },
+    {
+      "id": "controller-cloudflare",
+      "plane": "controller",
+      "capabilities": [
+        "dns.read",
+        "dns.write"
+      ],
+      "identityRef": "cloudflare:account/220fb33a64b2c61857c059e4ab99d2c8/zone/de2eeaf40be0ed74196e3edcfc0a5ca7 (wearvalleydigital.com)",
+      "credentialRef": "connected-app:cloudflare",
+      "discovery": "Discover current Cloudflare plugin actions, verify the connected account and active target zone, then read current DNS records before an authorised change.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-06T11:21:54.453Z",
+        "source": "Controller Cloudflare plugin verified the account and active wearvalleydigital.com zone with eight initial records. Four Sites ownership TXT records were created at 2026-10-06T11:19:03.927896Z; public TXT checks passed at 11:21:29Z. At 2026-10-06T11:21:54.453699Z, apex CNAME c6f4a7c4d8bfa8fa31b247da403bca99 was changed to A 162.159.143.30; www CNAME 14b9f5d336bc0e04e9796625e580c97e was changed from wvd.pages.dev to custom-domains.chatgpt.site; apex A 172.66.3.26 was created as 871ad78e6dc20565fcae9ac988ce5e4e. All three website records are DNS-only/Auto. Post-write read verified all seven desired website/ownership records and all six initial email/Google/mail/webmail records unchanged, including settings and TTL; nameservers unchanged. This is the DNS access/write checkpoint; subsequent native ACTIVE/TLS and anonymous HTTPS delivery evidence is recorded separately in docs/WVD-SERVICE-LAUNCH-2026-10-06.md."
+      },
+      "limits": [
+        "Controller-session access is not available to CI or deployed services.",
+        "Verified DNS writes cover the authorised TXT/A creations and apex/www record updates in this zone; other operations, zones and account administration are not inferred.",
+        "Keep existing nameservers and email DNS intact; subsequent changes require current target records and task authority.",
+        "Successful DNS writes and public TXT checks do not prove Sites domain activation or TLS readiness."
       ]
     }
   ]

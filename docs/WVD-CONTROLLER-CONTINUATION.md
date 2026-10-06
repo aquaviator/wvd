@@ -526,7 +526,7 @@ spending. No founder input is needed for remaining unblocked work.
 
 Latest founder direction: get WVD live as a service offering for promotion and
 social profiles, independently of Salon/Wedding/other product availability.
-The service Site is now PUBLIC at https://wear-valley-digital.leatfield.chatgpt.site.
+The service Site is now PUBLIC at https://wearvalleydigital.com/ (www also serves).
 Native audience revision 2 was applied at 2026-10-06T10:27:00.860717+00:00 and read
 back as public/active, version 4. Sites source 5ee9b94a7556476b7c3130f31a075612c441e090
 was mirrored to controller 705592e48444fb78d2694d48906d79603a4b346e; both push/PR CI passed all
@@ -540,10 +540,25 @@ by the visitor. Optional analytics are disabled. Products remain labelled in
 development/private/paused with no product audience change or commercial release.
 No new subscription, customer mail, social post or repeated email test occurred.
 
-Next launch action: connect wearvalleydigital.com and www through the existing
-Cloudflare DNS zone using the exact Sites records, then verify active TLS and
-update canonical/sitemap origin in the same Site. DNS write access is not exposed
-in the current controller session. The public Site URL can be used meanwhile.
-Keep all mail-related DNS intact. Do not rebuild booking, portals or products
-as a prerequisite for promoting this service offering; continue their separately
-authorised backlog under current ownership and acceptance rules.
+Custom-domain completion: the reinstalled Cloudflare plugin supplied working
+account/DNS access. Four TXT records were added at 11:19:03Z; apex/www routing was
+changed from wvd.pages.dev to the exact Sites targets at 11:21:54Z. Six original
+email/Google/mail/webmail records and both nameservers remained unchanged. Public
+DNS matched all targets; both native domain/provider/SSL statuses were ACTIVE by
+11:25:23Z. The controller access registry now records the verified Cloudflare route.
+
+Sites source e1b95d27f8691885964a4cd5579a65e10acba627 changes only the canonical
+default in astro.config.mjs and robots sitemap origin to the branded domain.
+Version 5 deployment appgdep_6ac4dbbf31e8819180b7ef82065e6e72 succeeded at
+2026-10-06T11:30:22.989717Z. Native readback confirms public/active/version 5 and
+current_live_url=https://wearvalleydigital.com. At 11:31:29–11:31:30Z, anonymous
+HTTPS returned 200 for both homepages, Services, Enquire, both sitemap files and
+robots; all seven responses matched the reviewed build exactly. Branded canonical,
+OG/schema and 16-route sitemap checks passed. www serves with the apex canonical.
+
+The source and evidence are being mirrored onto the existing controller branch;
+exact-commit CI is pending and must be recorded before final verified handover.
+The earlier 705592e CI/screenshots above retain their original source identity.
+The service launch is ready for promotion. Booking, portals and product releases
+continue as separately authorised backlog under current ownership and acceptance
+rules; none is a prerequisite for this public service offering.

@@ -4,8 +4,8 @@ import { loadProducts } from './src/lib/validation/load';
 import { isPubliclyIndexable } from './src/lib/product/visibility';
 
 const hiddenProductPaths = loadProducts().filter(({ product }) => !isPubliclyIndexable(product)).map(({ seo }) => new URL(seo.canonical).pathname.replace(/\/+$/, ''));
-// Use the verified public origin until the custom domain completes DNS/TLS setup.
-const publicSiteUrl = process.env.WVD_PUBLIC_SITE_URL || 'https://wear-valley-digital.leatfield.chatgpt.site';
+// Use the public service domain for canonical URLs, social metadata, and sitemaps.
+const publicSiteUrl = process.env.WVD_PUBLIC_SITE_URL || 'https://wearvalleydigital.com';
 
 export default defineConfig({
   site: publicSiteUrl,
