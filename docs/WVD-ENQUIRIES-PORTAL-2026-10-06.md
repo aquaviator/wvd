@@ -12,9 +12,10 @@ The separate Google service has been created, updated and verified with private 
 
 | Component | Exact prepared state |
 | --- | --- |
-| Controller runtime source | bb53eef40280ae8a575e704baceca3a98093ab2a |
+| Controller runtime source | 5c920347d58ea3f35071fd13b9f9573db5acac0e |
 | Controller complete frontend and hosting-policy source | 929342fcc7fe87a10e292a94544f3bd5130fb246 |
-| Test corrections and reviewed release receipt | e96343268c1a6f8a79465ebd36ace7e0df5a06ef; no application or hosting changes |
+| Initial test corrections and earlier release receipt | e96343268c1a6f8a79465ebd36ace7e0df5a06ef; superseded runtime receipt retained in Git history |
+| Corrected administrator helper | 5c920347d58ea3f35071fd13b9f9573db5acac0e; explicit WVD quota header verified |
 | Hosting-policy verification source | 929342fcc7fe87a10e292a94544f3bd5130fb246; all policy-aware browser checks passed |
 | Sites project | appgprj_6ac361a8bfd48191b3bde453565cf2ab |
 | Saved Sites source | 1de317f95f43d11675303f2d270e2dbaed73bc78 |
@@ -31,6 +32,20 @@ The saved frontend archive contains 90 files and is 43,612,160 bytes. Its seven 
 Version 6 was superseded before publication: the final hosting review found that its same-origin-only connect-src policy would block the Google enquiry endpoint. Version 7 adds only the actual service origin to that directive. All enquiry browser journeys now apply the real production Content Security Policy; the local static test server does not otherwise apply _headers. The other security directives are preserved.
 
 ## Verification evidence
+
+### Current runtime and corrected administrator helper
+
+[Google development access run 37479343393](https://github.com/aquaviator/wvd/actions/runs/37479343393) succeeded for **5c920347d58ea3f35071fd13b9f9573db5acac0e**. Its actual service transport/private API verification succeeded at **2026-10-06T14:31:12.467Z**, with status PRIVATE_SERVICE_HTTP_VERIFIED. Google login shell availability, anonymous transport denial and both private API denials passed. Owner remains null; actual Google sign-in, owner bootstrap, enquiry capture and notification delivery remain unverified. Existing booking hosting was unchanged.
+
+The current runtime image is `europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/service@sha256:5944548d81d2bfe349d4110537e59c19e1f2200d516446d8e0fc7472d276954f`. Configuration SHA-256 remains `ee7b1046f1d8d620536f09731478a5e1b2ab79427a0074c8b14a2d2796a053f7`; the URL remains https://wvd-service-v3b6mv7uka-nw.a.run.app. The exact receipt was downloaded from artifact **11419634176**, ZIP SHA-256 **843c04a29135b03c6716ad227aabf985b1335ce9c6b42fc53fa5eea4b13f22bf**, and matched against the successful verification log before updating the checked-in receipt.
+
+The focused deployment wrapper passed 14/14, including all **13 Python administrator-helper checks**. The new regression covers the WVD quota header on all fixed authenticated reads, updates and operation polling, and proves public probes do not receive the administrator token or quota header. [Ordinary CI push run 37479343311](https://github.com/aquaviator/wvd/actions/runs/37479343311) succeeded on the same exact source: all four jobs passed, with 592 Portal Node passes and one existing skip, 25 site unit passes, 94 public browser passes, eight Portal browser passes and five real Firestore emulator checks.
+
+[Development container run 37479343292](https://github.com/aquaviator/wvd/actions/runs/37479343292) also succeeded on that exact source, completing at **14:33:14Z**. Both packages, identity checks and isolated offline checks passed. It reported 592 Portal Node passes with one existing skip, all five Google emulator checks and the administrator wrapper covering all 13 Python cases. The new quota-header regression was therefore exercised in the existing unattended container as well as ordinary CI.
+
+Fresh service discovery at **2026-10-06T14:29:27.437Z** still found owner absent, domain not authorised and no automation access to the enquiry TTL policy. These automation limits remain distinct from the founder's successful permission tests. The correction updates the setup helper; its live administrator changes have not yet been run. The current service receipt replaces the earlier bb53 receipt. Public Sites version 5 and saved version 7 are unchanged.
+
+### Earlier application and hosting validation
 
 [Google development access run 37472003263](https://github.com/aquaviator/wvd/actions/runs/37472003263) succeeded for bb53eef. The new service was verified at **2026-10-06T13:37:20.466Z** and the run completed at 13:37:27Z. The liveness response, public auth configuration, login shell and bundled Firebase client were checked through private IAM transport. Anonymous transport and invalid Firebase bearer requests to both private APIs were denied. Owner bootstrap steps correctly skipped while owner was null. The existing private booking service remained unchanged and its verification passed.
 
@@ -69,23 +84,17 @@ The prepared [administrator helper](../tools/portal-runtime/enable-service-acces
 
 This is an initial owner-null setup. No permanent role is granted; the helper does not alter booking, create accounts, submit enquiries or send messages. TTL enablement can report CREATING or ENABLEMENT_PENDING before ACTIVE; it does not promise immediate deletion.
 
-The initial command below returned `GOOGLE_HTTP_403` in the founder's Cloud Shell on 6 October. **Do not repeat it until the read-only diagnostic below has identified the failure.** The original helper reports neither the failed API nor Google's structured reason. With no progress line, the denial occurred during its six preflight reads or the first authorised-domain update/readback. TTL activation and public-transport activation had not been reached; an authorised-domain write cannot yet be excluded.
+The initial helper at e96343268c1a6f8a79465ebd36ace7e0df5a06ef returned `GOOGLE_HTTP_403` in the founder's Cloud Shell. The paired diagnostic returned on **6 October at 14:26:15Z** established the cause: Firebase's Google-provider and authorised-domains reads were attributed to implicit consumer project 618104708054, where Identity Toolkit was disabled. Both exact requests succeeded when supplied with `X-Goog-User-Project: wvd-development`. All requested project and service permissions were returned in both modes. No role changes are indicated.
 
-Initial source-pinned setup command, retained for exact incident context:
+The corrected helper at **5c920347d58ea3f35071fd13b9f9573db5acac0e** adds that header only to the fixed authenticated Google API requests. Anonymous health checks and private denial probes preserve their own separate headers. Helper SHA-256: `b8d85e1be6d5af43ee0a033512888170a6eea94e7699030652f453cd32ae945b`.
+
+The old e963 setup command is superseded. Use the corrected helper together with the exact current [reviewed release receipt](evidence/wvd-service-last-reviewed-release.json) from the same checked-out revision:
 
 ```bash
-(
-  set -eu
-  wvd_setup_dir="$(mktemp -d)"
-  trap 'rm -rf "$wvd_setup_dir"' EXIT
-  wvd_setup_source='e96343268c1a6f8a79465ebd36ace7e0df5a06ef'
-  curl -fsSL "https://raw.githubusercontent.com/aquaviator/wvd/$wvd_setup_source/tools/portal-runtime/enable-service-access.py" -o "$wvd_setup_dir/enable-service-access.py"
-  curl -fsSL "https://raw.githubusercontent.com/aquaviator/wvd/$wvd_setup_source/docs/evidence/wvd-service-last-reviewed-release.json" -o "$wvd_setup_dir/wvd-service-release.json"
-  python3 "$wvd_setup_dir/enable-service-access.py" "$wvd_setup_dir/wvd-service-release.json"
-)
+python3 tools/portal-runtime/enable-service-access.py docs/evidence/wvd-service-last-reviewed-release.json
 ```
 
-Helper SHA-256: `a19732374ffc7d369a1f3617c586acaed18b6b1f82ed3d06eed6f2b75f88e23b`. The script and receipt are pinned to the same immutable commit, with the actual live receipt already retained. A later runtime update invalidates this setup command until its receipt is refreshed. If setup fails, return the final error/output without credentials; do not guess grants or repeat broad changes.
+The Cloud Shell handoff downloads both files from one immutable commit that contains the verified receipt. A later runtime update invalidates that pinned command until its receipt is refreshed. The diagnostic confirmed that the service domain, TTL activation and public transport are still pending; neither the diagnostic nor this header correction claims they have been enabled.
 
 #### Read-only diagnosis of the Cloud Shell 403
 
@@ -93,11 +102,11 @@ Helper SHA-256: `a19732374ffc7d369a1f3617c586acaed18b6b1f82ed3d06eed6f2b75f88e23
 
 This adapts the existing administrator helper's fixed targets, no-redirect HTTP client and token-in-memory pattern. It is separate because diagnosis must not invoke setup or trigger a privileged runtime deployment. It needs no arguments, dependencies, credential files or administrator role grants. It prints only selected context, HTTP status, bounded structured Google ErrorInfo fields, safe state booleans and scoped permission results. It omits raw provider messages, service configuration, access tokens and credential paths.
 
-Google documents that a raw request using `gcloud auth print-access-token` can require an explicit quota-project header; the caller then needs `serviceusage.services.use` on that project. This is a hypothesis for this incident, not a proven diagnosis. The current helper sets no quota header. Earlier gcloud CLI successes and the CI service identity do not establish the current Cloud Shell principal or raw REST quota attribution.
+Google documents that a raw request using `gcloud auth print-access-token` can require an explicit quota-project header; the caller then needs `serviceusage.services.use` on that project. The founder's paired responses establish this cause for the two failed Firebase reads. The diagnostic also confirmed the expected founder account, selected project, absent impersonation/credential overrides, and the quota permission. Earlier gcloud CLI successes and CI service access were not used to infer these current user-session facts.
 
 A request recovered by the explicit header is reported by name under `quotaHeaderRecovered`. Failed permission requests remain INCONCLUSIVE; a successful test reports only granted and notReturned permissions at the tested scope. Project-scope results may not capture conditional grants on descendant resources. The diagnostic never claims that permission tests guarantee a later setup PATCH will succeed.
 
-The diagnostic source and its synthetic tests are committed outside the Google deployment trigger paths. Ordinary CI runs the tests. No runtime image, release receipt, public website version, Google configuration or account is changed by this diagnostic addition. The next required evidence is its output from the same Cloud Shell session; controller connectors do not expose that session's effective Google credentials.
+The [sanitised diagnostic evidence](evidence/wvd-service-admin-quota-diagnostic-2026-10-06.json) records the founder-reported results without the personal account address or credentials. The diagnostic source and its synthetic tests are outside the Google deployment trigger paths. All 18 diagnostic tests passed locally and in both ordinary CI runs for source 2c448007cb471d4f0b99fd04563f49cbae787cc9; runs 37478592277 and 37478599688 subsequently completed successfully. That diagnostic addition made no runtime or configuration changes. The later corrected setup helper follows the ordinary Google deployment workflow and therefore requires a fresh reviewed service receipt.
 
 Primary API references checked 6 October 2026:
 

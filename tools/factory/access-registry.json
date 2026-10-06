@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-06T13:58:54.000Z",
+  "updatedAt": "2026-10-06T14:31:12.467Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -79,8 +79,8 @@
       "discovery": "Run existing Google development access workflow; preserve repository/branch/workflow restrictions.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-06T13:37:20.466Z",
-        "source": "Trusted Google development access workflow 37472003263 succeeded for runtime source bb53eef40280ae8a575e704baceca3a98093ab2a, using existing short-lived WIF authentication. Exact runtime verification and fresh capability limits are recorded in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md. Owner bootstrap preparation returned owner:null and skipped the temporary-ADC/provider-write steps; no real owner bootstrap has run."
+        "at": "2026-10-06T14:31:12.467Z",
+        "source": "Trusted Google development access workflow 37479343393 succeeded for runtime source 5c920347d58ea3f35071fd13b9f9573db5acac0e with existing short-lived WIF authentication. Exact current receipt and fresh automation limits are in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md. Owner remains null and temporary-ADC/provider-write owner setup skipped. Founder-reported Cloud Shell quota diagnosis is recorded separately; it does not grant these administrator capabilities to automation."
       },
       "limits": [
         "No downloaded service-account keys.",
@@ -269,13 +269,13 @@
       "discovery": "Run service-discovery.mjs through the existing Google development access workflow, then verify the exact service receipt and transport state before any update.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-06T13:37:20.466Z",
-        "source": "Cloud Run wvd-service in wvd-development/europe-west2 was privately deployed and verified by workflow 37472003263 at runtime source bb53eef40280ae8a575e704baceca3a98093ab2a. The exact image/config/URL receipt is docs/evidence/wvd-service-last-reviewed-release.json. Anonymous IAM transport and invalid Firebase private API requests were denied. Live service URL: https://wvd-service-v3b6mv7uka-nw.a.run.app. Existing booking service was unchanged. Mail delegation was checked without sending."
+        "at": "2026-10-06T14:31:12.467Z",
+        "source": "Cloud Run wvd-service in wvd-development/europe-west2 was privately updated and verified by workflow 37479343393 at source 5c920347d58ea3f35071fd13b9f9573db5acac0e. Its exact image/config/URL receipt is docs/evidence/wvd-service-last-reviewed-release.json, downloaded from artifact 11419634176 and matched to the successful verification log. Anonymous IAM transport and invalid Firebase private API requests were denied. Live service URL remains https://wvd-service-v3b6mv7uka-nw.a.run.app. Existing booking service was unchanged and mail delegation was checked without sending."
       },
       "limits": [
-        "Google setup still needs run.services.setIamPolicy, firebaseauth.configs.update and datastore.indexes.get/update, as observed 2026-10-06T13:35:44.362Z. The one-time exact-target administrator helper is prepared but has not run.",
+        "Automation still lacks the administrator setup permissions, as observed 2026-10-06T14:29:27.437Z. The founder diagnostic at 14:26:15Z returned every requested project and service permission for the founder session and proved the missing WVD quota header caused the Firebase denial. The corrected one-time helper is ready; founder execution is pending. See docs/evidence/wvd-service-admin-quota-diagnostic-2026-10-06.json.",
         "The actual Firebase owner account is absent; owner remains null. Real Google login, enquiry capture and inbox delivery are not yet verified.",
-        "The configured identity, data namespace, zero-to-one-instance bounds and total additional £5/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
+        "The configured identity, data namespace, zero-to-one-instance bounds and total additional \u00a35/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
         "Subsequent service updates require the last reviewed source/image/configuration receipt. Public transport does not grant access to private APIs."
       ]
     }
