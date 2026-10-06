@@ -178,7 +178,8 @@ test('without JavaScript the form remains disabled and a direct email fallback i
     await expect(page.locator('#enquiry-submit')).toBeDisabled();
     await expect(page.locator('#enquiry-confirmation')).toBeHidden();
     await expect(page.getByRole('link',{name:'Email a general enquiry directly',exact:true})).toHaveAttribute('href','mailto:hello@wearvalleydigital.com');
-    await expect(page.locator('noscript')).toContainText('The online form needs JavaScript.');
+    await expect(page.locator('noscript p')).toBeVisible();
+    await expect(page.locator('noscript p')).toContainText('The online form needs JavaScript.');
     expect(posts).toHaveLength(0);
   }finally{await context.close();}
 });
