@@ -190,11 +190,45 @@ the reviewed local build byte for byte. Canonical, OG, social-image and JSON-LD
 site URLs use the branded apex; www declares the apex canonical. The hosted
 sitemap has exactly 16 entries and robots points to the branded sitemap index.
 
-The exact two frontend files and the controller access/evidence updates are
-being mirrored to the existing development/shared-factory-bootstrap branch.
-Current controller CI is pending; retain the successful initial-release receipt
-above against its original source until the new exact-commit results are recorded.
-No new application behaviour, product audience, customer send or charge was added.
+The exact two frontend files and the controller access/evidence updates were
+mirrored to development/shared-factory-bootstrap in controller commit
+d2780e8575b3eeeff6e7489a0093e19c142a98d4. All seven committed file blob hashes
+matched the reviewed staged content. The earlier 705592e receipt above retains
+its original source identity.
+
+Both exact-source CI runs succeeded on attempt 1, with all four jobs (quality,
+portal-database, portal-google and google-windows) passing and no failed step:
+
+- [Push run 37457429363](https://github.com/aquaviator/wvd/actions/runs/37457429363),
+  completed 2026-10-06T11:37:39Z.
+- [PR run 37457436099](https://github.com/aquaviator/wvd/actions/runs/37457436099),
+  completed 2026-10-06T11:37:44Z.
+- Per run: 82 public browser tests, 19 site unit tests, 28 generated routes,
+  59 factory tests, 10 Google utility tests, 523 portal unit tests (one skip),
+  four portal browser tests, four Firebase emulator tests and nine native Windows
+  checks passed. Database bootstrap, migration, assertion and concurrency steps
+  also passed. Access registry: ACCESS_INVENTORY_VALID, 12 connections.
+- Development container PR run 37457436066 was skipped by the existing workflow.
+
+The downloaded push artifact 11410165788, public-guide-evidence-37457429363,
+explicitly identifies controller d2780e8575b3eeeff6e7489a0093e19c142a98d4.
+Its ZIP is 2,492,847 bytes; independently calculated SHA-256
+b7c9745376137bb68e84b8b1b22dbc033a7c0b0b0b4fb0a215fb9bc640c3087c
+matches the GitHub artifact digest and upload log. The 20 extracted PNG files
+total 2,658,343 bytes, within the unchanged 5 MiB evidence cap.
+Desktop/mobile Home and Enquiry draft screenshots were visually reviewed against
+this new artifact: service copy, product development labels, required/optional
+fields, explicit not-sent state and email/copy controls are visible and usable,
+with no observed clipping or overlap. Root inspected desktop Home and mobile
+Enquiry; the independent reviewer inspected mobile Home and desktop Enquiry.
+Services has no screenshot in the existing bundle; its browser accessibility
+and narrow-screen checks passed. These are synthetic CI screenshots, distinct
+from the anonymous hosted HTTPS/content checks recorded above.
+
+The application tested in CI is controller d2780e8, corresponding to the released
+Sites source e1b95d27. Subsequent receipt-only documentation changes do not alter
+that tested application or require another Sites deployment. No new application
+behaviour, product audience, customer send or charge was added.
 
 ## Work explicitly separate from this release
 

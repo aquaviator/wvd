@@ -7,7 +7,8 @@
 > Apex and www DNS, native ACTIVE/TLS status and anonymous HTTPS delivery were
 > verified on 6 October 2026. Branded canonical/sitemap metadata is deployed.
 > Sites source: e1b95d27f8691885964a4cd5579a65e10acba627.
-> Current controller CI is pending; the linked receipt preserves prior evidence.
+> Controller d2780e8575b3eeeff6e7489a0093e19c142a98d4 passed push/PR CI, all four jobs.
+> The linked receipt records the exact runs and reviewed source-bound screenshots.
 
 Authority: founder instruction, 5 October 2026.
 

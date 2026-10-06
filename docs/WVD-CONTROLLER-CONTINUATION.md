@@ -556,9 +556,29 @@ HTTPS returned 200 for both homepages, Services, Enquire, both sitemap files and
 robots; all seven responses matched the reviewed build exactly. Branded canonical,
 OG/schema and 16-route sitemap checks passed. www serves with the apex canonical.
 
-The source and evidence are being mirrored onto the existing controller branch;
-exact-commit CI is pending and must be recorded before final verified handover.
-The earlier 705592e CI/screenshots above retain their original source identity.
+The source and evidence were mirrored onto the existing controller branch in
+d2780e8575b3eeeff6e7489a0093e19c142a98d4; all seven committed file blob hashes
+matched the reviewed staged content. Push CI 37457429363 and PR CI 37457436099
+both succeeded on attempt 1, all four jobs, completing at 11:37:39Z and 11:37:44Z.
+Per run: 82 public browser, 19 site unit, 59 factory, 10 Google utility,
+523 portal unit (one skip), four portal browser, four Firebase emulator and nine
+native Windows checks passed; build generated 28 routes. Database checks passed.
+Access registry validation passed with 12 connections. The separate Development
+container PR run 37457436066 was skipped by its existing workflow.
+
+New push artifact 11410165788, public-guide-evidence-37457429363, explicitly binds
+to d2780e8. ZIP 2,492,847 bytes; independently calculated SHA-256
+b7c9745376137bb68e84b8b1b22dbc033a7c0b0b0b4fb0a215fb9bc640c3087c
+matched GitHub and the upload log. Twenty extracted PNG files total 2,658,343
+bytes, under the existing 5 MiB cap. Desktop/mobile Home and Enquiry screenshots
+were visually reviewed: current service copy/development labels, usable controls,
+and explicit not-sent enquiry draft state, with no observed clipping or overlap.
+Root inspected desktop Home/mobile Enquiry; independent review covered the other
+two. Full run links and evidence limits are in the service-launch receipt.
+
+The earlier 705592e CI/screenshots retain their original source identity. This
+final handover records tests against d2780e8 / released Sites e1b95d27; receipt-only
+documentation changes do not alter the tested application or redeploy the Site.
 The service launch is ready for promotion. Booking, portals and product releases
 continue as separately authorised backlog under current ownership and acceptance
 rules; none is a prerequisite for this public service offering.
