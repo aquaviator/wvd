@@ -1,4 +1,20 @@
-# WVD enquiries and owner Portal — implementation handoff
+# WVD enquiries and owner Portal — runtime implementation
+
+## Resumed 6 October 2026
+
+The execution workspace reconnected and its principal code edits were recovered. The dedicated retention collection, exact Firebase project-name aliases and image-digest drift checks are now implemented. The two deployment/admin test files were reconstructed and verified.
+
+This commit contains the complete backend/runtime/workflow slice. Independent review and the full local Portal Node suite passed: 586 tests, 585 passed, one existing skip, zero failures. Its deployment wrapper also passed all 12 synthetic Python administrator-helper regressions. Relevant syntax checks and git diff --check passed.
+
+The private Cloud Run creation and exact-source CI are now queued by this source push. Neither the new Portal nor the direct public form is being reported live. The public Sites version remains 5. The prepared public frontend and its tests will be synchronized only after Google returns the exact service URL. No new enquiry or owner notification has been sent.
+
+The runtime uses the dedicated path wvd_products/wvd/wvd_service_enquiries_v1 and the matching TTL collection group. The dormant administrator helper must only be used with an actual verified service release receipt; no such receipt is available at this checkpoint. Subsequent runtime updates require the verified prior release argument in both prepare and deploy.
+
+The section below is retained as the historical disconnection/recovery handoff. Its statements about unapplied fixes and unpushed runtime source are superseded by the resume record above.
+
+---
+
+## Historical implementation handoff
 
 Updated 6 October 2026. This is a blocked implementation checkpoint, not a release receipt.
 

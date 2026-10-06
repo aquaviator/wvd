@@ -9,6 +9,7 @@ on:
       - 'src/assets/brand/horizontal-logo.png'
       - 'tools/development-container/**'
       - 'tools/booking-runtime/**'
+      - 'tools/portal-runtime/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/development-container.yml'
@@ -20,6 +21,7 @@ on:
       - 'src/assets/brand/horizontal-logo.png'
       - 'tools/development-container/**'
       - 'tools/booking-runtime/**'
+      - 'tools/portal-runtime/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/development-container.yml'
@@ -42,6 +44,16 @@ jobs:
         run: docker build -f tools/development-container/Dockerfile -t wvd-development-test .
       - name: Build standalone booking runtime package
         run: docker build -f tools/booking-runtime/Dockerfile -t wvd-booking-package .
+      - name: Build standalone enquiry and Portal runtime package
+        run: docker build -f tools/portal-runtime/Dockerfile -t wvd-service-package .
+      - name: Confirm the service package requires its attached runtime identity
+        run: |
+          set +e
+          docker run --rm --network none wvd-service-package > service-startup.txt 2>&1
+          result=$?
+          set -e
+          test "$result" = 1
+          python3 -c 'from pathlib import Path; assert "WVD_SERVICE_START_FAILED_CHECK_TARGET_IDENTITY_AND_CONFIGURATION" in Path("service-startup.txt").read_text()'
       - name: Confirm hosting package requires an attached runtime identity
         run: |
           set +e

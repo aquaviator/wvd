@@ -8,6 +8,7 @@ import {readGoogleJson} from './google-json.mjs';
 // Firebase web configuration is public client configuration, never a credential.
 export const serviceName='projects/wvd-development/locations/europe-west2/services/wvd-service';
 export const ownerEmail='admin@wearvalleydigital.com';
+export const enquiryTtlField='projects/wvd-development/databases/(default)/collectionGroups/wvd_service_enquiries_v1/fields/deleteAt';
 const appName='WVD Portal Development';
 const imagePrefix='europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/service';
 const projectPermissions=Object.freeze([
@@ -115,7 +116,7 @@ export async function serviceDiscovery(binding,token,{request=fetch,now=()=>new 
   return {status:'PRESENT',owner:{uid:u.localId,email:ownerEmail,emailVerified:u.emailVerified??false,disabled:u.disabled??false,googleProviderLinked:u.providerUserInfo?.some(p=>p.providerId==='google.com')??false}};
  });
  const permission=key=>project.status==='REPORTED'?project.permissions.find(p=>p.permission===key).present:null;
- return {status:'DISCOVERY_REPORTED',observedAt,projectId:b.projectId,principal:b.serviceAccount,service:serviceName,changesMade:false,mailSent:false,deploymentReady:false,ttl:{plannedRetentionDays:90,readPermission:permission('datastore.indexes.get'),updatePermission:permission('datastore.indexes.update'),configurationVerified:false},results};
+ return {status:'DISCOVERY_REPORTED',observedAt,projectId:b.projectId,principal:b.serviceAccount,service:serviceName,changesMade:false,mailSent:false,deploymentReady:false,ttl:{field:enquiryTtlField,plannedRetentionDays:90,readPermission:permission('datastore.indexes.get'),updatePermission:permission('datastore.indexes.update'),configurationVerified:false},results};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){

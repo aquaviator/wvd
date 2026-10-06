@@ -6,7 +6,9 @@
     "test": "node --test tests/*.test.mjs",
     "dev:firebase": "firebase emulators:exec --project demo-wvd-portal --config firebase.emulators.json --only auth,firestore \"node firebase-demo.mjs\"",
     "test:firebase": "firebase emulators:exec --project demo-wvd-portal --config firebase.emulators.json --only auth,firestore \"node --test emulator-tests/*.test.mjs\"",
-    "start:booking": "node booking-main.mjs"
+    "start:booking": "node booking-main.mjs",
+    "build:live": "node ../portal-runtime/build-browser.mjs",
+    "start:live": "node live-main.mjs"
   },
   "engines": {
     "node": ">=22.16"
@@ -16,6 +18,8 @@
     "google-auth-library": "11.1.0"
   },
   "devDependencies": {
+    "esbuild": "0.28.2",
+    "firebase": "12.19.0",
     "firebase-tools": "15.32.1"
   }
 }

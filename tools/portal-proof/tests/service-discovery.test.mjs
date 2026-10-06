@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {serviceDiscovery,serviceName,ownerEmail} from '../../google-development-access/service-discovery.mjs';
+import {serviceDiscovery,serviceName,ownerEmail,enquiryTtlField} from '../../google-development-access/service-discovery.mjs';
 
 const binding=JSON.parse(readFileSync(new URL('../../google-development-access/binding.json',import.meta.url),'utf8'));
 const appId='1:6616382131:web:abcdef0123456789';
@@ -38,7 +38,8 @@ test('service discovery exposes only selected public configuration and owner pro
  assert.equal(result(report,'firebase-auth-config').selectedServiceDomainAuthorized,true);
  assert.equal(result(report,'selected-service-invoker-policy').unconditionalPublicInvoker,true);
  assert.equal(result(report,'selected-service').invokerIamDisabled,false);
- assert.deepEqual(report.ttl,{plannedRetentionDays:90,readPermission:true,updatePermission:true,configurationVerified:false});
+ assert.equal(enquiryTtlField,'projects/wvd-development/databases/(default)/collectionGroups/wvd_service_enquiries_v1/fields/deleteAt');
+ assert.deepEqual(report.ttl,{field:enquiryTtlField,plannedRetentionDays:90,readPermission:true,updatePermission:true,configurationVerified:false});
  const output=JSON.stringify(report);
  for(const forbidden of [secret,'synthetic-token','private@example.com','other@example.com','passwordHash','clientSecret','customAttributes'])assert.equal(output.includes(forbidden),false);
  assert.equal(calls.length,10);

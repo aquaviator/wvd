@@ -1,0 +1,37 @@
+{
+  "authentication": {
+    "serviceAccount": "wvd-development@wvd-development.iam.gserviceaccount.com"
+  },
+  "portal": {
+    "origin": "https://wearvalleydigital.com",
+    "firebase": {
+      "projectId": "wvd-development",
+      "productId": "wvd",
+      "databaseId": "(default)",
+      "mode": "live"
+    },
+    "web": {
+      "projectId": "wvd-development",
+      "apiKey": "AIzaSyDA5Ml_gg6OL2-LkTZS79ude2-qNbSrAp4",
+      "authDomain": "wvd-development.firebaseapp.com",
+      "appId": "1:6616382131:web:59b4e6749ce6e6e96b8ec6"
+    },
+    "owner": null,
+    "maxConcurrentRequests": 8
+  },
+  "enquiries": {
+    "allowedPublicOrigins": [
+      "https://wearvalleydigital.com",
+      "https://www.wearvalleydigital.com"
+    ],
+    "admission": { "minuteLimit": 10, "dailyLimit": 50 },
+    "maxConcurrentRequests": 2,
+    "retentionDays": 90
+  },
+  "mail": {
+    "subject": "admin@wearvalleydigital.com",
+    "senderEmail": "admin@wearvalleydigital.com",
+    "recipientEmail": "hello@wearvalleydigital.com",
+    "requestTimeoutMs": 10000
+  }
+}

@@ -13,6 +13,8 @@
 img.deliverable-snapshot{display:block;max-width:100%;height:auto;max-height:none}
 img.deliverable-snapshot[hidden]{display:none}
 
+.enquiry-inbox{margin:1.5rem 0}.enquiry-inbox dt{font-weight:700}.enquiry-inbox dd{margin:0 0 1rem;white-space:pre-wrap;overflow-wrap:anywhere}
+
 header{border-bottom:1px solid #cbd5e1;gap:.75rem 1.25rem}
 .brand{display:block;max-width:100%;line-height:0}
 .brand img{display:block;width:240px;max-width:100%;height:auto}

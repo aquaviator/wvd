@@ -7,6 +7,7 @@ on:
       - '.github/workflows/google-development-access.yml'
       - 'tools/google-development-access/**'
       - 'tools/booking-runtime/**'
+      - 'tools/portal-runtime/**'
       - 'tools/portal-proof/google-booking-event.mjs'
 permissions:
   contents: read
@@ -198,6 +199,75 @@ jobs:
           else
             echo 'MAIL_SEND_SCOPE_UNAVAILABLE_ADMIN_CONFIGURATION_REQUIRED'
           fi
+      - name: Verify enquiry and owner Portal runtime boundaries
+        run: node --test tools/portal-proof/tests/enquiry.test.mjs tools/portal-proof/tests/live-auth.test.mjs tools/portal-proof/tests/live-config.test.mjs tools/portal-proof/tests/live-browser.test.mjs tools/portal-proof/tests/live-app.test.mjs tools/portal-proof/tests/service-deployment.test.mjs
+      - id: service_auth
+        name: Authorise the bounded WVD service deployment
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          create_credentials_file: false
+          export_environment_variables: false
+      - id: service_host
+        name: Prepare the new enquiry and Portal service with private transport
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
+        run: node tools/portal-runtime/deployment.mjs prepare tools/google-development-access/binding.json tools/portal-runtime/wvd-development.candidate.json "$GITHUB_SHA"
+      - id: service_image
+        name: Build and upload the bounded WVD service image
+        if: steps.service_host.outputs.build == 'true'
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/service:${GITHUB_SHA}"
+          docker build -f tools/portal-runtime/Dockerfile -t "$image" .
+          bytes="$(docker image inspect "$image" --format '{{.Size}}')"
+          test "$bytes" -le 419430400
+          export DOCKER_CONFIG="$(mktemp -d)"
+          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+          printf '%s' "$WVD_GOOGLE_ACCESS_TOKEN" | docker login -u oauth2accesstoken --password-stdin https://europe-west2-docker.pkg.dev
+          docker push "$image"
+          digest="$(docker image inspect "$image" --format '{{index .RepoDigests 0}}')"
+          printf 'image=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+      - id: service_deployment
+        name: Deploy privately and bind the actual Google service address
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
+          WVD_SERVICE_RELEASE_OUTPUT: wvd-service-release.json
+          SERVICE_IMAGE: ${{ steps.service_image.outputs.image || steps.service_host.outputs.image }}
+        run: node tools/portal-runtime/deployment.mjs deploy tools/portal-runtime/wvd-development.candidate.json "$SERVICE_IMAGE" "$GITHUB_SHA"
+      - id: service_id_auth
+        name: Issue a short-lived identity token for the new service
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: id_token
+          id_token_audience: ${{ steps.service_deployment.outputs.url }}
+          id_token_include_email: true
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Verify the new service while public access remains closed
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
+          WVD_RUNTIME_ID_TOKEN: ${{ steps.service_id_auth.outputs.id_token }}
+        run: node tools/portal-runtime/deployment.mjs verify wvd-service-release.json
+      - name: Retain the exact prepared WVD service receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wvd-service-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: wvd-service-release.json
+          if-no-files-found: warn
+          retention-days: 1
       - name: Record bounded access evidence for controller handoff
         if: always()
         env:

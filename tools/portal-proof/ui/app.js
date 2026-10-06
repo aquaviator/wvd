@@ -1,5 +1,6 @@
 import {createAuthClient} from './auth-client.js';
 let authClient,invitationsEnabled=false,deliverablesEnabled=false,pendingMemberInvite=null;
+let liveMode=false,ownerConfigured=false,enquiryInboxRenderer=null;
 const el=id=>document.getElementById(id);
 let sessionToken=null,revision=0,adminAccess=false,displayedProjectId=null;
 const reviewTime=value=>new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(value))+' (UK time)';
@@ -7,11 +8,14 @@ const status=message=>{el('status').textContent=message;};
 const messages={DELIVERABLE_UNAVAILABLE:'The referenced preview is not available for this review.',DELIVERABLE_CONTENT_CONFLICT:'The referenced file differs from the reviewed version. Ask WVD to publish a new review.',INVITATION_DENIED:'This invitation cannot be accepted. Check the invited email or ask the Owner for a new invitation.',INVITATION_CONFLICT:'This invitation has changed. Ask the Owner for a new invitation.',CLIENT_CONFLICT:'That client already exists. Refresh the overview and add projects to the existing client.',ACCESS_REVISION_CONFLICT:'Account access has changed. Refresh the account list before saving.',ACCESS_ROLE_CONFLICT:'The account role has changed. Refresh the account list before saving.',TRIAGE_CONFLICT:'The ticket assessment has changed. Reload the project before saving.',PROJECT_CONFLICT:'That project name is already in use. Reload the client overview before creating another project.',MILESTONE_CONFLICT:'That milestone already exists. Reload the project and use its review workflow.',REVIEW_IMMUTABLE:'That version already has different review content. Use a new version identifier.',PROGRESS_CONFLICT:'Project progress has changed. Reload the project before saving.',UNAUTHENTICATED:'Please sign in again.',ACCESS_DENIED:'Your account does not have permission for this action.',REVIEW_CONFLICT:'The review content has changed or is unavailable. Reload the project.',VERSION_CONFLICT:'This milestone has changed. Reload the project before reviewing it.',STATE_CONFLICT:'This milestone is no longer awaiting approval.',INVALID_INVITATION:'This invitation is invalid or expired. Ask WVD for a new one.',INVALID_PASSWORD:'Choose a password of at least 15 characters.',RATE_LIMITED:'Too many attempts. Please wait 15 minutes.',SERVICE_UNAVAILABLE:'The service is temporarily unavailable. Please try again.'};
 function signedOut(){sessionToken=null;adminAccess=false;displayedProjectId=null;revision++;el('workspace').hidden=true;el('account').hidden=false;el('logout').hidden=true;el('overview').replaceChildren();el('tickets').replaceChildren();el('projects').replaceChildren();el('admin-overview').replaceChildren();el('admin-overview').hidden=true;el('ticket').reset();}
 async function api(path,body,method='POST'){
-  const headers={};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
+  const session=sessionToken;let bearer=session;
+  if(session&&liveMode){try{bearer=await authClient.getSessionToken();if(session!==sessionToken)throw Error('Please sign in again.');}catch(error){if(session===sessionToken)signedOut();throw error;}}
+  const headers={};if(bearer)headers.Authorization=`Bearer ${bearer}`;
   const options={method,headers,credentials:'omit',cache:'no-store'};
   if(method==='POST'){headers['Content-Type']='application/json';options.body=JSON.stringify(body);}
   const response=await fetch(path,options);const data=await response.json();
-  if(!response.ok){if(response.status===401&&path.startsWith('/api/portal/'))signedOut();const error=new Error(messages[data.error]??'The request could not be completed.');error.code=data.error;throw error;}return data;
+  if(session&&session!==sessionToken)throw Error('Please sign in again.');
+  if(!response.ok){if(response.status===401&&(path.startsWith('/api/portal/')||liveMode&&path.startsWith('/api/admin/'))){signedOut();if(liveMode)await authClient.logout().catch(()=>{});}const error=new Error(messages[data.error]??'The request could not be completed.');error.code=data.error;throw error;}return data;
 }
 function node(tag,text){const result=document.createElement(tag);result.textContent=text;return result;}
 function deliverableReference(container,review,onViewed,onUnavailable){
@@ -48,6 +52,7 @@ async function administration(){
   for(const business of overview.businesses)for(const item of business.projects){const option=node('option',item.projectId);option.value=item.projectId;el('projects').append(option);}
   if(overview.businesses.some(x=>x.projects.some(p=>p.projectId===selected)))el('projects').value=selected;
   box.append(node('h2','WVD administration'),node('p','Client and project overview. Select a project to read feedback and support conversations.'));
+  if(enquiryInboxRenderer){await enquiryInboxRenderer({container:box,api,status,isCurrent:()=>token===sessionToken&&box.isConnected});if(token!==sessionToken)return;}
   const refresh=node('button','Refresh overview');refresh.type='button';refresh.addEventListener('click',async()=>{refresh.disabled=true;try{await administration();}catch(error){status(error.message);}finally{refresh.disabled=false;}});box.append(refresh);
   for(const business of overview.businesses){
     const section=node('section','');section.append(node('h3',`Client: ${business.businessId}`));
@@ -94,7 +99,7 @@ async function administration(){
   box.hidden=false;
 }
 async function project(){
-  const id=projectId(),generation=++revision;if(id!==displayedProjectId){el('ticket').reset();displayedProjectId=id;}el('overview').replaceChildren();el('tickets').replaceChildren();if(!id)return;
+  const id=projectId(),generation=++revision;if(id!==displayedProjectId){el('ticket').reset();displayedProjectId=id;}el('overview').replaceChildren();el('tickets').replaceChildren();if(liveMode){el('project-selector').hidden=!id;el('support-tickets').hidden=!id;}if(!id)return;
   const [overview,tickets]=await Promise.all([read('overview',{projectId:id}),read('tickets',{projectId:id})]);
   const colleagues=overview.canManageColleagues?await read('colleagues',{projectId:id}):null;
   const catalogue=adminAccess?await read('deliverable-catalogue',{projectId:id}):[];
@@ -218,9 +223,9 @@ function invitedRegistration(){
     }
 
 }
-el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();let projects;try{if(pendingMemberInvite){if(!invitationsEnabled)throw Error('Invitation acceptance is unavailable.');await api('/api/invitations/redeem',{token:pendingMemberInvite});pendingMemberInvite=null;el('firebase-registration')?.remove();}projects=await read('projects',{});}catch(error){signedOut();throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':'No projects are assigned to your account.');await administration();await project();});});
+el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();if(liveMode&&!ownerConfigured){await authClient.logout();signedOut();status('Google sign-in completed. Owner workspace access is awaiting activation.');return;}let projects;try{if(pendingMemberInvite){if(!invitationsEnabled)throw Error('Invitation acceptance is unavailable.');await api('/api/invitations/redeem',{token:pendingMemberInvite});pendingMemberInvite=null;el('firebase-registration')?.remove();}projects=await read('projects',{});}catch(error){signedOut();if(liveMode)await authClient.logout().catch(()=>{});throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':liveMode?'Signed in. No client projects have been created yet.':'No projects are assigned to your account.');await administration();await project();});});
 el('redeem').addEventListener('submit',event=>{event.preventDefault();busy(el('redeem'),async()=>{await authClient.redeem(Object.fromEntries(new FormData(el('redeem'))));el('redeem').reset();el('invite-panel').open=false;status('Password set. You can now sign in.');});});
-el('logout').addEventListener('click',async()=>{try{await authClient.logout();signedOut();status('Signed out.');}catch(error){status(error.message);}});
+el('logout').addEventListener('click',async()=>{signedOut();try{await authClient.logout();status('Signed out.');}catch(error){status(error.message);}});
 el('projects').addEventListener('change',()=>{project().catch(error=>status(error.message));});
 el('ticket').addEventListener('submit',event=>{event.preventDefault();busy(el('ticket'),async()=>{await api('/api/portal/ticket',{...Object.fromEntries(new FormData(el('ticket'))),projectId:projectId(),operationId:crypto.randomUUID()});el('ticket').reset();status('Ticket saved.');await project();});});
 // Tokens are held in memory only. An optional invitation fragment is removed
@@ -232,7 +237,18 @@ if(location.hash.startsWith('#invite=')){const code=location.hash.slice(8);histo
 try {
   const config=await api('/auth-config.json',null,'GET');
   const {invitationsEnabled:enabled,deliverablesEnabled:previews,...authConfig}=config;invitationsEnabled=enabled===true;deliverablesEnabled=previews===true;
-  authClient=createAuthClient(authConfig,{request:api});
+  if(config.mode==='firebase-live'){
+    const {createLiveAuthClient}=await import('./live-auth-client.js');
+    authClient=await createLiveAuthClient(authConfig);liveMode=true;ownerConfigured=config.ownerConfigured;
+    if(config.enquiriesEnabled){const {renderEnquiryInbox}=await import('./enquiries.js');enquiryInboxRenderer=renderEnquiryInbox;}
+    pendingMemberInvite=null;el('firebase-registration')?.remove();el('invite-panel').hidden=true;
+    el('login').querySelectorAll('label').forEach(label=>label.remove());el('login').querySelector('button').textContent='Continue with Google';
+    el('account').querySelector('h1').textContent='WVD owner workspace';el('workspace').querySelector('h1').textContent='Owner workspace';
+    el('account-introduction').textContent='Sign in with your authorised Google account to manage client projects and view enquiries.';
+    el('account-access-note').textContent='This private workspace is reserved for the WVD owner.';
+    document.querySelector('.portal-label').textContent='Owner portal';document.title='Wear Valley Digital — Owner portal';
+    if(!ownerConfigured)status('Owner access is being set up. Google sign-in can be completed, but private workspace access is not active yet.');
+  }else authClient=createAuthClient(authConfig,{request:api});
   if(config.mode==='firebase-emulator'){
     el('invite-panel').hidden=true;
     invitedRegistration();

@@ -37,6 +37,22 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
       - run: npx playwright test --config tools/portal-proof/playwright.config.mjs
+        env:
+          WVD_PORTAL_EVIDENCE_DIR: portal-evidence
+      - name: Check owner Portal evidence size
+        id: portal-evidence-limit
+        if: always()
+        run: |
+          mkdir -p portal-evidence
+          test "$(du -sb portal-evidence | cut -f1)" -le 5242880
+      - name: Save synthetic owner Portal evidence
+        if: always() && steps.portal-evidence-limit.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-portal-evidence-${{ github.run_id }}
+          path: portal-evidence/*.png
+          if-no-files-found: warn
+          retention-days: 1
   portal-database:
     runs-on: ubuntu-latest
     services:
@@ -76,6 +92,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm ci --prefix tools/portal-proof
+      - run: npm run build:live --prefix tools/portal-proof
       - run: npm --prefix tools/portal-proof run test:firebase
   google-windows:
     runs-on: windows-latest
