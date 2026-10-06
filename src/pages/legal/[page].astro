@@ -21,14 +21,18 @@ const page = Astro.params.page;
       <p>Wear Valley Digital is run by Andy Clarke, based in Weardale, UK. For questions about your personal information or to exercise a privacy right, email <a href="mailto:hello@wearvalleydigital.com">hello@wearvalleydigital.com</a>.</p>
       <h2>Visiting this website</h2>
       <p>This website introduces our services and products in development. We have disabled optional visitor analytics and advertising trackers. The hosting service processes technical request information, such as an IP address and browser request, to deliver and protect the website.</p>
-      <h2>Preparing and sending an enquiry</h2>
-      <p>The enquiry page prepares a draft in your browser. It does not submit a form to WVD or save the draft on our server. If you open your email app or copy the draft, that app then handles the information. We receive it only when you send the email.</p>
+      <h2>Sending an enquiry</h2>
+      <p>When you select “Send enquiry”, the page sends your details securely to WVD. We save the enquiry in our private system and request an email notification to our business mailbox. The confirmation and reference shown on the page mean that your enquiry has been saved. Your details stay on the page if receipt cannot be confirmed, so you can retry.</p>
       <p>When you contact us, we receive the name, email address, business details and project information you choose to include, together with our correspondence. We use this to respond, understand your request and discuss possible work. Providing this information is voluntary, although we need a way to reply and enough detail to understand the enquiry.</p>
+      <p>If you use the direct email link, your email provider handles the message and we receive it when you send it. Please leave passwords, account credentials and sensitive customer information out of an initial enquiry.</p>
+      <h2>Private Portal sign-in</h2>
+      <p>The Portal uses Google sign-in through Firebase Authentication. Google processes your account identifier, email address and verification status. WVD uses these details to check whether your account is authorised to access the Portal. Private enquiries and project records are available only to authorised accounts.</p>
       <h2>Why we use the information</h2>
       <p>We process project enquiries to take steps at your request before entering a contract. Where an enquiry does not concern a possible contract with you, our basis is our legitimate interest in responding to business correspondence. Our legitimate interest in operating a secure website also supports necessary technical processing. An enquiry does not sign you up to marketing.</p>
       <h2>Service providers and retention</h2>
-      <p>We use Google Workspace for business email and a hosting provider to deliver this website. These providers process information needed to operate their services. Their processing may involve infrastructure outside the UK; their published privacy and data protection terms explain the arrangements that apply.</p>
-      <p>We keep enquiry correspondence while it is needed to answer your request, follow up an active discussion, or retain a necessary business record. We review it when that purpose ends. If we agree a project, any additional information, systems, retention needs and project terms will be discussed as part of the scope.</p>
+      <p>We use Google Cloud and Firebase to process and store online enquiries and operate the private Portal, Google Workspace for business email, and a hosting provider to deliver this website. These providers process information needed to operate their services. Their processing may involve infrastructure outside the UK; their published privacy and data protection terms explain the arrangements that apply.</p>
+      <p>Online enquiry records expire after 90 days. They are then unavailable through the Portal and queued for deletion. Email notifications and subsequent correspondence are separate business records: we keep these while needed to answer your request, follow up an active discussion, or retain a necessary business record, and review them when that purpose ends.</p>
+      <p>If we agree a project, any additional information, systems, retention needs and project terms will be discussed as part of the scope.</p>
       <h2>Your choices and rights</h2>
       <p>Depending on the circumstances, you can ask to access or correct your information, request deletion, restrict processing, or receive a portable copy. You can object to processing based on legitimate interests. Contact us using the email address above so we can consider your request.</p>
       <p>You can also raise a concern with the UK <a href="https://ico.org.uk/make-a-complaint/">Information Commissioner’s Office</a>. We do not use enquiry information to make solely automated decisions about you.</p>
@@ -37,7 +41,8 @@ const page = Astro.params.page;
     </>}
     {page === 'cookies' && <>
       <p>WVD does not currently enable optional visitor analytics or advertising trackers on this website. We do not ask you to accept optional tracking to browse our services.</p>
-      <p>The enquiry draft stays in the current page until you choose to copy it or open your email app. The page does not store that draft in a browser cookie or send it to a WVD form service.</p>
+      <p>The enquiry form keeps your details in the current page until you submit them. WVD does not save those details in browser cookies or persistent browser storage. After submission, the saved enquiry is handled as described in our privacy notice.</p>
+      <p>The private Portal uses Google sign-in. Its WVD sign-in session lasts for the current page. Google may use its own account cookies during sign-in and applies its own privacy and storage policies.</p>
       <p>A previous version of this website offered an analytics preference. Any old preference remaining in your browser is not used by the current site and can be removed through your browser’s site-data settings.</p>
       <p>The hosting service may process technical information needed to deliver and protect the site. External websites and your email app apply their own storage and cookie policies.</p>
       <p>For how we handle enquiries, read our <a href="/legal/privacy/">privacy notice</a>.</p>

@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/case-study.css';
 import { Image } from 'astro:assets';
 import horizontalLogo from '../assets/brand/horizontal-logo.png';
+import {serviceOrigin} from '../lib/contact/service';
 const { title, description, canonical, index = true, image = '/images/wear-valley-digital.webp', structuredData } = Astro.props;
 const siteUrl = new URL('/', Astro.site!).href;
 const canonicalUrl = new URL(canonical ? new URL(canonical).pathname : Astro.url.pathname, siteUrl).href;
@@ -44,6 +45,7 @@ const json = (value: unknown) => JSON.stringify(value).replace(/</g, String.from
         <a href="/products/" aria-current={Astro.url.pathname.startsWith('/products/') ? 'page' : undefined}>Products</a>
         <a href="/about/" aria-current={Astro.url.pathname.startsWith('/about/') ? 'page' : undefined}>About</a>
         <a href="/insights/" aria-current={Astro.url.pathname.startsWith('/insights/') ? 'page' : undefined}>Guides</a>
+        <a href={serviceOrigin} title="WVD Portal sign-in">Portal</a>
         <a href="/enquire/" aria-current={Astro.url.pathname.startsWith('/enquire/') ? 'page' : undefined}>Let’s talk ↗</a>
       </nav>
     </div></header>
@@ -52,7 +54,7 @@ const json = (value: unknown) => JSON.stringify(value).replace(/</g, String.from
       <div class="footer-topline"><p class="footer-statement">Rural roots.<br />Digital reach.</p><a class="text-link" href="/enquire/">Let’s talk about your next project ↗</a></div>
       <p><strong>Wear Valley Digital</strong> · Websites, software and automation.</p>
       <p>Based in Weardale · Local in-person and UK remote delivery.<br /><a href="mailto:hello@wearvalleydigital.com">hello@wearvalleydigital.com</a></p>
-      <nav aria-label="Footer"><a href="/services/">Services</a><a href="/products/">Products in development</a><a href="/about/">About Andy</a><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/contact/">Contact</a></nav>
+      <nav aria-label="Footer"><a href="/services/">Services</a><a href="/products/">Products in development</a><a href="/about/">About Andy</a><a href={serviceOrigin}>Portal sign-in</a><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/contact/">Contact</a></nav>
       <small>© {new Date().getFullYear()} Wear Valley Digital</small>
     </div></footer>
   </body>

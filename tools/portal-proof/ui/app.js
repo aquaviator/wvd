@@ -225,7 +225,14 @@ function invitedRegistration(){
 }
 el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();if(liveMode&&!ownerConfigured){await authClient.logout();signedOut();status('Google sign-in completed. Owner workspace access is awaiting activation.');return;}let projects;try{if(pendingMemberInvite){if(!invitationsEnabled)throw Error('Invitation acceptance is unavailable.');await api('/api/invitations/redeem',{token:pendingMemberInvite});pendingMemberInvite=null;el('firebase-registration')?.remove();}projects=await read('projects',{});}catch(error){signedOut();if(liveMode)await authClient.logout().catch(()=>{});throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':liveMode?'Signed in. No client projects have been created yet.':'No projects are assigned to your account.');await administration();await project();});});
 el('redeem').addEventListener('submit',event=>{event.preventDefault();busy(el('redeem'),async()=>{await authClient.redeem(Object.fromEntries(new FormData(el('redeem'))));el('redeem').reset();el('invite-panel').open=false;status('Password set. You can now sign in.');});});
-el('logout').addEventListener('click',async()=>{signedOut();try{await authClient.logout();status('Signed out.');}catch(error){status(error.message);}});
+el('logout').addEventListener('click',async()=>{
+  // The local adapter must revoke its bearer session before that token is
+  // cleared. Firebase sign-out owns its token and can clear private UI first.
+  const button=el('logout');button.disabled=true;if(liveMode)signedOut();
+  try{await authClient.logout();if(!liveMode)signedOut();status('Signed out.');}
+  catch(error){if(!liveMode)signedOut();status(error.message);}
+  finally{button.disabled=false;}
+});
 el('projects').addEventListener('change',()=>{project().catch(error=>status(error.message));});
 el('ticket').addEventListener('submit',event=>{event.preventDefault();busy(el('ticket'),async()=>{await api('/api/portal/ticket',{...Object.fromEntries(new FormData(el('ticket'))),projectId:projectId(),operationId:crypto.randomUUID()});el('ticket').reset();status('Ticket saved.');await project();});});
 // Tokens are held in memory only. An optional invitation fragment is removed

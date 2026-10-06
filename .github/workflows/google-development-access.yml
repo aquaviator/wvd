@@ -200,7 +200,39 @@ jobs:
             echo 'MAIL_SEND_SCOPE_UNAVAILABLE_ADMIN_CONFIGURATION_REQUIRED'
           fi
       - name: Verify enquiry and owner Portal runtime boundaries
-        run: node --test tools/portal-proof/tests/enquiry.test.mjs tools/portal-proof/tests/live-auth.test.mjs tools/portal-proof/tests/live-config.test.mjs tools/portal-proof/tests/live-browser.test.mjs tools/portal-proof/tests/live-app.test.mjs tools/portal-proof/tests/service-deployment.test.mjs
+        run: node --test tools/portal-proof/tests/enquiry.test.mjs tools/portal-proof/tests/live-auth.test.mjs tools/portal-proof/tests/live-config.test.mjs tools/portal-proof/tests/live-browser.test.mjs tools/portal-proof/tests/live-app.test.mjs tools/portal-proof/tests/service-deployment.test.mjs tools/portal-proof/tests/owner-bootstrap-runtime.test.mjs
+      - id: owner_plan
+        name: Check whether a verified owner identity has been explicitly configured
+        run: node tools/portal-runtime/bootstrap-owner.mjs prepare tools/portal-runtime/wvd-development.candidate.json tools/portal-runtime/owner-bootstrap.context.json
+      - name: Install the existing Firebase backend for explicit owner setup
+        if: steps.owner_plan.outputs.enabled == 'true'
+        run: npm ci --prefix tools/portal-proof --omit=dev --ignore-scripts
+      - id: owner_auth
+        name: Authorise owner setup with temporary workflow credentials
+        if: steps.owner_plan.outputs.enabled == 'true'
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          create_credentials_file: true
+          export_environment_variables: true
+      - name: Initialise only the verified owner and preserve any existing Portal state
+        if: steps.owner_plan.outputs.enabled == 'true'
+        env:
+          WVD_OWNER_BOOTSTRAP_OUTPUT: wvd-owner-bootstrap.json
+        run: node tools/portal-runtime/bootstrap-owner.mjs apply tools/portal-runtime/wvd-development.candidate.json tools/portal-runtime/owner-bootstrap.context.json
+      - name: Retain the owner setup result without account identifiers or credentials
+        if: always() && steps.owner_plan.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wvd-owner-bootstrap-${{ github.run_id }}-${{ github.run_attempt }}
+          path: wvd-owner-bootstrap.json
+          if-no-files-found: warn
+          retention-days: 1
       - id: service_auth
         name: Authorise the bounded WVD service deployment
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
@@ -214,10 +246,10 @@ jobs:
           create_credentials_file: false
           export_environment_variables: false
       - id: service_host
-        name: Prepare the new enquiry and Portal service with private transport
+        name: Prepare the enquiry and Portal service from the reviewed release
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
-        run: node tools/portal-runtime/deployment.mjs prepare tools/google-development-access/binding.json tools/portal-runtime/wvd-development.candidate.json "$GITHUB_SHA"
+        run: node tools/portal-runtime/deployment.mjs prepare tools/google-development-access/binding.json tools/portal-runtime/wvd-development.candidate.json "$GITHUB_SHA" docs/evidence/wvd-service-last-reviewed-release.json
       - id: service_image
         name: Build and upload the bounded WVD service image
         if: steps.service_host.outputs.build == 'true'
@@ -237,12 +269,12 @@ jobs:
           digest="$(docker image inspect "$image" --format '{{index .RepoDigests 0}}')"
           printf 'image=%s\n' "$digest" >> "$GITHUB_OUTPUT"
       - id: service_deployment
-        name: Deploy privately and bind the actual Google service address
+        name: Deploy the reviewed service and bind the actual Google address
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
           WVD_SERVICE_RELEASE_OUTPUT: wvd-service-release.json
           SERVICE_IMAGE: ${{ steps.service_image.outputs.image || steps.service_host.outputs.image }}
-        run: node tools/portal-runtime/deployment.mjs deploy tools/portal-runtime/wvd-development.candidate.json "$SERVICE_IMAGE" "$GITHUB_SHA"
+        run: node tools/portal-runtime/deployment.mjs deploy tools/portal-runtime/wvd-development.candidate.json "$SERVICE_IMAGE" "$GITHUB_SHA" docs/evidence/wvd-service-last-reviewed-release.json
       - id: service_id_auth
         name: Issue a short-lived identity token for the new service
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
@@ -255,7 +287,7 @@ jobs:
           id_token_include_email: true
           create_credentials_file: false
           export_environment_variables: false
-      - name: Verify the new service while public access remains closed
+      - name: Verify service transport and private application boundaries
         env:
           WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
           WVD_RUNTIME_ID_TOKEN: ${{ steps.service_id_auth.outputs.id_token }}
