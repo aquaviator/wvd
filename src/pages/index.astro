@@ -4,10 +4,80 @@ import ProductShowcase from '../components/ProductShowcase.astro';
 import { Image } from 'astro:assets';
 import primaryLogo from '../assets/brand/primary-logo.webp';
 ---
-<BaseLayout title="Wear Valley Digital | Products, websites, software & automation" description="Explore Human V1, PECP, Salon and Wedding from Wear Valley Digital. Founder-led websites, bespoke software and automation, rooted in Weardale." canonical="https://wearvalleydigital.com/">
-<section class="showcase-hero"><div class="wrap"><div class="hero-columns"><div class="hero-copy"><p class="eyebrow">Independent digital studio · Weardale, UK</p><h1>Built with purpose.<br /><em>Engineered to perform.</em></h1><p class="lede">Distinctive websites. Thoughtful software. Automation that earns its place. Founder-led digital expertise, from your first idea to the details that make it work.</p><div class="button-row"><a class="button" href="/enquire/">Let’s build something <span aria-hidden="true">↗</span></a><a class="text-link" href="#portfolio">Explore the products ↓</a></div></div><figure class="brand-art"><Image src={primaryLogo} alt="Wear Valley Digital W and river mark — Rural roots. Digital reach." width={640} loading="eager" fetchpriority="high" /><figcaption><span>Rooted in Weardale.</span><span>Built for what’s next.</span></figcaption></figure></div><div class="hero-foot"><span>Websites / Software / Automation</span><span>25+ years in engineering</span><span>Local perspective. UK-wide delivery.</span></div></div></section>
-<section class="showcase-section" id="portfolio"><div class="wrap"><div class="section-heading"><div><p class="eyebrow">01 / The WVD portfolio</p><h2>Real problems.<br />Considered products.</h2></div><p>From the salon floor to the wedding day. From training plans to performance engineering. Explore the products taking shape at WVD.</p></div><ProductShowcase /></div></section>
-<section class="service-band" id="services"><div class="wrap"><div class="section-heading"><div><p class="eyebrow">Work with Wear Valley Digital</p><h2>Your next project belongs here too.</h2></div><p>You don’t need to fit an existing product. Bring the problem, the idea or the process that needs to work better.</p></div><article class="service-row"><span class="service-number">01</span><h3>Websites</h3><p>Clear content, considered design and useful customer journeys, built for phones and larger screens.</p><a class="text-link" href="/services/#websites">Website services →</a></article><article class="service-row"><span class="service-number">02</span><h3>Bespoke software</h3><p>Turn specialist knowledge and business requirements into a practical application, with testing throughout delivery.</p><a class="text-link" href="/services/#software">Software services →</a></article><article class="service-row"><span class="service-number">03</span><h3>Automation</h3><p>Connect the systems you already use and reduce repetitive work with clearly scoped integrations.</p><a class="text-link" href="/services/#automation">Automation services →</a></article></div></section>
-<section class="showcase-section"><div class="wrap founder-note"><div><p class="eyebrow">Direct access to your engineer</p><h2>Built with Andy Clarke.</h2><a class="text-link" href="/about/">Meet the founder →</a></div><div class="founder-mark"><strong>25+ years in engineering.</strong><p>Performance engineering, testing and automation experience shapes how I approach every project: understand the problem, build with purpose and check that it works.</p><p>Local in-person delivery in Weardale, with remote work across the UK.</p></div></div></section>
-<section class="service-cta"><div class="wrap"><div class="showcase-callout"><div><h2>What would you like to build?</h2><p>Explore a product with us, improve your website or turn a manual process into something more useful.</p></div><a class="button" href="/enquire/">Start a conversation</a></div></div></section>
+<BaseLayout title="Wear Valley Digital | Websites, software & automation" description="Founder-led websites, bespoke software and automation for your business. Based in Weardale, working locally and remotely across the UK. Discuss your project with Andy Clarke." canonical="https://wearvalleydigital.com/">
+  <section class="showcase-hero">
+    <div class="wrap">
+      <div class="hero-columns">
+        <div class="hero-copy">
+          <p class="eyebrow">Independent digital studio · Weardale, UK</p>
+          <h1>Built with purpose.<br /><em>Engineered to perform.</em></h1>
+          <p class="lede">Websites, bespoke software and practical automation for your business. Work directly with Andy Clarke to shape your idea, improve a process or build a better digital presence.</p>
+          <div class="button-row">
+            <a class="button" href="/enquire/">Start your project <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="#services">Explore the services ↓</a>
+          </div>
+        </div>
+        <figure class="brand-art">
+          <Image src={primaryLogo} alt="Wear Valley Digital W and river mark — Rural roots. Digital reach." width={640} loading="eager" fetchpriority="high" />
+          <figcaption><span>Rooted in Weardale.</span><span>Built for what’s next.</span></figcaption>
+        </figure>
+      </div>
+      <div class="hero-foot"><span>Websites / Software / Automation</span><span>25+ years in engineering</span><span>Local perspective. UK-wide delivery.</span></div>
+    </div>
+  </section>
+
+  <section class="service-band" id="services">
+    <div class="wrap">
+      <div class="section-heading">
+        <div><p class="eyebrow">Work with Wear Valley Digital</p><h2>What would make your business work better?</h2></div>
+        <p>A website that explains what you do. A tool that fits the way your team works. Less time moving information between systems. Start with the problem you want to solve.</p>
+      </div>
+      <article class="service-row">
+        <span class="service-number">01</span><h3>Websites</h3>
+        <p>Help people find your business, understand your services and get in touch. Clear content and considered design, built for phones and larger screens.</p>
+        <a class="text-link" href="/services/#websites">Website services →</a>
+      </article>
+      <article class="service-row">
+        <span class="service-number">02</span><h3>Bespoke software</h3>
+        <p>Give your team a useful tool for its own workflow, from organising information to tracking work and supporting customer requests.</p>
+        <a class="text-link" href="/services/#software">Software services →</a>
+      </article>
+      <article class="service-row">
+        <span class="service-number">03</span><h3>Automation &amp; integrations</h3>
+        <p>Connect the systems you already use and reduce repeated manual steps, with clear checks on what happens and how exceptions are handled.</p>
+        <a class="text-link" href="/services/#automation">Automation services →</a>
+      </article>
+      <div class="button-row"><a class="button" href="/enquire/">Discuss your project</a><a class="text-link" href="mailto:hello@wearvalleydigital.com">Email an enquiry</a></div>
+    </div>
+  </section>
+
+  <section class="showcase-section">
+    <div class="wrap founder-note">
+      <div><p class="eyebrow">Direct access to your engineer</p><h2>Built with Andy Clarke.</h2><a class="text-link" href="/about/">Meet the founder →</a></div>
+      <div class="founder-mark">
+        <strong>25+ years in engineering.</strong>
+        <p>Performance engineering, testing and automation experience shapes how I approach every project: understand the problem, build with purpose and check that it works.</p>
+        <p>Based in Weardale, with local in-person delivery and remote work across the UK. You work directly with me from the first conversation through to handover.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase-section" id="portfolio">
+    <div class="wrap">
+      <div class="section-heading">
+        <div><p class="eyebrow">Inside the WVD studio</p><h2>Work in development.<br />Ideas taking shape.</h2></div>
+        <p>Alongside client services, WVD is developing its own products. Explore the prototypes, the problems they address and their current stage of development.</p>
+      </div>
+      <ProductShowcase />
+    </div>
+  </section>
+
+  <section class="service-cta">
+    <div class="wrap">
+      <div class="showcase-callout">
+        <div><h2>Let’s start with your business.</h2><p>Tell us what you do and what you would like to improve. We can work through the options and agree a practical scope.</p></div>
+        <a class="button" href="/enquire/">Start a conversation</a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

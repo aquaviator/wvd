@@ -1,5 +1,9 @@
 # Sites handoff and handback
 
+> Current service-launch scope and release evidence (6 October 2026):
+> [WVD-SERVICE-LAUNCH-2026-10-06.md](WVD-SERVICE-LAUNCH-2026-10-06.md).
+> The founder requested a public WVD service offering independently of product launch.
+
 Authority: founder instruction, 5 October 2026.
 
 ## Default routing
@@ -68,7 +72,7 @@ The existing Astro site is being improved using Sites design guidance while
 preserving its Google deployment direction; no Sites-hosted migration is claimed.
 
 
-## Active frontend handoff
+## Initial frontend handoff — historical
 
 The private development Site is now published:
 https://wear-valley-digital-development.leatfield.chatgpt.site
