@@ -10,7 +10,10 @@ import {enquiryCollectionId} from '../enquiry.mjs';
 import {enquiryTtlField} from '../../google-development-access/service-discovery.mjs';
 
 const clone=value=>JSON.parse(JSON.stringify(value));
-const candidate=JSON.parse(readFileSync(new URL('../../portal-runtime/wvd-development.candidate.json',import.meta.url),'utf8'));
+const candidateSource=JSON.parse(readFileSync(new URL('../../portal-runtime/wvd-development.candidate.json',import.meta.url),'utf8'));
+// Initial-creation checks keep a closed synthetic owner even after the tracked
+// runtime candidate is explicitly bound to the real owner account.
+const candidate={...candidateSource,portal:{...candidateSource.portal,owner:null}};
 const binding=JSON.parse(readFileSync(new URL('../../google-development-access/binding.json',import.meta.url),'utf8'));
 const image=imagePrefix+'@sha256:'+'a'.repeat(64),source='b'.repeat(40);
 const otherImage=imagePrefix+'@sha256:'+'c'.repeat(64),otherSource='d'.repeat(40);

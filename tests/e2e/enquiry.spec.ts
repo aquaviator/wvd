@@ -173,7 +173,7 @@ test('without JavaScript the form remains disabled and a direct email fallback i
   try{
     const page=await context.newPage(),posts=await mockEnquiries(page,async route=>respond(route,201,receipt));
     await page.goto(new URL('/enquire/',baseURL!).href);
-    await expect(page.locator('#enquiry-fields')).toBeDisabled();
+    await expect(page.locator('#enquiry-fields')).toHaveAttribute('disabled','');
     await expect(page.locator('#enquiry-email')).toBeDisabled();
     await expect(page.locator('#enquiry-submit')).toBeDisabled();
     await expect(page.locator('#enquiry-confirmation')).toBeHidden();
