@@ -16,7 +16,10 @@
       "authDomain": "wvd-development.firebaseapp.com",
       "appId": "1:6616382131:web:59b4e6749ce6e6e96b8ec6"
     },
-    "owner": null,
+    "owner": {
+      "uid": "LmdUBV9G9HfOnTWil2YPFwZFac52",
+      "email": "admin@wearvalleydigital.com"
+    },
     "maxConcurrentRequests": 8
   },
   "enquiries": {
