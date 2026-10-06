@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-06T11:21:54.453Z",
+  "updatedAt": "2026-10-06T13:44:55.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T22:15:48.337Z",
-        "source": "Live profile aquaviator; current WVD branch/CI read (59ad35a; CI 37357119941/37357127604 successful). Salon branch/tree/blob reads and non-forced evidence update 722fba535b79d905477e0f07202a28f9c94c1802 verified; product access detail in WVD-Salon handoff/wvd/access-evidence.json. Shell Salon clone lacks credential; connector works. No administration inferred. Refreshed WVD f8ad444 and product heads/PR ownership. GitHub job rerun capability retried cancelled quality job 111949862864; validation 37365604895 attempt 2 succeeded. Wedding non-forced compatibility fix fb99b6f6aa6f3f4d86888ad0b5f16b2493c1bcbc and handoff 35eaf66f3d9130b21a4ed7729787a55cf747505c pushed to development/undecided-date-onboarding with expected-head guards. Refreshed WVD 9387fed and both product draft PR heads/ownership. Existing ci.rerun capability accepted retry of failed/cancelled jobs in 37372269611 and 37372265521; acceptance of retry is not a passing result. Fresh WVD 6dc1dac push/PR CI succeeded (37377660492/37377667628). Wedding typography commit 7ba295e3ab5fe5733f0f4cbedce38c569037365b and handoff 4495c4e8f8f0dab867123865c442a12872acf970 pushed non-forced to development/undecided-date-onboarding with expected-head guards. Salon current tree read; binary fetch and fetch_blob fail UTF-8 decoding for historical PNGs."
+        "at": "2026-10-06T13:44:55.000Z",
+        "source": "Native GitHub connector read the actual branch and performed guarded non-forced development updates through 10c93e49a3c3f14742679b45588065dae4868a0a. All 16 changed file hashes were verified against the final tree. Runtime source bb53eef40280ae8a575e704baceca3a98093ab2a passed Google and development-container workflows. Final ordinary CI is recorded in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md. No PR merge or repository-administration change. Earlier product and controller receipts remain in Git history."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -59,13 +59,13 @@
       "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T22:15:48.337Z",
-        "source": "Owner-private WVD Site reopened, source d6200202c28c9ee509021c56f649ddaa8d6a5b5e pushed and packaged by Sites helper. Private deployment appgdep_6ac3ecf54d5c8191a4f6813d80498246 succeeded at 2026-10-05T18:31:33.101812+00:00; audience unchanged. docs/WVD-CONTROLLER-CONTINUATION.md. Wedding project appgprj_6ac3c826d96481919bd4218973832eb2 was reopened as owner account 0e17b421-97f4-421a-a694-ff56bbd659fb for WED-WP-003 fictional onboarding and reviewed section ordering. Sources 37b10d5eafcf56649e12a8a5ae2742b3a7b671df and 7b799af9a51b8c2eae53316874b476b9abfa2d47 deployed successfully as appgdep_6ac3f70a835c8191833a555eac8f5f5c and appgdep_6ac3fd7555f48191b8f9b47236b212c2. Existing DB/R2 and sole-owner custom audience retained; no spending change. Credentials held in session only. Refreshed Wedding owner-only access and exact source; legacy-client repair source 35034aba9e256b9163c7d630db2c92fc95333b65 deployed as appgdep_6ac40ceb11f48191a8ddc7f06752f755 with native succeeded result. Audience, bindings and spending unchanged. Wedding owner-only identity/access refreshed for WED-WP-003 typography; source 3add146935cd2d1628b6c96d193e88f04ae423dc deployed successfully as appgdep_6ac4211a39fc8191a3ed2e592e347799. Salon appgprj_6ac3bb5b197081919d34810fd6ff9ce0 verified sole-owner, version 0/no live URL; supported source opening returned Unable to prepare the Site (exit 1), no publication or source mutation. Credentials remained session-only. This failed recovery does not prove an empty remote."
+        "at": "2026-10-06T13:44:55.000Z",
+        "source": "Native owner access to WVD appgprj_6ac361a8bfd48191b3bde453565cf2ab was refreshed. Site is active, public, with current live URL https://wearvalleydigital.com/. Source 58a64285aab240d35717a89c41204a07dfdc521b was built/pushed/packaged through the official source helper and saved as version 6 (appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_0debbcc8a8b8819185766532ec11e493); no deployment attempt. Saved archive SHA-256 107e8451a7eb726782a591f7e7ebe8c4507c702ad90109b986d1736d06cf1707. Public version 5 continues until the Google enquiry service and real owner access are ready. Prior Salon/Wedding evidence remains in Git history and their handoffs."
       },
       "limits": [
-        "Sites frontend access does not imply access to the private booking service.",
-        "No automatic production-domain migration or extra spend.",
-        "Wedding scope is owner-private fictional development; Sites source access does not prove hosted identities, full acceptance, payments or real-data readiness."
+        "Sites frontend access does not imply access to Google administrator configuration or private Portal data.",
+        "The prepared version 6 is saved only. Preserve the public audience and branded domains during its later authorised activation.",
+        "Salon and Wedding access/release decisions remain separate; this WVD service update does not publish either product."
       ]
     },
     {
@@ -79,8 +79,8 @@
       "discovery": "Run existing Google development access workflow; preserve repository/branch/workflow restrictions.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T13:02:47.000Z",
-        "source": "Google workflow 37313700651."
+        "at": "2026-10-06T13:37:20.466Z",
+        "source": "Trusted Google development access workflow 37472003263 succeeded for runtime source bb53eef40280ae8a575e704baceca3a98093ab2a, using existing short-lived WIF authentication. Exact runtime verification and fresh capability limits are recorded in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md. Owner bootstrap preparation returned owner:null and skipped the temporary-ADC/provider-write steps; no real owner bootstrap has run."
       },
       "limits": [
         "No downloaded service-account keys.",
@@ -254,6 +254,29 @@
         "Verified DNS writes cover the authorised TXT/A creations and apex/www record updates in this zone; other operations, zones and account administration are not inferred.",
         "Keep existing nameservers and email DNS intact; subsequent changes require current target records and task authority.",
         "Successful DNS writes and public TXT checks do not prove Sites domain activation or TLS readiness."
+      ]
+    },
+    {
+      "id": "google-wvd-service",
+      "plane": "service",
+      "capabilities": [
+        "runtime.invoke",
+        "runtime.deploy",
+        "image.upload"
+      ],
+      "identityRef": "tools/portal-runtime/wvd-development.candidate.json",
+      "credentialRef": "github-google-wif / attached-service-identity",
+      "discovery": "Run service-discovery.mjs through the existing Google development access workflow, then verify the exact service receipt and transport state before any update.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-06T13:37:20.466Z",
+        "source": "Cloud Run wvd-service in wvd-development/europe-west2 was privately deployed and verified by workflow 37472003263 at runtime source bb53eef40280ae8a575e704baceca3a98093ab2a. The exact image/config/URL receipt is docs/evidence/wvd-service-last-reviewed-release.json. Anonymous IAM transport and invalid Firebase private API requests were denied. Live service URL: https://wvd-service-v3b6mv7uka-nw.a.run.app. Existing booking service was unchanged. Mail delegation was checked without sending."
+      },
+      "limits": [
+        "Google setup still needs run.services.setIamPolicy, firebaseauth.configs.update and datastore.indexes.get/update, as observed 2026-10-06T13:35:44.362Z. The one-time exact-target administrator helper is prepared but has not run.",
+        "The actual Firebase owner account is absent; owner remains null. Real Google login, enquiry capture and inbox delivery are not yet verified.",
+        "The configured identity, data namespace, zero-to-one-instance bounds and total additional £5/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
+        "Subsequent service updates require the last reviewed source/image/configuration receipt. Public transport does not grant access to private APIs."
       ]
     }
   ]

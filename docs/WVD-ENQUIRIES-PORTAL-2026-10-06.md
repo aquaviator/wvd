@@ -1,117 +1,114 @@
-# WVD enquiries and owner Portal — runtime implementation
+# WVD direct enquiries and owner Portal — prepared release
 
-## Resumed 6 October 2026
+Updated 6 October 2026. **Implementation is prepared; Google administrator setup and the founder's first sign-in are still required before public activation.**
 
-The execution workspace reconnected and its principal code edits were recovered. The dedicated retention collection, exact Firebase project-name aliases and image-digest drift checks are now implemented. The two deployment/admin test files were reconstructed and verified.
+## Current state
 
-This commit contains the complete backend/runtime/workflow slice. Independent review and the full local Portal Node suite passed: 586 tests, 585 passed, one existing skip, zero failures. Its deployment wrapper also passed all 12 synthetic Python administrator-helper regressions. Relevant syntax checks and git diff --check passed.
+The public WVD service website remains version 5 at https://wearvalleydigital.com/. Its existing email-draft enquiry page continues to work. Salon, Wedding and other products have not been released by this work.
 
-The private Cloud Run creation and exact-source CI are now queued by this source push. Neither the new Portal nor the direct public form is being reported live. The public Sites version remains 5. The prepared public frontend and its tests will be synchronized only after Google returns the exact service URL. No new enquiry or owner notification has been sent.
+The new direct-submission website is built and saved as **Sites version 6**, with no deployment attempt. It adds a Send enquiry button, a durable-receipt confirmation and matching WVD reference, retry protection, an email fallback, Portal navigation and updated privacy/storage explanations.
 
-The runtime uses the dedicated path wvd_products/wvd/wvd_service_enquiries_v1 and the matching TTL collection group. The dormant administrator helper must only be used with an actual verified service release receipt; no such receipt is available at this checkpoint. Subsequent runtime updates require the verified prior release argument in both prepare and deploy.
+The separate Google service has been created, updated and verified with private transport. Its real address is https://wvd-service-v3b6mv7uka-nw.a.run.app. Private Portal and enquiry APIs reject invalid sign-in tokens. The Google login shell is available to the authenticated verifier, but real Google sign-in and the owner's inbox have not yet been exercised. No new enquiry or owner notification has been sent.
 
-The section below is retained as the historical disconnection/recovery handoff. Its statements about unapplied fixes and unpushed runtime source are superseded by the resume record above.
+| Component | Exact prepared state |
+| --- | --- |
+| Controller runtime and frontend source | bb53eef40280ae8a575e704baceca3a98093ab2a |
+| Test corrections and reviewed release receipt | e96343268c1a6f8a79465ebd36ace7e0df5a06ef; no application or hosting changes |
+| Final verified test source | 10c93e49a3c3f14742679b45588065dae4868a0a; only the final no-JavaScript test assertion changed |
+| Sites project | appgprj_6ac361a8bfd48191b3bde453565cf2ab |
+| Saved Sites source | 58a64285aab240d35717a89c41204a07dfdc521b |
+| Saved Sites version ID | appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_0debbcc8a8b8819185766532ec11e493 |
+| Saved archive hash | sha256:107e8451a7eb726782a591f7e7ebe8c4507c702ad90109b986d1736d06cf1707 |
+| Google project, region and service | wvd-development / europe-west2 / wvd-service |
+| Exact previous runtime receipt | [wvd-service-last-reviewed-release.json](evidence/wvd-service-last-reviewed-release.json) |
+| Enquiry notification inbox | hello@wearvalleydigital.com |
+| Delegated sender and intended owner Google account | admin@wearvalleydigital.com |
+| Owner binding | null; no UID invented and no account or admin grant created |
 
----
+The saved frontend archive contains 90 files and is 43,612,160 bytes. Its six changed source files were mirrored exactly to the controller and verified through GitHub blob hashes.
 
-## Historical implementation handoff
+## Verification evidence
 
-Updated 6 October 2026. This is a blocked implementation checkpoint, not a release receipt.
+[Google development access run 37472003263](https://github.com/aquaviator/wvd/actions/runs/37472003263) succeeded for bb53eef. The new service was verified at **2026-10-06T13:37:20.466Z** and the run completed at 13:37:27Z. The liveness response, public auth configuration, login shell and bundled Firebase client were checked through private IAM transport. Anonymous transport and invalid Firebase bearer requests to both private APIs were denied. Owner bootstrap steps correctly skipped while owner was null. The existing private booking service remained unchanged and its verification passed.
 
-## Founder request and current public state
+The runtime image is:
+`europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/service@sha256:3a38768e4f53466d53f5f2c59fc82ad8c0a55cac86b37448c93e6ea51ae0a06d`.
 
-The founder approved replacing the public email-draft enquiry process with direct submission, durable capture and an owner notification, together with his private WVD Portal login. This extends the live WVD service offering without releasing Salon or another product.
+Its configuration SHA-256 is `ee7b1046f1d8d620536f09731478a5e1b2ab79427a0074c8b14a2d2796a053f7`. The exact release artifact 11417840225 was downloaded and its ZIP SHA-256 verified as `460edd146c187bd9f26b90a3c137c5b6dd3f73f87cc2e756fed0d13668923da9`.
 
-The public Site remains version 5, source e1b95d27f8691885964a4cd5579a65e10acba627, at https://wearvalleydigital.com/ and https://www.wearvalleydigital.com/. Its enquiry page still prepares an email draft. No new Portal service has been deployed. No live enquiry or notification has been sent for this work.
+[Development container run 37472003100](https://github.com/aquaviator/wvd/actions/runs/37472003100) succeeded for the same runtime source. It built both standalone packages, verified refusal to start without the attached service identity, and passed the offline checks: 592 Node tests passed, one existing skip, and five database/browser checks passed.
 
-## Blocking execution failure
+The complete public Sites build passed and generated 28 routes. The public unit suite passed 25/25; the Portal suite passed 592 tests with one existing skip. Real Firestore emulator checks passed 5/5, including atomic enquiry capture, notification claim, native expiry timestamps, private rules and collection isolation. Fourteen deployment checks include twelve synthetic Python administrator-helper regressions.
 
-The execution workspace disconnected during final source review. Both an outstanding read and a fresh read-only `pwd` failed with:
+The first integrated browser run passed all actual submission, receipt and uncertain-retry journeys. The only failing journey was the no-JavaScript fallback, with two Playwright matcher incompatibilities exposed in succession: FIELDSET is not a disabled control for its matcher, and NOSCRIPT wrappers are excluded from its text matcher. The tests now check the disabled attribute, actual disabled email/submit controls and visible noscript paragraph. Initial-deployment fixtures also remain independent of the later real owner binding. No application changes were needed for these assertion corrections.
 
-```text
-409 Conflict, environment_offline: Environment is not connected
+**Final ordinary verification passed:** [push run 37473087318](https://github.com/aquaviator/wvd/actions/runs/37473087318) completed at 13:45:47Z and [PR run 37473094781](https://github.com/aquaviator/wvd/actions/runs/37473094781) completed at 13:46:01Z. All four jobs succeeded in each run. The push tested exact source 10c93e49a3c3f14742679b45588065dae4868a0a; the PR tested merge source 5e5cb2fa1fc9d1d351c81c016851ef45f90ac74c. Both quality logs report 94/94 public browser tests, 8/8 combined legacy/live Portal browser tests, 25/25 site unit tests, 592 Portal Node passes with one existing skip, and 59 factory tests. The final push Firebase job 112301383343 passed all five checks. The existing Portal sign-out regression is resolved.
+
+The final public artifact metadata is 11418360301, 2,444,733 bytes, ZIP SHA-256 5a069e1a0ca88e627defb846803d720fd88e4a5f5380cd10db7da51c73888e59. Its unchanged frontend was already reviewed visually from the previous downloaded artifact below. Final owner Portal artifact 11417762245 was downloaded, hash-verified and all six PNGs reviewed: desktop/mobile login, inbox/detail and owner-setup-pending states. Its ZIP is 1,353,944 bytes with SHA-256 e8597a69d3098d96e82fd517ac05bd66410e38d2c2de4adfd05c9a5caad9f446. Controls and content fit, full references wrap, and synthetic HTML remains literal text. This proves the synthetic UI and access behaviors exercised by the tests, not a real Google popup, owner bootstrap or inbox delivery.
+
+The unchanged public receipt screenshots from bb53eef were inspected at desktop 1280 × 2006 and mobile 390 × 2156: confirmation/reference are readable, navigation and buttons wrap without overlap, and no content is clipped. Artifact 11417866131 has ZIP SHA-256 `8e07868823992ee5465fe1051a82d56fd0ac3dfadb331e29336407cfac78c259`. These are synthetic UI fixtures, not proof of live delivery.
+
+## The founder's two remaining steps
+
+### 1. One-time Google administrator setup
+
+Fresh discovery at **2026-10-06T13:35:44.362Z** confirmed that the current automation identity still lacks `run.services.setIamPolicy`, `firebaseauth.configs.update` and `datastore.indexes.get/update`. The real run.app hostname is not in Firebase's authorised domains, and no Firebase account exists for admin@wearvalleydigital.com.
+
+The prepared [administrator helper](../tools/portal-runtime/enable-service-access.py) uses the administrator's existing gcloud login. It first validates the live service's exact source, image, configuration, identity, capacity and receipt, then makes only these changes:
+
+1. Append the actual service hostname to Firebase authorised domains, preserving the existing entries.
+2. Enable TTL for `projects/wvd-development/databases/(default)/collectionGroups/wvd_service_enquiries_v1/fields/deleteAt`.
+3. Enable public HTTP transport on this one service, then recheck health, auth configuration and denial of both private APIs.
+
+This is an initial owner-null setup. No permanent role is granted; the helper does not alter booking, create accounts, submit enquiries or send messages. TTL enablement can report CREATING or ENABLEMENT_PENDING before ACTIVE; it does not promise immediate deletion.
+
+Open Google Cloud Shell as the administrator for wvd-development and run this source-pinned command:
+
+```bash
+(
+  set -eu
+  wvd_setup_dir="$(mktemp -d)"
+  trap 'rm -rf "$wvd_setup_dir"' EXIT
+  wvd_setup_source='e96343268c1a6f8a79465ebd36ace7e0df5a06ef'
+  curl -fsSL "https://raw.githubusercontent.com/aquaviator/wvd/$wvd_setup_source/tools/portal-runtime/enable-service-access.py" -o "$wvd_setup_dir/enable-service-access.py"
+  curl -fsSL "https://raw.githubusercontent.com/aquaviator/wvd/$wvd_setup_source/docs/evidence/wvd-service-last-reviewed-release.json" -o "$wvd_setup_dir/wvd-service-release.json"
+  python3 "$wvd_setup_dir/enable-service-access.py" "$wvd_setup_dir/wvd-service-release.json"
+)
 ```
 
-The remaining implementation edits, final tests, private deployment and public cutover could not run. They are not held for another routine founder approval. The GitHub connector remained available to save this handoff.
+Helper SHA-256: `a19732374ffc7d369a1f3617c586acaed18b6b1f82ed3d06eed6f2b75f88e23b`. The script and receipt are pinned to the same immutable commit, with the actual live receipt already retained. A later runtime update invalidates this setup command until its receipt is refreshed. If setup fails, return the final error/output without credentials; do not guess grants or repeat broad changes.
 
-Before any retry, verify the existing working checkouts and preserve their changes. The implementation below is in the working trees and has NOT yet been pushed. Do not assume it is recoverable from the current branch. If the workspace has been replaced, use the retained conversation/agent patches to reconstruct it against a fresh checked branch.
+### 2. First Google sign-in
 
-## Completed discovery and selected architecture
+After setup succeeds, open https://wvd-service-v3b6mv7uka-nw.a.run.app and sign in with **admin@wearvalleydigital.com**. This creates the real Firebase identity. An owner-setup-pending screen is expected at this stage; private data remains closed until the controller binds the verified owner.
 
-Read-only discovery was committed as e4fdaebada17e55d2f7988ac5b544c6b1a3ea751. [Google development access run 37461395448](https://github.com/aquaviator/wvd/actions/runs/37461395448) succeeded at 2026-10-06T12:11:16Z; the new checks were observed at 2026-10-06T12:10:52.874Z.
+The controller then performs a fresh exact-account lookup, verifies the real UID and Google provider, and supplies that explicit binding in the runtime candidate. The prepared owner bootstrap workflow uses temporary WIF application-default credentials for the established service account, rechecks the real enabled and verified Google account, creates only an absent WVD state and preserves existing Portal data. It does not promote a first visitor or overwrite an existing state. Operator attribution is retained without credential or UID output.
 
-The new service `wvd-service` was absent in the complete `wvd-development` / `europe-west2` inventory. Firebase Google sign-in is enabled and its actual web-app configuration was retrieved. An exact lookup found no Firebase account for admin@wearvalleydigital.com.
+The first sign-in is necessary user input. Routine implementation, verification, development pushes and the later public cutover are already authorised under [project authority](WVD-PROJECT-AUTHORITY.md).
 
-Selected backend: one new Cloud Run service combining enquiry capture and the owner Portal. Use the existing attached wvd-development service account, existing Firestore `(default)`, existing Artifact Registry repository and existing delegated Gmail send scope. Keep the booking service unchanged. The actual service URL must come from Google's creation response; no hostname has been guessed.
+## Controller continuation after those steps
 
-Bounds: zero minimum and one maximum instance, request-based CPU, one vCPU, 512 MiB, concurrency four, 60-second request timeout and an image no larger than 400 MiB. The founder's existing additional-hosting allowance remains £5/month TOTAL across WVD, not per service and not a technical hard cost cap.
+1. Verify the actual administrator changes through the existing read-only discovery and public HTTP checks. Record native TTL state accurately.
+2. Verify the real Google owner UID, bind it explicitly and run the prepared owner bootstrap through the trusted Google workflow. Keep the existing source/image/configuration receipt as the expected previous release for both prepare and deploy.
+3. Verify the real owner session and one bounded synthetic enquiry/owner notification. A Gmail provider receipt is not proof of inbox arrival. Never automatically repeat an uncertain send.
+4. Deploy the already saved Sites version 6 through native Sites publication once the service is usable. Preserve its current public audience and branded domains; no DNS change is needed for this update.
+5. Record the actual runtime receipt, website deployment, successful owner access and live enquiry result. Do not merge the draft PR or release Salon/Wedding as part of this work.
 
-The current automation identity can create/update the service, read Firebase configuration and exact users, use Firestore server access and obtain the existing delegated send scope. It lacks run.services.setIamPolicy, firebaseauth.configs.update and datastore.indexes.get/update. A narrowly scoped Google administrator setup is needed AFTER the service is concretely prepared and verified privately. Do not request a broad permanent role grant.
+## Runtime and data boundaries
 
-## Implementation already written in the working trees
+The new service reuses the existing Google/Firebase platform, attached identity, Firestore database and delegated Gmail scope. It scales from zero to one instance, with request-based CPU, one vCPU, 512 MiB, concurrency four and a 60-second request timeout. The existing allowance is £5/month **total additional WVD hosting**, not per service and not a technical hard cost cap.
 
-### Public Sites frontend
+POST /api/enquiries accepts only the two branded website origins and a bounded request schema. A transaction persists the enquiry, admission increment and notification intent before returning a receipt. Identical retries reuse one receipt. Capture survives notification failure; ambiguous mail outcomes are retained without automatic resend. Admission limits are ten per minute and fifty per day, with two concurrent handlers and a 16 KiB body limit.
 
-Project appgprj_6ac361a8bfd48191b3bde453565cf2ab was opened through the official Sites source helper at source e1b95d27f8691885964a4cd5579a65e10acba627.
+Enquiries use `wvd_products/wvd/wvd_service_enquiries_v1/{receiptId}`. Records expire after 90 days, are hidden from the Portal after expiry, and have a native deleteAt timestamp for the dedicated TTL policy. Mail notifications and correspondence remain separate business records. The frontend stores enquiry fields only in the current page, never in persistent browser storage.
 
-- `src/pages/enquire.astro`: direct JSON submission, saved-receipt confirmation, short WVD reference, no persistent browser storage, duplicate-click prevention, email fallback and same-request retry after an uncertain response.
-- `src/lib/contact/enquiry.ts`: extracted shared normalization while retaining the draft helper.
-- `src/lib/contact/submission.ts`: strict request/receipt contract and display reference.
-- `src/layouts/BaseLayout.astro`: prepared Portal navigation.
-- `src/pages/legal/[page].astro`: prepared direct-submission, Google/Firebase sign-in and retention wording.
+Private endpoints require the explicitly configured verified Google owner, a current unrevoked Firebase token and the stored WVD admin grant. Google browser authentication uses in-memory persistence. No customer accounts, first-user admin, cross-product access, demo clients or live product release are implied.
 
-`src/lib/contact/service.ts` is intentionally missing until the provider returns the actual service origin. The prepared frontend cannot build or be published yet. No new Sites version/source has been saved or deployed. In the retry handler, an unsuccessful retry must retain prior uncertainty and the original UUID even if the later response is a 4xx; root fixed this before the outage.
+## History and references
 
-### Controller backend and tests
+The execution outage and reconstruction checkpoint are preserved in Git history at 5f21cbf2994277c2347347d349ffacbdb304ead3. The first implementation/source commit was 22d5002bc6930a04dbbb3a8a04f803ce2721ac5b. Their pending/blocked statements are superseded by this prepared-release record.
 
-New enquiry modules: `enquiry.mjs`, `enquiry-firestore.mjs`, `enquiry-http.mjs`, `enquiry-mail.mjs` under tools/portal-proof, with focused Node and Firestore emulator tests. A transaction stores the enquiry, admission increment and notification intent before confirmation. Exact retries return one receipt. Notification failure cannot undo capture; ambiguous sends are not automatically retried.
-
-Public endpoint remains POST /api/enquiries. Private owner endpoints remain GET /api/admin/enquiries and GET /api/admin/enquiries/{id}. Exact apex/www origins, 16 KiB body limit, handler concurrency and persistent acceptance limits of 10/minute and 50/day are present. These are bounded abuse controls, not proof against bots.
-
-Mail uses trusted delegated account/sender admin@wearvalleydigital.com and fixed recipient hello@wearvalleydigital.com. The same short WVD reference is shown to the visitor, in the notification and in the owner inbox. No visitor email is sent. The Gmail grant was verified without sending; inbox delivery and the hello alias have not been proven by this task.
-
-New live Portal modules: `live-config.mjs`, `live-auth.mjs`, `live-app.mjs`, `live-main.mjs`, `owner-bootstrap.mjs`, separate live Google browser auth and owner enquiry UI. Existing emulator/local authentication restrictions remain. The exact verified owner UID/email and current stored WVD admin grant are required on every private request. `owner: null` permits only the setup/sign-in shell and denies all private APIs. No account, first-user grant, demo client or guessed UID is created.
-
-Firebase client 12.19.0 and esbuild 0.28.2 were pinned in the Portal package/lock; root package/lock were unchanged. The browser bundle built at 135,553 bytes, SHA-256 7bd056ba01a7f025935c623fbde479befadbdb10451d2e8632460a05b8826050.
-
-The Portal agent's complete Node run passed 570 of 571 tests, with one existing skip and no failures. This preceded the unfinished deployment/retention fixes. Focused enquiry and owner-auth/config/client tests also passed. These are local source checks, not a final integrated CI or live-provider receipt.
-
-Added synthetic desktop/mobile Portal browser cases for the Google login shell, owner inbox, empty owner setup, accessibility, plain-text rendering, refreshed tokens, storage and sign-out cleanup. Public browser tests now cover direct submission and uncertain retries. New browser and real Firestore emulator checks have NOT run for this feature.
-
-Root prepared CI, development-container and existing trusted Google-workflow updates. The latter uses a fresh short-lived access token, builds the bounded image, prepares/creates privately, binds the actual returned origin, then verifies private HTTP using a separate IAM transport token. None of these uncommitted workflow edits has executed.
-
-### Runtime files requiring completion
-
-Authored before the outage: tools/portal-runtime/deployment.mjs, enable-service-access.py, Dockerfile, build-browser.mjs, firebase-auth-sdk-entry.js and wvd-development.candidate.json; tests/service-deployment.test.mjs and tests/service-access-setup.test.py under tools/portal-proof. The candidate uses the actual public Firebase web config, owner:null and non-sending startup with fixed mail configuration.
-
-The deployment CLI and dormant administrator helper received independent source review. Focused deployment/admin tests did NOT run. Do NOT execute the administrator helper in its current unfinished state.
-
-## Required fixes before the first runtime push
-
-1. Finish the dedicated retention namespace. Firestore TTL applies to a collection group, so the generic `enquiries` ID could affect another product. The agreed source-only change is an `enquiryCollectionId(productId)` helper returning `${productId}_service_enquiries_v1`, with this service path `wvd_products/wvd/wvd_service_enquiries_v1`. Change store/emulator fixtures and add the focused cross-product/generic-collection cleanup-isolation test. This patch did NOT apply before disconnection.
-
-2. Change the administrator helper and discovery/test TTL target to `projects/wvd-development/databases/(default)/collectionGroups/wvd_service_enquiries_v1/fields/deleteAt`. The helper still has the old generic target. Keep the public/private HTTP routes unchanged. No live data migration exists.
-
-3. Allow only the two already verified Firebase project aliases, wvd-development and numeric 6616382131, in helper configuration/provider response names. Reuse the provider-returned configuration name in the narrow authorizedDomains patch. This final compatibility fix has NOT applied.
-
-4. Add a managed image-digest annotation and compare it to the actual container image in deployment inspection and the helper. This prevents a manual image edit from being accepted as an unchanged source release. Add its focused drift test. This final guard has NOT applied.
-
-5. Run `node --check tools/portal-runtime/deployment.mjs`, then `node --test tools/portal-proof/tests/service-deployment.test.mjs tools/portal-proof/tests/service-discovery.test.mjs tools/portal-proof/tests/enquiry.test.mjs` and diff validation. The Node deployment test invokes the Python tests with their required synthetic JSON fixture; do not run that Python file directly without the fixture. Then push only the complete runtime/backend/workflow slice initially; defer new public frontend tests until the real service URL exists.
-
-## Remaining release sequence
-
-1. Reconnect/verify the working workspace, finish the above fixes and run exact-source CI, container startup, Firebase emulator and synthetic browser checks. Inspect the actual evidence artifacts.
-2. Create and verify the new service privately through the existing trusted Google workflow. Its CLI saves the exact source/image/configuration/URL receipt as wvd-service-release.json. Use that receipt as the explicit expected prior release for subsequent changes; do not adopt manual drift or blindly recreate/push an immutable source image.
-3. Fill the actual provider-returned service origin into the Sites module, mirror exact frontend files and prepared tests to the controller, and build/test the complete public candidate without publishing an unavailable form.
-4. Finish and pin the concrete one-time administrator helper plus the exact verified receipt. Only then request the genuinely missing Google setup: append that hostname to Firebase authorized domains, enable the dedicated enquiry TTL and enable HTTP transport on this one service. Preserve unrelated settings and report TTL CREATING separately from ACTIVE. No broad IAM grants or messages.
-5. The founder signs in with admin@wearvalleydigital.com to establish a real Firebase UID. Verify that exact identity, run the explicit attributed owner bootstrap and bind it in the runtime. Keep private data closed until then.
-6. Verify one bounded synthetic enquiry/owner notification without automatic uncertain-send retries, the real owner login and public/private access boundaries. Publish the prepared public Site version through the official helper and verify the actual form and Portal link. Record exact source, image, Sites version, evidence and remaining limitations.
-
-## References
-
-- [Live WVD service-launch receipt](WVD-SERVICE-LAUNCH-2026-10-06.md)
-- [Project authority](WVD-PROJECT-AUTHORITY.md)
+- [WVD public service launch](WVD-SERVICE-LAUNCH-2026-10-06.md)
+- [Sites handoff](WVD-SITES-HANDOFF.md)
 - [Access automation](WVD-ACCESS-AUTOMATION.md)
-- [Google Firestore TTL scope and delayed deletion](https://firebase.google.com/docs/firestore/ttl)
-
-Current status: implementation prepared in working trees; runtime/deployment corrections and verification blocked by disconnected execution environment; public form and Portal release pending.
+- [Access registry](../tools/factory/access-registry.json)
