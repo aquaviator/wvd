@@ -3,16 +3,20 @@
 > Direct enquiry and owner Portal update, 6 October 2026:
 > [WVD-ENQUIRIES-PORTAL-2026-10-06.md](WVD-ENQUIRIES-PORTAL-2026-10-06.md)
 > records the completed implementation and the remaining one-time Google setup
-> and real owner sign-in. Sites version 6 is built and saved, not deployed;
-> source 58a64285aab240d35717a89c41204a07dfdc521b. Saved version ID:
-> appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_0debbcc8a8b8819185766532ec11e493.
+> and real owner sign-in. Sites version 7 is built and saved, not deployed;
+> source 1de317f95f43d11675303f2d270e2dbaed73bc78. Saved version ID:
+> appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_9054e2f3a32481918417774bf7a693ae.
 > Controller app/runtime source bb53eef40280ae8a575e704baceca3a98093ab2a passed
 > Google and container checks. Final test source
-> 10c93e49a3c3f14742679b45588065dae4868a0a passed all ordinary push/PR CI:
+> 929342fcc7fe87a10e292a94544f3bd5130fb246 passed all ordinary push/PR CI:
 > 94 public browser and eight combined Portal browser checks. The new Google
 > service is privately verified at https://wvd-service-v3b6mv7uka-nw.a.run.app.
+> Version 7 includes the actual service origin in connect-src; version 6 was
+> superseded before publication. Controller 929342fcc7fe87a10e292a94544f3bd5130fb246
+> passed both push/PR CI with the production security policy applied: runs
+> 37474782789 and 37474790790, all 94 public and eight Portal checks passed.
 > Retain the live version 5 until the real owner and enquiry flow are verified,
-> then deploy the already saved version 6 with the existing public audience.
+> then deploy the already saved version 7 with the existing public audience.
 > No DNS change, product publication or routine approval is required.
 
 > Current service-launch scope and release evidence (6 October 2026):
