@@ -1,6 +1,7 @@
 """Synthetic administrator-helper tests; invoked with a Node-built fixture."""
 import copy
 import importlib.util
+import io
 import json
 from pathlib import Path
 import sys
@@ -88,6 +89,36 @@ class FakeGoogle:
 class ServiceAccessTests(unittest.TestCase):
     def run_setup(self, client):
         return setup.run_setup(copy.deepcopy(FIXTURE["receipt"]), client, wait=lambda _seconds: None)
+
+    def test_google_api_quota_header_is_explicit_and_never_leaks_into_public_probes(self):
+        requests = []
+        class RecordingHTTP:
+            def open(self, request, timeout):
+                requests.append(request)
+                response = io.BytesIO(b"{}")
+                response.status = 200
+                return response
+        token = "synthetic-administrator-token"
+        client = setup.GoogleClient(token)
+        client.opener = RecordingHTTP()
+        for url in [setup.PROJECT_URL, setup.DATABASE_URL, setup.RUN_URL, setup.GOOGLE_PROVIDER_URL, setup.AUTH_GET, setup.FIELD_GET, "https://run.googleapis.com/v2/projects/wvd-development/locations/europe-west2/operations/synthetic"]:
+            client.call(url)
+        for url in [setup.AUTH_PATCH, setup.FIELD_PATCH, setup.RUN_PATCH]:
+            client.call(url, "PATCH", {})
+        for request in requests:
+            self.assertEqual(request.get_header("X-goog-user-project"), "wvd-development")
+            self.assertEqual(request.get_header("Authorization"), "Bearer " + token)
+            self.assertEqual(request.get_header("Content-type"), "application/json")
+        origin = FIXTURE["receipt"]["url"]
+        client.public_json(origin, "/health")
+        self.assertIsNone(requests[-1].get_header("Authorization"))
+        self.assertIsNone(requests[-1].get_header("X-goog-user-project"))
+        probe_headers = {"Authorization": "Bearer wvd-synthetic-invalid-firebase-token", "Origin": origin}
+        client.public_json(origin, "/api/admin/enquiries", probe_headers)
+        self.assertEqual(requests[-1].get_header("Authorization"), probe_headers["Authorization"])
+        self.assertIsNone(requests[-1].get_header("X-goog-user-project"))
+        self.assertNotIn(token, json.dumps(dict(requests[-1].header_items())))
+        self.assertEqual(set(probe_headers), {"Authorization", "Origin"})
 
     def test_initial_setup_changes_only_scoped_domain_ttl_and_public_transport(self):
         client = FakeGoogle()

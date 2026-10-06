@@ -215,6 +215,6 @@ test('administrator helper shares the exact Node release and dedicated collectio
     writeFileSync(fixture,JSON.stringify({service,receipt:inspectManagedService(service).release,ttlField:enquiryTtlField}),{mode:0o600});
     const result=spawnSync('python3',[fileURLToPath(new URL('./service-access-setup.test.py',import.meta.url)),fixture],{encoding:'utf8',timeout:20000,maxBuffer:1048576,env:{PATH:process.env.PATH,PYTHONDONTWRITEBYTECODE:'1'}});
     assert.equal(result.status,0,(result.stdout??'')+(result.stderr??'')+(result.error?.message??''));
-    assert.match(result.stderr,/Ran 12 tests/);
+    assert.match(result.stderr,/Ran 13 tests/);
   }finally{rmSync(directory,{recursive:true,force:true});}
 });

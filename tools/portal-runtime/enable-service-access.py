@@ -139,7 +139,9 @@ class GoogleClient:
     def call(self, url, method="GET", body=None, allow_missing=False):
         require(self.permitted(url, method), "FOREIGN_TARGET_OR_OPERATION")
         require(not allow_missing or url == FIELD_GET and method == "GET", "INVALID_MISSING_RESOURCE_POLICY")
-        headers = {"Authorization": "Bearer " + self.token, "Content-Type": "application/json"}
+        # Raw REST calls with a gcloud user token need this explicit consumer
+        # project; the token alone can otherwise select the CLI shared project.
+        headers = {"Authorization": "Bearer " + self.token, "Content-Type": "application/json", "X-Goog-User-Project": PROJECT}
         data = None if body is None else canonical(body).encode("utf-8")
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
         try:
