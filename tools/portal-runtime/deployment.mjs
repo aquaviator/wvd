@@ -214,7 +214,7 @@ export async function verifyServiceDeployment(receipt,token,idToken,{request=fet
   const health=found.public?anonymous:await get('/health',transport);
   if(health.status!==200||canonical(await readBoundedProviderJson(health,4096))!==canonical({status:'ok',mode:'live-portal',providerAccessChecked:false}))throw Error('HEALTH_RESPONSE_MISMATCH');
   const auth=await get('/auth-config.json',transport);
-  const expectedAuth={mode:'firebase-live',firebase:found.config.portal.web,ownerConfigured:found.config.portal.owner!==null,enquiriesEnabled:true};
+  const expectedAuth={mode:'firebase-live',firebase:found.config.portal.web,ownerConfigured:found.config.portal.owner!==null,enquiriesEnabled:true,invitationsEnabled:true};
   if(auth.status!==200||canonical(await readBoundedProviderJson(auth,16384))!==canonical(expectedAuth))throw Error('AUTH_CONFIGURATION_MISMATCH');
   const login=await get('/',transport);
   if(login.status!==200||!String(login.headers.get('Content-Type')).startsWith('text/html')||!String(login.headers.get('X-Robots-Tag')).includes('noindex'))throw Error('LOGIN_PAGE_MISMATCH');
