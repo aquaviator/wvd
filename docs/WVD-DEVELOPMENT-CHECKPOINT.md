@@ -1489,3 +1489,7 @@ GitHub-only, not deployed; legacy frontend unchanged. Full Sites recovery, front
 integration, hosted/distinct review, object lifecycle and all complete acceptance
 remain open. Drive modified 2026-10-07T08:45:34.167Z. Details and next work are
 in WVD-CONTROLLER-CONTINUATION.md. No release, audience, send or spend changed.
+
+## 7 October 2026 — Client Onboarding + Client Portal v1 live acceptance
+
+PR #4 deployed as wvd-service-00006-jfj. Owner invitation, exact-account Google sign-in, client review/approval/feedback/support, owner readback/reply and active-session denial after project-grant removal passed live. Synthetic records are labelled and retained with zero test-client project grants. Public Site version 8 now exposes Client Portal after these checks. See WVD-CLIENT-ONBOARDING-V1.md and its evidence for release identities, CI, live receipts and remaining limits. Direct authenticated live cross-project HTTP probes were not executed; automated isolation tests passed. Final receipts/public source mirror await PR #5 merge approval.

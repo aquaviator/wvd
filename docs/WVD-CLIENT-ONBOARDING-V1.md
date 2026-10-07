@@ -48,7 +48,7 @@ concurrency limits. Google guidance checked:
 https://firebase.google.com/docs/auth/admin/verify-id-tokens and
 https://firebase.google.com/docs/auth/admin/manage-sessions.
 
-## Baseline and live gate
+## Baseline and release
 
 Authenticated Google metadata confirmed live revision `wvd-service-00005-4xb`,
 source `e82753a43c5b39253d17a2920784be4fa10b220e`, image digest
@@ -57,13 +57,28 @@ The live configuration hash was recomputed and matched. Owner binding is set;
 the same service account, one-instance cap, concurrency four and 512 MiB remain.
 See `evidence/wvd-client-onboarding-live-baseline.json`.
 
-Native Sites read confirmed the public WVD Site remains version 7 at
-https://wearvalleydigital.com. Its existing source was recovered through the
-supported helper at `1de317f95f43d11675303f2d270e2dbaed73bc78`. Existing links say
-Portal/Portal sign-in; no Client Portal label or publication has been made.
+The existing public Site was recovered at
+`1de317f95f43d11675303f2d270e2dbaed73bc78`. After live client and owner acceptance,
+version 8 was published at https://wearvalleydigital.com with header/footer
+Client Portal links to the existing service. Browser verification confirmed both
+links. Source `9636204bf1b0fc2b95c8d410e2fa1bb3a0d8e6f6`; see
+`evidence/wvd-client-portal-publication.json`. Only the two link labels/title changed.
 
-The user supplied leatfield@gmail.com for the synthetic client sign-in check.
-No live synthetic client/project or invitation has been created yet.
+The user supplied a separate Google account for the synthetic client check and
+explicitly approved merge/deployment once final checks passed. PR #4 merged at
+`10a41e2b5a5cd80d1a895b21d4ddacf13cbca1ab`. Existing Google development access run
+37596353949 passed and deployed revision `wvd-service-00006-jfj`. The exact
+release is in `evidence/wvd-client-onboarding-release.json`. Authenticated live
+metadata comparison confirmed identical service configuration, service account,
+concurrency, resource allocation and maximum one instance.
+
+Owner Google sign-in succeeded before and after deployment. The existing enquiry
+The existing enquiry remains visible with its original provider-accepted notification
+status. Two clearly labelled synthetic clients and three projects were created:
+`SYNTHETIC — Client journey A`, `SYNTHETIC — Unassigned project A2` under the first
+client, and `SYNTHETIC — Cross-client denied B` under the second. The owner created
+a synthetic text review, progress update and seven-day invitation for only A.
+No invitation token or authentication credential is retained in this receipt.
 
 ## Verification status
 
@@ -73,11 +88,13 @@ cross-client and same-client/unassigned-project denial, wrong email, disabled or
 unverified account, wrong provider, expiry, revocation, replay, missing identity,
 forged administrator, internal-field exclusion and additional project grants.
 
-CI at `58271952be60960e5fd32e0f23473d01afcca020` passed Validate and build run
-37595165027. An earlier new-browser fixture failed because a fragment navigation
+CI at `d5cbf55fe0a3551cb3a63932077d0ddcdfb28fc5` passed Validate and build run
+37595772075 and isolated Development container run 37595772320. This includes
+real Firestore emulator transactions, desktop/mobile client browser tests,
+existing owner/public regressions and Linux/Windows jobs.
+An earlier new-browser fixture failed because a fragment navigation
 does not rerun its synthetic account initialization; the fixture was corrected
-without changing production identity checks. Current candidate verification
-and isolated container evidence must be reconciled before release.
+without changing production identity checks.
 
 The deployment verifier now expects the invitation capability exposed by the
 live composition. Its previous-release guard uses the authenticated baseline
@@ -90,22 +107,41 @@ CLI fixture paths/permissions on Windows, multiple installed gcloud wrappers,
 and missing `python3`. CI's Linux and Windows jobs are the authoritative
 cross-platform checks; local failures were not reported as passes.
 
-## Remaining work and limits
+## Live acceptance and remaining limits
 
-- Complete current-source CI and isolated Firebase container verification.
-- Obtain the approval required by automatic review for the shared-branch push;
-  the direct push was rejected for possible shared CI/deployment side effects.
-  The isolated development branch and draft PR are allowed and do not deploy.
-- Deploy through the existing reviewed-source Google workflow, using the fresh
-  live baseline rather than the stale owner-null receipt in the older record.
-- Exercise the actual owner invitation and client Google sign-in, project
-  views, feedback/support and negative API cases. Isolate or clean up the
-  synthetic records and revoke their project access after verification.
-- Only then update the public entry point and publish via the existing Site.
+- Client Google sign-in with the exact invited account succeeded. The live
+  browser shows only project A and Overview, Progress, Deliverables, Feedback,
+  Support. Progress history and the synthetic review are visible. Client
+  feedback, support submission and text-deliverable approval persisted.
+  See `evidence/wvd-client-onboarding-browser.json` and its screenshot.
+- Owner readback confirmed the approval, feedback and support ticket. An owner
+  support reply was saved and visible to the client. The owner removed all test
+  project grants; an existing client session was denied a new support reply and
+  a fresh project read. Owner readback confirmed the denied reply was not saved.
+  The account now shows No projects assigned. The client signed out and private
+  UI cleared. Two synthetic clients and three projects are retained, explicitly
+  labelled and isolated; the test account has zero project grants. The personal
+  Google account was not deleted or changed.
+- Direct authenticated live cross-project API probes were not executed: the
+  isolated CLI Google credential exchange was rejected because its OAuth token
+  audience is not this Firebase project. No provider allowlist was weakened and
+  no credentials were extracted from browser internals. Cross-project, expiry,
+  revoked-invitation and privilege-denial tests passed in automated CI; those
+  results are not represented as authenticated live API checks.
+- Public entry-point publication followed these live acceptance checks. The
+  public build validated and generated all 28 pages. A Windows Vite config-loader
+  issue was resolved using Astro's programmatic build with the unchanged imported
+  config and configFile:false. Packaging used installed Git Bash and GNU tar's
+  force-local path option; no app configuration or dependency changes were needed.
 - Invitations are copy/share links. Google sign-in is the only live provider.
   File-backed deliverable previews are not connected in this live composition;
   their approvals remain disabled. Published text reviews can be approved.
 - The existing bounded aggregate has a 512 KiB state cap and 200 invitation
   records per client; archival/large-scale onboarding is outside this v1.
 
-This receipt records an implementation candidate, not a completed live release.
+This receipt records the deployed implementation, live client/owner acceptance,
+live revoked-access denial and public entry-point publication. Final receipts and
+the public source mirror are in PR #5, pending separate shared-branch merge approval.
+No fallback identity or authentication bypass was added.
+Anonymous project/enquiry requests return 401
+with no-store, recorded in `evidence/wvd-client-onboarding-anonymous.json`.
