@@ -170,7 +170,13 @@ export class PortalProof {
     if(record.status==='redeemed'){if(record.recipientId!==recipientId)throw Error('INVALID_INVITATION');return {redeemed:true,alreadyRedeemed:true,invitationId:record.id};}
     const now=new Date(this.#timestamp()).toISOString();this.#pendingInvitation(record,now);
     const candidate=new PortalProof(this.#state,()=>now,this.#invitationPolicy);
-    candidate.provisionAccess({uid:recipientId,businessId:record.businessId,role:record.role,projectIds:record.projectIds});
+    const existing=this.#state.memberships.find(x=>x.actorId===recipientId&&x.businessId===record.businessId);
+    if(record.role==='Owner'&&existing){
+      if(!existing.active)throw Error('ACCESS_REVOKED');
+      if(existing.role!=='Owner')throw Error('ACCESS_ROLE_CONFLICT');
+      if(!this.#state.identities.some(x=>x.id===recipientId&&x.active))throw Error('IDENTITY_DISABLED');
+      candidate.updateAccess({uid:recipientId,businessId:record.businessId,role:'Owner',projectIds:[...new Set([...existing.projectIds,...record.projectIds])]});
+    }else candidate.provisionAccess({uid:recipientId,businessId:record.businessId,role:record.role,projectIds:record.projectIds});
     const saved=candidate.#state.invitations.find(x=>x.id===record.id);saved.status='redeemed';saved.recipientId=recipientId;saved.redeemedAt=now;
     this.#state=candidate.snapshot();return {redeemed:true,alreadyRedeemed:false,invitationId:record.id};
   }

@@ -66,3 +66,9 @@ test('client projections exclude future internal fields and actor/audit metadata
   assert.ok(!JSON.stringify(result).includes('private'));
   assert.ok(!JSON.stringify(clientProjection('tickets',[{id:'t',subject:'Help',...internal,triage:{note:'Client assessment',...internal},triageHistory:[]}])).includes('private'));
 });
+test('a second explicit invitation adds only the named project, without replacing prior access',async()=>{
+  const f=fixture(),first=await f.invite();await f.access.invitations.redeem('client',first.token);
+  const next=await f.invite({projectIds:['unassigned'],operationId:'second-project'});await f.access.invitations.redeem('client',next.token);
+  assert.deepEqual((await f.call('projects')).data.map(x=>x.id),['a','unassigned']);
+  assert.equal((await f.call('overview',{projectId:'b'})).status,403);validatePortalState(f.portal.snapshot());
+});

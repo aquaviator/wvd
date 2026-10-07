@@ -7,7 +7,7 @@ export function renderClientWorkspace({container,support,overview,api,reload,sta
   for(const title of ['Overview','Progress','Deliverables','Feedback','Support']){
     const panel=node('section',''),button=node('button',title);button.type='button';panel.hidden=true;
     panel.append(node('h2',title));panels.set(title,panel);
-    button.addEventListener('click',()=>{for(const [name,item]of panels)item.hidden=name!==title;support.hidden=title!=='Support';for(const child of nav.children)child.setAttribute('aria-pressed',String(child===button));});
+    button.addEventListener('click',()=>{container.dataset.clientSection=title;for(const [name,item]of panels)item.hidden=name!==title;support.hidden=title!=='Support';for(const child of nav.children)child.setAttribute('aria-pressed',String(child===button));});
     nav.append(button);
   }
   container.append(nav,...panels.values());
@@ -37,7 +37,7 @@ export function renderClientWorkspace({container,support,overview,api,reload,sta
     const send=node('button','Send feedback');form.append(label,send);
     form.addEventListener('submit',async event=>{event.preventDefault();send.disabled=true;try{await api('/api/portal/feedback',{projectId:overview.projectId,milestoneId:item.id,versionId:item.currentVersionId,body:body.value,operationId:crypto.randomUUID()});if(isCurrent()){await reload();status('Feedback saved.');}}catch(error){if(isCurrent())status(error.message);}finally{send.disabled=false;}});feedback.append(form);
   }
-  nav.firstElementChild.click();
+  ([...nav.children].find(button=>button.textContent===container.dataset.clientSection)??nav.firstElementChild).click();
 }
 
 export function clientInvitationControls({businessId,projectId,api,status,isCurrent}) {
