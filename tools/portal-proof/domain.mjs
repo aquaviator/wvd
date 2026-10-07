@@ -132,10 +132,12 @@ export class PortalProof {
   }
   // Trusted internal invitation operations. Redemption identity/email must come
   // from the separate current Firebase SDK proof, never directly from HTTP input.
-  createMemberInvitation(request) {
+  createClientInvitation(request) { return this.#createInvitation(request,true); }
+  createMemberInvitation(request) { return this.#createInvitation(request,false); }
+  #createInvitation(request,clientOwner) {
     if(!request||Object.keys(request).sort().join(',')!=='actorId,businessId,email,expiresAt,operationId,projectIds,tokenHash'||typeof request.tokenHash!=='string'||!/^[a-f0-9]{64}$/.test(request.tokenHash))throw Error('INVALID_INVITATION');
     const policy=invitationPolicy(this.#invitationPolicy),createdAt=new Date(this.#timestamp()).toISOString();
-    const {operationId,tokenHash,...input}=request,review=memberInvitation(this.#state,input,{now:createdAt,maxLifetimeMs:policy.maxLifetimeMs});
+    const {operationId,tokenHash,...input}=request,review=memberInvitation(this.#state,input,{now:createdAt,maxLifetimeMs:policy.maxLifetimeMs,clientOwner});
     const payload={kind:'invitation',operationId,...review};
     // The canonical digest binds the project array for the shared scalar retry contract.
     const retry=this.#retry(operationId,{kind:'invitation',operationId,digest:review.digest});if(retry)return {created:false,invitation:retry};
@@ -146,9 +148,9 @@ export class PortalProof {
     return {created:true,invitation:structuredClone(record)};
   }
   memberInvitationsFor(actorId,projectId) {
-    const project=authorise(this.#state,actorId,projectId,'manage-colleagues'),now=Date.parse(this.#timestamp());
+    const project=authorise(this.#state,actorId,projectId,this.workspaceAccess(actorId).admin?'manage-reviews':'manage-colleagues'),now=Date.parse(this.#timestamp());
     return structuredClone({projectId,invitations:(this.#state.invitations??[]).filter(x=>x.actorId===actorId&&x.businessId===project.businessId&&x.projectIds.includes(projectId)).map(record=>{
-      let canRevoke=record.status==='pending';if(canRevoke)try{for(const id of record.projectIds)authorise(this.#state,actorId,id,'manage-colleagues');}catch{canRevoke=false;}
+      let canRevoke=record.status==='pending';if(canRevoke)try{for(const id of record.projectIds)authorise(this.#state,actorId,id,record.role==='Owner'?'manage-reviews':'manage-colleagues');}catch{canRevoke=false;}
       return {invitationId:record.id,email:record.email,createdAt:record.createdAt,expiresAt:record.expiresAt,status:record.status,expired:record.status==='pending'&&Date.parse(record.expiresAt)<=now,canRevoke};
     })});
   }
@@ -159,7 +161,7 @@ export class PortalProof {
   #pendingInvitation(record,now) {
     const policy=invitationPolicy(this.#invitationPolicy);
     if(record.status!=='pending'||Date.parse(now)<Date.parse(record.createdAt)||Date.parse(record.expiresAt)<=Date.parse(now)||record.policyRef!==policy.ref||record.maxLifetimeMs!==policy.maxLifetimeMs)throw Error('INVALID_INVITATION');
-    memberInvitation(this.#state,{actorId:record.actorId,businessId:record.businessId,email:record.email,projectIds:record.projectIds,expiresAt:record.expiresAt},{now,maxLifetimeMs:policy.maxLifetimeMs});
+    memberInvitation(this.#state,{actorId:record.actorId,businessId:record.businessId,email:record.email,projectIds:record.projectIds,expiresAt:record.expiresAt},{now,maxLifetimeMs:policy.maxLifetimeMs,clientOwner:record.role==='Owner'});
   }
   redeemMemberInvitation({token,recipientId,email}) {
     if(typeof recipientId!=='string'||!recipientId.trim()||recipientId.length>128||typeof email!=='string')throw Error('INVALID_INVITATION');
@@ -168,13 +170,13 @@ export class PortalProof {
     if(record.status==='redeemed'){if(record.recipientId!==recipientId)throw Error('INVALID_INVITATION');return {redeemed:true,alreadyRedeemed:true,invitationId:record.id};}
     const now=new Date(this.#timestamp()).toISOString();this.#pendingInvitation(record,now);
     const candidate=new PortalProof(this.#state,()=>now,this.#invitationPolicy);
-    candidate.provisionAccess({uid:recipientId,businessId:record.businessId,role:'Member',projectIds:record.projectIds});
+    candidate.provisionAccess({uid:recipientId,businessId:record.businessId,role:record.role,projectIds:record.projectIds});
     const saved=candidate.#state.invitations.find(x=>x.id===record.id);saved.status='redeemed';saved.recipientId=recipientId;saved.redeemedAt=now;
     this.#state=candidate.snapshot();return {redeemed:true,alreadyRedeemed:false,invitationId:record.id};
   }
   revokeMemberInvitation({actorId,invitationId}) {
     const record=this.#state.invitations?.find(x=>x.id===invitationId&&x.actorId===actorId);if(!record)denied();
-    for(const projectId of record.projectIds)authorise(this.#state,actorId,projectId,'manage-colleagues');
+    for(const projectId of record.projectIds)authorise(this.#state,actorId,projectId,record.role==='Owner'?'manage-reviews':'manage-colleagues');
     if(record.status==='redeemed')throw Error('INVITATION_CONSUMED');
     if(record.status==='revoked')return {revoked:true,invitationId};
     const now=new Date(this.#timestamp()).toISOString();if(Date.parse(now)<Date.parse(record.createdAt))throw Error('INVALID_SERVER_TIME');

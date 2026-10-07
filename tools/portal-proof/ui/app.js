@@ -1,3 +1,4 @@
+import {renderClientWorkspace,clientInvitationControls} from './client-workspace.js';
 import {createAuthClient} from './auth-client.js';
 let authClient,invitationsEnabled=false,deliverablesEnabled=false,pendingMemberInvite=null;
 let liveMode=false,ownerConfigured=false,enquiryInboxRenderer=null;
@@ -45,6 +46,7 @@ async function administration(){
   const token=sessionToken,box=el('admin-overview');box.replaceChildren();box.hidden=true;
   const access=await read('workspace-access',{});
   if(token!==sessionToken)return;adminAccess=access.admin===true;
+  if(liveMode)el('workspace').querySelector('h1').textContent=adminAccess?'Owner workspace':'Your project workspace';
   if(!adminAccess)return;
   const overview=await read('admin-overview',{});
   if(token!==sessionToken)return;
@@ -58,7 +60,7 @@ async function administration(){
     const section=node('section','');section.append(node('h3',`Client: ${business.businessId}`));
     for(const item of business.projects){
       const card=node('article','');card.append(node('h4',item.projectId),node('p',`Stage: ${item.stage??'Awaiting update'}`),node('p',`Next step: ${item.nextStep??'Awaiting update'}`),node('p',`${item.awaitingReview} awaiting review · ${item.feedbackCount} feedback ${item.feedbackCount===1?'record':'records'} · ${item.ticketCount} support ${item.ticketCount===1?'ticket':'tickets'}`));
-      const open=node('button','Open project');open.type='button';open.addEventListener('click',()=>{el('projects').value=item.projectId;project().catch(error=>status(error.message));});card.append(open);section.append(card);
+      const open=node('button','Open project');open.type='button';open.addEventListener('click',()=>{el('projects').value=item.projectId;project().catch(error=>status(error.message));});card.append(open);if(liveMode&&invitationsEnabled)card.append(clientInvitationControls({businessId:business.businessId,projectId:item.projectId,api,status,isCurrent:()=>token===sessionToken&&card.isConnected}));section.append(card);
     }
     const accounts=document.createElement('details');accounts.className='admin-accounts';accounts.append(node('summary','Client accounts'));
     const load=node('button','Load accounts');load.type='button';const list=node('div','');list.className='account-list';
@@ -187,6 +189,7 @@ async function project(){
     const form=document.createElement('form'),label=node('label','Feedback'),body=document.createElement('textarea');body.required=true;body.maxLength=10000;label.append(body);form.append(label,node('button','Send feedback'));
     form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{await api('/api/portal/feedback',{projectId:id,milestoneId:m.id,versionId:m.currentVersionId,body:body.value,operationId:crypto.randomUUID()});body.value='';await project();status('Feedback saved.');});});card.append(form);box.append(card);
   }
+  if(liveMode&&!adminAccess)renderClientWorkspace({container:box,support:el('support-tickets'),overview,api,reload:project,status,isCurrent:()=>generation===revision&&Boolean(sessionToken)});
   for(const ticket of tickets){
     const card=node('article','');card.append(node('h3',ticket.subject),node('p',ticket.body));
     const careLabel=value=>({'needs-review':'Needs review','care-included':'Included in agreed Care','quote-required':'Separate quote required'})[value];
@@ -211,7 +214,7 @@ async function project(){
   }
 }
 function invitedRegistration(){
-    if(pendingMemberInvite&&invitationsEnabled&&authClient&&!el('firebase-registration')){
+    if(!liveMode&&pendingMemberInvite&&invitationsEnabled&&authClient&&!el('firebase-registration')){
       const details=document.createElement('details');details.id='firebase-registration';details.append(node('summary','Create your invited development account'));
       const form=document.createElement('form'),email=document.createElement('input'),password=document.createElement('input');email.type='email';email.required=true;email.maxLength=320;email.autocomplete='username';password.type='password';password.required=true;password.minLength=15;password.maxLength=1024;password.autocomplete='new-password';
       for(const [text,input]of [['Invited account email',email],['Invited account password',password]]){const label=node('label',text);label.append(input);form.append(label);}
@@ -248,12 +251,12 @@ try {
     const {createLiveAuthClient}=await import('./live-auth-client.js');
     authClient=await createLiveAuthClient(authConfig);liveMode=true;ownerConfigured=config.ownerConfigured;
     if(config.enquiriesEnabled){const {renderEnquiryInbox}=await import('./enquiries.js');enquiryInboxRenderer=renderEnquiryInbox;}
-    pendingMemberInvite=null;el('firebase-registration')?.remove();el('invite-panel').hidden=true;
+    el('firebase-registration')?.remove();el('invite-panel').hidden=true;
     el('login').querySelectorAll('label').forEach(label=>label.remove());el('login').querySelector('button').textContent='Continue with Google';
-    el('account').querySelector('h1').textContent='WVD owner workspace';el('workspace').querySelector('h1').textContent='Owner workspace';
-    el('account-introduction').textContent='Sign in with your authorised Google account to manage client projects and view enquiries.';
-    el('account-access-note').textContent='This private workspace is reserved for the WVD owner.';
-    document.querySelector('.portal-label').textContent='Owner portal';document.title='Wear Valley Digital — Owner portal';
+    el('account').querySelector('h1').textContent='Your WVD workspace';el('workspace').querySelector('h1').textContent='Owner workspace';
+    el('account-introduction').textContent='Sign in with your invited Google account to view your projects. WVD owners use their authorised account.';
+    el('account-access-note').textContent='Access is by invitation only. Your account can see only its assigned projects.';
+    document.querySelector('.portal-label').textContent='Project portal';document.title='Wear Valley Digital — Project portal';
     if(!ownerConfigured)status('Owner access is being set up. Google sign-in can be completed, but private workspace access is not active yet.');
   }else authClient=createAuthClient(authConfig,{request:api});
   if(config.mode==='firebase-emulator'){

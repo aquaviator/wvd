@@ -67,6 +67,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
     try {
       const session = await resolveSession(sessionToken);
       if (!session || typeof session.actorId !== 'string' || !session.actorId) return response(401, {error:'UNAUTHENTICATED'});
+      if(session.liveClient===true&&!['workspace-access','projects','overview','tickets','read-ticket','ticket','reply','feedback','approve','deliverable'].includes(action))return response(403,{error:'ACCESS_DENIED'});
       const request = {...input, actorId:session.actorId};
       const operations = {
         'deliverable-catalogue': async()=>{await portal.authorise(session.actorId,input.projectId,'manage-reviews');return deliverableCatalogue?deliverableCatalogue.list(session.actorId,input.projectId):[];},
@@ -100,6 +101,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
         }
       };
       const result=await operations[action]();
+      if(session.liveClient===true&&action==='overview')result.canManageColleagues=false;
       if(action==='update-colleague-access')return response(200,{changed:result.changed,accountId:input.uid,projectId:input.projectId,hasProjectAccess:input.grant});
       return response(200,result);
     } catch (error) {

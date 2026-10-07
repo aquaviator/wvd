@@ -110,6 +110,7 @@ export class FirestorePortal {
   projectsFor(...args){return this.#run('projectsFor',args);}
   workspaceAccess(...args){return this.#run('workspaceAccess',args);}
   adminOverview(...args){return this.#run('adminOverview',args);}
+  createClientInvitation(...args){return this.#run('createClientInvitation',args);}
   createMemberInvitation(...args) { return this.#run('createMemberInvitation', args); }
   memberInvitationsFor(...args) { return this.#run('memberInvitationsFor',args); }
   memberInvitationRecord(...args) { return this.#run('memberInvitationRecord', args); }
