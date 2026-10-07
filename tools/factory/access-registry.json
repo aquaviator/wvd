@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-07T04:31:00.000Z",
+  "updatedAt": "2026-10-07T05:33:00.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-07T04:31:00.000Z",
-        "source": "Fresh connector reads: WVD development/shared-factory-bootstrap e82753a43c5b39253d17a2920784be4fa10b220e, Salon draft PR #1 722fba535b79d905477e0f07202a28f9c94c1802, Wedding draft PR #1 449b6c259406d2982ad815525c0f15032ccc49b6. WVD current-head validate 37481763913/37481756529, container 37481756443 and Google 37481756419 succeeded; PR container skipped. Recovered interrupted Wedding handoff-only commit 32c44b41300ce7582d149876208e280ed103bf80, compared its sole seven-line addition and advanced the authorised development branch using expected-head non-forced update. No application change, merge or release. Detailed reconciliation in docs/WVD-CONTROLLER-CONTINUATION.md; earlier WVD runtime/frontend receipts retained in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md and Git history."
+        "at": "2026-10-07T05:33:00.000Z",
+        "source": "Fresh branch/PR reads: WVD 58e9004fb8d5097a4e58ba8485bc26e9bbe5c182 had successful push/PR CI 37572649658/37572653373 and skipped PR container. Wedding draft PR #1 was unchanged at 32c44b41300ce7582d149876208e280ed103bf80; native request-limit candidate 2318b6a8609cc089b7a339ec68ce15925aa66791 was pushed to development/undecided-date-onboarding using expected-head, non-forced update. All seven changed files were read back exactly. No Wedding Actions runs existed for this source; 14 focused plus 20 brand and nine onboarding local checks, typecheck and build passed. Salon draft PR #1 remains 722fba535b79d905477e0f07202a28f9c94c1802. No PR merge or product release."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -58,9 +58,9 @@
       "credentialRef": "connected-app:sites",
       "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
       "evidence": {
-        "status": "VERIFIED",
-        "at": "2026-10-07T04:31:00.000Z",
-        "source": "Fresh native Wedding get_site/get_site_version: project appgprj_6ac3c826d96481919bd4218973832eb2, current user owner, active version 6, custom owner-only access revision 1, no editors/groups/external visitors, current URL https://wvd-wedding-workspace.leatfield.chatgpt.site. Saved version appgprj_6ac3c826d96481919bd4218973832eb2~appgver_4048ea80a69c81919f2ac3157162a70e binds source ed03a2e76fd8d4faa57cb9aeb9006dadadb53e12 to deployment appgdep_6ac42f24f6488191a10f05e9d22d67f8 and archive SHA-256 7ecf54c9a6ba79fbe0790fc531a694970e74d60735b645990ea21d3583f3a35e. No source credential, edit or deployment requested. Archive materialisation was unavailable; no fresh binary/source equivalence or browser acceptance claimed. Prior WVD owner/public/version-7 saved-only evidence remains in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md and Git history; WVD hosting was not rechecked or changed in this reconciliation."
+        "status": "FAILED",
+        "at": "2026-10-07T05:33:00.000Z",
+        "source": "Wedding-specific source recovery failed: current native get_site verified owner role, active version 6, sole-owner custom audience revision 1, no editors/groups/external visitors, project appgprj_6ac3c826d96481919bd4218973832eb2. A fresh repo-scoped credential was issued; the unmodified supported site-workflow.mjs source helper then exited 1 with 'Unable to prepare the Site.' No source was edited/pushed and no deployment requested. Deployed source remains ed03a2e76fd8d4faa57cb9aeb9006dadadb53e12. This is a failed checkout capability, not proof that Sites metadata access or all account permissions are absent. The GitHub-only server candidate and resumption limits are in Wedding handoff/WED-WP-007-REQUEST-LIMITS.md. No credential is persisted. Prior WVD public/saved-version evidence remains in its service handoff and Git history; that Site was not changed."
       },
       "limits": [
         "Sites frontend access does not imply access to Google administrator configuration or private Portal data.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-07T04:31:00.000Z",
-        "source": "Fresh get_profile confirmed admin@wearvalleydigital.com. Read WVD root 13mG23q4WgFJJA8p_ZKS2YNi1iVc_rvuB and entrypoint/queue modification metadata: Salon 1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4 2026-10-05T18:55:11.206Z; Wedding 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs 2026-10-05T23:14:16.118Z; queue 16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5vOHTk 2026-10-05T17:02:00.977Z. These match the prior completed receipts. Wedding's saved-review receipt had already been revision-guarded and read back in the preceding task. No duplicate write, sharing change or assignment dispatched. Folder metadata does not prove unchanged descendants; future work must inspect its selected records."
+        "at": "2026-10-07T05:33:00.000Z",
+        "source": "Fresh get_profile confirmed admin@wearvalleydigital.com. Salon and queue modification values remain 2026-10-05T18:55:11.206Z / 2026-10-05T17:02:00.977Z. Wedding START HERE 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs initially matched 2026-10-05T23:14:16.118Z. A full file-backed trusted read found one tab and no protected controls. Revision-guarded append recorded candidate 2318b6a, tests and explicit NOT deployed status; content readback passed. New modification 2026-10-07T05:32:37.618Z. Existing deployed-source paragraph, date/rich-link elements, original source documents and ownership remain unchanged. No duplicate assignment, sharing change or external message."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",

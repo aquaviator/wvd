@@ -677,3 +677,48 @@ visually reviewed again for this test-clock-only change. Logs and the exact-sour
 run outcomes were inspected. The PR container was skipped by existing rules.
 This receipt-only follow-up does not change the tested fixture or application.
 Continue the product backlog above; the date-dependent CI failure is resolved.
+
+## Wedding request-size hardening — 7 October 2026
+
+Completed a bounded native integration fix for the body-buffering risk already
+flagged in Wedding HANDOFF.md (WED-WP-007 / WED-REQ-026, plus shared JSON input
+validation). Product commit `2318b6a8609cc089b7a339ec68ce15925aa66791` is now on
+`development/undecided-date-onboarding`, draft PR #1. Before writing, both
+product heads, queue and Drive modification evidence were refreshed; no competing
+branch update or assigned worker was observed. The seven changed files were
+read back exactly. No product CI runs exist for this source; absence is not PASS.
+
+JSON and PNG request readers now enforce actual byte limits while reading, using
+fixed-size storage even for many tiny chunks. Missing/understated Content-Length
+cannot trigger complete unbounded buffering. Oversized streams cancel before
+processing/persistence; errors preserve the existing response contracts and
+release reader locks. Valid 2 MiB PNGs still validate, strip metadata and stay private.
+
+Fourteen focused stream/route/SQLite checks passed, as did all 20 existing brand/
+review checks, nine onboarding checks, TypeScript and production compilation on
+Node v24.19.0. The new evidence binds both server files and its test script by
+SHA-256. Task/reproduction/limits: `handoff/WED-WP-007-REQUEST-LIMITS.md` and
+`evidence/continuation/request-limits-results.json` in the product commit.
+185 recovered text blobs matched GitHub before edits; four binary images and
+generated tsbuildinfo were omitted. The remote tree preserves them unchanged.
+Compilation is not proof that the omitted public image can be served.
+
+**Not deployed:** native Sites metadata still shows owner-private version 6,
+source `ed03a2e76fd8d4faa57cb9aeb9006dadadb53e12`. Fresh source credential
+issuance succeeded, but the supported, unmodified source helper exited 1 with
+`Unable to prepare the Site.` No source push, archive publication, deployment or
+audience edit followed. Do not deploy this incomplete recovery checkout.
+No browser/hosted D1/R2 or distinct verification is claimed. All fourteen package
+gates and 32 full scenarios remain open; WED-CONT-001 remains partial.
+
+The existing Wedding Drive entrypoint received a revision-guarded, read-back
+receipt explicitly separating candidate and deployed source; modified
+2026-10-07T05:32:37.618Z. Salon remains at 722fba535b79d905477e0f07202a28f9c94c1802
+with its baseline hold unchanged. Access evidence records the source-helper
+failure separately from successful Sites metadata and GitHub/Drive operations.
+
+Next: recover full supported Sites source when the capability works, reconcile
+only the two server changes from this exact candidate, then build/private-publish
+and verify hosted limits. Continue an independent native backlog slice meanwhile.
+No new subscription, spend, live send, customer data, payment flow, schema,
+dependency, public audience, PR merge or commercial release was introduced.

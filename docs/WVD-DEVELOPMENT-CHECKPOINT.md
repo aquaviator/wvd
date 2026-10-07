@@ -1431,3 +1431,17 @@ Push/PR runs 37572206102 and 37572209383 passed all four jobs; offline container
 browser scenarios. Exact image, artifact metadata and limits are in the controller
 continuation. No live provider call or product release was added. Resume the
 Wedding/Salon backlog above; do not rerun unchanged suites solely to restate this receipt.
+
+## Wedding actual-byte request limits — 7 October 2026
+
+Native integration candidate `2318b6a8609cc089b7a339ec68ce15925aa66791` is on Wedding's
+authorised development branch. It fixes the handoff's known request-buffering
+risk: JSON is bounded to 200000 bytes and PNGs to 2 MiB while reading, before
+processing/storage. Fourteen focused checks, 20 brand/review regressions, nine
+onboarding checks, TypeScript and build passed. Seven product files read back exactly.
+
+The candidate is **not deployed**: the supported Sites source checkout failed.
+Owner-private version 6/source ed03a2e remains live. Product handoff, test evidence,
+Drive entrypoint and access registry now state the exact distinction and recovery
+steps. Browser, hosted and independent verification remain unrun; no package or
+commercial gate closed. Read the latest controller continuation before resuming.
