@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-07T11:02:16.094Z",
+  "updatedAt": "2026-10-07T11:44:45.488Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-07T11:02:16.094Z",
-        "source": "Fresh WVD 8889a268 includes merged branded-workspace MVP PR #6; push 37608563800 and PR 37608569118 passed all four jobs, container 37608563824 and Google access 37608563844 succeeded; PR container skipped. Wedding PR #1 draft/unassigned at 5f859c3; candidate 597e6a3c4d3169e234d32a16caed0173357c5ce6 pushed non-forced with expected-head guard and eight-file compare/readback exact. Eighteen local change-summary checks, 44 export regressions, TypeScript and build passed. No Wedding Actions run or hosted/independent verification. Salon remains ed0e9c16cdf48abb095a91bdc19b4f088230eb9f. No deployment or release."
+        "at": "2026-10-07T11:44:45.488Z",
+        "source": "GitHub connector: current WVD d2d72f4199200d063ff2fddc2e24ead591ac375d push 37611432069 and PR 37611438211 complete four-job successes; PR container skipped. Wedding expected-head non-forced update to 75385166583a500b96c12cbf42db919886507977, exact six-file comparison/readback; no product Actions run exists. Salon ed0e9c16cdf48abb095a91bdc19b4f088230eb9f and both unassigned draft PRs refreshed. Native ordinary-meal repair is GitHub-only, not deployed or independently verified."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-07T11:02:16.094Z",
-        "source": "Profile admin@wearvalleydigital.com confirmed. Direct-child WVD/Salon/Wedding changed scan since 09:55:17 UTC returned none before work. Salon modified 2026-10-07T09:53:59.274Z; Wedding before 2026-10-07T08:45:34.167Z; queue 2026-10-05T17:02:00.977Z with no named Wedding assignees. Full trusted Wedding read: one tab, no protected controls; existing date/rich links preserved. Revision-guarded 597e6a3c4d3169e234d32a16caed0173357c5ce6 append and exact-text readback passed; new modification 2026-10-07T11:01:01.164Z. No duplicate dispatch, sharing or person-directed message."
+        "at": "2026-10-07T11:44:45.488Z",
+        "source": "Google Drive connector profile admin@wearvalleydigital.com; changed-record scan of WVD, Salon and Wedding roots since 2026-10-07T11:02:16.094Z returned none before work. Queue unchanged at 2026-10-05T17:02:00.977Z; Salon START HERE unchanged at 2026-10-07T09:53:59.274Z. Wedding START HERE 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs revision-guarded append records product 75385166583a500b96c12cbf42db919886507977, exact text and existing native chips verified, modification 2026-10-07T11:43:41.111Z. No worker dispatch or sharing change."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",

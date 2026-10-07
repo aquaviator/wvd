@@ -961,3 +961,47 @@ full menu review, bounded jobs/object expiry/revocation and supplier capabilitie
 within existing authority. Sites owns frontend integration after supported
 recovery. Hosted and independent review remain required. No live send, real-data
 use, financial execution, audience change, commercial release or additional spend.
+
+
+## Wedding atomic meal-response validation — 7 October 2026
+
+Product candidate `75385166583a500b96c12cbf42db919886507977` is pushed with an
+expected-head guard, non-forced, to development/undecided-date-onboarding,
+draft PR #1. Fresh WVD d2d72f4 push 37611432069 and PR 37611438211 passed all
+four jobs; PR container 37611438040 skipped. Product heads, unassigned draft PRs,
+Drive changes and queue were checked; no competing product update appeared.
+Salon remains ed0e9c1. Preserve the existing branded-workspace controller handoff.
+
+WED-WP-005 / WED-REQ-020 repairs a reproduced validation gap: false/numeric meal
+values could persist, and omitted choices could retain a no-longer-valid option.
+Shared applyResponses now validates rows and effective accepted choices before
+mutating invitations/history. Valid omitted and optional blank choices remain;
+declines retain prior history and clear allocation. Missing event/person references
+fail closed. Owner/guest routes reuse the same native transaction boundary.
+
+28 focused production-route/SQLite checks (14 per owner/guest path), 12 domain
+and 14 export-consumer regressions, TypeScript and all five build stages PASS
+on Node v24.19.0. Eight concurrent identical submissions persist one result;
+invalid batches and storage conflicts persist no partial changes. The test failed
+on the pinned base with actual HTTP 200 versus expected 400 before the repair.
+Historical regression receipt bytes were restored. Task:
+`handoff/WED-WP-005-MEAL-VALIDATION.md`; source-hash-bound evidence:
+`evidence/continuation/meal-validation-results.json`. Exact six-file comparison
+and readback passed. No product Actions run exists; creator checks do not prove
+hosted or distinct verification. All fourteen package gates and 32 full scenarios
+remain open. Original contracts, schema, dependency locks and binaries unchanged.
+
+Not deployed. 203 source blobs matched the base before edits; four binary assets
+remain unmaterialised locally and preserved remotely; generated tsbuildinfo excluded.
+Full supported Sites recovery must reconcile lib/wedding.ts, current export routes/
+helper and earlier server/media limits before exact-source build/private publication.
+No unsupported recovery retry occurred. Last verified private version 6/source
+ed03a2e remains separate. Next: distinct review; remaining native menu preview/commit,
+stable options and person eligibility, with Sites owning frontend/history/unresolved
+choice presentation after recovery. WED-API-019 is not implemented by this repair.
+
+Wedding Drive receipt was revision-guarded, exact-text checked and native chips
+preserved; modified 2026-10-07T11:43:41.111Z. GitHub/Drive registry evidence
+refreshed; prior Sites observations retain their actual dates. Salon research and
+target verification remain independent available work. No founder input, live send,
+real data, health capture, payment, audience change, commercial release or spend.

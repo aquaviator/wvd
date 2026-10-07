@@ -1526,3 +1526,19 @@ recovery precedes publication and frontend integration. Drive receipt modified
 2026-10-07T11:01:01.164Z; exact task/evidence/next actions are in the
 latest controller continuation. WVD branded-workspace work at 8889a268 and Salon
 ed0e9c1 are preserved. No input, live send, audience change or spending required.
+
+
+## Wedding meal-response integrity repair — 7 October 2026
+
+Wedding `75385166583a500b96c12cbf42db919886507977` fixes malformed/falsy meal
+inputs and obsolete omitted choices before atomic RSVP mutations. Both owner and
+guest routes use the repaired validator. 28 focused route checks, 26 domain/export
+regressions, TypeScript and all five build stages pass; six files read back exactly.
+Task/evidence: handoff/WED-WP-005-MEAL-VALIDATION.md and
+ evidence/continuation/meal-validation-results.json in the product repository.
+
+Not deployed; all fourteen gates and 32 full scenarios remain open. Full supported
+Sites recovery and distinct/hosted verification still required. Drive receipt
+modified 2026-10-07T11:43:41.111Z. Detailed scope, evidence and next work are
+in the latest controller continuation. Salon ed0e9c1 and WVD branded-workspace
+work are preserved. No founder input or additional spending required.
