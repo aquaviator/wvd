@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-07T08:46:38.650Z",
+  "updatedAt": "2026-10-07T09:55:17.267Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-07T08:46:38.650Z",
-        "source": "Fresh WVD 4e7c184 had successful push 37588466245 and PR 37588472606, all four jobs; container PR 37588472720 skipped. Wedding draft PR #1 unassigned at a119c5c; candidate 5f859c3157393942241abbec63191878b980e857 pushed non-forced with expected-head guard, seven-file compare/readback exact. Fifteen local export-status checks plus 29 export regressions, TypeScript and build passed. No product Actions run, hosted or independent verification. Salon draft remains 722fba535b79d905477e0f07202a28f9c94c1802. No merge, deployment or release."
+        "at": "2026-10-07T09:55:17.267Z",
+        "source": "Fresh WVD c8e6178 includes merged client portal work; push 37600948334 and PR 37600954477 success, container PR 37600954472 skipped. Salon draft PR #1 unassigned at 722fba5; SALON-WVD-002 analysis ed0e9c16cdf48abb095a91bdc19b4f088230eb9f pushed non-forced with expected-head guard; six-file compare and exact readback passed. JSON/source/task references and unchanged-gate checks passed. No Salon Actions run exists. Wedding unchanged at 5f859c3157393942241abbec63191878b980e857. No product implementation, deployment or release."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-07T08:46:38.650Z",
-        "source": "Profile admin@wearvalleydigital.com confirmed. WVD/Salon/Wedding direct-child changed scan since 07:37:17 UTC returned none before work. Salon entrypoint modified 2026-10-05T18:55:11.206Z, Wedding before 2026-10-07T07:36:03.862Z, queue 2026-10-05T17:02:00.977Z. Full trusted Wedding read: one tab, no protected controls, existing date/rich links preserved. Revision-guarded candidate 5f859c3157393942241abbec63191878b980e857 append and exact-text readback passed, new modification 2026-10-07T08:45:34.167Z. No sharing, dispatch or person-directed message."
+        "at": "2026-10-07T09:55:17.267Z",
+        "source": "Profile admin@wearvalleydigital.com confirmed. Direct-child WVD/Salon/Wedding changed scan since 08:46:38 UTC returned none before work. Salon initial modification 2026-10-05T18:55:11.206Z; Wedding 2026-10-07T08:45:34.167Z; queue 2026-10-05T17:02:00.977Z. Salon and portfolio trusted reads found no protected controls; existing date/rich links preserved. Revision-guarded SALON-WVD-002 appends and exact-text readbacks passed; new modifications 2026-10-07T09:53:59.274Z and 2026-10-07T09:53:59.601Z. No dispatch, sharing or person-directed message."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",
@@ -277,6 +277,28 @@
         "The actual Firebase owner account is absent; owner remains null. Real Google login, enquiry capture and inbox delivery are not yet verified.",
         "The configured identity, data namespace, zero-to-one-instance bounds and total additional £5/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
         "Subsequent service updates require the last reviewed source/image/configuration receipt. Public transport does not grant access to private APIs."
+      ]
+    },
+    {
+      "id": "controller-sites-salon-metadata",
+      "plane": "controller",
+      "capabilities": [
+        "site.metadata.read",
+        "site.access.read"
+      ],
+      "identityRef": "connected-app:sites / leatfield@gmail.com / owner",
+      "credentialRef": "connected-app:sites",
+      "discovery": "Discover native Sites get_site and read exact Salon project appgprj_6ac3bb5b197081919d34810fd6ff9ce0 before relying on metadata.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-07T09:55:17.267Z",
+        "source": "Fresh get_site for Salon confirmed active project, owner role, latest version 0, null live URL, sole-owner custom access revision 1 and no editors/groups/external visitors. Product SALON-WVD-002 analysis/evidence at ed0e9c16cdf48abb095a91bdc19b4f088230eb9f records the limits. This is metadata/access-policy evidence only; no source credential/helper, publish, database/object or billing probe was attempted."
+      },
+      "limits": [
+        "Controller read only; no CI/runtime/service identity inferred.",
+        "No commercial target, customer identity, physical DB/R2 mapping, restore or cost proof.",
+        "Sites financial-execution restrictions remain; no payment flow, audience edit or new spending.",
+        "Existing controller-sites failure concerns Wedding source checkout and retains its original timestamp."
       ]
     }
   ]

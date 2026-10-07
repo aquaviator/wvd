@@ -1493,3 +1493,20 @@ in WVD-CONTROLLER-CONTINUATION.md. No release, audience, send or spend changed.
 ## 7 October 2026 — Client Onboarding + Client Portal v1 live acceptance
 
 PR #4 deployed as wvd-service-00006-jfj. Owner invitation, exact-account Google sign-in, client review/approval/feedback/support, owner readback/reply and active-session denial after project-grant removal passed live. Synthetic records are labelled and retained with zero test-client project grants. Public Site version 8 now exposes Client Portal after these checks. See WVD-CLIENT-ONBOARDING-V1.md and its evidence for release identities, CI, live receipts and remaining limits. Direct authenticated live cross-project HTTP probes were not executed; automated isolation tests passed. Final receipts/public source mirror await PR #5 merge approval.
+
+
+## Salon target and identity analysis — 7 October 2026
+
+Salon `ed0e9c16cdf48abb095a91bdc19b4f088230eb9f` records SALON-WVD-002's source-bound target comparison,
+identity/migration invariants and cost/access gaps. Native fictional development
+is preserved; Google/Firebase reuse is the first candidate to investigate,
+not a selected commercial target. Six handoff files compared/read back exactly;
+JSON/reference/unchanged-gate checks passed. No application tests repeated.
+Salon Sites metadata shows owner-private version 0, no live URL; no deployment.
+
+SALON-WVD-002 remains open for product-scoped resource/identity/cost evidence and
+distinct review. SALON-WVD-001 acceptance hold and downstream gates are unchanged;
+SALON-WVD-003 remains independently actionable. Both Drive receipts are verified.
+See the latest controller continuation for exact evidence and next work.
+The newer WVD client portal work at c8e6178 and Wedding candidate 5f859c3 are preserved.
+No founder input, live send, payment, release or additional spending is required.

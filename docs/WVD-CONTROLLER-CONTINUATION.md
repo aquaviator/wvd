@@ -848,3 +848,61 @@ GitHub and Drive only; the earlier Sites failure timestamp is preserved. No foun
 input, live send, real data, financial execution, public audience, release or
 additional spending was required. Continue remaining authorised native work or
 supported Sites recovery when new capability evidence is available.
+
+
+## Salon target and identity analysis — 7 October 2026
+
+SALON-WVD-002's bounded analysis is recorded at product commit
+`ed0e9c16cdf48abb095a91bdc19b4f088230eb9f` on `import/salon-foundation`, draft PR #1.
+Task: `handoff/wvd/tasks/SALON-WVD-002.json`; analysis and source-bound evidence:
+`handoff/wvd/results/SALON-WVD-002/target-identity-analysis.md` and `evidence.json`.
+Status is **ANALYSIS_RECORDED_TARGET_UNSELECTED**, independent review NOT_RUN.
+This advances the independently authorised target-analysis item without closing it.
+
+The analysis compares existing Sites, existing Google/Firebase reuse and a direct
+native Worker target across actual permissions, identity, jobs, data/assets,
+domains and cost. Preserve native Vinext/React/Worker/D1/R2 fictional development.
+Investigate existing Google/Firebase first under WVD engineering direction, but
+WVD workload grants, resource IDs and client roles are not Salon permissions.
+Its Node identity/invitation code is a reuse candidate, not a Worker adapter.
+Salon actor migration requires verified issuer/subject links, never email-only
+merges. Any persistence change must prove the original atomic booking/claim/
+audit behavior and restore invariants. No migration or commercial target selected.
+
+Fresh Salon Sites metadata confirms active owner-only custom access revision 1,
+version 0 and no live URL. It does not prove runtime resources, commercial identity,
+service jobs or billing. No source helper was retried or credential stored.
+The existing Wedding source-helper failure retains its historical timestamp.
+WVD's newer client portal deployment/public Site v8 at c8e6178 was read and preserved;
+its separate successful workflow does not prove this runtime's Salon/Wedding source
+recovery. Do not repeat owner setup or live client/confirmation tests from stale
+registry observations. Current WVD client release evidence is in
+WVD-CLIENT-ONBOARDING-V1.md, not the older service-owner-null observation.
+
+Commercial and all-in cost signals remain UNKNOWN. £5/month is the shared total
+additional allowance. Provider minimum prices and free tiers are not a budget fit.
+No new subscription, provider account, schema, application code, payment, live send,
+customer data, audience, deployment or release change occurred.
+
+Before work, WVD c8e6178 had successful push 37600948334 and PR 37600954477;
+PR container 37600954472 skipped. Both product heads, PR ownership, Drive
+modifications and queue were refreshed with no competing product change.
+The expected-head non-forced Salon push compared exactly six handoff files and all
+six read back exactly. JSON, twelve pinned source references, task/output references,
+the ten-item overlay and unchanged other-task/phase/verification/release gates
+passed. No Salon Actions run exists; absence is not PASS. Builds were not repeated
+for this documentation-only slice. Original contracts and all unrun scenarios remain.
+
+Salon START HERE and its portfolio receipt were revision-guarded and exact-text
+verified, modified 2026-10-07T09:53:59.274Z and 2026-10-07T09:53:59.601Z respectively.
+Current access observations are in the registry and Salon access-evidence overlay;
+the original historical evidence remains intact. No duplicate worker dispatch.
+
+Next: verify Salon-scoped target/resource/identity and billing evidence through
+existing connections, prepare a concrete configuration/cost proposal, and obtain
+distinct exact-output review before target selection. SALON-WVD-003 research remains
+independently actionable. SALON-WVD-001 remains held for full source recovery and
+distinct review; downstream dependencies remain blocked. Wedding is unchanged at
+5f859c3157393942241abbec63191878b980e857, undeployed export/request-limit slices and
+all fourteen package/full scenario gates still open. No founder input is needed
+for the remaining independent work.
