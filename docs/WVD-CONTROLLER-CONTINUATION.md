@@ -906,3 +906,58 @@ distinct review; downstream dependencies remain blocked. Wedding is unchanged at
 5f859c3157393942241abbec63191878b980e857, undeployed export/request-limit slices and
 all fourteen package/full scenario gates still open. No founder input is needed
 for the remaining independent work.
+
+
+## Wedding selected-row export change summary — 7 October 2026
+
+Product candidate `597e6a3c4d3169e234d32a16caed0173357c5ce6` is on
+`development/undecided-date-onboarding`, draft PR #1, pushed non-forced with
+an expected-head guard. Fresh WVD 8889a268 includes branded-workspace MVP PR #6:
+push 37608563800 and PR 37608569118 passed all four jobs; container 37608563824
+and Google access 37608563844 succeeded, PR container skipped. Preserve that
+controller's work and its current WVD-BRANDED-WORKSPACES-MVP handoff. Product
+heads/ownership and Drive modifications were refreshed; no competing product
+change or named assignee appeared. AI discovery already inherits standard 1.5.0;
+no duplicate planning update or public exposure was needed.
+
+WED-WP-007 / WED-REQ-023/034 now has creator-scoped read-only selected-row changes.
+New reviewed POST receipts preserve a versioned comparison basis of internal
+invitation IDs and selected formula-safe CSV cell representations. Native
+GET /api/export/changes reports added/removed/changed counts, affected selected
+fields and surviving-row order differences. It rechecks membership and grace,
+returns no guest values or row IDs, and performs no write. Missing events are
+explicit; unselected data does not affect the summary. Reverting rows clears
+the delta. Row identity comparison is distinct from exact CSV-output freshness:
+different identities can have identical exported cell values. It is not history
+or full menu-impact review. Older receipts return COMPARISON_UNAVAILABLE while
+their existing CSV replay/status remain intact.
+
+Eighteen new production-route/SQLite checks and all 44 existing export regressions,
+TypeScript and all five production build stages passed on Node v24.19.0.
+Historical regression receipt bytes were restored. Task:
+handoff/WED-WP-007-EXPORT-CHANGES.md; hash-bound evidence:
+evidence/continuation/export-changes-results.json. Eight changed files compared
+and read back exactly. No Wedding Actions run exists; this is creator verification
+with synthetic identity/D1 adapters, not hosted or distinct QA. All 14 package
+gates and 32 full scenarios remain open.
+
+199 recovered source blobs matched the pinned GitHub base before edits. Four
+binary images remain unmaterialised locally; generated tsbuildinfo is excluded.
+Original binaries, schema, dependencies and contracts are preserved remotely.
+**Not deployed:** no Sites action or unsupported recovery retry occurred. Last
+verified owner-private version 6/source ed03a2e remains the live reference.
+Recover complete supported source, reconcile the current export helper/routes
+and earlier server/media request limits, then build/private-publish the exact
+candidate. Never deploy this incomplete text-only recovery directory.
+
+Wedding Drive START HERE was revision-guarded and exact-text verified; modified
+2026-10-07T11:01:01.164Z. Registry refresh covers GitHub/Drive only,
+preserving the earlier Sites observations and their dates. Salon remains ed0e9c1
+with SALON-WVD-001 held and SALON-WVD-002 target unselected. Its independent
+SALON-WVD-003 research item remains available. No founder input is needed.
+
+Next native/frontend work remains reviewed export UI, summary/detail presentation,
+full menu review, bounded jobs/object expiry/revocation and supplier capabilities
+within existing authority. Sites owns frontend integration after supported
+recovery. Hosted and independent review remain required. No live send, real-data
+use, financial execution, audience change, commercial release or additional spend.

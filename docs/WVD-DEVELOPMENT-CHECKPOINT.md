@@ -1510,3 +1510,19 @@ SALON-WVD-003 remains independently actionable. Both Drive receipts are verified
 See the latest controller continuation for exact evidence and next work.
 The newer WVD client portal work at c8e6178 and Wedding candidate 5f859c3 are preserved.
 No founder input, live send, payment, release or additional spending is required.
+
+
+## Wedding export change summary — 7 October 2026
+
+Wedding `597e6a3c4d3169e234d32a16caed0173357c5ce6` adds a creator-scoped, read-only summary
+of added/removed/changed selected invitation rows and order differences.
+New reviewed receipts preserve the comparison basis; older receipts explicitly
+lack it and retain their existing replay/status. Eighteen new route/SQLite checks,
+all 44 export regressions, TypeScript and build passed; eight files read back exactly.
+
+GitHub-only, not deployed. Original gates, contracts and binary blobs are preserved;
+hosted/distinct acceptance and all full scenarios remain open. Full supported Sites
+recovery precedes publication and frontend integration. Drive receipt modified
+2026-10-07T11:01:01.164Z; exact task/evidence/next actions are in the
+latest controller continuation. WVD branded-workspace work at 8889a268 and Salon
+ed0e9c1 are preserved. No input, live send, audience change or spending required.
