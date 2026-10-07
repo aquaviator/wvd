@@ -762,3 +762,46 @@ planning update was made and private product routes were not exposed.
 All fourteen Wedding package gates and 32 full scenarios remain open. Continue
 the remaining native backlog while recovery is blocked. No live send, real-data
 use, financial flow, public audience, release or additional spending occurred.
+
+## Wedding reviewed export retries — 7 October 2026
+
+Product candidate `a119c5c551346c0cd7cffd1fc9c50f8ba3c2c5f0` adds reviewed native POST exports
+under WED-WP-007 / WED-REQ-034 and the snapshot/idempotency portion of WED-API-026.
+It is on `development/undecided-date-onboarding`, draft PR #1, unreleased.
+Fresh ownership/heads and Drive modifications were unchanged before work.
+WVD source 6161f32 passed push 37583786530 and PR 37583790518; no CI fix was needed.
+
+Reused existing native origin/body limits, membership/grace checks, CSV selection,
+escaping, conditional audit commits and bounded operation receipts. POST requires
+explicit fields, event, purpose, reviewed revision and an Idempotency-Key.
+Same-request retries return the committed CSV/time/revision, including after source
+edits; changed payloads or stale new requests fail. Eight simultaneous identical
+requests produced one winning audit/receipt in the local adapter test. Membership
+and grace are rechecked for retries; keys are hashed/namespaced. Existing 1 MB /
+5,000-operation caps apply. Legacy GET stays unchanged in capability and is not
+claimed to offer review/retry guarantees; Sites frontend integration is pending.
+
+Fifteen new route/SQLite checks and all 14 existing CSV regressions passed, plus
+TypeScript and production build on Node v24.19.0. Product task:
+`handoff/WED-WP-007-REVIEWED-EXPORT.md`; hash-bound new evidence:
+`evidence/continuation/export-retries-results.json`. Original GET evidence was
+preserved after its regression run. Seven changed files were compared and read
+back exactly after the expected-head guarded, non-forced push. No product Actions
+runs exist for this source; local creator checks are not hosted or independent QA.
+Original contracts, lockfile, schema and four unmaterialised binary blobs remain
+unchanged remotely. Generated tsbuildinfo was excluded from the push.
+
+**Not deployed:** no unsupported recovery attempt or Sites change occurred.
+Last verified private version 6/source ed03a2e remains the live reference.
+Recover full supported source, reconcile current export helper/route plus earlier
+server/media request limits, then build/private-publish and verify exact output.
+Next native work includes UI review/retry integration through Sites, staleness
+presentation and separately specified job/object expiry/revocation. No retention
+duration was invented. All fourteen package gates and 32 full scenarios remain open.
+
+Wedding Drive receipt was revision-guarded and exact-text verified; modified
+2026-10-07T07:36:03.862Z. Salon remains 722fba5 with its original acceptance hold;
+its target/research work remains independent. Current access evidence records only
+observed GitHub/Drive operations, preserving the earlier Sites failure timestamp.
+No founder input, live sends, real data, financial operation, public audience,
+product release or additional spending was needed.

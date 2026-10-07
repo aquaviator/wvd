@@ -1461,3 +1461,19 @@ full Sites source before reconciling both slices; preserve owner-private version
 in the latest controller continuation and product WED-WP-007-EXPORT-FIELDS task.
 Wedding Drive receipt and current access evidence are synchronised. Salon remains
 on 722fba5 with its original hold; no founder action is needed for independent work.
+
+## Wedding reviewed export snapshots — 7 October 2026
+
+Wedding development candidate `a119c5c551346c0cd7cffd1fc9c50f8ba3c2c5f0` adds a reviewed
+POST export adapter: exact source revision, explicit columns and retry key;
+one persisted safe CSV/audit result for identical retries. Fifteen new route/SQLite
+checks, 14 existing CSV regressions, TypeScript and build passed. Seven changed
+files read back exactly; Drive receipt and access evidence are current.
+
+Still **not deployed**. Legacy UI uses GET and does not yet have these guarantees.
+Recover full Sites source and reconcile both export and request-reader slices
+before private publication. Hosted/distinct review, full acceptance, frontend
+integration and job/object lifecycle remain open. See the latest controller
+continuation and product WED-WP-007-REVIEWED-EXPORT task for exact evidence.
+Salon's baseline hold is unchanged. No new founder input or spending is required
+for remaining independent authorised work.
