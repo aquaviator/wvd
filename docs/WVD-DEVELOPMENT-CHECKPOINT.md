@@ -1477,3 +1477,15 @@ integration and job/object lifecycle remain open. See the latest controller
 continuation and product WED-WP-007-REVIEWED-EXPORT task for exact evidence.
 Salon's baseline hold is unchanged. No new founder input or spending is required
 for remaining independent authorised work.
+
+## Wedding export freshness status — 7 October 2026
+
+Wedding candidate `5f859c3157393942241abbec63191878b980e857` adds authenticated read-only status
+for the creator's reviewed exports, with stable retry IDs and selected-output
+CURRENT/STALE detection. Fifteen new checks and all 29 existing export regressions,
+TypeScript and build PASS; exact seven-file readback passed. Task/evidence are in
+handoff/WED-WP-007-EXPORT-STATUS.md and evidence/continuation/export-status-results.json.
+GitHub-only, not deployed; legacy frontend unchanged. Full Sites recovery, frontend
+integration, hosted/distinct review, object lifecycle and all complete acceptance
+remain open. Drive modified 2026-10-07T08:45:34.167Z. Details and next work are
+in WVD-CONTROLLER-CONTINUATION.md. No release, audience, send or spend changed.

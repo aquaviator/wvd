@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-07T07:37:17.000Z",
+  "updatedAt": "2026-10-07T08:46:38.650Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-07T07:37:17.000Z",
-        "source": "Fresh WVD head 6161f32dedaa6bcac446da9e9a1e0cec29dc1b56 had successful validation 37583786530 (push) and 37583790518 (PR), container 37583790520 skipped. Wedding draft PR #1 was unassigned at 7fd63f6; candidate a119c5c551346c0cd7cffd1fc9c50f8ba3c2c5f0 was pushed non-forced with expected-head guard to development/undecided-date-onboarding. Seven-file compare/readback passed. Fifteen local reviewed-export checks plus 14 existing CSV regressions, TypeScript and build passed. No Wedding Actions runs exist for this candidate; hosted/distinct verification remains unrun. Salon draft remains 722fba535b79d905477e0f07202a28f9c94c1802. No merge, deployment or release."
+        "at": "2026-10-07T08:46:38.650Z",
+        "source": "Fresh WVD 4e7c184 had successful push 37588466245 and PR 37588472606, all four jobs; container PR 37588472720 skipped. Wedding draft PR #1 unassigned at a119c5c; candidate 5f859c3157393942241abbec63191878b980e857 pushed non-forced with expected-head guard, seven-file compare/readback exact. Fifteen local export-status checks plus 29 export regressions, TypeScript and build passed. No product Actions run, hosted or independent verification. Salon draft remains 722fba535b79d905477e0f07202a28f9c94c1802. No merge, deployment or release."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-07T07:37:17.000Z",
-        "source": "Current profile confirmed admin@wearvalleydigital.com. WVD/Salon/Wedding direct-child changed-record scan since 06:50 UTC returned no changes before work. Metadata matched Salon 2026-10-05T18:55:11.206Z, Wedding 2026-10-07T06:49:41.849Z and queue 2026-10-05T17:02:00.977Z. Wedding full trusted read had one tab, no protected controls, existing date/rich links preserved. Revision-guarded append recorded reviewed-export candidate a119c5c551346c0cd7cffd1fc9c50f8ba3c2c5f0 and explicit undeployed/legacy-UI boundary; exact appended text read back. New modification 2026-10-07T07:36:03.862Z. No sharing, worker dispatch or person-directed message."
+        "at": "2026-10-07T08:46:38.650Z",
+        "source": "Profile admin@wearvalleydigital.com confirmed. WVD/Salon/Wedding direct-child changed scan since 07:37:17 UTC returned none before work. Salon entrypoint modified 2026-10-05T18:55:11.206Z, Wedding before 2026-10-07T07:36:03.862Z, queue 2026-10-05T17:02:00.977Z. Full trusted Wedding read: one tab, no protected controls, existing date/rich links preserved. Revision-guarded candidate 5f859c3157393942241abbec63191878b980e857 append and exact-text readback passed, new modification 2026-10-07T08:45:34.167Z. No sharing, dispatch or person-directed message."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",

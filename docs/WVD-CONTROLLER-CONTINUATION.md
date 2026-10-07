@@ -805,3 +805,46 @@ its target/research work remains independent. Current access evidence records on
 observed GitHub/Drive operations, preserving the earlier Sites failure timestamp.
 No founder input, live sends, real data, financial operation, public audience,
 product release or additional spending was needed.
+
+## Wedding selected-output export status — 7 October 2026
+
+Product candidate `5f859c3157393942241abbec63191878b980e857` is pushed non-forced with an
+expected-head guard to development/undecided-date-onboarding, draft PR #1.
+Fresh WVD head 4e7c184 passed push 37588466245 and PR 37588472606, all four jobs;
+container PR 37588472720 was skipped. Product heads/ownership and Drive changed
+records were checked before work; no competing update or assigned worker appeared.
+AI discovery is already inherited via standard 1.5.0; private products stay private.
+
+WED-WP-007 / WED-REQ-023/034 now has creator-scoped read-only export status.
+New reviewed POST receipts expose a stable opaque X-Export-Id. Native status GET
+rechecks membership/grace and returns metadata with CURRENT/STALE for selected
+output. It compares the current projection to the stored CSV using original
+revision/time, so unrelated edits and the export audit do not make it stale.
+Missing events are stale; invalid guest data fails closed. A reverted identical
+output is current, not proof of no intervening changes. No CSV/guest rows are
+returned by status, and reads never mutate state. Old receipts and legacy GET
+continue without invented IDs. The existing UI still uses legacy GET.
+
+Fifteen new production-route/SQLite checks plus 15 retry and 14 GET regressions,
+TypeScript and production build PASS on Node v24.19.0. Historical regression
+receipt bytes were restored after execution. Exact seven-file compare/readback
+passed. Task: handoff/WED-WP-007-EXPORT-STATUS.md; hash-bound new evidence:
+evidence/continuation/export-status-results.json. No Wedding Actions run exists
+for this candidate; local creator checks are not hosted or independent QA.
+Original contracts, schema, dependency locks and binary blobs are unchanged.
+
+Not deployed. No unsupported Sites recovery retry, source push, publish or audience
+change was attempted. Last verified owner-private version 6/source ed03a2e is the
+live reference. Full supported recovery must reconcile current export routes/helper
+and earlier server/media limits before exact-source build and private publication.
+Incomplete text recovery must not deploy. Frontend review/retry/status, detailed
+menu/row deltas, object jobs/expiry/revocation, supplier capabilities and independent
+review remain open. All fourteen package gates and 32 full scenarios are unverified.
+
+Wedding Drive receipt was revision-guarded and exact-text read back; modified
+2026-10-07T08:45:34.167Z. Salon remains 722fba5 with its acceptance hold;
+its target/research tasks remain independent. Current registry observations refresh
+GitHub and Drive only; the earlier Sites failure timestamp is preserved. No founder
+input, live send, real data, financial execution, public audience, release or
+additional spending was required. Continue remaining authorised native work or
+supported Sites recovery when new capability evidence is available.
