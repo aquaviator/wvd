@@ -6,7 +6,7 @@ import {PortalProof} from '../domain.mjs';
 
 const workspaces={clientOrigin:'https://portal.example.test',adminOrigin:'https://admin.example.test',websiteOrigin:'https://www.example.test'};
 test('branded hosts preserve role isolation, explicit origins and client project boundaries',async t=>{
-  const portal=new PortalProof({identities:[{id:'owner',active:true,wvdAdmin:true},{id:'client',active:true,wvdAdmin:false}],projects:[{id:'a',businessId:'a'},{id:'b',businessId:'b'}],memberships:[{actorId:'client',businessId:'a',role:'Owner',active:true,projectIds:['a']}],milestones:[]});
+  const portal=new PortalProof({identities:[{id:'owner',active:true,wvdAdmin:true},{id:'client',active:true,wvdAdmin:false}],projects:[{id:'a',businessId:'a'},{id:'b',businessId:'b'}],memberships:[{actorId:'client',businessId:'a',role:'Owner',active:true,projectIds:['a']}],milestones:[]},()=> '2026-10-07T10:00:00.000Z');
   const owner=async raw=>raw==='owner'?{actorId:'owner'}:null;
   const session=async raw=>raw==='client'?{actorId:'client',liveClient:true}:owner(raw);
   const server=createLivePortalApplication({portal,resolveOwnerSession:owner,resolveSession:session,config:{...liveConfig().portal,owner:{uid:'owner',email:'owner@example.test'},workspaces},browserBundle:Buffer.from('export {};')});
@@ -22,6 +22,12 @@ test('branded hosts preserve role isolation, explicit origins and client project
   assert.equal((await get(client,'/api/portal/admin-overview','client')).status,403);
   assert.equal((await get(client,'/api/admin/enquiries','client')).status,403);
   assert.equal((await get(client,'/api/invitations/create','client')).status,403);
+  const ticket={projectId:'a',type:'question',subject:'Synthetic domain test',body:'Scoped support write',operationId:'domain-test'};
+  const post=(host,origin,body)=>fetch(base+'/api/portal/ticket',{method:'POST',headers:{'X-Forwarded-Host':host,Origin:origin,Authorization:'Bearer client','Content-Type':'application/json'},body:JSON.stringify(body)});
+  assert.equal((await post(client,workspaces.clientOrigin,ticket)).status,200);
+  assert.equal((await post(client,workspaces.clientOrigin,{...ticket,projectId:'b'})).status,403);
+  assert.equal((await post(client,workspaces.adminOrigin,ticket)).status,403);
+  assert.equal((await post(admin,workspaces.adminOrigin,ticket)).status,401);
   assert.equal((await get(admin,'/api/portal/projects','owner',workspaces.clientOrigin)).status,403);
   assert.equal((await get(client,'/api/portal/projects','client',workspaces.adminOrigin)).status,403);
   for(const [host,kind]of [[admin,'admin'],[client,'client']]){
