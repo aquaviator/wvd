@@ -722,3 +722,43 @@ only the two server changes from this exact candidate, then build/private-publis
 and verify hosted limits. Continue an independent native backlog slice meanwhile.
 No new subscription, spend, live send, customer data, payment flow, schema,
 dependency, public audience, PR merge or commercial release was introduced.
+
+## Wedding scoped export columns — 7 October 2026
+
+Completed WED-WP-007 / WED-REQ-034's bounded native export-selection slice.
+GitHub candidate `7fd63f6046bc25977ae335438182716c55a691be` is on Wedding's
+`development/undecided-date-onboarding`, draft PR #1. Exact-head guarded push,
+seven-file compare and exact readback passed. Product task and SHA-256-bound
+evidence: `handoff/WED-WP-007-EXPORT-FIELDS.md` and
+`evidence/continuation/export-fields-results.json`. Existing branch ownership,
+Drive modifications and WVD CI were checked first; no competing changes observed.
+
+Reused the authenticated synchronous CSV route, formula protection and conditional
+audit commit. Optional allowlisted columns preserve caller order and reject
+unknown, duplicate, empty or repeated selections. Existing UI requests retain
+the five original columns. Snapshot revision/time accompany rows and response
+headers; audit records matching metadata, validated purpose and authenticated
+actor. Wrong-owner, expired-grace and conflicting writes cannot deliver a CSV.
+No contact, grant, household, sensitive or unrelated-event data is selectable.
+
+Fourteen local production-route/SQLite-adapter checks, TypeScript and production
+build passed on Node v24.19.0. Platform identity and D1 are adapters; browser,
+hosted enforcement and distinct verification remain NOT_RUN. No existing
+contracts, schemas, locks or binary assets changed. No full acceptance is closed.
+This is API support only: Sites frontend field-selection controls, durable jobs,
+stale-export presentation and protected object lifecycle remain outstanding.
+
+**Not deployed.** Supported Sites recovery was not retried without new capability
+evidence. Last verified owner-private version 6/source ed03a2e remains the live
+reference; this run made no Sites changes. Full source recovery must reconcile
+this export helper/route plus the previous 2318b6a server/media request-limit
+changes, then build/private-publish and verify the exact output. Never deploy the
+incomplete text-only recovery checkout. Salon's baseline hold remains unchanged.
+
+Wedding Drive receipt was appended with a revision guard and read back; modified
+2026-10-07T06:49:41.849Z. No duplicate dispatch or user input is needed.
+AI discovery inheritance was already implemented in standard 1.5.0; no duplicate
+planning update was made and private product routes were not exposed.
+All fourteen Wedding package gates and 32 full scenarios remain open. Continue
+the remaining native backlog while recovery is blocked. No live send, real-data
+use, financial flow, public audience, release or additional spending occurred.

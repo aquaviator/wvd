@@ -1445,3 +1445,19 @@ Owner-private version 6/source ed03a2e remains live. Product handoff, test evide
 Drive entrypoint and access registry now state the exact distinction and recovery
 steps. Browser, hosted and independent verification remain unrun; no package or
 commercial gate closed. Read the latest controller continuation before resuming.
+
+## Wedding export-field selection — 7 October 2026
+
+Wedding candidate `7fd63f6046bc25977ae335438182716c55a691be` adds optional
+allowlisted CSV columns and consistent actor/purpose/revision/time audit metadata.
+Fourteen focused production-route/SQLite checks, TypeScript and build passed;
+seven files read back exactly after the guarded development push.
+The existing frontend retains its legacy columns. Hosted/distinct verification,
+durable jobs and all full acceptance gates remain open.
+
+This and the preceding request-reader fix are still **not deployed**. Recover
+full Sites source before reconciling both slices; preserve owner-private version
+6/source ed03a2e and original binaries. Detailed source/evidence/next actions are
+in the latest controller continuation and product WED-WP-007-EXPORT-FIELDS task.
+Wedding Drive receipt and current access evidence are synchronised. Salon remains
+on 722fba5 with its original hold; no founder action is needed for independent work.
