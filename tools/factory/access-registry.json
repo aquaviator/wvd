@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-06T14:31:12.467Z",
+  "updatedAt": "2026-10-07T04:31:00.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-06T13:58:54.000Z",
-        "source": "Native GitHub connector read the actual branch and performed guarded non-forced development updates through 929342fcc7fe87a10e292a94544f3bd5130fb246. Changed file hashes were verified against remote trees. Runtime source bb53eef40280ae8a575e704baceca3a98093ab2a passed Google and container workflows. Final ordinary CI 37474782789/37474790790 passed all four jobs, including 94 public browser checks with the real hosting policy and eight Portal browser checks. Exact receipts and observed limits are in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md. No PR merge or repository administration change. Earlier product/controller receipts remain in Git history."
+        "at": "2026-10-07T04:31:00.000Z",
+        "source": "Fresh connector reads: WVD development/shared-factory-bootstrap e82753a43c5b39253d17a2920784be4fa10b220e, Salon draft PR #1 722fba535b79d905477e0f07202a28f9c94c1802, Wedding draft PR #1 449b6c259406d2982ad815525c0f15032ccc49b6. WVD current-head validate 37481763913/37481756529, container 37481756443 and Google 37481756419 succeeded; PR container skipped. Recovered interrupted Wedding handoff-only commit 32c44b41300ce7582d149876208e280ed103bf80, compared its sole seven-line addition and advanced the authorised development branch using expected-head non-forced update. No application change, merge or release. Detailed reconciliation in docs/WVD-CONTROLLER-CONTINUATION.md; earlier WVD runtime/frontend receipts retained in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md and Git history."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -59,8 +59,8 @@
       "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-06T13:58:54.000Z",
-        "source": "Native owner access to WVD appgprj_6ac361a8bfd48191b3bde453565cf2ab was refreshed. Site is active, public, with current live URL https://wearvalleydigital.com/. Source 1de317f95f43d11675303f2d270e2dbaed73bc78 was built/pushed/packaged through the official source helper and saved as version 7 (appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_9054e2f3a32481918417774bf7a693ae); no deployment attempt. Saved archive SHA-256 c50421284ee20e28f4f3168234b8eb1df92997142dcbcf5c3ceb2476ca1e25c7. Public version 5 continues until the Google enquiry service and real owner access are ready. Prior Salon/Wedding evidence remains in Git history and their handoffs. Version 7 corrects the public CSP to permit only the actual Google service origin; version 6 was superseded before publication."
+        "at": "2026-10-07T04:31:00.000Z",
+        "source": "Fresh native Wedding get_site/get_site_version: project appgprj_6ac3c826d96481919bd4218973832eb2, current user owner, active version 6, custom owner-only access revision 1, no editors/groups/external visitors, current URL https://wvd-wedding-workspace.leatfield.chatgpt.site. Saved version appgprj_6ac3c826d96481919bd4218973832eb2~appgver_4048ea80a69c81919f2ac3157162a70e binds source ed03a2e76fd8d4faa57cb9aeb9006dadadb53e12 to deployment appgdep_6ac42f24f6488191a10f05e9d22d67f8 and archive SHA-256 7ecf54c9a6ba79fbe0790fc531a694970e74d60735b645990ea21d3583f3a35e. No source credential, edit or deployment requested. Archive materialisation was unavailable; no fresh binary/source equivalence or browser acceptance claimed. Prior WVD owner/public/version-7 saved-only evidence remains in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md and Git history; WVD hosting was not rechecked or changed in this reconciliation."
       },
       "limits": [
         "Sites frontend access does not imply access to Google administrator configuration or private Portal data.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-05T22:15:48.337Z",
-        "source": "Live get_profile admin@wearvalleydigital.com; WVD folder/product handoff/queue reads. Revision-guarded Salon continuation 1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4 and portfolio receipt 1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA updates read back; modified 18:55:11.206Z / 18:55:11.543Z. Targeted authorised receipt writes only, no sharing or provider grants. Fresh Salon/Wedding START HERE and queue modification evidence checked before work; no change. Existing connected account revised Wedding entrypoint 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs current-source paragraph and typography receipt under a revision guard; source, receipt and limits read back. No sharing or account-scope change; profile identity reused from prior verified evidence."
+        "at": "2026-10-07T04:31:00.000Z",
+        "source": "Fresh get_profile confirmed admin@wearvalleydigital.com. Read WVD root 13mG23q4WgFJJA8p_ZKS2YNi1iVc_rvuB and entrypoint/queue modification metadata: Salon 1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4 2026-10-05T18:55:11.206Z; Wedding 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs 2026-10-05T23:14:16.118Z; queue 16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5vOHTk 2026-10-05T17:02:00.977Z. These match the prior completed receipts. Wedding's saved-review receipt had already been revision-guarded and read back in the preceding task. No duplicate write, sharing change or assignment dispatched. Folder metadata does not prove unchanged descendants; future work must inspect its selected records."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",
@@ -275,7 +275,7 @@
       "limits": [
         "Automation still lacks the administrator setup permissions, as observed 2026-10-06T14:29:27.437Z. The founder diagnostic at 14:26:15Z returned every requested project and service permission for the founder session and proved the missing WVD quota header caused the Firebase denial. The corrected one-time helper is ready; founder execution is pending. See docs/evidence/wvd-service-admin-quota-diagnostic-2026-10-06.json.",
         "The actual Firebase owner account is absent; owner remains null. Real Google login, enquiry capture and inbox delivery are not yet verified.",
-        "The configured identity, data namespace, zero-to-one-instance bounds and total additional \u00a35/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
+        "The configured identity, data namespace, zero-to-one-instance bounds and total additional £5/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
         "Subsequent service updates require the last reviewed source/image/configuration receipt. Public transport does not grant access to private APIs."
       ]
     }

@@ -582,3 +582,56 @@ documentation changes do not alter the tested application or redeploy the Site.
 The service launch is ready for promotion. Booking, portals and product releases
 continue as separately authorised backlog under current ownership and acceptance
 rules; none is a prerequisite for this public service offering.
+
+## Wedding saved-review handoff reconciliation — 7 October 2026
+
+Recovered the interrupted handback for WED-WP-003 saved presentation review.
+The application/evidence commit is `449b6c259406d2982ad815525c0f15032ccc49b6`;
+its creator receipt is `handoff/WED-WP-003-SAVED-REVIEW.md` in WVD-Wedding.
+It records 20 route/SQLite/React-render checks (six new), TypeScript and final
+production build passing. Those checks were not rerun or relabelled as new evidence.
+
+Fresh native Sites reads confirm owner-private Wedding version 6, source
+`ed03a2e76fd8d4faa57cb9aeb9006dadadb53e12`, version ID
+`appgprj_6ac3c826d96481919bd4218973832eb2~appgver_4048ea80a69c81919f2ac3157162a70e`
+and associated deployment `appgdep_6ac42f24f6488191a10f05e9d22d67f8`.
+The previous terminal deployment receipt reported success at
+2026-10-05T23:13:50.329480Z. Current native metadata shows the same live URL,
+sole-owner access revision 1 and no editors, groups or external visitors.
+Archive metadata SHA-256 is
+`7ecf54c9a6ba79fbe0790fc531a694970e74d60735b645990ea21d3583f3a35e`;
+materialisation of that saved artifact was unavailable, so this reconciliation
+does not claim a new archive byte comparison, rebuild or hosted acceptance.
+
+GitHub's interrupted handoff commit `32c44b41300ce7582d149876208e280ed103bf80`
+was one commit ahead of the unchanged development head: exactly seven added lines
+in `handoff/WVD-CONTINUATION.md`, no application edits. It has now been pushed
+non-forced to `development/undecided-date-onboarding` with an expected-head guard.
+Draft PR #1 remains unreleased and unassigned. No Wedding Actions runs existed
+for application commit 449b6c; absence of CI is not a pass.
+
+Fresh Drive identity is admin@wearvalleydigital.com. The Salon/Wedding entrypoint
+and work-queue modification values match the preceding receipts:
+2026-10-05T18:55:11.206Z, 2026-10-05T23:14:16.118Z and
+2026-10-05T17:02:00.977Z respectively. The Wedding Drive saved-review receipt
+already exists; no duplicate write or worker dispatch was made. Salon draft PR #1
+remains at `722fba535b79d905477e0f07202a28f9c94c1802`; its baseline hold remains.
+
+WVD was refreshed at `e82753a43c5b39253d17a2920784be4fa10b220e`.
+Its current-head validate runs 37481763913 and 37481756529, container 37481756443
+and Google access 37481756419 succeeded; the PR container run was skipped.
+The newer WVD service/enquiry and exact owner-binding changes are preserved.
+The older prepared-release document's owner-null statements are historical where
+superseded by e82753a; do not ask the founder to repeat first sign-in without a
+fresh failed lookup. No live enquiry, notification, confirmation email or public
+cutover was attempted here. Further service work must reconcile that exact source,
+current runtime receipt and current owner access before action.
+
+WED-CONT-001 and WED-WP-003 remain partial. All fourteen package acceptance gates
+and 32 complete scenarios remain unverified. Next: distinct exact-candidate review
+and supported keyboard/mobile review of saved-versus-unsaved publication; when
+that capability is unavailable, freeze one remaining native editor gap from
+WED-WP-003 rather than rerunning unchanged checks. Salon's full binary checkout
+and distinct baseline verification remain separate; retry recovery only with new
+capability evidence. No commercial release, audience widening, real customer data,
+financial flow, schema change, provider grant, live send or spending was added.

@@ -1402,3 +1402,20 @@ all 32 full scenarios remain unrun. Salon binary source recovery remains blocked
 its existing Sites identity was checked without deployment. Full evidence, exact
 references and next tasks are in the latest controller continuation. WVD 6dc1dac CI
 passed in both push/PR runs. Neither product has commercial release approval.
+
+## 7 October 2026 — completed interrupted Wedding handback
+
+Finished the saved-review handoff that had been created but not attached to the
+Wedding development branch. Application/evidence remains `449b6c259406d2982ad815525c0f15032ccc49b6`;
+the seven-line handoff-only successor `32c44b41300ce7582d149876208e280ed103bf80`
+is now on `development/undecided-date-onboarding`. Fresh Sites metadata confirms
+the same owner-private version 6 and source `ed03a2e76fd8d4faa57cb9aeb9006dadadb53e12`.
+The existing Drive receipt is unchanged. No product deployment or repeated live test.
+
+Read the reconciliation in [controller continuation](WVD-CONTROLLER-CONTINUATION.md)
+for exact evidence and limits. The prior 20 creator checks, TypeScript and build
+remain source-bound historical results; browser/hosted/distinct acceptance is
+still open. WVD's newer service and owner-binding implementation at e82753a is
+preserved. Next work remains Wedding exact-candidate verification or a frozen
+remaining editor gap, plus Salon baseline recovery when a supported path is
+available. Both product drafts remain unreleased.
