@@ -79,7 +79,9 @@ def validate_receipt(receipt):
 def validate_configuration(config, origin):
     require(exact(config, ["authentication", "portal", "enquiries", "mail"]) and exact(config["authentication"], ["serviceAccount"]) and config["authentication"]["serviceAccount"] == SERVICE_ACCOUNT, "SERVICE_CONFIGURATION_DRIFT")
     portal, enquiry, mail = config["portal"], config["enquiries"], config["mail"]
-    require(exact(portal, ["origin", "firebase", "web", "owner", "maxConcurrentRequests"]) and portal["origin"] == origin and portal["owner"] is None and type(portal["maxConcurrentRequests"]) is int and portal["maxConcurrentRequests"] == 8, "INITIAL_OWNER_CONFIGURATION_REQUIRED")
+    require(exact(portal, ["origin", "firebase", "web", "owner", "maxConcurrentRequests"] + (["workspaces"] if "workspaces" in portal else [])) and portal["origin"] == origin and portal["owner"] is None and type(portal["maxConcurrentRequests"]) is int and portal["maxConcurrentRequests"] == 8, "INITIAL_OWNER_CONFIGURATION_REQUIRED")
+    if "workspaces" in portal:
+        require(portal["workspaces"] == {"clientOrigin": "https://portal.wearvalleydigital.com", "adminOrigin": "https://admin.wearvalleydigital.com", "websiteOrigin": "https://wearvalleydigital.com"}, "SERVICE_CONFIGURATION_DRIFT")
     require(portal["firebase"] == {"projectId": PROJECT, "productId": "wvd", "databaseId": "(default)", "mode": "live"}, "SERVICE_CONFIGURATION_DRIFT")
     web = portal["web"]
     require(exact(web, ["projectId", "apiKey", "authDomain", "appId"]) and web["projectId"] == PROJECT and web["authDomain"] == PROJECT + ".firebaseapp.com" and web["appId"] == "1:6616382131:web:59b4e6749ce6e6e96b8ec6" and isinstance(web["apiKey"], str) and re.fullmatch(r"AIza[A-Za-z0-9_-]{30,80}", web["apiKey"]), "SERVICE_CONFIGURATION_DRIFT")

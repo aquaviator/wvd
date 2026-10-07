@@ -10,14 +10,15 @@ export function ownerBinding(value) {
   return Object.freeze({...value});
 }
 export function livePortalConfiguration(value,env=process.env) {
-  if(!exact(value,['origin','firebase','web','owner','maxConcurrentRequests']))throw Error('INVALID_LIVE_CONFIGURATION');
+  if(!exact(value,['origin','firebase','web','owner','maxConcurrentRequests',...(value?.workspaces!==undefined?['workspaces']:[])]))throw Error('INVALID_LIVE_CONFIGURATION');
   if(!httpsOrigin(value.origin))throw Error('INVALID_LIVE_CONFIGURATION');
+  if(value.workspaces!==undefined&&(!exact(value.workspaces,['clientOrigin','adminOrigin','websiteOrigin'])||!Object.values(value.workspaces).every(httpsOrigin)||new Set(Object.values(value.workspaces)).size!==3||[value.workspaces.clientOrigin,value.workspaces.adminOrigin].includes(value.origin)))throw Error('INVALID_WORKSPACE_CONFIGURATION');
   const firebase=firebaseConfiguration(value.firebase,env);
   if(firebase.mode!=='live')throw Error('LIVE_FIREBASE_REQUIRED');
   const web=value.web;
   if(!exact(web,['projectId','apiKey','authDomain','appId'])||web.projectId!==firebase.projectId||web.authDomain!==`${firebase.projectId}.firebaseapp.com`||typeof web.apiKey!=='string'||!/^AIza[A-Za-z0-9_-]{30,80}$/.test(web.apiKey)||typeof web.appId!=='string'||!/^1:\d+:web:[A-Za-z0-9]+$/.test(web.appId))throw Error('INVALID_FIREBASE_WEB_CONFIGURATION');
   if(!Number.isSafeInteger(value.maxConcurrentRequests)||value.maxConcurrentRequests<1||value.maxConcurrentRequests>32)throw Error('INVALID_LIVE_CONFIGURATION');
-  return Object.freeze({origin:value.origin,firebase,web:Object.freeze({...web}),owner:ownerBinding(value.owner),maxConcurrentRequests:value.maxConcurrentRequests});
+  return Object.freeze({origin:value.origin,firebase,web:Object.freeze({...web}),owner:ownerBinding(value.owner),maxConcurrentRequests:value.maxConcurrentRequests,...(value.workspaces?{workspaces:Object.freeze({...value.workspaces})}:{})});
 }
 
 // Pure validation shared with deployment tooling. This accepts configuration

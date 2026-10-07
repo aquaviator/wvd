@@ -4,6 +4,11 @@
   },
   "portal": {
     "origin": "https://wearvalleydigital.com",
+    "workspaces": {
+      "clientOrigin": "https://portal.wearvalleydigital.com",
+      "adminOrigin": "https://admin.wearvalleydigital.com",
+      "websiteOrigin": "https://wearvalleydigital.com"
+    },
     "firebase": {
       "projectId": "wvd-development",
       "productId": "wvd",
