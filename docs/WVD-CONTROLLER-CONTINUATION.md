@@ -635,3 +635,24 @@ WED-WP-003 rather than rerunning unchanged checks. Salon's full binary checkout
 and distinct baseline verification remain separate; retry recovery only with new
 capability evidence. No commercial release, audience widening, real customer data,
 financial flow, schema change, provider grant, live send or spending was added.
+
+### CI repair discovered during reconciliation
+
+Coordination commit `c1ada887a4f2bb80fdaa4f5b691f84a6be43c2c8` passed quality,
+database and Windows jobs, but push 37571902193 and PR 37571904381 both failed
+the same real-emulator browser fixture at booking-ui.test.mjs:38.
+Four other emulator scenarios passed. The fixture selected 6 October while the
+browser's real date was 7 October: booking.js sets the date input minimum from
+the current date, so native form validation prevented availability submission.
+The 09:00 locator timeout was a symptom, not a reason to extend the timeout.
+
+The bounded repair reuses Playwright's fixed Date clock for all five synthetic
+browser contexts, set before navigation to the existing server fixture instant
+2026-10-04T12:00:00.000Z. Cancellation and management use that same constant.
+An explicit minimum-date assertion checks alignment. Timers continue normally;
+all original pending/reload, collision, reschedule, stale-device, link rotation,
+revocation and cancellation assertions remain. Only the emulator fixture changes;
+production date validation, scheduling, runtime and live-send behavior do not.
+Local node --check passed. The next exact-source ordinary and offline container
+runs must pass before treating this CI repair as verified; inspect the branch's
+new run results, not the failed c1ada887 runs above.
