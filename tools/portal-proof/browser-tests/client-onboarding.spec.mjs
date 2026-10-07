@@ -27,7 +27,8 @@ test('owner creates link; invited client sees only scoped sections and can submi
   await invite.getByLabel('Client Google account email').fill('client@example.test');await invite.getByRole('button',{name:'Create invitation',exact:true}).click();
   const link=await invite.getByLabel('Client invitation link').inputValue();
   await page.getByRole('button',{name:'Sign out'}).click();
-  await page.addInitScript(()=>{globalThis.syntheticIdentity='client';});await page.goto(link);
+  await page.addInitScript(()=>{globalThis.syntheticIdentity='client';});
+  await page.evaluate(()=>{globalThis.syntheticIdentity='client';});await page.goto(link);
   await expect(page).toHaveURL(origin+'/');await page.getByRole('button',{name:'Continue with Google'}).click();
   await expect(page.getByRole('heading',{name:'Your project workspace'})).toBeVisible();
   await expect(page.locator('#admin-overview')).toBeHidden();await expect(page.locator('body')).not.toContainText('Other client secret');
