@@ -186,7 +186,7 @@ test('HTTP verification proves private transport and application denial without 
     if(path==='/health'&&!options.headers['X-Serverless-Authorization'])return new Response('',{status:403});
     assert.equal(options.headers['X-Serverless-Authorization'],'Bearer '+idToken);
     if(path==='/health')return Response.json({status:'ok',mode:'live-portal',providerAccessChecked:false});
-    if(path==='/auth-config.json')return Response.json({mode:'firebase-live',firebase:bound.portal.web,ownerConfigured:false,enquiriesEnabled:true,invitationsEnabled:true});
+    if(path==='/auth-config.json')return Response.json({mode:'firebase-live',firebase:bound.portal.web,ownerConfigured:false,enquiriesEnabled:true,invitationsEnabled:true,...(bound.portal.workspaces?{workspace:{kind:"shared",...bound.portal.workspaces}}:{})});
     if(path==='/')return new Response('<main id="login">Continue with Google</main><script src="/app.js"></script>',{headers:{'Content-Type':'text/html','X-Robots-Tag':'noindex, nofollow'}});
     if(path==='/firebase-auth-sdk.js')return new Response('/* synthetic SDK */'+' '.repeat(1024),{headers:{'Content-Type':'text/javascript'}});
     assert.ok(['/api/portal/workspace-access','/api/admin/enquiries'].includes(path));

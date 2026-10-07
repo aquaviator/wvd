@@ -35,6 +35,7 @@ export function serviceConfiguration(value) {
   const checked=liveServiceConfiguration(value,{}),p=checked.portal,e=checked.enquiries,m=checked.mail;
   if(checked.authentication.serviceAccount!==serviceAccount||p.firebase.projectId!=='wvd-development'||p.firebase.productId!=='wvd'||p.firebase.databaseId!=='(default)'||p.web.appId!=='1:6616382131:web:59b4e6749ce6e6e96b8ec6'||p.maxConcurrentRequests!==8||p.owner!==null&&p.owner.email!=='admin@wearvalleydigital.com'||canonical([...e.allowedPublicOrigins].sort())!==canonical([initialOrigin,'https://www.wearvalleydigital.com'].sort())||e.admission.minuteLimit!==10||e.admission.dailyLimit!==50||e.maxConcurrentRequests!==2||e.retentionDays!==90||m!==null&&(m.subject!=='admin@wearvalleydigital.com'||m.senderEmail!=='admin@wearvalleydigital.com'||m.recipientEmail!=='hello@wearvalleydigital.com'||m.requestTimeoutMs!==10000))throw Error('SERVICE_CONFIGURATION_OUT_OF_SCOPE');
   if(p.origin!==initialOrigin)providerOrigin(p.origin);
+  if(p.workspaces&&canonical(p.workspaces)!==canonical({clientOrigin:'https://portal.wearvalleydigital.com',adminOrigin:'https://admin.wearvalleydigital.com',websiteOrigin:initialOrigin}))throw Error('SERVICE_CONFIGURATION_OUT_OF_SCOPE');
   if(Buffer.byteLength(canonical(checked))>16384)throw Error('CONFIGURATION_TOO_LARGE');
   return checked;
 }
@@ -214,7 +215,7 @@ export async function verifyServiceDeployment(receipt,token,idToken,{request=fet
   const health=found.public?anonymous:await get('/health',transport);
   if(health.status!==200||canonical(await readBoundedProviderJson(health,4096))!==canonical({status:'ok',mode:'live-portal',providerAccessChecked:false}))throw Error('HEALTH_RESPONSE_MISMATCH');
   const auth=await get('/auth-config.json',transport);
-  const expectedAuth={mode:'firebase-live',firebase:found.config.portal.web,ownerConfigured:found.config.portal.owner!==null,enquiriesEnabled:true,invitationsEnabled:true};
+  const expectedAuth={mode:'firebase-live',firebase:found.config.portal.web,ownerConfigured:found.config.portal.owner!==null,enquiriesEnabled:true,invitationsEnabled:true,...(found.config.portal.workspaces?{workspace:{kind:'shared',...found.config.portal.workspaces}}:{})};
   if(auth.status!==200||canonical(await readBoundedProviderJson(auth,16384))!==canonical(expectedAuth))throw Error('AUTH_CONFIGURATION_MISMATCH');
   const login=await get('/',transport);
   if(login.status!==200||!String(login.headers.get('Content-Type')).startsWith('text/html')||!String(login.headers.get('X-Robots-Tag')).includes('noindex'))throw Error('LOGIN_PAGE_MISMATCH');

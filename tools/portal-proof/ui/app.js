@@ -1,6 +1,7 @@
 import {renderClientWorkspace,clientInvitationControls} from './client-workspace.js';
 import {createAuthClient} from './auth-client.js';
 let authClient,invitationsEnabled=false,deliverablesEnabled=false,pendingMemberInvite=null;
+let workspaceConfig=null;
 let liveMode=false,ownerConfigured=false,enquiryInboxRenderer=null;
 const el=id=>document.getElementById(id);
 let sessionToken=null,revision=0,adminAccess=false,displayedProjectId=null;
@@ -60,7 +61,7 @@ async function administration(){
     const section=node('section','');section.append(node('h3',`Client: ${business.businessId}`));
     for(const item of business.projects){
       const card=node('article','');card.append(node('h4',item.projectId),node('p',`Stage: ${item.stage??'Awaiting update'}`),node('p',`Next step: ${item.nextStep??'Awaiting update'}`),node('p',`${item.awaitingReview} awaiting review · ${item.feedbackCount} feedback ${item.feedbackCount===1?'record':'records'} · ${item.ticketCount} support ${item.ticketCount===1?'ticket':'tickets'}`));
-      const open=node('button','Open project');open.type='button';open.addEventListener('click',()=>{el('projects').value=item.projectId;project().catch(error=>status(error.message));});card.append(open);if(liveMode&&invitationsEnabled)card.append(clientInvitationControls({businessId:business.businessId,projectId:item.projectId,api,status,isCurrent:()=>token===sessionToken&&card.isConnected}));section.append(card);
+      const open=node('button','Open project');open.type='button';open.addEventListener('click',()=>{el('projects').value=item.projectId;project().catch(error=>status(error.message));});card.append(open);if(liveMode&&invitationsEnabled)card.append(clientInvitationControls({businessId:business.businessId,projectId:item.projectId,clientOrigin:workspaceConfig?.clientOrigin,api,status,isCurrent:()=>token===sessionToken&&card.isConnected}));section.append(card);
     }
     const accounts=document.createElement('details');accounts.className='admin-accounts';accounts.append(node('summary','Client accounts'));
     const load=node('button','Load accounts');load.type='button';const list=node('div','');list.className='account-list';
@@ -131,7 +132,7 @@ async function project(){
       for(const [text,input]of [['Member email',email],['Invitation expiry (your local time)',expiry]]){const label=node('label',text);label.append(input);form.append(label);}
       form.append(node('p','The recipient must sign in with a verified Firebase account matching this email. This grants Member access to this project. No email is sent.'),node('button','Create Member invitation'));
       const resultBox=node('div','');resultBox.className='invitation-actions';form.addEventListener('submit',event=>{event.preventDefault();busy(form,async()=>{resultBox.replaceChildren();const result=await api('/api/invitations/create',{businessId:colleagues.businessId,email:email.value,projectIds:[id],expiresAt:new Date(expiry.value).toISOString(),operationId:crypto.randomUUID()});if(generation!==revision||!sessionToken||!details.isConnected)return;resultBox.append(node('p',`Invitation expires ${reviewTime(result.expiresAt)}.`));
-        if(result.token){const link=location.origin+'/#member-invite='+result.token;const copy=node('button','Copy invitation link');copy.type='button';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(link);status('Invitation link copied. Share it with the invited colleague.');}catch{status('Clipboard access is unavailable. Revoke this invitation and try again in a supported browser.');}});resultBox.append(copy);}
+        if(result.token){const link=(workspaceConfig?.clientOrigin??location.origin)+'/#member-invite='+result.token;const copy=node('button','Copy invitation link');copy.type='button';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(link);status('Invitation link copied. Share it with the invited colleague.');}catch{status('Clipboard access is unavailable. Revoke this invitation and try again in a supported browser.');}});resultBox.append(copy);}
         const revoke=node('button','Revoke this invitation');revoke.type='button';revoke.addEventListener('click',async()=>{revoke.disabled=true;try{await api('/api/invitations/revoke',{invitationId:result.invitationId});resultBox.replaceChildren(node('p','Invitation revoked.'));status('Invitation revoked.');}catch(error){status(error.message);revoke.disabled=false;}});resultBox.append(revoke);status('Member invitation created. Copy the link now; it is not retained after leaving this view.');
       });});details.append(form,resultBox);
       const load=node('button','Load your invitations'),historyBox=node('div','');load.type='button';historyBox.className='member-invitation-history';
@@ -226,7 +227,7 @@ function invitedRegistration(){
     }
 
 }
-el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();if(liveMode&&!ownerConfigured){await authClient.logout();signedOut();status('Google sign-in completed. Owner workspace access is awaiting activation.');return;}let projects;try{if(pendingMemberInvite){if(!invitationsEnabled)throw Error('Invitation acceptance is unavailable.');await api('/api/invitations/redeem',{token:pendingMemberInvite});pendingMemberInvite=null;el('firebase-registration')?.remove();}projects=await read('projects',{});}catch(error){signedOut();if(liveMode)await authClient.logout().catch(()=>{});throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':liveMode?'Signed in. No client projects have been created yet.':'No projects are assigned to your account.');await administration();await project();});});
+el('login').addEventListener('submit',event=>{event.preventDefault();busy(el('login'),async()=>{const input=Object.fromEntries(new FormData(el('login'))),data=await authClient.login(input);sessionToken=data.sessionToken;el('login').reset();if(liveMode&&!ownerConfigured){await authClient.logout();signedOut();status('Google sign-in completed. Owner workspace access is awaiting activation.');return;}let projects;try{if(pendingMemberInvite){if(!invitationsEnabled)throw Error('Invitation acceptance is unavailable.');await api('/api/invitations/redeem',{token:pendingMemberInvite});pendingMemberInvite=null;el('firebase-registration')?.remove();}projects=await read('projects',{});}catch(error){signedOut();if(liveMode)await authClient.logout().catch(()=>{});throw error;}el('projects').replaceChildren();for(const p of projects){const option=node('option',p.id);option.value=p.id;el('projects').append(option);}el('account').hidden=true;el('workspace').hidden=false;el('logout').hidden=false;status(projects.length?'Signed in.':'No projects are assigned to your account.');await administration();await project();});});
 el('redeem').addEventListener('submit',event=>{event.preventDefault();busy(el('redeem'),async()=>{await authClient.redeem(Object.fromEntries(new FormData(el('redeem'))));el('redeem').reset();el('invite-panel').open=false;status('Password set. You can now sign in.');});});
 el('logout').addEventListener('click',async()=>{
   // The local adapter must revoke its bearer session before that token is
@@ -246,7 +247,7 @@ if(location.hash.startsWith('#invite=')){const code=location.hash.slice(8);histo
 
 try {
   const config=await api('/auth-config.json',null,'GET');
-  const {invitationsEnabled:enabled,deliverablesEnabled:previews,...authConfig}=config;invitationsEnabled=enabled===true;deliverablesEnabled=previews===true;
+  const {invitationsEnabled:enabled,deliverablesEnabled:previews,workspace,...authConfig}=config;workspaceConfig=workspace??null;invitationsEnabled=enabled===true;deliverablesEnabled=previews===true;
   if(config.mode==='firebase-live'){
     const {createLiveAuthClient}=await import('./live-auth-client.js');
     authClient=await createLiveAuthClient(authConfig);liveMode=true;ownerConfigured=config.ownerConfigured;
@@ -257,6 +258,16 @@ try {
     el('account-introduction').textContent='Sign in with your invited Google account to view your projects. WVD owners use their authorised account.';
     el('account-access-note').textContent='Access is by invitation only. Your account can see only its assigned projects.';
     document.querySelector('.portal-label').textContent='Project portal';document.title='Wear Valley Digital — Project portal';
+    if(workspaceConfig){
+      const admin=workspaceConfig.kind==='admin';
+      document.querySelector('.portal-label').textContent=admin?'Owner workspace':'Client Portal';
+      document.title='Wear Valley Digital — '+(admin?'Owner workspace':'Client Portal');
+      el('account').querySelector('h1').textContent=admin?'Your WVD owner workspace':'Your client project';
+      el('account-introduction').textContent=admin?'Sign in with your authorised WVD owner account.':'Sign in with the Google account named in your project invitation.';
+      el('account-access-note').textContent=admin?'Owner access only. Client accounts cannot open this workspace.':'Your account can see only its assigned projects.';
+      if(admin){const link=node('a','Go to Client Portal');link.href=workspaceConfig.clientOrigin;el('account').append(link);}
+      if(workspaceConfig.kind==='shared'){const links=node('p','');for(const [label,url]of [['Client Portal',workspaceConfig.clientOrigin],['Owner workspace',workspaceConfig.adminOrigin]]){const a=node('a',label);a.href=url;links.append(a,document.createTextNode(' · '));}el('account').append(links);}
+    }
     if(!ownerConfigured)status('Owner access is being set up. Google sign-in can be completed, but private workspace access is not active yet.');
   }else authClient=createAuthClient(authConfig,{request:api});
   if(config.mode==='firebase-emulator'){

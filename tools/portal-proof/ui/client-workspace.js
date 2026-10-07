@@ -40,7 +40,7 @@ export function renderClientWorkspace({container,support,overview,api,reload,sta
   ([...nav.children].find(button=>button.textContent===container.dataset.clientSection)??nav.firstElementChild).click();
 }
 
-export function clientInvitationControls({businessId,projectId,api,status,isCurrent}) {
+export function clientInvitationControls({businessId,projectId,clientOrigin=location.origin,api,status,isCurrent}) {
   const box=node('details','');box.className='client-invitation';box.append(node('summary',`Invite client to ${projectId}`));
   const form=node('form',''),label=node('label','Client Google account email'),email=node('input','');email.type='email';email.required=true;email.maxLength=320;label.append(email);
   const button=node('button','Create invitation'),result=node('div','');
@@ -48,7 +48,7 @@ export function clientInvitationControls({businessId,projectId,api,status,isCurr
   form.addEventListener('submit',async event=>{event.preventDefault();button.disabled=true;result.replaceChildren();try{
     const invite=await api('/api/invitations/create',{businessId,projectIds:[projectId],email:email.value,expiresAt:new Date(Date.now()+7*24*60*60*1000-60000).toISOString(),operationId:crypto.randomUUID()});
     if(!isCurrent())return;
-    if(invite.token){const link=location.origin+'/#member-invite='+invite.token,field=node('input','');field.readOnly=true;field.value=link;field.setAttribute('aria-label','Client invitation link');const copy=node('button','Copy invitation link');copy.type='button';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(link);status('Invitation link copied.');}catch{field.select();status('Select and copy the invitation link.');}});result.append(field,copy);}
+    if(invite.token){const link=clientOrigin+'/#member-invite='+invite.token,field=node('input','');field.readOnly=true;field.value=link;field.setAttribute('aria-label','Client invitation link');const copy=node('button','Copy invitation link');copy.type='button';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(link);status('Invitation link copied.');}catch{field.select();status('Select and copy the invitation link.');}});result.append(field,copy);}
     result.append(node('p','Invitation created. Keep this link private; it is shown only here.'));
   }catch(error){if(isCurrent())status(error.message);}finally{button.disabled=false;}});
   const history=node('div',''),load=node('button','Review invitations');load.type='button';

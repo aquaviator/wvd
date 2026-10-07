@@ -22,6 +22,14 @@ export function createLivePortalApplication({portal,resolveOwnerSession,resolveS
   assets.set('/firebase-auth-sdk.js',['text/javascript; charset=utf-8',browserBundle]);
   const portalHandler=createPortalHandler({portal,resolveSession,allowedOrigin:checked.origin});
   const invitationHandler=invitations?createInvitationHandler({invitations,allowedOrigin:checked.origin}):null;
+  // Hostnames select a workspace, never an identity or an administration grant.
+  // Firebase Hosting preserves the public host in X-Forwarded-Host. Only exact
+  // configured hosts are recognised; all APIs still verify current Google proof.
+  const workspaces=new Map();
+  if(checked.workspaces)for(const [kind,origin]of [['client',checked.workspaces.clientOrigin],['admin',checked.workspaces.adminOrigin]]){
+    const scopedSession=kind==='admin'?resolveOwnerSession:async token=>{const session=await resolveSession(token);return session?.liveClient===true?session:null;};
+    workspaces.set(new URL(origin).host,{kind,origin,portal:createPortalHandler({portal,resolveSession:scopedSession,allowedOrigin:origin}),invitation:invitations?createInvitationHandler({invitations,allowedOrigin:origin}):null});
+  }
   const csp=`default-src 'none'; script-src 'self' https://apis.google.com; style-src 'self'; img-src 'self' data:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://${checked.web.authDomain}; frame-src https://${checked.web.authDomain}; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`;
   let active=0;
   const server=createServer({maxHeaderSize:16384},async(request,response)=>{
@@ -31,16 +39,25 @@ export function createLivePortalApplication({portal,resolveOwnerSession,resolveS
     try {
       if(typeof request.url!=='string'||request.url.length>4096||!request.url.startsWith('/')||request.url.startsWith('//'))return send(400,{error:'INVALID_REQUEST'});
       const url=new URL(request.url,'http://localhost');
+      const host=request.headers['x-forwarded-host']??request.headers.host;
+      const workspace=typeof host==='string'?workspaces.get(host.toLowerCase()):undefined;
+      const requestOrigin=workspace?.origin??checked.origin;
       if(url.pathname==='/health'&&!url.search&&request.method==='GET')return send(200,{status:'ok',mode:'live-portal',providerAccessChecked:false});
       if(url.pathname==='/robots.txt'&&!url.search&&request.method==='GET'){response.writeHead(200,{'Content-Type':'text/plain; charset=utf-8'});response.end('User-agent: *\nDisallow: /\n');return;}
       const privateApi=url.pathname.startsWith('/api/portal/')||url.pathname.startsWith('/api/admin/')||url.pathname.startsWith('/api/invitations/');
-      if(privateApi&&((request.headers.origin!==undefined&&request.headers.origin!==checked.origin)||request.headers['sec-fetch-site']==='cross-site'))return send(403,{error:'ORIGIN_DENIED'});
+      if(privateApi&&((request.headers.origin!==undefined&&request.headers.origin!==requestOrigin)||request.headers['sec-fetch-site']==='cross-site'))return send(403,{error:'ORIGIN_DENIED'});
+      if(workspace?.kind==='client'&&(url.pathname.startsWith('/api/admin/')||url.pathname.startsWith('/api/invitations/')&&url.pathname!=='/api/invitations/redeem'))return send(403,{error:'ACCESS_DENIED'});
       if(active>=checked.maxConcurrentRequests){response.setHeader('Retry-After','5');return send(503,{error:'SERVICE_UNAVAILABLE'});}
       active++;counted=true;
-      if(invitationHandler&&url.pathname.startsWith('/api/invitations/'))return await invitationHandler(request,response);
+      if(workspace?.kind==='admin'&&privateApi){
+        const bearer=/^Bearer ([^\s]{1,8192})$/.exec(request.headers.authorization??'');
+        if(!bearer||!await resolveOwnerSession(bearer[1]))return send(401,{error:'UNAUTHENTICATED'});
+        if(url.pathname==='/api/invitations/redeem')return send(403,{error:'ACCESS_DENIED'});
+      }
+      if(invitationHandler&&url.pathname.startsWith('/api/invitations/'))return await (workspace?.invitation??invitationHandler)(request,response);
       if(enquiryHandler&&enquiryRoute(url.pathname))return await enquiryHandler(request,response);
-      if(url.pathname.startsWith('/api/portal/'))return await portalHandler(request,response);
-      if(url.pathname==='/auth-config.json'&&!url.search&&request.method==='GET')return send(200,{mode:'firebase-live',firebase:checked.web,ownerConfigured:checked.owner!==null,enquiriesEnabled:enquiryHandler!==undefined,...(invitations?{invitationsEnabled:true}:{})});
+      if(url.pathname.startsWith('/api/portal/'))return await (workspace?.portal??portalHandler)(request,response);
+      if(url.pathname==='/auth-config.json'&&!url.search&&request.method==='GET')return send(200,{mode:'firebase-live',firebase:checked.web,ownerConfigured:checked.owner!==null,enquiriesEnabled:enquiryHandler!==undefined&&workspace?.kind!=='client',...(invitations?{invitationsEnabled:true}:{}),...(checked.workspaces?{workspace:{kind:workspace?.kind??'shared',...checked.workspaces}}:{})});
       if(assets.has(url.pathname)&&!url.search&&request.method==='GET'){
         const [type,body]=assets.get(url.pathname);response.writeHead(200,{'Content-Type':type});response.end(body);return;
       }
