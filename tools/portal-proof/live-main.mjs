@@ -8,6 +8,7 @@ import {createFirestoreEnquiryStore} from './enquiry-firestore.mjs';
 import {createEnquiryHandler,enquiryRoute} from './enquiry-http.mjs';
 import {createEnquiryNotificationDispatcher,createGoogleEnquiryMailSender} from './enquiry-mail.mjs';
 import {createKeylessMailAuthClient} from './google-keyless-mail-auth.mjs';
+import {createLiveClientAccess,clientInvitationPolicy} from './client-onboarding.mjs';
 
 export async function readLiveServiceConfiguration({env=process.env,args=process.argv.slice(2),read=readFile}={}) {
   const supplied=env.WVD_SERVICE_CONFIG_JSON;
@@ -22,6 +23,7 @@ export function composeLiveService({config,backend,signer,clock,browserBundle}) 
   const checked=liveServiceConfiguration(config);
   if(typeof backend?.close!=='function'||typeof clock!=='function'||(checked.mail!==null&&typeof signer?.request!=='function'))throw Error('INVALID_CONFIGURATION');
   const resolveOwnerSession=createLiveOwnerResolver({auth:backend.auth,portal:backend.portal,owner:checked.portal.owner,maxConcurrentRequests:checked.portal.maxConcurrentRequests});
+  const clientAccess=createLiveClientAccess({auth:backend.auth,portal:backend.portal,resolveOwnerSession,maxConcurrentRequests:checked.portal.maxConcurrentRequests});
   const store=createFirestoreEnquiryStore({db:backend.db,productId:checked.portal.firebase.productId,clock,admission:checked.enquiries.admission,retentionDays:checked.enquiries.retentionDays});
   let notify;
   if(checked.mail!==null){
@@ -31,7 +33,7 @@ export function composeLiveService({config,backend,signer,clock,browserBundle}) 
     notify=createEnquiryNotificationDispatcher({store,sender,clock});
   }
   const enquiryHandler=createEnquiryHandler({store,resolveOwnerSession,allowedPublicOrigins:checked.enquiries.allowedPublicOrigins,maxConcurrentRequests:checked.enquiries.maxConcurrentRequests,notify});
-  const server=createLivePortalApplication({portal:backend.portal,resolveOwnerSession,config:checked.portal,enquiryHandler,enquiryRoute,browserBundle});
+  const server=createLivePortalApplication({portal:backend.portal,resolveOwnerSession,...clientAccess,config:checked.portal,enquiryHandler,enquiryRoute,browserBundle});
   return {server,close:()=>backend.close()};
 }
 
@@ -50,7 +52,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
     if(credentials.client_email!==config.authentication.serviceAccount||credentials.private_key)throw Error('RUNTIME_IDENTITY_MISMATCH');
     const signer=config.mail===null?undefined:await auth.getClient();
     const {createFirebaseBackend}=await import('./firebase-backend.mjs');
-    backend=createFirebaseBackend(config.portal.firebase);
+    backend=createFirebaseBackend(config.portal.firebase,{invitationPolicy:clientInvitationPolicy});
     const browserBundle=await readFile(new URL('../portal-runtime/dist/firebase-auth-sdk.js',import.meta.url));
     runtime=composeLiveService({config,backend,signer,clock:()=>new Date().toISOString(),browserBundle});
     await new Promise((resolve,reject)=>{runtime.server.once('error',reject);runtime.server.listen(port,'0.0.0.0',resolve);});

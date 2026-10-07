@@ -42,7 +42,7 @@ test.beforeAll(async()=>{
 });
 test.afterAll(async()=>{for(const item of [server,closedServer]){item?.closeIdleConnections();if(item)await new Promise(resolve=>item.close(resolve));}});
 test('owner Google login, refreshed bearer inbox reads, accessibility and private-data sign-out',async({page},testInfo)=>{
-  await page.goto('/');await expect(page.getByRole('heading',{name:'WVD owner workspace',exact:true})).toBeVisible();await expect(page.locator('#login input')).toHaveCount(0);await expect(page.locator('#invite-panel')).toBeHidden();
+  await page.goto('/');await expect(page.getByRole('heading',{name:'Your WVD workspace',exact:true})).toBeVisible();await expect(page.locator('#login input')).toHaveCount(0);await expect(page.locator('#invite-panel')).toBeHidden();
   await page.keyboard.press('Tab');await expect(page.getByRole('link',{name:'Skip to main content'})).toBeFocused();await page.keyboard.press('Enter');await expect(page.locator('#main-content')).toBeFocused();
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
   await capture(page,testInfo,'owner-login');

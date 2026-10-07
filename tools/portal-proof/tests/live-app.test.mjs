@@ -23,7 +23,7 @@ async function fixture(t,{binding=owner}={}){
   return {base,get,calls,server,config};
 }
 test('live shell exposes only public web configuration, explicit liveness and protected assets',async t=>{
-  const f=await fixture(t),home=await f.get('/');assert.equal(home.status,200);const html=await home.text();assert.match(html,/WVD owner workspace/);assert.match(html,/Continue with Google/);assert.doesNotMatch(html,/synthetic development accounts/);
+  const f=await fixture(t),home=await f.get('/');assert.equal(home.status,200);const html=await home.text();assert.match(html,/WVD project workspace/);assert.match(html,/Continue with Google/);assert.doesNotMatch(html,/synthetic development accounts/);
   for(const [name,pattern]of [['cache-control',/no-store/],['x-robots-tag',/noindex/],['content-security-policy',/frame-ancestors 'none'/],['content-security-policy',/connect-src 'self' https:\/\/identitytoolkit.googleapis.com https:\/\/securetoken.googleapis.com/],['cross-origin-opener-policy',/^same-origin-allow-popups$/]])assert.match(home.headers.get(name),pattern);
   assert.equal(home.headers.get('set-cookie'),null);assert.equal(home.headers.get('access-control-allow-origin'),null);
   const publicConfig=await(await f.get('/auth-config.json')).json();assert.deepEqual(Object.keys(publicConfig).sort(),['enquiriesEnabled','firebase','mode','ownerConfigured']);assert.equal(publicConfig.mode,'firebase-live');assert.equal(publicConfig.ownerConfigured,true);assert.ok(!JSON.stringify(publicConfig).includes(owner.uid)&&!JSON.stringify(publicConfig).includes(owner.email));

@@ -11,6 +11,7 @@ import {createBookingHandler} from './booking-http.mjs';
 const assets = new Map([
   ['/brand-logo.png', ['image/png',readFileSync(new URL('../../src/assets/brand/horizontal-logo.png',import.meta.url))]],
   ['/', ['text/html; charset=utf-8',readFileSync(new URL('./ui/index.html',import.meta.url))]],
+  ['/client-workspace.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/client-workspace.js',import.meta.url))]],
   ['/app.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/app.js',import.meta.url))]],
   ['/auth-client.js', ['text/javascript; charset=utf-8',readFileSync(new URL('./ui/auth-client.js',import.meta.url))]],
   ['/style.css', ['text/css; charset=utf-8',readFileSync(new URL('./ui/style.css',import.meta.url))]]
