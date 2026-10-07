@@ -57,12 +57,14 @@ The live configuration hash was recomputed and matched. Owner binding is set;
 the same service account, one-instance cap, concurrency four and 512 MiB remain.
 See `evidence/wvd-client-onboarding-live-baseline.json`.
 
-Native Sites read confirmed the public WVD Site remains version 7 at
-https://wearvalleydigital.com. Its existing source was recovered through the
-supported helper at `1de317f95f43d11675303f2d270e2dbaed73bc78`. Existing links say
-Portal/Portal sign-in; no Client Portal label or publication has been made.
+The existing public Site was recovered at
+`1de317f95f43d11675303f2d270e2dbaed73bc78`. After live client and owner acceptance,
+version 8 was published at https://wearvalleydigital.com with header/footer
+Client Portal links to the existing service. Browser verification confirmed both
+links. Source `9636204bf1b0fc2b95c8d410e2fa1bb3a0d8e6f6`; see
+`evidence/wvd-client-portal-publication.json`. Only the two link labels/title changed.
 
-The user supplied leatfield@gmail.com for the synthetic client sign-in check and
+The user supplied a separate Google account for the synthetic client check and
 explicitly approved merge/deployment once final checks passed. PR #4 merged at
 `10a41e2b5a5cd80d1a895b21d4ddacf13cbca1ab`. Existing Google development access run
 37596353949 passed and deployed revision `wvd-service-00006-jfj`. The exact
@@ -71,7 +73,7 @@ metadata comparison confirmed identical service configuration, service account,
 concurrency, resource allocation and maximum one instance.
 
 Owner Google sign-in succeeded before and after deployment. The existing enquiry
-WVD-536CD6D89D37 remains visible with its original provider-accepted notification
+The existing enquiry remains visible with its original provider-accepted notification
 status. Two clearly labelled synthetic clients and three projects were created:
 `SYNTHETIC — Client journey A`, `SYNTHETIC — Unassigned project A2` under the first
 client, and `SYNTHETIC — Cross-client denied B` under the second. The owner created
@@ -105,32 +107,41 @@ CLI fixture paths/permissions on Windows, multiple installed gcloud wrappers,
 and missing `python3`. CI's Linux and Windows jobs are the authoritative
 cross-platform checks; local failures were not reported as passes.
 
-## Remaining work and limits
+## Live acceptance and remaining limits
 
 - Client Google sign-in with the exact invited account succeeded. The live
   browser shows only project A and Overview, Progress, Deliverables, Feedback,
   Support. Progress history and the synthetic review are visible. Client
   feedback, support submission and text-deliverable approval persisted.
   See `evidence/wvd-client-onboarding-browser.json` and its screenshot.
-- Complete owner readback of the client activity and revoke synthetic access,
-  then confirm the active client session is denied. Google account selection
-  stalled again when opening the second owner session; the user was asked to
-  select the authorised owner account. Synthetic records remain clearly labelled.
+- Owner readback confirmed the approval, feedback and support ticket. An owner
+  support reply was saved and visible to the client. The owner removed all test
+  project grants; an existing client session was denied a new support reply and
+  a fresh project read. Owner readback confirmed the denied reply was not saved.
+  The account now shows No projects assigned. The client signed out and private
+  UI cleared. Two synthetic clients and three projects are retained, explicitly
+  labelled and isolated; the test account has zero project grants. The personal
+  Google account was not deleted or changed.
 - Direct authenticated live cross-project API probes were not executed: the
   isolated CLI Google credential exchange was rejected because its OAuth token
   audience is not this Firebase project. No provider allowlist was weakened and
   no credentials were extracted from browser internals. Cross-project, expiry,
   revoked-invitation and privilege-denial tests passed in automated CI; those
   results are not represented as authenticated live API checks.
-- Only then update the public entry point and publish via the existing Site.
+- Public entry-point publication followed these live acceptance checks. The
+  public build validated and generated all 28 pages. A Windows Vite config-loader
+  issue was resolved using Astro's programmatic build with the unchanged imported
+  config and configFile:false. Packaging used installed Git Bash and GNU tar's
+  force-local path option; no app configuration or dependency changes were needed.
 - Invitations are copy/share links. Google sign-in is the only live provider.
   File-backed deliverable previews are not connected in this live composition;
   their approvals remain disabled. Published text reviews can be approved.
 - The existing bounded aggregate has a 512 KiB state cap and 200 invitation
   records per client; archival/large-scale onboarding is outside this v1.
 
-This receipt records a deployed implementation and verified client actions.
-Owner readback, revocation verification and public entry-point publication remain
-pending. No fallback identity or authentication bypass was added.
+This receipt records the deployed implementation, live client/owner acceptance,
+live revoked-access denial and public entry-point publication. Final receipts and
+the public source mirror are in PR #5, pending separate shared-branch merge approval.
+No fallback identity or authentication bypass was added.
 Anonymous project/enquiry requests return 401
 with no-store, recorded in `evidence/wvd-client-onboarding-anonymous.json`.

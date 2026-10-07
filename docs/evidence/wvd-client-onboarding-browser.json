@@ -1,7 +1,7 @@
 {
   "observedAt": "2026-10-07T09:09:59.7717864Z",
   "releaseSource": "10a41e2b5a5cd80d1a895b21d4ddacf13cbca1ab",
-  "syntheticAccount": "leatfield@gmail.com",
+  "syntheticAccount": "USER_AUTHORIZED_TEST_ACCOUNT_REDACTED",
   "clientGoogleSignIn": "PASS",
   "assignedProject": "SYNTHETIC — Client journey A",
   "visibleProjectCount": 1,
@@ -19,9 +19,16 @@
   "feedbackPersisted": "PASS",
   "supportTicketPersisted": "PASS",
   "textDeliverableApproval": "PASS",
-  "ownerReadback": "PENDING",
-  "accessRevocation": "PENDING",
+  "ownerReadback": "PASS",
+  "accessRevocation": "PASS",
   "authenticatedCrossProjectLiveProbe": "NOT_EXECUTED_GOOGLE_OAUTH_AUDIENCE_MISMATCH",
   "automatedCrossProjectDenial": "PASS_CI_37595772075",
-  "screenshot": "wvd-client-deliverable-live.jpg"
+  "screenshot": "wvd-client-deliverable-live.jpg",
+  "syntheticCleanup": "LABELLED_RECORDS_RETAINED_WITH_ZERO_CLIENT_PROJECT_GRANTS",
+  "revokedSessionRead": "DENIED",
+  "clientSignOut": "PASS",
+  "revokedSessionWrite": "DENIED_AND_NOT_PERSISTED",
+  "completedAt": "2026-10-07T09:25:28.7534171Z",
+  "remainingProjectGrants": 0,
+  "ownerSupportReplyVisibleToClient": "PASS"
 }

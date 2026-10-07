@@ -1,0 +1,23 @@
+{
+  "observedAt": "2026-10-07T09:25:38.304Z",
+  "id": "appgdep_6ac60fd4b8f481918c67c41a8e9359c1",
+  "project_id": "appgprj_6ac361a8bfd48191b3bde453565cf2ab",
+  "title": "Wear Valley Digital — Websites, Software & Automation",
+  "version_id": "appgprj_6ac361a8bfd48191b3bde453565cf2ab~appgver_62a12a10cffc8191b43df6a4b3a85b95",
+  "type": "publish",
+  "status": "succeeded",
+  "url": "https://wear-valley-digital.leatfield.chatgpt.site",
+  "has_mcp": false,
+  "screenshot_asset_pointer": null,
+  "provider_deployment_id": "site---6ac361a8bfd48191b3bde453565cf2ab",
+  "failure_message": null,
+  "env_set_revision": 0,
+  "updated_at": "2026-10-07T09:24:52.988045+00:00",
+  "sourceCommit": "9636204bf1b0fc2b95c8d410e2fa1bb3a0d8e6f6",
+  "versionNumber": 8,
+  "brandedUrl": "https://wearvalleydigital.com",
+  "browserHeaderAndFooterLink": "PASS",
+  "portalTarget": "https://wvd-service-v3b6mv7uka-nw.a.run.app",
+  "publishedAfterLiveClientOwnerAndRevocationChecks": true,
+  "screenshot": "wvd-client-portal-public-live.jpg"
+}
