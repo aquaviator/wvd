@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/health",
+    "status": 200,
+    "noStore": true
+  },
+  {
+    "path": "/auth-config.json",
+    "status": 200,
+    "noStore": true
+  },
+  {
+    "path": "/api/portal/projects",
+    "status": 401,
+    "noStore": true
+  },
+  {
+    "path": "/api/admin/enquiries",
+    "status": 401,
+    "noStore": true
+  }
+]
