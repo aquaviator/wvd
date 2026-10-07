@@ -1,0 +1,27 @@
+{
+  "observedAt": "2026-10-07T09:09:59.7717864Z",
+  "releaseSource": "10a41e2b5a5cd80d1a895b21d4ddacf13cbca1ab",
+  "syntheticAccount": "leatfield@gmail.com",
+  "clientGoogleSignIn": "PASS",
+  "assignedProject": "SYNTHETIC — Client journey A",
+  "visibleProjectCount": 1,
+  "visibleSections": [
+    "Overview",
+    "Progress",
+    "Deliverables",
+    "Feedback",
+    "Support"
+  ],
+  "ownerControlsVisible": false,
+  "otherProjectsVisible": false,
+  "progressHistory": "PASS",
+  "textDeliverableReview": "PASS",
+  "feedbackPersisted": "PASS",
+  "supportTicketPersisted": "PASS",
+  "textDeliverableApproval": "PASS",
+  "ownerReadback": "PENDING",
+  "accessRevocation": "PENDING",
+  "authenticatedCrossProjectLiveProbe": "NOT_EXECUTED_GOOGLE_OAUTH_AUDIENCE_MISMATCH",
+  "automatedCrossProjectDenial": "PASS_CI_37595772075",
+  "screenshot": "wvd-client-deliverable-live.jpg"
+}

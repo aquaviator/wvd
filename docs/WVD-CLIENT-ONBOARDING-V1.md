@@ -107,9 +107,21 @@ cross-platform checks; local failures were not reported as passes.
 
 ## Remaining work and limits
 
-- Exercise the actual owner invitation and client Google sign-in, project
-  views, feedback/support and negative API cases. Isolate or clean up the
-  synthetic records and revoke their project access after verification.
+- Client Google sign-in with the exact invited account succeeded. The live
+  browser shows only project A and Overview, Progress, Deliverables, Feedback,
+  Support. Progress history and the synthetic review are visible. Client
+  feedback, support submission and text-deliverable approval persisted.
+  See `evidence/wvd-client-onboarding-browser.json` and its screenshot.
+- Complete owner readback of the client activity and revoke synthetic access,
+  then confirm the active client session is denied. Google account selection
+  stalled again when opening the second owner session; the user was asked to
+  select the authorised owner account. Synthetic records remain clearly labelled.
+- Direct authenticated live cross-project API probes were not executed: the
+  isolated CLI Google credential exchange was rejected because its OAuth token
+  audience is not this Firebase project. No provider allowlist was weakened and
+  no credentials were extracted from browser internals. Cross-project, expiry,
+  revoked-invitation and privilege-denial tests passed in automated CI; those
+  results are not represented as authenticated live API checks.
 - Only then update the public entry point and publish via the existing Site.
 - Invitations are copy/share links. Google sign-in is the only live provider.
   File-backed deliverable previews are not connected in this live composition;
@@ -117,9 +129,8 @@ cross-platform checks; local failures were not reported as passes.
 - The existing bounded aggregate has a 512 KiB state cap and 200 invitation
   records per client; archival/large-scale onboarding is outside this v1.
 
-This receipt records a deployed implementation. Client acceptance and public
-entry-point publication remain pending; it does not claim completed live
-acceptance. Google account selection for the client stalled in browser control;
-the user was asked to complete that normal sign-in step. No fallback identity or
-authentication bypass was added. Anonymous project/enquiry requests return 401
+This receipt records a deployed implementation and verified client actions.
+Owner readback, revocation verification and public entry-point publication remain
+pending. No fallback identity or authentication bypass was added.
+Anonymous project/enquiry requests return 401
 with no-store, recorded in `evidence/wvd-client-onboarding-anonymous.json`.
