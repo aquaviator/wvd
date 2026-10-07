@@ -1,4 +1,5 @@
 import {deliverablePreview} from './deliverable-preview.mjs';
+import {clientProjection} from './client-projection.mjs';
 // Transport-independent proof. resolveSession must be a trusted server adapter.
 const schemas = {
   'workspace-access': [],
@@ -101,7 +102,7 @@ export function createBoundary({portal, resolveSession, allowedOrigin,deliverabl
         }
       };
       const result=await operations[action]();
-      if(session.liveClient===true&&action==='overview')result.canManageColleagues=false;
+      if(session.liveClient===true)return response(200,clientProjection(action,result));
       if(action==='update-colleague-access')return response(200,{changed:result.changed,accountId:input.uid,projectId:input.projectId,hasProjectAccess:input.grant});
       return response(200,result);
     } catch (error) {

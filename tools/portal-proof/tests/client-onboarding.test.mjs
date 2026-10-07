@@ -5,6 +5,7 @@ import {validatePortalState} from '../state.mjs';
 import {createLiveOwnerResolver} from '../live-auth.mjs';
 import {createLiveClientAccess,clientInvitationPolicy} from '../client-onboarding.mjs';
 import {createBoundary} from '../boundary.mjs';
+import {clientProjection} from '../client-projection.mjs';
 
 const owner={uid:'admin',email:'admin@example.test'},origin='https://portal.example.test';
 function fixture(){
@@ -58,4 +59,10 @@ test('empty product and forged non-owner admin do not bootstrap access',async()=
   const portal=new PortalProof(state,()=> '2026-10-07T10:00:00.000Z');
   const auth={verifyIdToken:async()=>({uid:'wrong',email:'wrong@example.test',email_verified:true,firebase:{sign_in_provider:'google.com'}}),getUser:async()=>({uid:'wrong',email:'wrong@example.test',emailVerified:true,disabled:false,providerData:[{providerId:'google.com'}]})};
   const access=createLiveClientAccess({auth,portal,resolveOwnerSession:async()=>null});assert.equal(await access.resolveSession('wrong'),null);
+});
+test('client projections exclude future internal fields and actor/audit metadata',()=>{
+  const internal={technicalEvidence:'private',internalResearch:'private',costGovernance:'private',actorId:'private'};
+  const result=clientProjection('overview',{projectId:'a',canApprove:true,...internal,progressHistory:[{stage:'Build',nextStep:'Review',timestamp:'now',...internal}],feedbackHistory:[],approvalHistory:[],completedMilestones:[],awaitingClient:[{id:'m',currentVersionId:'v',...internal,review:{title:'Review',body:'Client text',digest:'digest',...internal,deliverable:{label:'File',sourceId:'private',contentSha256:'private',sourceVersion:'v',mediaType:'text/plain'}}}]});
+  assert.ok(!JSON.stringify(result).includes('private'));
+  assert.ok(!JSON.stringify(clientProjection('tickets',[{id:'t',subject:'Help',...internal,triage:{note:'Client assessment',...internal},triageHistory:[]}])).includes('private'));
 });
