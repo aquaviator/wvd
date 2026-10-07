@@ -653,6 +653,27 @@ An explicit minimum-date assertion checks alignment. Timers continue normally;
 all original pending/reload, collision, reschedule, stale-device, link rotation,
 revocation and cancellation assertions remain. Only the emulator fixture changes;
 production date validation, scheduling, runtime and live-send behavior do not.
-Local node --check passed. The next exact-source ordinary and offline container
-runs must pass before treating this CI repair as verified; inspect the branch's
-new run results, not the failed c1ada887 runs above.
+Local node --check passed. The failed c1ada887 runs remain historical evidence;
+the corrected exact-source verification follows below.
+
+Verified repair source: `9ae85ee90334694d7744d54c4c365e4b4b8c2302`.
+[Push CI 37572206102](https://github.com/aquaviator/wvd/actions/runs/37572206102)
+and [PR CI 37572209383](https://github.com/aquaviator/wvd/actions/runs/37572209383)
+passed all four jobs. Both actual Firebase suites passed all five scenarios,
+including the previously failing complete booking recovery journey.
+[Offline container 37572206082](https://github.com/aquaviator/wvd/actions/runs/37572206082)
+also passed: 592 Portal unit passes with one existing skip, five emulator/browser
+passes, and both standalone package identity guards. The log's receipt pins
+9ae85ee, Node v22.23.3, Playwright 1.62.1, demo-wvd-portal and liveAccess=false.
+The test image was
+`sha256:e3b3f8c98c4e26d312ebef7e3915e6d1bb8dab13cc5562ba93433e591febbd04`;
+execution used --network none and the unchanged evidence-size gate passed.
+
+GitHub artifact metadata: 11461805692,
+`portal-container-evidence-37572206082`, 3,875,146 compressed bytes,
+SHA-256 `5337212dd1cdef27967d6d44c22dd0daf494e27b468e0e031e3bbef9bfdfc058`.
+This digest is provider-reported metadata; the archive was not downloaded or
+visually reviewed again for this test-clock-only change. Logs and the exact-source
+run outcomes were inspected. The PR container was skipped by existing rules.
+This receipt-only follow-up does not change the tested fixture or application.
+Continue the product backlog above; the date-dependent CI failure is resolved.

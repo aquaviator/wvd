@@ -1419,3 +1419,15 @@ still open. WVD's newer service and owner-binding implementation at e82753a is
 preserved. Next work remains Wedding exact-candidate verification or a frozen
 remaining editor gap, plus Salon baseline recovery when a supported path is
 available. Both product drafts remain unreleased.
+
+### CI repair and completed verification
+
+The handback push exposed an existing date-dependent emulator fixture: its
+6 October booking became invalid once the browser's real date reached 7 October.
+Source `9ae85ee90334694d7744d54c4c365e4b4b8c2302` fixes only the synthetic
+browser clocks, retaining production validation and every original assertion.
+Push/PR runs 37572206102 and 37572209383 passed all four jobs; offline container
+37572206082 passed 592 unit checks (one existing skip) and all five Firebase
+browser scenarios. Exact image, artifact metadata and limits are in the controller
+continuation. No live provider call or product release was added. Resume the
+Wedding/Salon backlog above; do not rerun unchanged suites solely to restate this receipt.
