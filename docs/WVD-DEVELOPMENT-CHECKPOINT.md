@@ -1,5 +1,15 @@
 # WVD development checkpoint
 
+## Latest Salon cost-evidence correction — 8 October 2026
+
+Product [pricing follow-up](https://github.com/aquaviator/WVD-Salon/blob/5b518d4d18dd283a3ae360bdf434db7d7827d0de/handoff/wvd/results/SALON-WVD-003/uk-pricing-followup.md) holds the earlier WhatsApp free-service
+assumption pending reconciliation of conflicting official guidance; UK GBP rates,
+Fresha regional pricing and Treatwell monthly fee remain unresolved. Original research,
+all acceptance gates and UNKNOWN cost/commercial signals are preserved. Five allowed
+handoff paths verified and pushed non-forced; Drive continuation/portfolio receipts
+updated. [Exact evidence](../tools/factory/evidence/salon-pricing-followup-20261008.json); no application change or release. Wedding's
+ownership-coordinated reconciliation below remains outstanding.
+
 ## Current Wedding source correction — 8 October 2026
 
 Fresh discovery found divergent staging/pilot and menu-integration branches.

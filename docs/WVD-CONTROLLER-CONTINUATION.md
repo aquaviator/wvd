@@ -1,5 +1,28 @@
 # Controller continuation — 5 October 2026
 
+## Latest Salon pricing follow-up — 8 October 2026
+
+Salon `5b518d4d18dd283a3ae360bdf434db7d7827d0de` now records a [scoped pricing follow-up](https://github.com/aquaviator/WVD-Salon/blob/5b518d4d18dd283a3ae360bdf434db7d7827d0de/handoff/wvd/results/SALON-WVD-003/uk-pricing-followup.md).
+The earlier WhatsApp free-service assumption is held: the retrieved public page
+conflicts with indexed developer change notices effective 1 October. Full developer
+rules/rate cards could not be retrieved (429/inaccessible); no new tariff is certified.
+Fresha's en-GB page returned AUD; Treatwell still omitted its monthly amount.
+All region-specific costs and commercial signals remain UNKNOWN. Original findings
+are unchanged; distinct review must cover both records. SALON-AT-030 remains NOT_RUN.
+
+Five allowed handoff paths passed structural/gate checks and exact remote readback;
+non-forced product push verified. No Salon Actions run; application checks were not
+repeated for documentation. Both Drive receipts have verified text, links, typography
+and native elements. Exact revisions and checks: [receipt](../tools/factory/evidence/salon-pricing-followup-20261008.json).
+Factory delivery remains INCOMPLETE at research; full primary-source inputs are missing.
+
+Wedding takeover/heads are unchanged. Preserve the reconciliation priority below;
+do not mutate its older integration line or duplicate workers. Resume exact findings
+review or authorised target/access work independently; revisit Meta after its transient
+read limit clears. Avoid repeating unchanged price checks or branch preflight.
+Next Drive scan should overlap from `2026-10-08T22:39:55.913Z` and compare revisions,
+including the two Salon receipt updates. No founder input is required by this slice.
+
 ## Current priority — Wedding branch reconciliation, 8 October 2026
 
 Read [the reconciliation preflight](WVD-WEDDING-BRANCH-RECONCILIATION.md) before
