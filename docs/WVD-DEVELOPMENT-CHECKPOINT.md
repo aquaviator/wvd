@@ -1637,3 +1637,14 @@ Delivery INCOMPLETE, next verify; no deployment, independent acceptance or relea
 Next: full WED-API-019 contract reconciliation and distinct review; Sites controls
 await complete-source recovery. Drive checkpoint verified, Salon unchanged.
 See controller continuation for exact source, monitoring cursor and access evidence.
+
+
+## 8 October 2026 — Wedding versioned menu API
+
+Wedding `d44ae2a24bc50a3eac87ca3d404e83a27aed88eb` adds the versioned menu transport, explicit menu/response
+revision basis and projected stale exports while reusing native atomic commits.
+21 focused checks, 168 regressions, TypeScript/build and eleven-path remote
+readback PASS. [Canonical task and limits](https://github.com/aquaviator/WVD-Wedding/blob/d44ae2a24bc50a3eac87ca3d404e83a27aed88eb/handoff/WED-WP-005-MENU-API.md).
+Durable preview replay remains a contract gap. Distinct/hosted verification,
+Sites controls and full acceptance stay open; no deployment or release.
+See controller continuation for next work, Drive cursor and fresh access evidence.

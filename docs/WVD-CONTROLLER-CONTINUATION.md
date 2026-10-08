@@ -1348,3 +1348,47 @@ remains separate. Last verified private version 6/source ed03a2e stays distinct.
 Original contracts, 14 Wedding gates and 32 full scenarios remain open. No founder
 input, live sends, real data, health/financial flows, audience/release or spend change.
 Historical booking setup and AI discovery requirements are already recorded; do not repeat.
+
+
+## Wedding versioned menu API adapter — 8 October 2026
+
+Wedding `d44ae2a24bc50a3eac87ca3d404e83a27aed88eb` pushed with expected-head non-forced guard; eleven paths
+compared/read back exactly. Draft PR1 stays unreleased; no product Actions run.
+Canonical [scope, evidence and remaining contract gaps](https://github.com/aquaviator/WVD-Wedding/blob/d44ae2a24bc50a3eac87ca3d404e83a27aed88eb/handoff/WED-WP-005-MENU-API.md).
+WED-API-019 now has a versioned transport over the native PREVIEW/COMMIT handlers.
+Explicit snapshot/menu/all-active-response revisions protect review freshness;
+preview reports actor-scoped projected stale exports. Legacy payloads, response
+shape and existing receipt semantics are preserved. Durable PREVIEW replay and
+production capacity/rate policy remain explicit gaps; do not mark API complete.
+
+21 focused route/SQLite checks and 168 regressions PASS; TypeScript and five
+production build stages PASS. Historical receipts restored/hash-matched. Source
+baseline: 227 available blobs matched parent excluding generated tsbuildinfo;
+four missing remote binary assets remain preserved remotely. Never deploy the
+text snapshot. RepairCount 2: response JSON type and diagnosed legacy-preview
+compatibility; one pre-test patch-context error had no source effect. Measured
+frozen-idea-to-checks 4.86 minutes; token counts/escaped defects null. Factory
+idea/delivery-status plan `8c3b62a6f923fa9a47759a6c446b99d58ade589dcce843294d6d4dba8e780cbb`;
+research/blueprint/build structurally complete, INCOMPLETE exit 2, next verify,
+verify/deploy HOLD. Creator-local results are not distinct/hosted acceptance.
+
+Fresh product heads/PR ownership unchanged before work; Salon remains 0d33503.
+WVD base 2d09b9a push 37844316655 all four jobs PASS; PR 37844325049 success,
+container 37844325002 skipped. Drive direct-child scan with actual provider filter
+since 2026-10-08T19:59:26.244Z found only prior Wedding START update at
+2026-10-08T21:04:33.677Z; native revision matched. Queue unchanged at
+2026-10-05T17:02:00.977Z. Initial keyword-form query returned no results and was
+corrected to special_filter_query_str before relying on monitoring evidence.
+Current concise checkpoint verified by exact text, link typography and 1 date/7
+rich chips. Modified time 2026-10-08T21:24:35.366Z; native revision
+`ANLCKQn1iu3zxZGiRZvveIfiYI3cOYHROPvBi9PmDCkA1J7n85IhUhdb2CX0nJgM8xW7hPuMSEdHPZaq59XmuKT7ceHWZCMS9DG5LvOBl6Y`.
+Next scan overlap from 2026-10-08T21:04:33.677Z with native revision comparison;
+metadata previously lagged. This is not recursive brand asset verification.
+Registry updated only for current GitHub/Drive observations; Sites failure date retained.
+
+Next: reconcile durable PREVIEW idempotency with read-only semantics against the
+original contract, then one bounded implementation. Sites-owned controls still
+require supported full-source recovery; independent exact-candidate and brand
+review remain open. Last verified private version 6/source ed03a2e stays distinct.
+Original contracts, 14 gates and 32 full scenarios unchanged. No founder input,
+release, live send, real/sensitive data, audience expansion or additional spend.

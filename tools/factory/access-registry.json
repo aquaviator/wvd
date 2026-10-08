@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-08T21:05:29.520Z",
+  "updatedAt": "2026-10-08T21:25:25.200Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-08T21:05:29.520Z",
-        "source": "GitHub connector aquaviator (78605956). WVD base da8d55ec5e3bf1c921010a23c12133cdb130c6e5 push 37836202478 all four jobs success; PR 37836216722 success; container 37836216734 skipped. Wedding expected-head non-forced push e1cf7d08bb96a13b116da481f98ec8fe3886f535, nine paths compared/read back exactly; no product Actions run. Salon 0d33503f555bb557e3b89c32c49551253762f992 unchanged; product PR1 open/draft/unassigned before work. Reviewed option editor undeployed; hosted/distinct acceptance NOT_RUN."
+        "at": "2026-10-08T21:25:25.200Z",
+        "source": "GitHub connector aquaviator (78605956). WVD base 2d09b9a23be19a5633bfa1b375bf3104a0ce012d push 37844316655 all four jobs success; PR 37844325049 success; container 37844325002 skipped. Wedding expected-head non-forced push d44ae2a24bc50a3eac87ca3d404e83a27aed88eb; eleven changed paths compared/read back exactly; no product Actions run. Salon 0d33503f555bb557e3b89c32c49551253762f992 unchanged. Product PR1 open/draft/unassigned before work. Versioned menu adapter remains undeployed with documented preview-replay gap; distinct/hosted acceptance NOT_RUN."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-08T21:05:29.520Z",
-        "source": "Profile admin@wearvalleydigital.com. Overlapping direct-child scan of WVD/Salon/Wedding roots and Wedando brand root since 2026-10-08T18:28:18.287Z found only prior Wedding checkpoint updated 2026-10-08T19:59:26.244Z, with unchanged native revision; not recursive asset verification. Queue 16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5vOHTk unchanged 2026-10-05T17:02:00.977Z. Wedding START 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs now has concise e1cf7d0 task link; revision-guarded write, exact text/effective link typography and 1 date/7 rich chips verified. Metadata modified_time 2026-10-08T21:04:09.244Z; native revision ANLCKQlECypA0wJCHGof--Ahk4R1_ZOIzTFwqqAfJeFF8WB4tgv1o3viTmCK8bDKxI_buNc2-7dcQhcqVZEucAZLQKOFGch8MVWir3X36dU. Next scan overlap from 2026-10-08T19:59:26.244Z and compare revisions due prior metadata lag. No worker dispatch, asset overwrite or sharing change."
+        "at": "2026-10-08T21:25:25.200Z",
+        "source": "Profile admin@wearvalleydigital.com. Correct provider-filter direct-child scan of WVD/Salon/Wedding roots and Wedando brand root since 2026-10-08T19:59:26.244Z found only prior Wedding START updated 2026-10-08T21:04:33.677Z with unchanged native revision; not recursive asset verification. Queue 16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5vOHTk unchanged 2026-10-05T17:02:00.977Z. Wedding START 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs now links d44ae2a task; revision-guarded write and exact text/effective hyperlink style plus 1 date/7 rich chips verified. Metadata modified_time 2026-10-08T21:24:35.366Z; revision ANLCKQn1iu3zxZGiRZvveIfiYI3cOYHROPvBi9PmDCkA1J7n85IhUhdb2CX0nJgM8xW7hPuMSEdHPZaq59XmuKT7ceHWZCMS9DG5LvOBl6Y. Next scan overlap from 2026-10-08T21:04:33.677Z and compare native revisions due prior metadata lag. No worker dispatch, asset overwrite or sharing changes."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",
