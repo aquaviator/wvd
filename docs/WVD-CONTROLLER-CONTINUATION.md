@@ -1302,3 +1302,49 @@ original contracts, 14 package gates and 32 full scenarios remain open. Existing
 booking runtime and AI-discovery standard 1.5.0 already cover the historical
 external-thread requests; do not repeat setup. No founder input, real data,
 health/financial flow, live send, audience expansion, release or additional spend.
+
+
+## Wedding reviewed option editor — 8 October 2026
+
+Wedding `e1cf7d08bb96a13b116da481f98ec8fe3886f535` pushed non-forced with expected-head guard to
+`development/undecided-date-onboarding`; nine changed paths compared/read back
+exactly, no product Actions run. Draft PR1 remains unreleased. Canonical
+[task, evidence and next work](https://github.com/aquaviator/WVD-Wedding/blob/e1cf7d08bb96a13b116da481f98ec8fe3886f535/handoff/WED-WP-005-OPTION-EDITOR.md).
+Native full-option proposals support stable-ID renames and combined ordinary
+option creation/rules. Swaps and reused labels cannot substitute existing choices;
+material changes preserve history and request reselection without changing attendance.
+Exact retries retain generated IDs. Legacy label/rule clients remain compatible.
+
+21 focused route/SQLite checks, 149 regressions, TypeScript and all five build
+stages PASS. Historical receipt bytes restored to the parent. Available source
+matched the refreshed parent excluding generated tsbuildinfo; four missing remote
+binaries and generated cache excluded from push. Never deploy this text snapshot.
+Local synthetic creator evidence is not independent or hosted verification.
+Factory plan `78c58ba383b855e7c09b478407877eabbb1ea805161305ee3ab16e82a09b0813`;
+idea/delivery-status INCOMPLETE exit 2, next verify. Research/blueprint/build
+structurally complete; verify/deploy HOLD. Measured frozen-idea-to-local-checks
+3.28 minutes, repairCount 1 (test error-name expectation, no production repair).
+Preparation cache/command-size/path errors corrected before recorded checks;
+input/output tokens and escaped defects null. Working receipts remain ignored.
+
+Fresh heads and PR ownership showed no competing changes. WVD base da8d55e
+push 37836202478 passed all four jobs; PR 37836216722 success, container
+37836216734 skipped. Salon remains 0d33503 with all previous intake/review gates.
+Direct-child Drive scan overlapping from 2026-10-08T18:28:18.287Z found only the
+prior Wedding checkpoint updated 2026-10-08T19:59:26.244Z; native revision matched
+that prior write. Queue unchanged at 2026-10-05T17:02:00.977Z. No new worker dispatch.
+This is not recursive brand asset verification. Current concise Wedding checkpoint
+was revision-guarded and exact text/link typography plus 1 date/7 rich chips verified.
+Post-write metadata modified_time is 2026-10-08T21:04:09.244Z; revision
+`ANLCKQlECypA0wJCHGof--Ahk4R1_ZOIzTFwqqAfJeFF8WB4tgv1o3viTmCK8bDKxI_buNc2-7dcQhcqVZEucAZLQKOFGch8MVWir3X36dU`.
+Keep the next scan overlapping from 2026-10-08T19:59:26.244Z and compare native
+revisions because metadata lag was previously observed. Registry refreshed only
+for current GitHub/Drive observations; earlier Sites failure timestamp preserved.
+
+Next: reconcile full WED-API-019 versioned request/revision contract with the native
+adapter; independent exact-candidate review. Sites-owned filtered menu/review
+controls require supported complete-source recovery. Brand verification/adoption
+remains separate. Last verified private version 6/source ed03a2e stays distinct.
+Original contracts, 14 Wedding gates and 32 full scenarios remain open. No founder
+input, live sends, real data, health/financial flows, audience/release or spend change.
+Historical booking setup and AI discovery requirements are already recorded; do not repeat.

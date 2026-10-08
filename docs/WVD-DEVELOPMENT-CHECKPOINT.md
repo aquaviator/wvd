@@ -1624,3 +1624,16 @@ Shared delivery remains INCOMPLETE, next verify; no deployment or release.
 All product gates stay open. See controller continuation for the Drive timestamp
 lag/revision evidence and overlapping monitoring cursor. Next: stable-ID renames,
 combined configuration, distinct review and Sites-owned controls after source recovery.
+
+
+## 8 October 2026 — Wedding reviewed option creation and renames
+
+Wedding `e1cf7d08bb96a13b116da481f98ec8fe3886f535` adds full ordinary-option proposals to native reviewed
+preview/commit. Stable renames and combined option/rule creation preserve history
+and prevent label-based substitution. 21 focused checks, 149 regressions,
+TypeScript/five build stages and nine-path remote readback PASS. Canonical
+[task and next work](https://github.com/aquaviator/WVD-Wedding/blob/e1cf7d08bb96a13b116da481f98ec8fe3886f535/handoff/WED-WP-005-OPTION-EDITOR.md).
+Delivery INCOMPLETE, next verify; no deployment, independent acceptance or release.
+Next: full WED-API-019 contract reconciliation and distinct review; Sites controls
+await complete-source recovery. Drive checkpoint verified, Salon unchanged.
+See controller continuation for exact source, monitoring cursor and access evidence.
