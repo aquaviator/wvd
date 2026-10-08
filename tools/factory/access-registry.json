@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-08T15:32:58.302Z",
+  "updatedAt": "2026-10-08T16:21:37.563Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-08T15:32:58.302Z",
-        "source": "GitHub connected identity aquaviator (78605956). WVD c0649d517582d73ff0fd23809ad4a848135234a3 push 37795365560 all four jobs success; PR 37795375855 success, container 37795375953 skipped. Wedding expected-head non-forced push 6035a0ae8b5aa0c239b7b21ff88a6936566b6fba, exact seven-file comparison/readback; no product Actions run. Salon 0d33503f555bb557e3b89c32c49551253762f992; both draft PR1 unassigned. Native reviewed-menu commit remains GitHub-only; hosted/distinct verification NOT_RUN."
+        "at": "2026-10-08T16:21:37.563Z",
+        "source": "GitHub connector identity aquaviator (78605956). WVD 2cfc6af1a2a7742465deac47b02abe1c3f176d4d push 37801771465 all four jobs success; PR 37801781105 success, container 37801781100 skipped. Wedding expected-head non-forced push to 6aab68148b6a40e58c0c892048c522c189c715f4; seven files compared/read back exactly, no product Actions run. Salon 0d33503f555bb557e3b89c32c49551253762f992 unchanged; both draft PR1 unassigned. Native withdrawal repair remains undeployed; hosted/distinct review NOT_RUN."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-08T15:32:58.302Z",
-        "source": "Drive profile admin@wearvalleydigital.com verified. Direct-child changed-record query across WVD/Salon/Wedding roots plus Wedando brand root 1DrJ9zXfQmOuWvuMym7nWLa-29ifn-lDP since 2026-10-08T14:34:55.022Z returned no changes before work; not recursive asset verification. Queue 16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5vOHTk unchanged at 2026-10-05T17:02:00.977Z. Wedding START 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs received revision-guarded concise 6035a0a handoff linking canonical GitHub task; exact text/link typography and existing 1 date/7 rich-link chips verified. Modified 2026-10-08T15:31:12.012Z. No worker dispatch, asset edit or sharing change."
+        "at": "2026-10-08T16:21:37.563Z",
+        "source": "Drive profile admin@wearvalleydigital.com verified. Direct-child changed-record scan of WVD/Salon/Wedding roots and Wedando brand root 1DrJ9zXfQmOuWvuMym7nWLa-29ifn-lDP since 2026-10-08T15:32:58.302Z found no changed records before work; not recursive payload verification. Queue 16Q8nFXWd9u-1rtQ0m6o4Z36yioLaU2fGMx6Oj5vOHTk unchanged at 2026-10-05T17:02:00.977Z. Wedding START 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs received revision-guarded concise 6aab681 checkpoint linking canonical product task; exact text, link typography and existing 1 date/7 rich-link chips verified; modified 2026-10-08T16:20:20.881Z. No worker dispatch, asset overwrite or sharing change."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",

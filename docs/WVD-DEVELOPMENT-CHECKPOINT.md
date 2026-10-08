@@ -1587,3 +1587,13 @@ remotely. Not deployed. Shared delivery contract adopted; verify/deploy remain H
 Stable IDs/eligibility, Sites frontend/recovery and distinct/full acceptance remain
 open. See [controller continuation](WVD-CONTROLLER-CONTINUATION.md) and its canonical
 product-task link. Salon and WVD PR8 work preserved; no founder input required.
+
+
+## Wedding withdrawal history — 8 October 2026
+
+Wedding `6aab68148b6a40e58c0c892048c522c189c715f4` repairs native withdrawal history and
+clears current meal allocation while preserving other invitations. 18 focused
+checks, 68 regressions, TypeScript/build and seven-file readback pass. Not deployed;
+verify/deploy and all full acceptance gates remain open. See the latest
+[controller continuation](WVD-CONTROLLER-CONTINUATION.md) and canonical product task
+for source, next work and access evidence. No founder input required.

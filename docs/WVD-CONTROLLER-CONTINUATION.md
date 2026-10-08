@@ -1173,3 +1173,45 @@ Not deployed: last verified private version 6/source ed03a2e stays distinct.
 All 14 package gates/32 full scenarios and commercial restrictions remain open.
 Salon research remains a review candidate. No founder input, sends, real data,
 financial/health flows, audience expansion, release or extra spending.
+
+
+## Wedding invitation withdrawal repair — 8 October 2026
+
+Wedding `6aab68148b6a40e58c0c892048c522c189c715f4` is pushed non-forced with expected-head guard
+to development/undecided-date-onboarding, draft PR #1. WED-WP-004's existing native
+withdrawal action had no response-history transition; WED-REQ-020 requires one.
+This concrete gap was repaired before the larger stable-option/eligibility task.
+Canonical scope, results and next work:
+[withdrawal task](https://github.com/aquaviator/WVD-Wedding/blob/6aab68148b6a40e58c0c892048c522c189c715f4/handoff/WED-WP-004-WITHDRAWAL-HISTORY.md).
+
+18 focused production-route/SQLite checks and 68 affected regressions PASS;
+TypeScript and all five build stages PASS. Historical evidence bytes restored.
+Seven paths compared/read back exactly; no product Actions run exists. 215 source
+blobs matched base 6035a0a before work; generated tsbuildinfo and four remote binary
+assets excluded. Prior choices/review remain in history while current allocation
+is cleared. Current guest scope, export row-removal delta and existing explicit
+outbox suppression were verified; no sends, automatic grant revocation or deletion.
+
+Shared factory `idea` and `delivery-status` CLI used. Plan hash
+`a8c85d7882276330fa39d71c167fe9899f483ee669d34c2ef2deb24b929a8ef7`.
+Status INCOMPLETE (exit 2), next verify; research/blueprint/build evidence is
+structurally complete, verify/deploy HOLD. Measured implementation-to-receipt time
+6.2 minutes, repairCount 0; input/output tokens and escaped defects null/unavailable.
+Working plans/receipts remain ignored controller scratch; source/provider records
+are authoritative. No independent verification or delivery-completion claim.
+
+Fresh WVD base 2cfc6af push 37801771465 passed all four jobs; PR 37801781105
+success, container 37801781100 skipped. Both product heads/PR ownership refreshed,
+no competing work detected. Salon remains 0d33503f555bb557e3b89c32c49551253762f992.
+Direct-child Drive monitoring since 2026-10-08T15:32:58.302Z found no new changes;
+no recursive asset claim. Queue unchanged. Wedding START HERE concise checkpoint
+modified 2026-10-08T16:20:20.881Z, exact text/chips/link typography verified.
+GitHub/Drive access evidence refreshed only; earlier Sites evidence dates preserved.
+
+Next: distinct candidate review, stable option IDs/person eligibility and Sites-owned
+withdrawal/menu controls after supported full-source recovery. Brand verification
+remains separate. Not deployed: private version 6/source ed03a2e stays distinct.
+All original contracts, 14 package gates and 32 full scenarios remain open.
+No founder input, real data, financial/health flow, live send, release, audience
+change or extra spending. Existing booking runtime and AI-discovery standard 1.5.0
+are already recorded; do not repeat their historical setup requests.
