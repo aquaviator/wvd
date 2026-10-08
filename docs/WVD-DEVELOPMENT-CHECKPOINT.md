@@ -1576,3 +1576,14 @@ and their guide read; payload verification and adoption remain pending.
 See the latest [controller continuation](WVD-CONTROLLER-CONTINUATION.md) for exact
 evidence and source-recovery/worker boundaries. Salon research remains a review
 candidate. No founder input, live send, release, audience or spending change.
+
+
+## Wedding reviewed menu commit — 8 October 2026
+
+Wedding `6035a0ae8b5aa0c239b7b21ff88a6936566b6fba` adds atomic reviewed native menu commits,
+truthful meal history/unresolved choices and affected export freshness. 22 focused
+checks, 96 regressions, TypeScript and production build pass; seven paths verified
+remotely. Not deployed. Shared delivery contract adopted; verify/deploy remain HOLD.
+Stable IDs/eligibility, Sites frontend/recovery and distinct/full acceptance remain
+open. See [controller continuation](WVD-CONTROLLER-CONTINUATION.md) and its canonical
+product-task link. Salon and WVD PR8 work preserved; no founder input required.

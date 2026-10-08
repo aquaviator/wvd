@@ -1129,3 +1129,47 @@ awaiting distinct review, target unselected and baseline acceptance held.
 Continue independent native work, exact-output review or supported source recovery.
 No founder input, payment, health capture, real data, live send, audience expansion,
 commercial release or additional spend is required by this slice.
+
+
+## Wedding reviewed native menu commit — 8 October 2026
+
+Wedding `6035a0ae8b5aa0c239b7b21ff88a6936566b6fba` is pushed non-forced with expected-head guard
+to development/undecided-date-onboarding; draft PR #1 remains unreleased.
+Canonical scope, decisions, evidence and next work are in the product-owned
+[menu-commit task](https://github.com/aquaviator/WVD-Wedding/blob/6035a0ae8b5aa0c239b7b21ff88a6936566b6fba/handoff/WED-WP-005-MENU-COMMIT.md).
+The native exact-label adapter commits reviewed changes atomically, preserves
+meal history/attendance, exposes unresolved selections and reflects affected
+selected-output export freshness. 22 focused route/SQLite checks, 96 relevant
+regressions, TypeScript and five production build stages PASS. Seven remote paths
+match exactly; no product Actions run exists. Historical receipts preserved.
+
+WVD c0649d5's new working-brief/idea-to-deploy contract was adopted for this task,
+without retrofitting old work. Plan hash
+4111e1db3dd4d5c4f9a0e95d1f57166ec7327198613780130675693696b51a40;
+shared delivery engine reports INCOMPLETE, next stage verify. Research/blueprint/
+build evidence is structurally complete for this bounded scope; verify/deploy
+HOLD, with no fabricated acceptance/deployment receipt. Task execution measured
+7.86 minutes through receipt generation; repairCount 1 (nested delta test
+assertion), input/output tokens and escaped defects null/unavailable.
+Ignored working plan/receipts are controller scratch, not provider proof.
+
+Fresh WVD base push 37795365560 passed all four jobs; PR 37795375855 success and
+container 37795375953 skipped. Both product PRs were unassigned; Wedding base
+46faac3 and Salon 0d33503 stayed unchanged before execution. 211 Wedding source
+blobs matched the base; four remote binaries and generated tsbuildinfo excluded.
+The independent WVD PR8 merge and its new delivery contract are preserved.
+
+Direct-child Drive monitoring since 2026-10-08T14:34:55.022Z found no new changes
+in WVD/Salon/Wedding roots or the Wedando brand-pack root. This is not recursive
+payload/hash verification. Queue modification remains 2026-10-05T17:02:00.977Z.
+Wedding START HERE now links the canonical task; revision-guarded append and
+native chips/link styles verified, modified 2026-10-08T15:31:12.012Z.
+Only observed GitHub/Drive access evidence was refreshed; Sites failure dates stay intact.
+
+Next: exact-output distinct review, bounded stable option IDs/person eligibility
+with legacy compatibility, then Sites-owned menu/review controls after supported
+complete-source recovery. Brand asset verification/adoption remains separate.
+Not deployed: last verified private version 6/source ed03a2e stays distinct.
+All 14 package gates/32 full scenarios and commercial restrictions remain open.
+Salon research remains a review candidate. No founder input, sends, real data,
+financial/health flows, audience expansion, release or extra spending.
