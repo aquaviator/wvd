@@ -1,5 +1,9 @@
 # WVD engineering instructions
 
+For idea-to-deployment work, start with `docs/WVD-WORKING-BRIEF.md` and follow
+`docs/WVD-IDEA-TO-DEPLOY.md`. Use the existing factory `idea` and
+`delivery-status` commands; a generated plan is never a completed deployment.
+
 Read `docs/WVD-DEVELOPMENT-STANDARD.md` before architecture or implementation.
 
 - All web-facing projects with creative content inherit the visual/video/text

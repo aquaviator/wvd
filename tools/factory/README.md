@@ -1,5 +1,12 @@
 # Shared factory bootstrap 0.1.0
 
+Idea intake and delivery evidence now use the controller-operated
+[idea-to-deploy contract](../../docs/WVD-IDEA-TO-DEPLOY.md):
+`node cli.mjs idea idea.example.json` generates a bounded blueprint/stage plan;
+`node cli.mjs delivery-status <plan.json> <receipts.json> <git-sha>` reports the
+first incomplete stage and invalidated evidence. These commands do not dispatch
+agents or deploy. Existing provider execution and verification remain required.
+
 All task packets inherit the versioned [WVD development standard](../../docs/WVD-DEVELOPMENT-STANDARD.md):
 existing Google platform, no new service subscriptions and reuse before build.
 Run `node cli.mjs standard` to inspect the profile and revision-bound candidate

@@ -5,6 +5,7 @@ import {execFileSync, spawnSync} from 'node:child_process';
 import {mkdtempSync, writeFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {assessCiAccessReceipt} from '../access-receipt.mjs';
 import {accessReport} from '../../google-development-access/access-report.mjs';
 
@@ -94,13 +95,13 @@ test('CLI emits bounded assessment and fails mismatched input without echoing pr
   const cli = new URL('../cli.mjs', import.meta.url);
   try {
     writeFileSync(receiptFile, JSON.stringify(receipt)); writeFileSync(evidenceFile, JSON.stringify(options));
-    const output = execFileSync(process.execPath, [cli.pathname, 'access-receipt', receiptFile, evidenceFile], {encoding: 'utf8'});
+    const output = execFileSync(process.execPath, [fileURLToPath(cli), 'access-receipt', receiptFile, evidenceFile], {encoding: 'utf8'});
     assert.equal(JSON.parse(output).status, 'RECEIPT_MATCHED');
     receipt.secret = 'do-not-echo'; writeFileSync(receiptFile, JSON.stringify(receipt));
-    const result = spawnSync(process.execPath, [cli.pathname, 'access-receipt', receiptFile, evidenceFile], {encoding: 'utf8'});
+    const result = spawnSync(process.execPath, [fileURLToPath(cli), 'access-receipt', receiptFile, evidenceFile], {encoding: 'utf8'});
     assert.equal(result.status, 1); assert.equal((result.stdout + result.stderr).includes('do-not-echo'), false);
     writeFileSync(receiptFile, '{"secret":"do-not-echo" invalid');
-    const malformed = spawnSync(process.execPath, [cli.pathname, 'access-receipt', receiptFile, evidenceFile], {encoding: 'utf8'});
+    const malformed = spawnSync(process.execPath, [fileURLToPath(cli), 'access-receipt', receiptFile, evidenceFile], {encoding: 'utf8'});
     assert.equal(malformed.status, 1); assert.equal(malformed.stderr.trim(), 'INVALID_ACCESS_RECEIPT_INPUT');
   } finally {rmSync(directory, {recursive: true, force: true});}
 });

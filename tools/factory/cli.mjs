@@ -6,9 +6,16 @@ import {assess, createHandoff} from './handoff.mjs';
 import {developmentStandard,reuseCatalogue,projectPlan} from './standard.mjs';
 import {accessInventory,accessPlan,validateAccessInventory} from './access.mjs';
 import {assessCiAccessReceipt} from './access-receipt.mjs';
+import {deliveryPlan, deliveryStatus} from './delivery.mjs';
 try {
   const [command, file, stateDirectory = '.factory/runs', extra] = process.argv.slice(2);
-  if (command === 'access-check') console.log(JSON.stringify(validateAccessInventory(accessInventory()),null,2));
+  if (command === 'idea' && file) console.log(JSON.stringify(deliveryPlan(JSON.parse(await readFile(resolve(file),'utf8'))),null,2));
+  else if (command === 'delivery-status' && file && extra) {
+    const result = deliveryStatus(JSON.parse(await readFile(resolve(file),'utf8')), JSON.parse(await readFile(resolve(stateDirectory),'utf8')), extra);
+    console.log(JSON.stringify(result,null,2));
+    if (result.status !== 'RECORDED_DELIVERY_COMPLETE') process.exitCode = 2;
+  }
+  else if (command === 'access-check') console.log(JSON.stringify(validateAccessInventory(accessInventory()),null,2));
   else if (command === 'access-receipt' && file && process.argv[4]) {
     // Metadata must be fetched through the trusted connector. Local JSON is not
     // itself authenticated evidence; this command checks its exact bindings.

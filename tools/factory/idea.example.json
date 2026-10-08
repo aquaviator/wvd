@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "example-enquiry-site",
+  "productId": "example-product",
+  "flavour": "public-website",
+  "problem": "Fictional example: customers cannot find the service or contact the business easily.",
+  "audience": "Prospective customers in the UK",
+  "outcome": "An accessible service website with a working enquiry journey",
+  "nonGoals": ["Payments", "Customer accounts"],
+  "acceptance": ["A visitor can find the service and submit an enquiry", "Private enquiry data is inaccessible to anonymous visitors"],
+  "constraints": ["Existing Google platform", "No new paid services", "Synthetic test data only"],
+  "authorityRef": "EXAMPLE_ONLY: replace with this product's actual brief and release authority"
+}
