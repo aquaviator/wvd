@@ -1005,3 +1005,62 @@ preserved; modified 2026-10-07T11:43:41.111Z. GitHub/Drive registry evidence
 refreshed; prior Sites observations retain their actual dates. Salon research and
 target verification remain independent available work. No founder input, live send,
 real data, health capture, payment, audience change, commercial release or spend.
+
+
+## Salon primary-source research review — 8 October 2026
+
+SALON-WVD-003 candidate [`0d33503f555bb557e3b89c32c49551253762f992`](https://github.com/aquaviator/WVD-Salon/commit/0d33503f555bb557e3b89c32c49551253762f992)
+is pushed non-forced with an expected-head guard to `import/salon-foundation`;
+PR #1 remains draft. Task: `handoff/wvd/tasks/SALON-WVD-003.json`.
+Report and hash-bound evidence:
+`handoff/wvd/results/SALON-WVD-003/research-validation.md` and `evidence.json`.
+Status **PRIMARY_SOURCE_REVIEW_RECORDED_APPROVAL_PENDING**, distinct review NOT_RUN.
+This advances the independent research item without completing its commercial
+validation or SALON-AT-030.
+
+The review reconciles the original research's four competitor price/feature claims
+and WhatsApp/Google integration assumptions against eight current primary pages.
+It records corrections, qualified claims and explicit region-specific cost gaps.
+Published offerings do not establish Salon demand, comparative quality, paid
+conversion, contribution margin or provider eligibility. Keep the blueprint's
+pricing hypotheses, pilot exclusions and truthful unavailable-feature handling.
+Commercial and cost signals remain UNKNOWN; the original specification is unchanged.
+
+Source was pinned at ed0e9c16cdf48abb095a91bdc19b4f088230eb9f before the task.
+Original research Drive 14p4le53gUpeFUGziv-xw3RfjJPXrSOQx remains modified
+2026-10-05T15:15:43.877Z; readable text retrieved, original binary hash not verified.
+Five changed handoff paths compared and read back exactly. JSON, report digest,
+ten-item overlay and other-nine-task preservation checks passed; application and
+acceptance tests were not repeated for documentation-only changes. No Salon
+Actions run exists for this candidate; absence is not a passing test result.
+
+Salon START HERE and portfolio receipt were revision-guarded and exact-text/
+native-chip/link-style verified, modified 2026-10-08T13:27:11.055Z and
+2026-10-08T13:27:11.431Z. Queue remains unchanged at 2026-10-05T17:02:00.977Z.
+The pre-work direct-child changed-record query across WVD, Salon and Wedding
+roots since 2026-10-07T11:44:45.488Z returned none; this is not recursive monitoring.
+Both product heads and unassigned draft PR ownership were refreshed. No duplicate
+worker dispatch or competing update was observed.
+
+Fresh WVD f8b8734 push 37616235967 and PR 37616241806 passed all four jobs;
+PR container 37616241652 skipped. GitHub/Drive registry evidence is refreshed for
+this run's actual operations only; previous Sites observations retain their dates.
+Preserve current WVD client-portal and branded-workspace handoffs. AI discovery
+already inherits standard 1.5.0; do not duplicate that planning or expose products.
+
+Next: obtain distinct Research/Product review of this exact findings candidate;
+resolve the identified provider-price gaps before a bounded cost/offer decision.
+Salon-scoped resource/identity/billing evidence for SALON-WVD-002 and full-source/
+independent acceptance for SALON-WVD-001 remain open. All downstream dependencies
+and unrun scenarios remain intact. A paid pilot is not authorised by desk research.
+
+Wedding remains 75385166583a500b96c12cbf42db919886507977, undeployed native slices
+and all fourteen package/32 full scenario gates open. Continue already-scoped native
+menu preview/commit, stable options/person eligibility or supported recovery work;
+Sites owns frontend integration after complete supported source recovery. The last
+verified private live source ed03a2e/version 6 stays distinct from GitHub candidates.
+No unsupported source-helper retry occurred.
+
+No product code, deployment, financial execution, live send, real customer data,
+audience, commercial release or spending changed. No specific founder input is
+needed for the remaining independent authorised work.

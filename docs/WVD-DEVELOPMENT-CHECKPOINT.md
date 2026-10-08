@@ -1542,3 +1542,20 @@ Sites recovery and distinct/hosted verification still required. Drive receipt
 modified 2026-10-07T11:43:41.111Z. Detailed scope, evidence and next work are
 in the latest controller continuation. Salon ed0e9c1 and WVD branded-workspace
 work are preserved. No founder input or additional spending required.
+
+
+## Salon primary-source review candidate — 8 October 2026
+
+Salon `0d33503f555bb557e3b89c32c49551253762f992` records SALON-WVD-003's bounded research review:
+eight primary pages, seven claim findings, explicit regional-cost uncertainty
+and unproven demand/economics. Five handoff files compared/read back exactly;
+JSON, report digest and unchanged-gate checks passed. No application tests repeated.
+Both Drive receipts are verified. Findings await distinct review; SALON-WVD-003
+and SALON-AT-030 are not complete. Commercial/cost signals remain UNKNOWN.
+
+SALON-WVD-001 acceptance hold, unselected target, original contracts, all other
+task dependencies and unrun scenarios remain intact. Wedding stays 7538516 with
+its undeployed work and existing full acceptance gates. See the latest
+[controller continuation](WVD-CONTROLLER-CONTINUATION.md) for exact evidence and
+next work. No release, live send, financial execution, audience or spending change;
+no founder input needed.
