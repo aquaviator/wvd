@@ -1612,3 +1612,15 @@ for source, next work and access evidence. No founder input required.
 - Shared delivery CLI INCOMPLETE, next verify; no fabricated completion.
   Drive checkpoint verified, registry observations refreshed; Salon unchanged.
   All 14 Wedding gates/32 full scenarios and product release restrictions remain.
+
+
+## 8 October 2026 — Wedding ordinary meal eligibility
+
+Wedding `6833a020b5fa130c5119d734b7b899218e4aafcc` adds reviewed adult/child eligibility and explicit
+no-meal option metadata with legacy compatibility. 22 focused checks, 127
+regressions, TypeScript and five build stages PASS; nine remote paths verified.
+Canonical [task and next work](https://github.com/aquaviator/WVD-Wedding/blob/6833a020b5fa130c5119d734b7b899218e4aafcc/handoff/WED-WP-005-MEAL-ELIGIBILITY.md).
+Shared delivery remains INCOMPLETE, next verify; no deployment or release.
+All product gates stay open. See controller continuation for the Drive timestamp
+lag/revision evidence and overlapping monitoring cursor. Next: stable-ID renames,
+combined configuration, distinct review and Sites-owned controls after source recovery.

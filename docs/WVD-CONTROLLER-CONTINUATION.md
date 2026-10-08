@@ -1258,3 +1258,47 @@ Brand asset verification/adoption remains separate. Last verified private versio
 6/source ed03a2e stays distinct. Original contracts, all 14 package gates and
 32 full scenarios remain open. No founder input, real data, health/financial
 flows, sends, audience expansion, commercial release or additional spend.
+
+
+## Wedding ordinary meal eligibility — 8 October 2026
+
+Wedding `6833a020b5fa130c5119d734b7b899218e4aafcc` pushed with expected-head non-forced guard to
+ development/undecided-date-onboarding; draft PR1 remains unreleased.
+Canonical [task, evidence and next work](https://github.com/aquaviator/WVD-Wedding/blob/6833a020b5fa130c5119d734b7b899218e4aafcc/handoff/WED-WP-005-MEAL-ELIGIBILITY.md).
+The native reviewed menu flow supports explicit ALL/ADULT/CHILD and MEAL/NO_MEAL
+rules. Both label and ID replies enforce them; omitted saved choices revalidate.
+Material changes preserve choice history and unresolved state without changing
+attendance. No label inference or new personal fields. Ambiguous person references
+now fail closed, following a self-review finding.
+
+22 focused route/SQLite checks, 127 regressions, TypeScript and all five build
+stages PASS. Historical receipt bytes restored and matched to base hashes.
+Nine paths compared/read back exactly; no product Actions run. Four missing
+remote binaries and generated tsbuildinfo excluded; never deploy the text snapshot.
+Fresh branch/PR ownership and CI showed no competing work or relevant failure.
+WVD base a45866d push 37824698044 passed all four jobs, PR 37824703926 success,
+container 37824704018 skipped. Salon remains 0d33503 and its existing gates stay open.
+
+Shared factory idea/delivery-status used; plan
+`4ac19ac9972fbb24441be33a2ad37705a311f1b3a92fa11d543d878c36533bc6`.
+Research/blueprint/build structurally complete; INCOMPLETE exit 2, next verify;
+verify/deploy HOLD. Measured implementation-to-evidence 4.94 minutes, repairCount 1;
+two preparation errors, input/output tokens and escaped defects null/unavailable.
+Creator evidence is not independent verification. Working receipts remain ignored.
+
+Drive direct-child scan since 2026-10-08T18:29:18.318Z found no changes; queue
+unchanged. Concise Wedding checkpoint is revision-guarded and text/style/chip
+verified. Provider modified_time reports 2026-10-08T18:28:35.360Z, which is
+older than this run. Trust the changed revision/readback for this write. Next scan
+must overlap from 2026-10-08T18:28:18.287Z and compare document revisions; do not
+advance a timestamp-only watermark to observation time. Registry records this
+limitation. Sites failure evidence dates remain unchanged; no unsupported retry.
+
+Next: reviewed stable-ID renames and combined option creation/configuration;
+Sites-owned filtering/menu/review controls after supported full-source recovery.
+Distinct candidate review and brand asset verification remain separate open work.
+Last verified private deployment version 6/source ed03a2e stays distinct. All
+original contracts, 14 package gates and 32 full scenarios remain open. Existing
+booking runtime and AI-discovery standard 1.5.0 already cover the historical
+external-thread requests; do not repeat setup. No founder input, real data,
+health/financial flow, live send, audience expansion, release or additional spend.
