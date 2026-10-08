@@ -1,5 +1,37 @@
 # Controller continuation — 5 October 2026
 
+## Current priority — Wedding branch reconciliation, 8 October 2026
+
+Read [the reconciliation preflight](WVD-WEDDING-BRANCH-RECONCILIATION.md) before
+older Wedding continuation entries below. Fresh all-branch discovery found staging
+`1bcdd422756d15e77c625d669cb3ca0fa8223f93` with controller takeover, branding,
+Cloudflare/pilot records and passing CI, diverged from integration `d44ae2a24bc50a3eac87ca3d404e83a27aed88eb`.
+The last common source is `75385166583a500b96c12cbf42db919886507977` (19 versus 7 commits).
+Earlier Sites-only/live-source and universally unrun claims are historical and
+must be reconciled with newer product-owned scoped evidence, without treating
+source-recorded hosting/access as a fresh provider probe.
+
+Bounded preflight completed: four overlapping files compared; two workspace-route
+conflict blocks; a synthetic reviewed-withdrawal payload incompatibility reproduced;
+distinct source review confirmed preservation requirements. Both product branches
+and workers were left untouched. No new menu implementation, merge or deployment.
+Factory delivery INCOMPLETE, next blueprint; only research structurally complete.
+
+Next: refresh staging current-state/PR2 and owning controller handback, then reconcile
+the two source files and seven integration commits in one owned isolated candidate.
+Preserve review gates, stable meal history, pending-audience suppression and staging
+lifecycle protections; run both branches' affected tests and distinct candidate review.
+If that ownership remains unavailable, continue Salon's existing independent review
+work. Do not repeat this unchanged preflight, duplicate the pilot, retry its blocked
+backup download, or extend the older Wedding line before reconciliation.
+
+Drive START has a current correction near the top; exact text, effective link style
+and native chips verified. Next direct-child scan overlaps from
+`2026-10-08T21:24:36.066Z`, with content/revision comparison; no recursive asset claim.
+Salon stays `0d33503f555bb557e3b89c32c49551253762f992`. No founder input is needed for
+this coordination outcome; all product release, send, data and spend limits remain.
+
+
 Read this with AGENTS.md, WVD-PROJECT-AUTHORITY.md, the development checkpoint,
 WVD-ACCESS-AUTOMATION.md and WVD-ACCESS-HANDOFF-2026-10-05.md. Existing authority,
 personal-calendar blocking, Sites ownership and GBP 5 total hosting allowance

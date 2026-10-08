@@ -1,5 +1,16 @@
 # WVD development checkpoint
 
+## Current Wedding source correction — 8 October 2026
+
+Fresh discovery found divergent staging/pilot and menu-integration branches.
+[Reconciliation preflight](WVD-WEDDING-BRANCH-RECONCILIATION.md) records exact heads,
+two route merge conflicts, a reproduced withdrawal payload incompatibility and
+distinct source review. Product branches untouched; no deployment or full acceptance.
+Read this and the latest controller priority before historical Wedding entries.
+Next is ownership-coordinated integration, then affected candidate tests; independent
+Salon review remains available. No routine founder approval is required.
+
+
 Authority: agreed founder brief and subsequent instructions in the development
 conversation. The repository development standard governs implementation. This
 checkpoint records progress; it does not replace product requirements or release
