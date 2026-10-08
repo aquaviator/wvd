@@ -1597,3 +1597,18 @@ checks, 68 regressions, TypeScript/build and seven-file readback pass. Not deplo
 verify/deploy and all full acceptance gates remain open. See the latest
 [controller continuation](WVD-CONTROLLER-CONTINUATION.md) and canonical product task
 for source, next work and access evidence. No founder input required.
+
+
+## 8 October 2026 — Wedding stable meal references
+
+- Wedding development candidate `65649df9715550f04f7b83eb70a6a22a41a46663` pushed with expected-head
+  guard, nine paths read back exactly; draft PR1 remains unreleased.
+- Additive stable meal references with legacy label compatibility and truthful
+  history. 20 focused route/SQLite checks, 107 regressions, TypeScript and five
+  build stages PASS. No hosted or distinct verification/deployment.
+- Canonical [task and next work](https://github.com/aquaviator/WVD-Wedding/blob/65649df9715550f04f7b83eb70a6a22a41a46663/handoff/WED-WP-005-STABLE-MEALS.md).
+  Next: ordinary person eligibility/no-meal configuration, stable-ID rename
+  support, distinct review and Sites-owned controls after full-source recovery.
+- Shared delivery CLI INCOMPLETE, next verify; no fabricated completion.
+  Drive checkpoint verified, registry observations refreshed; Salon unchanged.
+  All 14 Wedding gates/32 full scenarios and product release restrictions remain.

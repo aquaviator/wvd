@@ -1215,3 +1215,46 @@ All original contracts, 14 package gates and 32 full scenarios remain open.
 No founder input, real data, financial/health flow, live send, release, audience
 change or extra spending. Existing booking runtime and AI-discovery standard 1.5.0
 are already recorded; do not repeat their historical setup requests.
+
+
+## Wedding stable meal references — 8 October 2026
+
+Wedding `65649df9715550f04f7b83eb70a6a22a41a46663` is pushed non-forced with expected-head guard
+to development/undecided-date-onboarding; draft PR #1 remains unreleased.
+Canonical scope, decisions, creator evidence and next work:
+[stable-meal task](https://github.com/aquaviator/WVD-Wedding/blob/65649df9715550f04f7b83eb70a6a22a41a46663/handoff/WED-WP-005-STABLE-MEALS.md).
+Reviewed menu commits persist stable option references; unchanged labels retain
+IDs, removed/reintroduced labels get new IDs. Existing label clients remain
+compatible. Current owner/guest replies validate event-scoped references and
+preserve prior IDs through response/menu/withdrawal/postponement history.
+No read-time migration or untouched-invitation rewrite.
+
+20 focused production-route/SQLite checks and 107 relevant regressions PASS;
+TypeScript and all five production build stages PASS. Historical receipts restored.
+Nine changed paths compared/read back exactly; no product Actions run exists.
+218 source blobs matched 6aab681 before work; generated tsbuildinfo and four
+remote binary assets excluded. This text-only snapshot must not be deployed.
+
+Shared factory idea/delivery-status CLI used. Plan hash
+`5f2266c4ff775631cb6a622fa9a7f54cb3068e86d9698fc1c9ce046d692c83f7`.
+Status INCOMPLETE (exit 2), next verify. Research/blueprint/build evidence is
+structurally complete; verify/deploy HOLD. Measured implementation-to-evidence
+4.31 minutes, repairCount 0; one preparation-path error corrected before tests.
+Input/output tokens and escaped defects null/unavailable. Working plan/receipts
+remain ignored scratch; source/provider records are authoritative.
+
+Fresh WVD base 59dcff9 push 37808216888 passed all four jobs; PR 37808223895
+success, container 37808223923 skipped. Product heads/PR ownership refreshed;
+no competing source work observed. Salon remains 0d33503. Direct-child Drive scan
+since 2026-10-08T16:21:37.563Z found no changed records; no recursive asset claim.
+Queue unchanged. Wedding START concise checkpoint modified 2026-10-08T18:28:18.287Z,
+exact text/link typography/native chips verified. GitHub/Drive access evidence
+updated only for observed operations; earlier Sites evidence dates preserved.
+
+Next: explicit ordinary person eligibility/no-meal configuration with legacy
+compatibility, then reviewed stable-ID rename support. Distinct candidate review
+and Sites-owned controls after complete-source recovery remain outstanding.
+Brand asset verification/adoption remains separate. Last verified private version
+6/source ed03a2e stays distinct. Original contracts, all 14 package gates and
+32 full scenarios remain open. No founder input, real data, health/financial
+flows, sends, audience expansion, commercial release or additional spend.
