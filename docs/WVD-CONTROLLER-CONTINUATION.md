@@ -1064,3 +1064,68 @@ No unsupported source-helper retry occurred.
 No product code, deployment, financial execution, live send, real customer data,
 audience, commercial release or spending changed. No specific founder input is
 needed for the remaining independent authorised work.
+
+
+## Wedding read-only menu impact preview — 8 October 2026
+
+Product candidate `46faac3025114290ed634af062fbb0b6231fc592` is pushed non-forced with an expected-head
+guard to development/undecided-date-onboarding, draft PR #1. Fresh WVD 0a7bc432
+push 37784837723 and PR 37784845878 passed all four jobs; PR container
+37784845488 skipped. Product heads and unassigned draft PR ownership were checked
+before work, with no competing source update. Preserve the existing WVD
+client-portal/branded-workspace handoffs and AI-discovery inheritance standard 1.5.0.
+
+WED-WP-005 / WED-REQ-023's first preview criterion now has a native owner-only
+POST /api/menu/preview. It compares proposed and current exact-label menus,
+identifies affected accepted selections and already unavailable choices, and
+binds a deterministic review hash to actor, wedding, proposal, event/response
+and aggregate revision. Label replacement is removal plus addition, never
+an inferred rename. Optional blanks/nonattending/withdrawn invitations do not
+create active allocations. No state, audit, receipt, outbox or export write occurs.
+
+Task: handoff/WED-WP-005-MENU-PREVIEW.md. Hash-bound evidence:
+evidence/continuation/menu-preview-results.json. 21 focused production-route/
+SQLite-adapter checks, 28 existing meal-response and 14 export regressions,
+TypeScript and all five production build stages PASS on Node v24.19.0.
+Historical regression receipts were restored. Seven changed paths compared and
+read back exactly. No product Actions run exists. Hosted identity/D1, frontend
+and distinct verification remain NOT_RUN; all fourteen package gates and 32
+complete scenarios remain open. Source-only creator verification is not release.
+
+This is a read-only precursor, not complete WED-API-019. Stable option identities,
+person eligibility, reviewed atomic commit/history/unresolved-state persistence,
+menu-driven export consequences and frontend controls remain unfinished.
+Original contracts, schema, locks, existing application files and binaries
+were preserved. 206 local source blobs matched pinned base 7538516 before work;
+generated tsbuildinfo was excluded and four historical binary assets remain remote.
+
+**Not deployed.** Full supported Sites recovery must reconcile this helper/route,
+prior meal validation, current export helpers/routes and earlier server/media
+limits before exact-source build/private publication. Never deploy incomplete
+text recovery. Last verified private version 6/source ed03a2e remains distinct;
+no unsupported source-helper retry occurred. Next native work is a frozen
+stable-option/reviewed-commit slice; Sites owns eventual frontend integration.
+
+Drive changed-record monitoring found a new product-root child:
+[03_Wedando Brand Assets — v1.0](https://drive.google.com/drive/folders/1DrJ9zXfQmOuWvuMym7nWLa-29ifn-lDP),
+created 2026-10-08T14:01:42.368Z. Its START-HERE.txt and
+04_Guides-Tokens/BRAND-AND-WORKER-GUIDE.txt were read (file IDs and modification
+times are in the product continuation). The guide separates Wedando product chrome
+from couple themes/typography, previews and immutable published snapshots.
+Do not overwrite the active asset worker or duplicate its output. Full payload/
+manifest verification, source availability and Sites adoption remain unperformed;
+the new folder is not deployment or commercial-release evidence.
+
+The scan was direct-child only across WVD/Salon/Wedding roots since
+2026-10-08T13:29:47.521Z, followed by listing the new folder and Guides-Tokens;
+it does not claim recursive coverage. Queue remains unchanged at
+2026-10-05T17:02:00.977Z. Wedding Drive START HERE was revision-guarded,
+exact-text/native-chip/effective-link-style verified; modified 2026-10-08T14:33:30.083Z.
+GitHub/Drive registry evidence is current for observed operations only; earlier
+Sites failure dates remain intact.
+
+Salon stays 0d33503f555bb557e3b89c32c49551253762f992 with its research candidate
+awaiting distinct review, target unselected and baseline acceptance held.
+Continue independent native work, exact-output review or supported source recovery.
+No founder input, payment, health capture, real data, live send, audience expansion,
+commercial release or additional spend is required by this slice.

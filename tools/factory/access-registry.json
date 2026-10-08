@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-08T13:29:47.521Z",
+  "updatedAt": "2026-10-08T14:34:55.022Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-08T13:29:47.521Z",
-        "source": "GitHub connector: current WVD f8b8734f4480a2ad1004ec578f618e722fb3e849 push 37616235967 and PR 37616241806 all four jobs success; PR container skipped. Salon expected-head non-forced update to 0d33503f555bb557e3b89c32c49551253762f992, exact five-file comparison/readback; no product Actions run exists. Wedding 75385166583a500b96c12cbf42db919886507977 and unassigned draft PR ownership refreshed. Research findings await distinct review; no product deployment or release."
+        "at": "2026-10-08T14:34:55.022Z",
+        "source": "GitHub connector: WVD 0a7bc432aa3dd298077b43065b5a4731910ecf41 push 37784837723 and PR 37784845878 all four jobs success; PR container skipped. Wedding expected-head non-forced update to 46faac3025114290ed634af062fbb0b6231fc592, exact seven-file comparison/readback; no product Actions run exists. Salon 0d33503f555bb557e3b89c32c49551253762f992 and unassigned draft PR ownership refreshed. Native menu preview is GitHub-only; hosted/distinct verification NOT_RUN."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-08T13:29:47.521Z",
-        "source": "Google Drive connector profile admin@wearvalleydigital.com; direct-child changed-record query across WVD 13mG23q4WgFJJA8p_ZKS2YNi1iVc_rvuB, Salon and Wedding roots since 2026-10-07T11:44:45.488Z returned none before work (not recursive). Queue unchanged 2026-10-05T17:02:00.977Z. Salon research 14p4le53gUpeFUGziv-xw3RfjJPXrSOQx read as text, original binary hash unverified. Salon START 1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4 and portfolio 1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA revision-guarded append for product 0d33503f555bb557e3b89c32c49551253762f992; exact text/native chips/effective link styles verified, modified 2026-10-08T13:27:11.055Z and 2026-10-08T13:27:11.431Z. No worker dispatch/sharing change."
+        "at": "2026-10-08T14:34:55.022Z",
+        "source": "Google Drive connector profile admin@wearvalleydigital.com. Direct-child changed-record scan across WVD/Salon/Wedding roots since 2026-10-08T13:29:47.521Z found new Wedando brand folder 1DrJ9zXfQmOuWvuMym7nWLa-29ifn-lDP (created 2026-10-08T14:01:42.368Z); folder and Guides-Tokens listed, START-HERE 11kdp1KzoGPaV6H42feGduBfK7b8d1vId and guide 1zrr0aJzuBbKepDpfFgOef3wA_mUTG2w9 read. Payload hashes/adoption unverified; no brand-worker write. Queue unchanged 2026-10-05T17:02:00.977Z. Wedding START 1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs revision-guarded append for 46faac3025114290ed634af062fbb0b6231fc592, exact text/native chips/link styles verified; modified 2026-10-08T14:33:30.083Z. No worker dispatch/sharing change; monitoring was not recursive."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",

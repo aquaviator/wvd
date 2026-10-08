@@ -1559,3 +1559,20 @@ its undeployed work and existing full acceptance gates. See the latest
 [controller continuation](WVD-CONTROLLER-CONTINUATION.md) for exact evidence and
 next work. No release, live send, financial execution, audience or spending change;
 no founder input needed.
+
+
+## Wedding menu impact preview — 8 October 2026
+
+Wedding `46faac3025114290ed634af062fbb0b6231fc592` adds owner-only read-only menu review.
+It identifies selected options affected by proposed removal/replacement and binds
+the review to the actual snapshot; it never rewrites replies. 21 focused checks,
+42 meal/export regressions, TypeScript and all five build stages pass.
+Seven paths read back exactly; Drive receipt modified 2026-10-08T14:33:30.083Z.
+
+Not deployed. Stable options, eligibility, reviewed commit/history, export
+consequences, frontend and hosted/distinct acceptance remain open. All original
+contracts and full scenarios are preserved. New Wedando brand assets were discovered
+and their guide read; payload verification and adoption remain pending.
+See the latest [controller continuation](WVD-CONTROLLER-CONTINUATION.md) for exact
+evidence and source-recovery/worker boundaries. Salon research remains a review
+candidate. No founder input, live send, release, audience or spending change.
