@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-08T23:44:47.000Z",
+  "updatedAt": "2026-10-09T00:10:23.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-08T23:44:47.000Z",
-        "source": "GitHub identity aquaviator (78605956) refreshed. Salon parent0d33503 advanced by guarded non-forced update to 5b518d4d18dd283a3ae360bdf434db7d7827d0de; exactly five authorised research handoff paths compared/read back. No application changes or Actions run. WVD base729b896 push37855227683 all four jobs success; PR37855231779 success, container37855231775 skipped. Wedding staging1bcdd42 and integrationd44ae2a unchanged with takeover preserved. Evidence: tools/factory/evidence/salon-pricing-followup-20261008.json; this is not provider/deployment permission."
+        "at": "2026-10-09T00:10:23.000Z",
+        "source": "Fresh profile aquaviator (78605956), current branch heads and draft PRs verified. WVD base7225d536 push37861236930 and PR37861239720 successful; container37861239710 skipped. Salon5b518d4 and Wedding staging1bcdd42/integrationd44ae2a preserved. Shared factory discovery inheritance fix reuses existing code and is locally verified; exact scope in tools/factory/evidence/idea-discovery-inheritance-20261009.json. No provider/deployment access inferred."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-08T23:44:47.000Z",
-        "source": "Profile admin@wearvalleydigital.com refreshed. Direct-child modified-time scan of WVD/Salon/Wedding/brand roots since2026-10-08T21:24:36.066Z found only prior Wedding START update at22:39:55.913Z; not recursive asset verification. Salon START and portfolio read with native controls, then revision-guarded pricing receipts appended and exact text/link/effective style/native counts verified. Exact document identities, revisions and modified times in tools/factory/evidence/salon-pricing-followup-20261008.json. Next scan overlap22:39:55.913Z. No worker output, sharing or assets overwritten."
+        "at": "2026-10-09T00:10:23.000Z",
+        "source": "Fresh profile admin@wearvalleydigital.com. Direct-child modified-time scan since2026-10-08T22:39:55.913Z across WVD/Salon/Wedding/brand roots returned only previous Salon and Wedding START updates. Salon native revision matches previous receipt; current Wedding correction and continuation read. No writes or worker dispatch. Exact revisions in tools/factory/evidence/idea-discovery-inheritance-20261009.json; next overlapping scan from2026-10-08T23:44:19.564Z. Not recursive asset or service-account access proof."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",

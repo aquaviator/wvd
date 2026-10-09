@@ -11,7 +11,7 @@ export function reuseCatalogue() {return structuredClone(catalogue);}
 export const standardHash=createHash('sha256').update(JSON.stringify({standard,catalogue})).digest('hex');
 
 // A plan creates verification work, never evidence of indexing or release authority.
-function publicDiscoveryPlan(flavour) {
+export function publicDiscoveryPlan(flavour) {
   const {checks,...policy}=structuredClone(standard.publicDiscovery);
   return {...policy,surface:flavour==='android-application'?'public-companion-content':'public-web-content',
     status:'NOT_VERIFIED',audienceChangeAllowed:false,

@@ -105,3 +105,10 @@ existing product. Preserve existing backlogs and product constitutions. Retrofit
 only the current item, not every historical ticket. The first measured pilot must
 report both quality and usage before optimising further. The factory's synthetic
 tests verify its bookkeeping; they are not a completed live product pilot.
+
+Idea plans (workflow version 1.1.0) also inherit the same public-search and AI-discovery
+policy and seven NOT_RUN checks as `project` plans, including Android public companion
+content. This creates verification work; it does not change audiences or prove indexing.
+Regenerate older idea plans before resuming: their plan hash and downstream receipt
+bindings change. Preserve historical receipts; do not relabel them for the new plan.
+Record actual source/deployment evidence through the existing acceptance workflow.

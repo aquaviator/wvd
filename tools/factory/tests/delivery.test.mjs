@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {deliveryPlan, deliveryStatus} from '../delivery.mjs';
-import {developmentStandard} from '../standard.mjs';
+import {developmentStandard, projectPlan} from '../standard.mjs';
 const fixture = () => JSON.parse(readFileSync(new URL('../idea.example.json', import.meta.url)));
 const revision = 'a'.repeat(40);
 function evidence(plan) {
@@ -63,5 +63,42 @@ test('tampered plan and duplicate receipts cannot bypass stage requirements', ()
   const plan = deliveryPlan(fixture()), receipts = evidence(plan);
   assert.throws(() => deliveryStatus(plan, [receipts[0], receipts[0]], revision));
   plan.stages[0].criteria = [];
+  assert.throws(() => deliveryStatus(plan, receipts, revision), /PLAN_CHANGED/);
+});
+
+test('idea and project entrypoints inherit the same unverified discovery work for every flavour', () => {
+  for (const [flavour, profile] of Object.entries(developmentStandard().flavours)) {
+    const config = JSON.parse(readFileSync(new URL('../product.example.json', import.meta.url)));
+    config.flavour = flavour;
+    config.reuseDecisions = profile.reuseAssetIds.map(assetId => ({assetId, decision: 'adapt',
+      reason: 'Synthetic consumer review', evidenceRef: 'fixture/reuse'}));
+    const plan = deliveryPlan({...fixture(), flavour});
+    assert.deepEqual(plan.publicDiscovery, projectPlan(config).publicDiscovery);
+    assert.equal(plan.publicDiscovery.checks.length, 7);
+    assert(plan.publicDiscovery.checks.every(check => check.status === 'NOT_RUN' && check.evidenceRef === null));
+    assert.equal(plan.publicDiscovery.status, 'NOT_VERIFIED');
+    assert.equal(plan.publicDiscovery.audienceChangeAllowed, false);
+    assert.equal(plan.publicDiscovery.surface, flavour === 'android-application' ? 'public-companion-content' : 'public-web-content');
+    assert.equal(plan.publicDiscovery.privateData, 'authenticated-and-excluded-from-public-retrieval');
+    assert.equal(plan.publicDiscovery.crawlerPolicy, 'separate-search-retrieval-from-model-training');
+    assert.equal(plan.publicDiscovery.claims, 'no-guaranteed-indexing-ranking-or-ai-citation');
+  }
+});
+
+test('discovery mutation is isolated and cannot become accepted planning evidence', () => {
+  const plan = deliveryPlan(fixture());
+  const original = structuredClone(plan.publicDiscovery);
+  plan.publicDiscovery.checks[0].status = 'PASS';
+  plan.publicDiscovery.audienceChangeAllowed = true;
+  assert.deepEqual(deliveryPlan(fixture()).publicDiscovery, original);
+  assert.throws(() => deliveryStatus(plan, [], revision), /PLAN_CHANGED/);
+  assert.throws(() => deliveryPlan({...fixture(), publicDiscovery: original}), /INVALID_IDEA/);
+});
+
+test('plans generated before discovery inheritance must be regenerated', () => {
+  const plan = deliveryPlan(fixture());
+  const receipts = evidence(plan);
+  delete plan.publicDiscovery;
+  plan.workflowVersion = '1.0.0';
   assert.throws(() => deliveryStatus(plan, receipts, revision), /PLAN_CHANGED/);
 });

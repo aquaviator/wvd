@@ -1,5 +1,12 @@
 # WVD development checkpoint
 
+## Shared discovery inheritance — 9 October 2026
+
+Idea plans now inherit the existing seven public-search/AI-discovery checks through
+the shared builder, matching project plans across all four flavours. Workflow 1.1.0
+requires regenerating old plans; all 74 factory tests pass. [Exact scope and checks](../tools/factory/evidence/idea-discovery-inheritance-20261009.json).
+This creates unverified acceptance work and does not expose or certify any product.
+
 ## Latest Salon cost-evidence correction — 8 October 2026
 
 Product [pricing follow-up](https://github.com/aquaviator/WVD-Salon/blob/5b518d4d18dd283a3ae360bdf434db7d7827d0de/handoff/wvd/results/SALON-WVD-003/uk-pricing-followup.md) holds the earlier WhatsApp free-service

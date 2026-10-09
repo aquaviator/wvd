@@ -1,5 +1,20 @@
 # Controller continuation — 5 October 2026
 
+## Latest shared-flow fix — 9 October 2026
+
+The idea-to-deployment planner now reuses the existing public-discovery builder.
+All four flavours inherit seven NOT_RUN checks, privacy/crawler policy and unchanged
+audiences; Android uses public companion content. Workflow version is 1.1.0.
+Regenerate older idea plans before resuming; their hashes/receipt bindings change.
+No indexed/search-ready product or release is claimed.
+
+Three regression cases reproduced the missing inheritance before the fix; all 74
+factory tests now pass, including project/context consumers. [Evidence](../tools/factory/evidence/idea-discovery-inheritance-20261009.json).
+No product branches or Drive records changed. Wedding takeover remains active in its
+current-state record; Salon pricing assumptions stay held. Next: continue an owned,
+dependency-ready product task using a regenerated plan and exact source evidence.
+Drive scan overlap: `2026-10-08T23:44:19.564Z`; compare content/revisions.
+
 ## Latest Salon pricing follow-up — 8 October 2026
 
 Salon `5b518d4d18dd283a3ae360bdf434db7d7827d0de` now records a [scoped pricing follow-up](https://github.com/aquaviator/WVD-Salon/blob/5b518d4d18dd283a3ae360bdf434db7d7827d0de/handoff/wvd/results/SALON-WVD-003/uk-pricing-followup.md).

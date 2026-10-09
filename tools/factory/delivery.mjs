@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {developmentStandard, standardHash} from './standard.mjs';
+import {developmentStandard, publicDiscoveryPlan, standardHash} from './standard.mjs';
 
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const text = value => typeof value === 'string' && value.trim().length > 0 && value.length <= 2000;
@@ -23,8 +23,9 @@ export function deliveryPlan(idea) {
       !['nonGoals', 'acceptance', 'constraints'].every(k => list(idea[k]))) throw Error('INVALID_IDEA: supply the bounded idea contract; references only, no credentials');
   const profile = developmentStandard().flavours[idea.flavour];
   const plan = {
-    schemaVersion: 1, workflowVersion: '1.0.0', standardHash,
+    schemaVersion: 1, workflowVersion: '1.1.0', standardHash,
     idea: structuredClone(idea),
+    publicDiscovery: publicDiscoveryPlan(idea.flavour),
     blueprint: {id: idea.flavour, baseline: profile.baseline, reviewCandidates: profile.reuseAssetIds,
       policy: 'Inspect current source; reuse, adapt, then build only gaps. Preserve native product stack and constitution.'},
     execution: {mode: 'connected-controller', backgroundService: false, deploysFromThisCommand: false,
