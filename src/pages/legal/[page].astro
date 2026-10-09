@@ -1,7 +1,79 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { loadSite } from '../../lib/validation/load';
-const site=loadSite();
-export function getStaticPaths(){const pages={privacy:{title:'Privacy Policy',body:'Wear Valley Digital does not provide customer accounts or direct checkout. Optional site analytics are disabled unless you consent. Purchases are completed on Etsy, whose privacy information applies when you visit or transact there.'},cookies:{title:'Cookie Policy',body:'This site stores your analytics-consent choice in your browser. Optional analytics are used only after consent. Etsy may apply its own cookies when you follow a link to its service.'},terms:{title:'Website Terms',body:'Wear Valley Digital provides information about its digital products. Product purchases, payment and delivery currently take place through Etsy. This website does not provide customer accounts, consulting, bespoke services or direct downloads. Nothing on this site is accounting, tax, legal or financial advice.'},'digital-product-terms':{title:'Digital Product Terms',body:'Digital products are purchased, paid for and delivered through Etsy. The applicable Etsy transaction terms and applicable consumer rights govern that purchase. Product files are supplied for the purchaser’s own use and may not be resold, redistributed or presented as another seller’s work.'},refunds:{title:'Refund Information',body:'Purchases are completed through Etsy rather than through a Wear Valley Digital checkout. Requests concerning an order, cancellation or refund should be made through the Etsy transaction environment and are governed by the applicable Etsy purchase terms together with applicable consumer rights.'},contact:{title:'Contact',body:'For a product or order enquiry, contact Wear Valley Digital through the configured sales channel or your order conversation. Wear Valley Digital does not currently operate a separate customer-account or direct-download service.',link:true}} as const;return Object.entries(pages).map(([page,data])=>({params:{page},props:{data}}));} const {data}=Astro.props;
+export function getStaticPaths() {
+  return [
+    ['privacy', 'Privacy notice'],
+    ['cookies', 'Cookies and website storage'],
+    ['terms', 'Website terms'],
+    ['digital-product-terms', 'Digital product terms'],
+    ['refunds', 'Order and refund enquiries'],
+    ['contact', 'Contact Wear Valley Digital'],
+  ].map(([page, title]) => ({ params: { page }, props: { title } }));
+}
+const { title } = Astro.props;
+const page = Astro.params.page;
 ---
-<BaseLayout title={`${data.title} | Wear Valley Digital`} description={`${data.title} for Wear Valley Digital.`} canonical={`https://wearvalleydigital.com/legal/${Astro.params.page}/`} index={false}><section class="hero"><div class="wrap"><p class="eyebrow">Legal</p><h1>{data.title}</h1><p class="lede">{data.body}</p>{'link' in data&&<p><a href={site.customer_contact_url}>{site.customer_contact_label}</a></p>}</div></section></BaseLayout>
+<BaseLayout title={`${title} | Wear Valley Digital`} description={`${title} for Wear Valley Digital services and this website.`} canonical={`https://wearvalleydigital.com/legal/${page}/`} index={false}>
+  <section class="hero"><div class="wrap prose"><p class="eyebrow">Wear Valley Digital</p><h1>{title}</h1><p>Updated 6 October 2026</p></div></section>
+  <section class="section"><div class="wrap prose">
+    {page === 'privacy' && <>
+      <h2>Who is responsible</h2>
+      <p>Wear Valley Digital is run by Andy Clarke, based in Weardale, UK. For questions about your personal information or to exercise a privacy right, email <a href="mailto:hello@wearvalleydigital.com">hello@wearvalleydigital.com</a>.</p>
+      <h2>Visiting this website</h2>
+      <p>This website introduces our services and products in development. We have disabled optional visitor analytics and advertising trackers. The hosting service processes technical request information, such as an IP address and browser request, to deliver and protect the website.</p>
+      <h2>Sending an enquiry</h2>
+      <p>When you select “Send enquiry”, the page sends your details securely to WVD. We save the enquiry in our private system and request an email notification to our business mailbox. The confirmation and reference shown on the page mean that your enquiry has been saved. Your details stay on the page if receipt cannot be confirmed, so you can retry.</p>
+      <p>When you contact us, we receive the name, email address, business details and project information you choose to include, together with our correspondence. We use this to respond, understand your request and discuss possible work. Providing this information is voluntary, although we need a way to reply and enough detail to understand the enquiry.</p>
+      <p>If you use the direct email link, your email provider handles the message and we receive it when you send it. Please leave passwords, account credentials and sensitive customer information out of an initial enquiry.</p>
+      <h2>Private Portal sign-in</h2>
+      <p>The Portal uses Google sign-in through Firebase Authentication. Google processes your account identifier, email address and verification status. WVD uses these details to check whether your account is authorised to access the Portal. Private enquiries and project records are available only to authorised accounts.</p>
+      <h2>Why we use the information</h2>
+      <p>We process project enquiries to take steps at your request before entering a contract. Where an enquiry does not concern a possible contract with you, our basis is our legitimate interest in responding to business correspondence. Our legitimate interest in operating a secure website also supports necessary technical processing. An enquiry does not sign you up to marketing.</p>
+      <h2>Service providers and retention</h2>
+      <p>We use Google Cloud and Firebase to process and store online enquiries and operate the private Portal, Google Workspace for business email, and a hosting provider to deliver this website. These providers process information needed to operate their services. Their processing may involve infrastructure outside the UK; their published privacy and data protection terms explain the arrangements that apply.</p>
+      <p>Online enquiry records expire after 90 days. They are then unavailable through the Portal and queued for deletion. Email notifications and subsequent correspondence are separate business records: we keep these while needed to answer your request, follow up an active discussion, or retain a necessary business record, and review them when that purpose ends.</p>
+      <p>If we agree a project, any additional information, systems, retention needs and project terms will be discussed as part of the scope.</p>
+      <h2>Your choices and rights</h2>
+      <p>Depending on the circumstances, you can ask to access or correct your information, request deletion, restrict processing, or receive a portable copy. You can object to processing based on legitimate interests. Contact us using the email address above so we can consider your request.</p>
+      <p>You can also raise a concern with the UK <a href="https://ico.org.uk/make-a-complaint/">Information Commissioner’s Office</a>. We do not use enquiry information to make solely automated decisions about you.</p>
+      <h2>Other websites</h2>
+      <p>External services have their own privacy notices. Follow their guidance when using an email provider, social network or a historical Etsy order conversation.</p>
+    </>}
+    {page === 'cookies' && <>
+      <p>WVD does not currently enable optional visitor analytics or advertising trackers on this website. We do not ask you to accept optional tracking to browse our services.</p>
+      <p>The enquiry form keeps your details in the current page until you submit them. WVD does not save those details in browser cookies or persistent browser storage. After submission, the saved enquiry is handled as described in our privacy notice.</p>
+      <p>The private Portal uses Google sign-in. Its WVD sign-in session lasts for the current page. Google may use its own account cookies during sign-in and applies its own privacy and storage policies.</p>
+      <p>A previous version of this website offered an analytics preference. Any old preference remaining in your browser is not used by the current site and can be removed through your browser’s site-data settings.</p>
+      <p>The hosting service may process technical information needed to deliver and protect the site. External websites and your email app apply their own storage and cookie policies.</p>
+      <p>For how we handle enquiries, read our <a href="/legal/privacy/">privacy notice</a>.</p>
+    </>}
+    {page === 'terms' && <>
+      <h2>Using this website</h2>
+      <p>This website describes Wear Valley Digital’s website, software and automation services, with examples of our own products in development. It does not provide a checkout, take payment or create a project agreement.</p>
+      <h2>Agreeing work</h2>
+      <p>An enquiry starts a discussion. Before work begins, we agree a written scope, deliverables, price, responsibilities and applicable project terms. Hosting, third-party charges, maintenance and ongoing support are included only where they are expressly agreed.</p>
+      <h2>Products in development</h2>
+      <p>Product pages explain their current status. A prototype, planned feature or case study is not an offer of immediate product access, a subscription or a confirmed launch date. Fictional examples are for illustration.</p>
+      <h2>Content and third parties</h2>
+      <p>Please ask before reusing our original text, designs or brand assets beyond normal viewing and sharing a link to this website. Third-party names and materials remain the property of their respective owners. External websites operate under their own terms.</p>
+      <p>General guides and examples are not a substitute for advice specific to your circumstances. Nothing in these website terms removes rights that cannot lawfully be excluded.</p>
+      <p>Questions? <a href="/enquire/">Tell us about your project</a> or email <a href="mailto:hello@wearvalleydigital.com">hello@wearvalleydigital.com</a>.</p>
+    </>}
+    {page === 'digital-product-terms' && <>
+      <p>Products marked as paused, prototypes or in development are not currently offered for purchase or subscription through this website.</p>
+      <p>For a previous Etsy purchase, refer to the listing and terms that applied to that order, your Etsy transaction record and your applicable consumer rights. Please use the original order conversation for order-specific questions.</p>
+      <p>Any future product sale will have its applicable terms available before purchase. Bespoke service projects have a separately agreed scope and project terms.</p>
+      <a class="text-link" href="/services/">Explore WVD services →</a>
+    </>}
+    {page === 'refunds' && <>
+      <p>This website does not take payments. If your question concerns a previous Etsy purchase, use the conversation attached to that order so the transaction can be identified. The terms applicable to the purchase and your consumer rights remain relevant.</p>
+      <p>For an agreed service project, contact us through the project’s agreed contact route and refer to its project terms. You can also email <a href="mailto:hello@wearvalleydigital.com">hello@wearvalleydigital.com</a> to help us identify the right conversation.</p>
+    </>}
+    {page === 'contact' && <>
+      <p class="lede">Have a website to improve, a software idea to explore or a manual process to simplify?</p>
+      <div class="button-row"><a class="button" href="/enquire/">Tell us about your project</a><a class="text-link" href="mailto:hello@wearvalleydigital.com">hello@wearvalleydigital.com</a></div>
+      <p>Wear Valley Digital is run by Andy Clarke in Weardale, UK, with local in-person and remote delivery across the UK.</p>
+      <p>Existing clients should use the contact route agreed for their project. For a historical Etsy order, use the original order conversation.</p>
+    </>}
+  </div></section>
+</BaseLayout>

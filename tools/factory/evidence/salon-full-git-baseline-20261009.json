@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-09T01:23:09.000Z",
+  "task": "SALON-WVD-001-CI",
+  "actor": "codex-controller:/root:2026-10-09T01:09Z",
+  "wvdBase": "632af007d17e77bf240d3dbbbc46ab5fa3114600",
+  "salon": {
+    "before": "5b518d4d18dd283a3ae360bdf434db7d7827d0de",
+    "implementation": "281d29d6474f0de95441b13d542d8ea8ad6d87bd",
+    "receipt": "60620dd57834974ef54b764772c323fe9b7fbf63",
+    "report": "https://github.com/aquaviator/WVD-Salon/blob/60620dd57834974ef54b764772c323fe9b7fbf63/handoff/wvd/results/SALON-WVD-001/ci-reproduction.json",
+    "run": 37869129262,
+    "job": 113622859107,
+    "status": "SUCCESS",
+    "artifactId": 11589202434,
+    "artifactDigestReported": "sha256:84fa094d4b2d612c06697d94a309a7ead965ce25dce5ff5a9e3ddf409789dba6",
+    "artifactByteDigestVerified": false,
+    "artifactMaterialization": "HTTP 403/error 1010; source/database evidence preserved from authenticated job log",
+    "repairedRun": 37868945801,
+    "repair": "Exclude Wrangler metadata.sqlite when selecting exactly one application database; no application change",
+    "checks": [
+      "Full clean Git checkout and exact import tree",
+      "Four historical PNG Git blob hashes and PNG signatures",
+      "Unchanged dependency lock; native install with 683 packages",
+      "TypeScript; five domain tests; native build",
+      "Two empty local D1 migrations; all thirteen application tables empty; no foreign-key violations",
+      "No tracked changes after verification; five receipt paths exact remote readback"
+    ],
+    "PR1": "OPEN_DRAFT",
+    "acceptance": "HOLD_DISTINCT_REVIEW_NOT_RUN",
+    "release": "NOT_APPROVED"
+  },
+  "wedding": {
+    "staging": "1bcdd422756d15e77c625d669cb3ca0fa8223f93",
+    "integration": "d44ae2a24bc50a3eac87ca3d404e83a27aed88eb",
+    "master": "95f61d8a58c17a70502510846f7863c72481f7a8",
+    "ownership": "Current staging handoff still records takeover workers; no mutation or duplicate dispatch"
+  },
+  "drive": {
+    "scanSince": "2026-10-08T23:44:19.564Z",
+    "scope": "Direct children of WVD, Salon, Wedding and brand folders; modification evidence, not recursive asset verification",
+    "observedChangesBeforeWork": "Only overlapping previous Salon START modification; content/revisions read before this write",
+    "start": {
+      "id": "1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4",
+      "revision": "ANLCKQlv_mragTiP0rQbRBhFiryayu8CekD6OE--5RUBaRo_pzNcJsaIGcoBX_Us5Cp4f_RqQ3im50QOk1hHPNC_loEjWUNpBIb9OlOppXE",
+      "counts": {
+        "date": 1,
+        "richLink": 5
+      },
+      "link": {
+        "content": "Read the full-checkout evidence",
+        "textStyle": {
+          "link": {
+            "url": "https://github.com/aquaviator/WVD-Salon/blob/60620dd57834974ef54b764772c323fe9b7fbf63/handoff/wvd/results/SALON-WVD-001/ci-reproduction.md"
+          }
+        }
+      },
+      "exactAppend": true
+    },
+    "portfolio": {
+      "id": "1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA",
+      "revision": "ANLCKQlTttBrVcS2ozkHPAyNpA7TIwxSnMwQGzDzzOxe1r6uv1SF1gyIXyesOK32jqOEfRtqP1qbdrKYCp9kZBW94QM0-eMSSTL5OxvodSQ",
+      "counts": {
+        "date": 1,
+        "richLink": 1
+      },
+      "link": {
+        "content": "Read the full-checkout evidence",
+        "textStyle": {
+          "link": {
+            "url": "https://github.com/aquaviator/WVD-Salon/blob/60620dd57834974ef54b764772c323fe9b7fbf63/handoff/wvd/results/SALON-WVD-001/ci-reproduction.md"
+          }
+        }
+      },
+      "exactAppend": true
+    },
+    "nextScanOverlap": "2026-10-09T01:22:37.777Z",
+    "nativeElementsAndLinkTypography": "Preserved and checked through native connector; exact appended text verified"
+  },
+  "factory": {
+    "workflowVersion": "1.1.0",
+    "planHash": "c032b1bc7f3d936041d737a3199f0edacbf36764aeafd77578142b1e534ebb80",
+    "deliveryStatus": "INCOMPLETE",
+    "nextStage": "research",
+    "limitation": "No synthetic full-delivery receipts awarded for this bounded CI support slice"
+  },
+  "next": "Distinct exact-output review of Salon original report plus CI supplement; decide SALON-AT-028 criterion coverage. Refresh Wedding controller handback before reconciliation. Do not rerun unchanged baseline merely to refresh timestamps."
+}

@@ -1,0 +1,8 @@
+{
+  "name": "wvd-shared-factory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test tests/*.test.mjs", "preflight": "node cli.mjs preflight"},
+  "engines": {"node": ">=20"}
+}

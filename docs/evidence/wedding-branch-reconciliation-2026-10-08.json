@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-08T22:40:30.604Z",
+  "task": "WED-CONT-001 branch reconciliation preflight",
+  "repository": "aquaviator/WVD-Wedding",
+  "sources": {
+    "mergeBase": "75385166583a500b96c12cbf42db919886507977",
+    "integration": {
+      "branch": "development/undecided-date-onboarding",
+      "head": "d44ae2a24bc50a3eac87ca3d404e83a27aed88eb",
+      "uniqueCommits": 7,
+      "pr": 1
+    },
+    "staging": {
+      "branch": "development/cloudflare-staging",
+      "head": "1bcdd422756d15e77c625d669cb3ca0fa8223f93",
+      "uniqueCommits": 19,
+      "pr": 2
+    },
+    "master": "95f61d8a58c17a70502510846f7863c72481f7a8"
+  },
+  "ownership": {
+    "productBranchesWritten": false,
+    "stagingCurrentStateRecordsTakeover": true,
+    "stagingCurrentStateNamesLocalBranch": "development/wvd-completion",
+    "namedLocalBranchPresentInGitHub": false,
+    "activeControllerLiveness": "NOT_ESTABLISHED",
+    "decision": "Preserve both product branches; ownership-coordinated reconciliation before new Wedding feature implementation.",
+    "productImplementationWorkerDispatched": false
+  },
+  "ci": {
+    "wvd": {
+      "head": "e90780fe15e3ad81841cc4e7d4cbe829e68ed430",
+      "pushRun": 37846693667,
+      "jobs": [
+        "google-windows",
+        "portal-database",
+        "quality",
+        "portal-google"
+      ],
+      "conclusion": "success"
+    },
+    "staging": {
+      "head": "1bcdd422756d15e77c625d669cb3ca0fa8223f93",
+      "run": 37833061625,
+      "job": 113503061528,
+      "conclusion": "success",
+      "scope": "Fresh run and complete job/step metadata; historical runtime logs not replayed."
+    }
+  },
+  "drive": {
+    "scanFrom": "2026-10-08T21:04:33.677Z",
+    "coverage": "Direct children of WVD, Salon, Wedding and Wedando brand roots only",
+    "changed": [
+      {
+        "id": "1WHETJI6Glb1aZh1e9ES2EHJOJ6RhMUeQM7vGnmNxmAs",
+        "modifiedTime": "2026-10-08T21:24:36.066Z"
+      }
+    ],
+    "queueModifiedTime": "2026-10-05T17:02:00.977Z",
+    "finalRevision": "AHj4eMRoORSdoUlHIAa1pcMTkORQKgw_WPgPrElDrR5s6Hfd2r3UoNOIY9fU2mGuGi4ogTK4JArrxFlKcIMv4rLSkzpMTfZ0T1WZ8FaYjbo",
+    "finalModifiedTime": "2026-10-08T22:39:42.680Z",
+    "nextScanOverlapFrom": "2026-10-08T21:24:36.066Z",
+    "nativeElements": {
+      "dateElement": 1,
+      "richLink": 7
+    },
+    "checkpoint": "Current correction inserted near top; exact text and effective hyperlink typography verified; historical content preserved."
+  },
+  "review": {
+    "reviewer": "distinct delegated agent /root/reconciliation_review",
+    "scope": "Read-only four overlapping source files and local merge output; ancestry and product acceptance not independently verified",
+    "findings": [
+      "Two workspace conflict blocks require combined stable meal history and pending-only lifecycle transitions",
+      "Withdrawal review flag is rejected by earlier helper's exact input shape",
+      "Withdrawal must combine explicit review, precise history/clearing, pending audience suppression and repeat semantics",
+      "Retain staging partner cap, DELETE_PENDING media guard and module/outbox protections"
+    ]
+  },
+  "limitations": [
+    "No product code or branch updated; no resolved merge candidate, build, deployment or hosted test",
+    "Staging CURRENT-STATE reports private Cloudflare release/pilot; this run did not probe its provider, live data or permissions",
+    "Original contracts preserved; branch-local historical NOT_RUN states are not a statement that newer scoped staging checks never ran",
+    "No full acceptance, financial/sensitive flow, provider send, extra spend or audience change"
+  ],
+  "metrics": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "elapsedMinutes": null,
+    "repairCount": 0,
+    "escapedDefects": null
+  },
+  "fileComparisons": [
+    {
+      "path": "app/api/workspace/route.ts",
+      "exit": 2,
+      "conflict_blocks": 2,
+      "sha256": {
+        "base": "825b92af99367336d4de7a06cb20bfd7f3ef8b0def813d66b86c99a88a590951",
+        "integration": "2bd064eb9c3140ed92222665ff651c10b2aa59da910592963e8f30234b7c45e7",
+        "staging": "07694913f8b139d6370d056423f9c3e45898335a8a6168aaadc941d4d877a7e8"
+      }
+    },
+    {
+      "path": "lib/wedding.ts",
+      "exit": 0,
+      "conflict_blocks": 0,
+      "sha256": {
+        "base": "c9239f871a98c6df06c04c856f8fe52ebaed9338b287e086df07045d5f4100d8",
+        "integration": "3e3795547f8373dbb2a79083f75eaa03bffdfc53c40b06c75ea6cbf5ddefaa4a",
+        "staging": "cd11636c5f62fc3799c22d6a84e7e0ec166950217db5d5d085bf1d7b3a53c578"
+      }
+    },
+    {
+      "path": "handoff/WVD-CONTINUATION.md",
+      "exit": 0,
+      "conflict_blocks": 0,
+      "sha256": {
+        "base": "e98fdbef91e0eca9ddb9eb0d1fb58b5f48718208b712519822a5f712067c322c",
+        "integration": "6473ce89cba8fd1b165bed7c2c7e2ae749b760464af011a2cd724eede3c0ddbd",
+        "staging": "0d5ad2251594eafef561708cb8d0a7c62a766d22209cc3aa20cddaba66f47d8c"
+      }
+    },
+    {
+      "path": "handoff/current-backlog.json",
+      "exit": 0,
+      "conflict_blocks": 0,
+      "sha256": {
+        "base": "ca1fcf7e83a8a94d58e84e16aeba47680d0d6ed5dbf91a26e21d4ca08cdef31d",
+        "integration": "9d4238a7a49f075481b6d0e4fe24bab754ea1df4dd075b64dc2be609e3659d39",
+        "staging": "9acb44b20381a80de9aeea3b5e4e8803870b1f9979c6821aa5e4813cdf59a715"
+      }
+    }
+  ],
+  "payloadReproduction": {
+    "classification": "EXPECTED_INCOMPATIBILITY_REPRODUCED",
+    "sourceSha256": "c89b43df6b5d162b9fa6ae4655ee3cc902b770b73eadd4f23291080fcadec297",
+    "payload": {
+      "invitation": "synthetic fixture first invitation",
+      "reviewed": true
+    },
+    "observed": {
+      "code": "INVALID",
+      "message": "Select the invitation to withdraw."
+    },
+    "stateUnchanged": true,
+    "limits": [
+      "Domain helper on a conflict-free textual library merge only; no merged route or deployed candidate exists",
+      "Synthetic fixtures only; this reproduces a compatibility failure, not an acceptance pass"
+    ]
+  }
+}

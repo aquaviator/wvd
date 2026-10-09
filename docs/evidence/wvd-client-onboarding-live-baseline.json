@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "service": "projects/wvd-development/locations/europe-west2/services/wvd-service",
+  "sourceRevision": "e82753a43c5b39253d17a2920784be4fa10b220e",
+  "image": "europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/service@sha256:d23240922b2a6c33c6d7b5d8f739af48b668e1834b7dac44715e8dbc5887c1a3",
+  "configSha256": "d943c30fd79f76a07313561a4d15157e58acdfbccda8207994770c67b5782fa7",
+  "url": "https://wvd-service-v3b6mv7uka-nw.a.run.app",
+  "observedAt": "2026-10-07T08:39:17.684Z",
+  "revision": "wvd-service-00005-4xb",
+  "ownerConfigured": true,
+  "source": "Authenticated gcloud service metadata read; configuration hash recomputed locally; no mutation."
+}

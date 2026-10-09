@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "task": "IDEA-DISCOVERY-INHERITANCE",
+  "sourceParent": "7225d536d94c11038d3b5b5156e89042543cdf0b",
+  "observedAt": "2026-10-09T00:10:23.000Z",
+  "actor": "codex-controller:/root:2026-10-09T00:06Z",
+  "scope": "Close the idea planner's missing inheritance of existing public-discovery acceptance work.",
+  "reuse": {
+    "source": "tools/factory/standard.mjs:publicDiscoveryPlan",
+    "decision": "Export and reuse existing builder; no parallel policy or provider integration."
+  },
+  "changes": {
+    "workflowVersion": "1.1.0",
+    "flavours": 4,
+    "unrunDiscoveryChecksPerPlan": 7,
+    "migration": "Regenerate old idea plans; old plan/receipt bindings are not rewritten."
+  },
+  "verification": {
+    "recoveredFiles": 24,
+    "recovery": "Exact UTF-8 content verified against Git blob hashes; isolated source snapshot.",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "before": "Three new regression tests failed against the unmodified implementation; existing 12 delivery tests passed.",
+    "after": "All 74 factory tests passed, including project/context consumers, all-flavour discovery parity, mutation isolation and old-plan rejection.",
+    "diffCheck": "PASS",
+    "cli": "idea produces workflow 1.1.0 and unverified discovery. Empty receipt assessment exits 2 / INCOMPLETE; no deployment claim.",
+    "independentReview": "NOT_RUN",
+    "container": "NOT_APPLICABLE_TO_FACTORY_ONLY_SLICE; existing portal-container path filters do not cover factory; standard CI runs factory tests."
+  },
+  "ownership": {
+    "salon": "5b518d4d18dd283a3ae360bdf434db7d7827d0de",
+    "weddingStaging": "1bcdd422756d15e77c625d669cb3ca0fa8223f93",
+    "weddingIntegration": "d44ae2a24bc50a3eac87ca3d404e83a27aed88eb",
+    "productChanges": false,
+    "notes": "Draft PRs remain open/unassigned. Wedding current-state still records takeover and workers; preserved."
+  },
+  "drive": {
+    "scanFrom": "2026-10-08T22:39:55.913Z",
+    "scope": "Direct children of WVD, Salon, Wedding and brand roots; not recursive asset verification.",
+    "result": "Only prior Salon START and Wedding START updates returned. Salon revision equals previous exact verified receipt; Wedding correction/current continuation read again. No documents changed.",
+    "salonRevision": "ANLCKQllMIXNzcyOm0iQjiQESa_QS8EyGPZP37nnMUUf97_kox5pL_8LUdNeLjHs7fvJDkNLN6WKaFG9r3R_KY-4MFcr4xgKJDvV_Wl8Ufs",
+    "weddingRevision": "ANLCKQltE8MkAnvCCXsyUdU7QhpFpZ8O5LqwuznAUeyWGkKbs08gNl3f9TeZ9-G1znS7SIBohqAdhkLubZY8MUL8fAqlG9tqJEhWJ8BNlwg",
+    "nextScanOverlap": "2026-10-08T23:44:19.564Z"
+  },
+  "limits": [
+    "Planning only; no public exposure, search submission or indexing guarantee",
+    "No product acceptance or commercial release",
+    "No live send, transaction, deployment, private-data use, audience or spending change"
+  ],
+  "next": "Use regenerated idea plans for new/current tasks; bind discovery checks to actual authorised public surfaces and exact deployments. Preserve product ownership and remaining acceptance gates."
+}

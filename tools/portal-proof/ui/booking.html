@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Book an introductory call · WVD development</title><link rel="stylesheet" href="/booking.css"><script src="/booking.js" defer></script></head>
+<body data-runtime-mode="emulator" data-cancellation-enabled="false" data-rescheduling-enabled="false" data-management-enabled="false" data-managed-mode="false" data-managed-availability="false" data-link-lifecycle="false"><a class="skip" href="#main">Skip to booking</a><header><a href="/"><img src="/brand-logo.png" width="260" alt="Wear Valley Digital"></a><p class="badge">Isolated development preview</p></header>
+<main id="main"><h1>Choose a time to talk</h1><p>A 30-minute introductory call. All times are shown in UK time (Europe/London).</p><p class="notice">This preview uses synthetic availability. It does not send invitations or book a real customer call.</p>
+<form id="availability"><label for="day">Choose a date</label><input id="day" name="day" type="date" required><button id="find" type="submit" disabled>Find available times</button></form>
+<div id="slots" aria-label="Available times"></div><p id="selection"></p><button id="confirm" type="button" hidden>Confirm this time</button><button id="retry" type="button" hidden>Check booking status</button>
+<section id="result" role="status" aria-live="polite" aria-atomic="true"><p id="message">Loading booking controls…</p><a id="meet" hidden rel="noreferrer" target="_blank">Open Google Meet</a></section>
+<section id="management" hidden aria-label="Manage this booking"><button id="change" type="button" hidden>Change booking time</button><button id="keep-time" type="button" hidden>Keep current time</button><button id="cancel" type="button">Cancel this booking</button><div id="cancel-question" hidden><p>Cancel this confirmed booking and release its time?</p><button id="cancel-agree" type="button">Yes, cancel booking</button> <button id="keep" type="button">Keep booking</button></div></section>
+<section id="share-controls" hidden aria-label="Private management link"><button id="share-link" type="button">Create private management link</button><p id="share-message" role="status"></p><label id="share-label" for="share-value" hidden>Private management link — anyone with this link can manage your booking</label><input id="share-value" type="url" readonly hidden><a id="share-open" hidden target="_blank" rel="noreferrer">Open private management link</a></section>
+<section id="link-controls" hidden aria-label="Private link security">
+<h2>Private link security</h2><p>Replace a shared link or disable it. Your booking stays in place.</p>
+<button id="replace-link" type="button">Replace private link</button><button id="revoke-link" type="button">Disable private link</button>
+<div id="link-question" hidden><p id="link-question-text"></p><button id="link-agree" type="button">Continue</button><button id="link-keep" type="button">Keep existing link</button></div>
+<p id="link-message" role="status"></p><label id="replacement-label" for="replacement-value" hidden>New private management link — keep this safe</label><input id="replacement-value" type="url" readonly hidden>
+</section>
+<button id="refresh-booking" type="button" hidden>Refresh booking details</button>
+<p id="management-help" hidden><a href="mailto:hello@wearvalleydigital.com">Contact Wear Valley Digital</a> if your management link is unavailable.</p>
+<noscript><p>JavaScript is needed for this development preview.</p></noscript></main><footer>Wear Valley Digital · Development preview</footer></body></html>

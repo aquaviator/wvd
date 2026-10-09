@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "task": "WED-CONT-001 recovery receipt reconciliation",
+  "observedAt": "2026-10-09T07:04:59Z",
+  "actor": "codex-controller:/root:2026-10-09T07:01Z",
+  "coordinationBase": "6054c2ab392ea1f21966fe2eeab888ec289dec68",
+  "product": {
+    "repository": "aquaviator/WVD-Wedding",
+    "branch": "development/cloudflare-staging",
+    "parentObserved": "ddac99a4eb8310d6fb08617e63c8e629a7025cb7",
+    "source": "0f0301010a9374b3721c3c7628f3737b7e56ce01",
+    "integration": "d44ae2a24bc50a3eac87ca3d404e83a27aed88eb",
+    "ownership": "Existing takeover controller retained; no owner handback or product edits by this task",
+    "pullRequest": 2,
+    "draft": true
+  },
+  "delta": {
+    "commits": [
+      "62a6b2806c15735a0468c26000d2d3c58bb89857",
+      "0f0301010a9374b3721c3c7628f3737b7e56ce01"
+    ],
+    "files": [
+      ".github/workflows/verify.yml",
+      "AGENTS.md",
+      "evidence/continuation/pilot-media-reference-review.json",
+      "evidence/continuation/r2-checkpoint-verifier-tests.json",
+      "evidence/continuation/recovery-hardening-review.json",
+      "handoff/CLOUDFLARE-VALIDATION-GATE.md",
+      "handoff/CURRENT-STATE.md",
+      "handoff/PILOT-PLAN.md",
+      "handoff/RECOVERY.md",
+      "handoff/current-backlog.json",
+      "scripts/restore-safety.mjs",
+      "scripts/test-r2-checkpoint.mjs",
+      "scripts/test-restore-safety.mjs",
+      "scripts/verify-r2-checkpoint.mjs"
+    ],
+    "summary": "Recovery helper preserves pending deletion and terminal message history; new binary checkpoint verifier and synthetic suites; unattended continuation rules."
+  },
+  "ci": {
+    "run": 37896424951,
+    "job": 113708710695,
+    "source": "0f0301010a9374b3721c3c7628f3737b7e56ce01",
+    "conclusion": "success",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-node@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run install:ci",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run node node_modules/typescript/bin/tsc --noEmit --incremental false",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run build:staging",
+        "conclusion": "success"
+      },
+      {
+        "name": "Clear inherited receipts before this run",
+        "conclusion": "success"
+      },
+      {
+        "name": "Domain and native route regressions",
+        "conclusion": "success"
+      },
+      {
+        "name": "Install isolated browser test dependency",
+        "conclusion": "success"
+      },
+      {
+        "name": "Install browser",
+        "conclusion": "success"
+      },
+      {
+        "name": "Synthetic browser journeys",
+        "conclusion": "success"
+      },
+      {
+        "name": "Save synthetic verification evidence",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-node@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "scope": "Authenticated CI metadata inspection, no rerun or downloaded artifact certification."
+  },
+  "reviewReceipt": {
+    "path": "evidence/continuation/recovery-hardening-review.json",
+    "reviewer": "independent acceptance_audit",
+    "sourceBinding": [
+      {
+        "path": "scripts/restore-safety.mjs",
+        "gitBlob": "d5b56f3ad6c1fa2ff51debac3c7ddc3e1132768a",
+        "gitBlobVerified": true,
+        "sha256": "cdda0295e695d4bfce32eba88641fc275d1ff9238e76d54ccb734dd8f94176e8",
+        "reviewSha256": "d317d9c5f48b90ca2b1eccd8e4aed6c1085f64dcea00dbe719e8ed564d7d6c29",
+        "reviewMatch": "REVIEW_HASH_UNRESOLVED"
+      },
+      {
+        "path": "scripts/test-restore-safety.mjs",
+        "gitBlob": "0530fa8e8a2bd1f2a9bdbeb87c1de083000bdc9d",
+        "gitBlobVerified": true,
+        "sha256": "b8000ace63561d54199ef9716279825bf2b67ecff4a6bc02d754c3337a2a63de",
+        "reviewSha256": "b8000ace63561d54199ef9716279825bf2b67ecff4a6bc02d754c3337a2a63de",
+        "reviewMatch": "EXACT"
+      },
+      {
+        "path": "scripts/verify-r2-checkpoint.mjs",
+        "gitBlob": "d9b485e496f0b84d8dbf5670a06905becfac906d",
+        "gitBlobVerified": true,
+        "sha256": "b2946042ea7ce47ea7e8fda505857adc542755f8d20e7455551771d7c4ef9bb9",
+        "reviewSha256": "127fbde7c36559a9a3ddce4cefaeb22467a9620dd63fc75762b282183973d184",
+        "reviewMatch": "CRLF_WORKTREE_ONLY"
+      },
+      {
+        "path": "scripts/test-r2-checkpoint.mjs",
+        "gitBlob": "080d0259aabbc6d3032592f9d20679ee0e36fc20",
+        "gitBlobVerified": true,
+        "sha256": "fe3ddda12ba81ffc9490c7db46941485fe71426fb6bffa143736e6631c9a4b14",
+        "reviewSha256": "85b07d907b53362b211117e06ea93755889f412d07a4d3aaec0a513ac1217def",
+        "reviewMatch": "CRLF_WORKTREE_ONLY"
+      }
+    ],
+    "assessment": "Two R2 file hashes match only after explicit LF-to-CRLF transformation; test-restore matches exactly. restore-safety review hash remains unmatched under raw LF and uniform CRLF. Preserve receipt and do not certify byte-identical review of committed helper from it."
+  },
+  "focusedExecution": {
+    "command": "node scripts/test-restore-safety.mjs",
+    "runtime": "Node v24.19.0",
+    "environment": "Linux controller scratch; both executed files matched remote Git blob SHA-1",
+    "exitCode": 0,
+    "checksPassed": 5,
+    "reason": "Resolve a concrete new review/source binding discrepancy, not a timestamp rerun",
+    "scope": "Pure synthetic helper tests only; controller is distinct from recorded recovery author/reviewer; no full independent acceptance claimed."
+  },
+  "hosting": {
+    "sourceRecord": "handoff/CURRENT-STATE.md at product source",
+    "reportedLiveSource": "4d89998f402034e86f1d1d249ee19cad291227f1",
+    "reportedVersion": "130c5287-06cc-4f56-a5db-8efb373e0578",
+    "reportedProviderObservation": "2026-10-09T06:54:45Z",
+    "freshProviderProbeByThisTask": false,
+    "candidateDeployed": false,
+    "open": [
+      "Verified R2 bytes/checkpoint",
+      "Hosted authenticated browser",
+      "Local authorised CLI authentication"
+    ],
+    "retryRule": "Product AGENTS: retry unchanged blocked capability after relevant change or at most daily; do not duplicate founder prompts."
+  },
+  "drive": {
+    "scope": "Direct-child modification scan of WVD, Salon, Wedding and brand roots; not recursive",
+    "overlap": "2026-10-09T02:19:56.316Z",
+    "result": "Only prior Salon START resource receipt; no new owner handback",
+    "writes": 0
+  },
+  "next": [
+    "Owning controller should reconcile the restore helper review hash to committed bytes or record exact-source review before relying on byte-bound acceptance.",
+    "Preserve new recovery safeguards through eventual owner-coordinated integration.",
+    "Do not repeat blocked hosted/CLI checks without relevant change or before the product daily retry bound.",
+    "Salon gates and original acceptance scenarios remain unchanged."
+  ],
+  "limits": [
+    "No Wedding or Salon source mutation",
+    "No backup/private object data read",
+    "No deployment, audience change, message, payment, real-data use or additional spend",
+    "Five helper tests do not establish hosted recovery, pilot completion or commercial acceptance"
+  ],
+  "metrics": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "elapsedMinutes": null,
+    "repairCount": 0,
+    "escapedDefects": null
+  },
+  "factory": {
+    "workflowVersion": "1.2.0",
+    "status": "INCOMPLETE",
+    "exitCode": 2,
+    "receipts": "None fabricated; task is scoped reconciliation, not completed product delivery."
+  }
+}

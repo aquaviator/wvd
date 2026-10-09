@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {serviceOrigin} from '../lib/contact/service';
+const endpoint=new URL('/api/enquiries',serviceOrigin).href;
+---
+<BaseLayout title="Discuss your project | Wear Valley Digital" description="Send an enquiry about a website, software or automation project." canonical="https://wearvalleydigital.com/enquire/">
+  <section class="hero"><div class="wrap prose">
+    <p class="eyebrow">Start a conversation</p>
+    <h1>Tell us what you need</h1>
+    <p class="lede">Share the problem you want to solve. Timing, an existing website and budget context are helpful if you know them.</p>
+    <p>Send your enquiry directly to Wear Valley Digital. We’ll use your details to understand your project and reply to you.</p>
+  </div></section>
+  <section class="section"><div class="wrap prose enquiry">
+    <form id="enquiry-form" method="post" action={endpoint} data-endpoint={endpoint} novalidate>
+      <fieldset id="enquiry-fields" disabled><legend>Your enquiry</legend>
+        <label for="enquiry-name">Your name (required)</label><input id="enquiry-name" name="name" required maxlength="120" autocomplete="name">
+        <label for="enquiry-business">Business or organisation (required)</label><input id="enquiry-business" name="business" required maxlength="200" autocomplete="organization">
+        <label for="enquiry-email">Your email (required)</label><input id="enquiry-email" name="email" type="email" required maxlength="320" autocomplete="email">
+        <label for="enquiry-need">What do you need? (required)</label><textarea id="enquiry-need" name="need" required maxlength="2000" rows="6"></textarea>
+        <label for="enquiry-website">Existing website (optional)</label><input id="enquiry-website" name="website" type="url" maxlength="500" placeholder="https://" autocomplete="url">
+        <label for="enquiry-timing">Timing (optional)</label><input id="enquiry-timing" name="timing" maxlength="300">
+        <label for="enquiry-budget">Budget context (optional)</label><input id="enquiry-budget" name="budget" maxlength="300">
+        <div class="enquiry-trap" aria-hidden="true"><label for="enquiry-company-website">Leave this field empty</label><input id="enquiry-company-website" name="websiteTrap" tabindex="-1" autocomplete="off"></div>
+        <p>You can leave the optional fields blank. Please avoid passwords, account credentials or sensitive customer information.</p>
+        <p class="enquiry-privacy">Your details are used to respond to this enquiry. Read our <a href="/legal/privacy/">privacy notice</a>.</p>
+        <div class="button-row"><button class="button" type="submit" id="enquiry-submit">Send enquiry</button><button class="button" type="button" id="enquiry-clear">Clear details</button></div>
+      </fieldset>
+    </form>
+    <p id="enquiry-status" role="status" aria-live="polite"></p>
+    <section id="enquiry-confirmation" class="enquiry-confirmation" tabindex="-1" hidden aria-labelledby="enquiry-confirmed-heading">
+      <p class="eyebrow">Enquiry received</p><h2 id="enquiry-confirmed-heading">Thanks for getting in touch.</h2>
+      <p>We’ve received your enquiry and will use the email address you provided to continue the conversation.</p>
+      <p>Your reference: <strong id="enquiry-reference"></strong></p>
+      <p>Keep this reference if you need to follow up.</p>
+      <div class="button-row"><a class="button" href="/services/">Explore our services</a><button class="button" type="button" id="enquiry-again">Send another enquiry</button></div>
+    </section>
+    <p>Prefer email? <a href="mailto:hello@wearvalleydigital.com">Email a general enquiry directly</a>.</p>
+    <noscript><p>The online form needs JavaScript. Please use the email link above to get in touch.</p></noscript>
+  </div></section>
+</BaseLayout>
+<style>
+  .enquiry fieldset{min-width:0;padding:1.4rem;border:1px solid var(--line);border-radius:.65rem;background:white}
+  .enquiry legend{font-weight:800}.enquiry label{display:block;font-weight:750;margin-top:1rem}
+  .enquiry input,.enquiry textarea{display:block;width:100%;max-width:100%;font:inherit;color:var(--ink);background:white;border:1px solid var(--muted);border-radius:.3rem;padding:.65rem}
+  .enquiry button{font:inherit}.enquiry button:disabled{opacity:.65;cursor:wait}.enquiry [readonly]{background:var(--paper,#f5f8fb)}
+  .enquiry-trap{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+  .enquiry-confirmation{padding:1.5rem;background:white;border:1px solid var(--line);border-top:4px solid var(--blue,#0064d5);border-radius:.5rem}
+  #enquiry-reference{overflow-wrap:anywhere}.enquiry [hidden]{display:none!important}
+</style>
+<script>
+  import {normaliseEnquiryFields,type EnquiryFields} from '../lib/contact/enquiry';
+  import {prepareEnquirySubmission,readEnquiryReceipt,enquiryReference,type EnquirySubmission} from '../lib/contact/submission';
+  const form=document.querySelector<HTMLFormElement>('#enquiry-form');
+  const fields=document.querySelector<HTMLFieldSetElement>('#enquiry-fields');
+  const status=document.querySelector<HTMLElement>('#enquiry-status');
+  const submit=document.querySelector<HTMLButtonElement>('#enquiry-submit');
+  const clear=document.querySelector<HTMLButtonElement>('#enquiry-clear');
+  const confirmation=document.querySelector<HTMLElement>('#enquiry-confirmation');
+  const reference=document.querySelector<HTMLElement>('#enquiry-reference');
+  const trap=document.querySelector<HTMLInputElement>('#enquiry-company-website');
+  const inputs=Array.from(fields?.querySelectorAll<HTMLInputElement|HTMLTextAreaElement>('input:not([name="websiteTrap"]),textarea')??[]);
+  let pending=false,uncertain=false,attempt:EnquirySubmission|null=null;
+  const message=(text:string)=>{if(status)status.textContent=text;};
+  function controls(){
+    inputs.forEach(input=>input.readOnly=pending||uncertain);
+    if(submit){submit.disabled=pending;submit.textContent=pending?'Sending enquiry…':uncertain?'Try again':'Send enquiry';}
+    if(clear)clear.disabled=pending||uncertain;
+    form?.setAttribute('aria-busy',String(pending));
+  }
+  function reset(){
+    if(pending)return;
+    form?.reset();attempt=null;uncertain=false;
+    if(form)form.hidden=false;if(confirmation)confirmation.hidden=true;if(reference)reference.textContent='';
+    controls();message('');inputs[0]?.focus();
+  }
+  if(fields&&form?.dataset.endpoint)fields.disabled=false;
+  clear?.addEventListener('click',reset);
+  document.querySelector('#enquiry-again')?.addEventListener('click',reset);
+  form?.addEventListener('submit',async(event)=>{
+    event.preventDefault();
+    if(pending||!inputs.every(input=>input.reportValidity()))return;
+    try{
+      if(trap?.value)throw Error('Please check your enquiry details.');
+      const values=normaliseEnquiryFields(Object.fromEntries(inputs.map(input=>[input.name,input.value])) as EnquiryFields);
+      if(!attempt||(!uncertain&&JSON.stringify(attempt.fields)!==JSON.stringify(values)))attempt=prepareEnquirySubmission(values,crypto.randomUUID(),trap?.value??'');
+    }catch(error){message(error instanceof Error?error.message:'Check your enquiry details.');return;}
+    pending=true;controls();message('Sending your enquiry…');
+    try{
+      const response=await fetch(form.dataset.endpoint!,{method:'POST',mode:'cors',credentials:'omit',cache:'no-store',redirect:'error',referrerPolicy:'strict-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(attempt),signal:AbortSignal.timeout(55000)});
+      if(![200,201].includes(response.status)){
+        if([400,403,409,410,413,415,429].includes(response.status)){
+          if(uncertain){
+            message(response.status===429?'We still couldn’t confirm receipt. Please wait a little, then try again to check the same enquiry.':'We still couldn’t confirm receipt. Your details are kept here. Try again to check the same enquiry without duplicating it.');
+            return;
+          }
+          uncertain=false;
+          if([400,409,410,413,415].includes(response.status))attempt=null;
+          message(response.status===429?'We’re receiving a lot of enquiries right now. Please try again shortly, or use the email link below.':response.status===403?'The online form is temporarily unavailable. Please use the email link below.':'Please check your details and try again, or use the email link below.');
+          return;
+        }
+        throw Error('RECEIPT_NOT_CONFIRMED');
+      }
+      const text=await response.text();
+      if(text.length>1024)throw Error('RECEIPT_NOT_CONFIRMED');
+      const receipt=readEnquiryReceipt(JSON.parse(text));
+      if(reference)reference.textContent=enquiryReference(receipt);
+      form.reset();form.hidden=true;attempt=null;uncertain=false;
+      if(confirmation){confirmation.hidden=false;confirmation.focus();}
+      message('Thanks, your enquiry has been received.');
+    }catch{
+      uncertain=true;
+      message('We couldn’t confirm receipt. Your details are still here. Try again to check the same enquiry without duplicating it.');
+    }finally{pending=false;controls();}
+  });
+</script>

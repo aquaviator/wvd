@@ -1,0 +1,9 @@
+{
+  "productId": "example-product",
+  "flavour": "public-website",
+  "bindings": {"googleProjectId": null, "hostingTarget": null, "dataNamespace": "example-product", "credentialRef": null},
+  "reuseDecisions": [
+    {"assetId":"wvd-public-site","decision":"adapt","reason":"Fictional example: adapt existing layout/content components after source review.","evidenceRef":"example-review/wvd-public-site"},
+    {"assetId":"hv1-hosting-config","decision":"adapt","reason":"Fictional example: parameterise hosting target and security headers after source review.","evidenceRef":"example-review/hv1-hosting-config"}
+  ]
+}

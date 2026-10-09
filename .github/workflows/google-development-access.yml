@@ -1,0 +1,319 @@
+name: Google development access
+on:
+  workflow_dispatch:
+  push:
+    branches: [development/shared-factory-bootstrap]
+    paths:
+      - '.github/workflows/google-development-access.yml'
+      - 'tools/google-development-access/**'
+      - 'tools/booking-runtime/**'
+      - 'tools/portal-runtime/**'
+      - 'tools/portal-proof/google-booking-event.mjs'
+permissions:
+  contents: read
+concurrency:
+  group: google-development-access
+  cancel-in-progress: false
+jobs:
+  access:
+    if: github.repository_id == '1347788556' && github.repository_owner_id == '78605956' && github.ref == 'refs/heads/development/shared-factory-bootstrap'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Check explicit access activation
+        env:
+          ENABLED: ${{ vars.WVD_GOOGLE_ACCESS_ENABLED }}
+        run: |
+          if [ "$ENABLED" != "true" ]; then
+            echo 'BLOCKED: Google IAM/API prerequisites and resource grants have not been activated.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+      - id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/drive.readonly,https://www.googleapis.com/auth/calendar.freebusy
+          create_credentials_file: false
+          export_environment_variables: false
+      - id: resource_access
+        name: Verify granted Drive and Calendar access before live tests
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: node tools/google-development-access/preflight.mjs tools/google-development-access/binding.json
+      - name: Verify portal Calendar adapter against the live provider
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: node tools/google-development-access/calendar-contract.mjs tools/google-development-access/binding.json
+      - id: calendar_grant_auth
+        name: Authorise service-account calendar-list grant inspection
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/calendar.calendarlist
+          create_credentials_file: false
+          export_environment_variables: false
+      - id: writer_access
+        name: Verify WVD Calendar writer grant without creating events
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.calendar_grant_auth.outputs.access_token }}
+        run: node tools/google-development-access/calendar-writer-preflight.mjs tools/google-development-access/binding.json
+      - name: Verify synthetic event cleanup contracts before live writes
+        run: node --test tools/portal-proof/tests/google-booking-event.test.mjs tools/portal-proof/tests/booking-event-rehearsal.test.mjs
+      - name: Verify delegation setup preserves existing provider mappings
+        run: python3 tools/google-development-access/test_delegation.py
+      - id: calendar_event_auth
+        name: Authorise approved Workspace booking organiser
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/calendar.events
+          access_token_subject: admin@wearvalleydigital.com
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Rehearse past synthetic event and Meet with verified cleanup
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.calendar_event_auth.outputs.access_token }}
+        run: node tools/google-development-access/booking-event-rehearsal.mjs tools/google-development-access/binding.json
+      - id: runtime_read_auth
+        name: Authorise read-only runtime permission discovery
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Report booking runtime access requirements without changing configuration
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/google-development-access/booking-runtime-preflight.mjs tools/google-development-access/binding.json
+      - name: Verify service discovery stays read-only and target-bound
+        run: node --test tools/portal-proof/tests/service-discovery.test.mjs
+      - name: Discover enquiry and Portal configuration without changing access or sending mail
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/google-development-access/service-discovery.mjs tools/google-development-access/binding.json
+      - id: confirmation_access
+        name: Verify explicit confirmation key version without writes or mail
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/google-development-access/confirmation-key-preflight.mjs
+      - name: Discover existing London hosting resources without provisioning
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/google-development-access/hosting-discovery.mjs tools/google-development-access/binding.json
+      - name: Test private deployment boundaries and provider readiness before activation
+        run: node --test tools/portal-proof/tests/private-deployment.test.mjs tools/portal-proof/tests/hosting-discovery.test.mjs tools/portal-proof/tests/booking-provider-readiness.test.mjs tools/portal-proof/tests/private-http.test.mjs
+      - id: private_host
+        name: Prepare bounded private runtime deployment within founder authority
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/booking-runtime/private-deployment.mjs prepare tools/google-development-access/binding.json
+      - name: Build and upload bounded private runtime image
+        id: runtime_image
+        if: steps.private_host.outputs.create == 'true'
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/booking:${GITHUB_SHA}"
+          docker build -f tools/booking-runtime/Dockerfile -t "$image" .
+          bytes="$(docker image inspect "$image" --format '{{.Size}}')"
+          test "$bytes" -le 419430400
+          export DOCKER_CONFIG="$(mktemp -d)"
+          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+          printf '%s' "$WVD_GOOGLE_ACCESS_TOKEN" | docker login -u oauth2accesstoken --password-stdin https://europe-west2-docker.pkg.dev
+          docker push "$image"
+          digest="$(docker image inspect "$image" --format '{{index .RepoDigests 0}}')"
+          printf 'image=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+      - name: Deploy private runtime and verify managed startup
+        if: steps.private_host.outputs.create == 'true'
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+          RUNTIME_IMAGE: ${{ steps.runtime_image.outputs.image }}
+        run: node tools/booking-runtime/private-deployment.mjs create "$RUNTIME_IMAGE" "$GITHUB_SHA"
+      - id: private_http
+        name: Enable authenticated network path and verify anonymous denial
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.runtime_read_auth.outputs.access_token }}
+        run: node tools/booking-runtime/private-http.mjs prepare
+      - id: runtime_id_auth
+        name: Issue short-lived identity token for private runtime only
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: id_token
+          id_token_audience: ${{ steps.private_http.outputs.url }}
+          id_token_include_email: true
+          create_credentials_file: false
+          export_environment_variables: false
+      - id: runtime_access
+        name: Verify authenticated runtime provider startup over HTTP
+        env:
+          WVD_RUNTIME_ID_TOKEN: ${{ steps.runtime_id_auth.outputs.id_token }}
+          RUNTIME_URL: ${{ steps.private_http.outputs.url }}
+        run: node tools/booking-runtime/private-http.mjs verify "$RUNTIME_URL"
+      - id: mail_scope_probe
+        name: Check existing delegated send scope without sending a message
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/gmail.send
+          access_token_subject: admin@wearvalleydigital.com
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Report mail scope activation state without using its token
+        env:
+          MAIL_SCOPE_OUTCOME: ${{ steps.mail_scope_probe.outcome }}
+        run: |
+          if [ "$MAIL_SCOPE_OUTCOME" = success ]; then
+            echo 'MAIL_SEND_SCOPE_PRESENT_NO_MESSAGE_SENT'
+          else
+            echo 'MAIL_SEND_SCOPE_UNAVAILABLE_ADMIN_CONFIGURATION_REQUIRED'
+          fi
+      - name: Verify enquiry and owner Portal runtime boundaries
+        run: node --test tools/portal-proof/tests/enquiry.test.mjs tools/portal-proof/tests/live-auth.test.mjs tools/portal-proof/tests/live-config.test.mjs tools/portal-proof/tests/live-browser.test.mjs tools/portal-proof/tests/live-app.test.mjs tools/portal-proof/tests/service-deployment.test.mjs tools/portal-proof/tests/owner-bootstrap-runtime.test.mjs
+      - id: owner_plan
+        name: Check whether a verified owner identity has been explicitly configured
+        run: node tools/portal-runtime/bootstrap-owner.mjs prepare tools/portal-runtime/wvd-development.candidate.json tools/portal-runtime/owner-bootstrap.context.json
+      - name: Install the existing Firebase backend for explicit owner setup
+        if: steps.owner_plan.outputs.enabled == 'true'
+        run: npm ci --prefix tools/portal-proof --omit=dev --ignore-scripts
+      - id: owner_auth
+        name: Authorise owner setup with temporary workflow credentials
+        if: steps.owner_plan.outputs.enabled == 'true'
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          create_credentials_file: true
+          export_environment_variables: true
+      - name: Initialise only the verified owner and preserve any existing Portal state
+        if: steps.owner_plan.outputs.enabled == 'true'
+        env:
+          WVD_OWNER_BOOTSTRAP_OUTPUT: wvd-owner-bootstrap.json
+        run: node tools/portal-runtime/bootstrap-owner.mjs apply tools/portal-runtime/wvd-development.candidate.json tools/portal-runtime/owner-bootstrap.context.json
+      - name: Retain the owner setup result without account identifiers or credentials
+        if: always() && steps.owner_plan.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wvd-owner-bootstrap-${{ github.run_id }}-${{ github.run_attempt }}
+          path: wvd-owner-bootstrap.json
+          if-no-files-found: warn
+          retention-days: 1
+      - id: service_auth
+        name: Authorise the bounded WVD service deployment
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_lifetime: 600s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          create_credentials_file: false
+          export_environment_variables: false
+      - id: service_host
+        name: Prepare the enquiry and Portal service from the reviewed release
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
+        run: node tools/portal-runtime/deployment.mjs prepare tools/google-development-access/binding.json tools/portal-runtime/wvd-development.candidate.json "$GITHUB_SHA" docs/evidence/wvd-service-last-reviewed-release.json
+      - id: service_image
+        name: Build and upload the bounded WVD service image
+        if: steps.service_host.outputs.build == 'true'
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/service:${GITHUB_SHA}"
+          docker build -f tools/portal-runtime/Dockerfile -t "$image" .
+          bytes="$(docker image inspect "$image" --format '{{.Size}}')"
+          test "$bytes" -le 419430400
+          export DOCKER_CONFIG="$(mktemp -d)"
+          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+          printf '%s' "$WVD_GOOGLE_ACCESS_TOKEN" | docker login -u oauth2accesstoken --password-stdin https://europe-west2-docker.pkg.dev
+          docker push "$image"
+          digest="$(docker image inspect "$image" --format '{{index .RepoDigests 0}}')"
+          printf 'image=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+      - id: service_deployment
+        name: Deploy the reviewed service and bind the actual Google address
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
+          WVD_SERVICE_RELEASE_OUTPUT: wvd-service-release.json
+          SERVICE_IMAGE: ${{ steps.service_image.outputs.image || steps.service_host.outputs.image }}
+        run: node tools/portal-runtime/deployment.mjs deploy tools/portal-runtime/wvd-development.candidate.json "$SERVICE_IMAGE" "$GITHUB_SHA" docs/evidence/wvd-service-last-reviewed-release.json
+      - id: service_id_auth
+        name: Issue a short-lived identity token for the new service
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: wvd-development
+          workload_identity_provider: projects/6616382131/locations/global/workloadIdentityPools/wvd-github-development/providers/github
+          service_account: wvd-development@wvd-development.iam.gserviceaccount.com
+          token_format: id_token
+          id_token_audience: ${{ steps.service_deployment.outputs.url }}
+          id_token_include_email: true
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Verify service transport and private application boundaries
+        env:
+          WVD_GOOGLE_ACCESS_TOKEN: ${{ steps.service_auth.outputs.access_token }}
+          WVD_RUNTIME_ID_TOKEN: ${{ steps.service_id_auth.outputs.id_token }}
+        run: node tools/portal-runtime/deployment.mjs verify wvd-service-release.json
+      - name: Retain the exact prepared WVD service receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wvd-service-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: wvd-service-release.json
+          if-no-files-found: warn
+          retention-days: 1
+      - name: Record bounded access evidence for controller handoff
+        if: always()
+        env:
+          ACCESS_RESOURCE_RESULT: ${{ steps.resource_access.outcome }}
+          ACCESS_WRITER_RESULT: ${{ steps.writer_access.outcome }}
+          ACCESS_CONFIRMATION_RESULT: ${{ steps.confirmation_access.outcome }}
+          ACCESS_RUNTIME_RESULT: ${{ steps.runtime_access.outcome }}
+          ACCESS_MAIL_RESULT: ${{ steps.mail_scope_probe.outcome }}
+        run: node tools/google-development-access/access-report.mjs
+      - name: Retain access evidence without credentials or provider data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-access-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: access-evidence.json
+          if-no-files-found: error
+          retention-days: 1

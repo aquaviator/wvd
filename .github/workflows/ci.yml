@@ -5,9 +5,101 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: python -B -m unittest discover -s tools/operator-diagnostics -p "test_*.py"
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
+      - run: node tools/factory/cli.mjs access-check
+      - run: npm --prefix tools/factory test
+      - run: python -B -m unittest discover -s tools/google-development-access -p "test_*.py"
+      - run: npm --prefix tools/portal-proof test
       - run: npm run validate
       - run: npm test
       - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+        env:
+          WVD_PUBLIC_EVIDENCE_DIR: public-evidence
+      - name: Check public evidence size
+        id: public-evidence-limit
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p public-evidence
+          du -ah public-evidence
+          bytes=$(du -sb public-evidence | cut -f1)
+          test "$bytes" -le 5242880
+      - name: Save synthetic public page evidence
+        if: always() && steps.public-evidence-limit.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-guide-evidence-${{ github.run_id }}
+          path: public-evidence/*.png
+          if-no-files-found: warn
+          retention-days: 1
+      - run: npx playwright test --config tools/portal-proof/playwright.config.mjs
+        env:
+          WVD_PORTAL_EVIDENCE_DIR: portal-evidence
+      - name: Check owner Portal evidence size
+        id: portal-evidence-limit
+        if: always()
+        run: |
+          mkdir -p portal-evidence
+          test "$(du -sb portal-evidence | cut -f1)" -le 5242880
+      - name: Save synthetic owner Portal evidence
+        if: always() && steps.portal-evidence-limit.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-portal-evidence-${{ github.run_id }}
+          path: portal-evidence/*.png
+          if-no-files-found: warn
+          retention-days: 1
+  portal-database:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: portal_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d portal_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Isolated disposable CI database only; this is not a deployed credential.
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - run: psql -h localhost -U postgres -d portal_test -v ON_ERROR_STOP=1 -f supabase/tests/bootstrap.sql
+      - run: psql -h localhost -U postgres -d portal_test -v ON_ERROR_STOP=1 -f supabase/migrations/202610020001_portal.sql
+      - run: psql -h localhost -U postgres -d portal_test -v ON_ERROR_STOP=1 -f supabase/tests/assertions.sql
+      - run: node supabase/tests/concurrency.mjs
+        env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGDATABASE: portal_test
+  portal-google:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: tools/portal-proof/package-lock.json }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm ci --prefix tools/portal-proof
+      - run: npm run build:live --prefix tools/portal-proof
+      - run: npm --prefix tools/portal-proof run test:firebase
+  google-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: python -B -m unittest discover -s tools/google-development-access -p "test_*.py"
+      - run: node --test tools/portal-proof/tests/google-preflight.test.mjs tools/portal-proof/tests/google-launcher.test.mjs

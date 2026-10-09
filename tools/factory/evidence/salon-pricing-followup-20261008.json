@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "task": "SALON-WVD-003 UK pricing follow-up",
+  "observedAt": "2026-10-08T23:44:47Z",
+  "product": {
+    "repository": "aquaviator/WVD-Salon",
+    "branch": "import/salon-foundation",
+    "parent": "0d33503f555bb557e3b89c32c49551253762f992",
+    "commit": "5b518d4d18dd283a3ae360bdf434db7d7827d0de",
+    "changedPaths": [
+      "handoff/wvd/current-state.json",
+      "handoff/wvd/delivery-backlog.json",
+      "handoff/wvd/tasks/SALON-WVD-003.json",
+      "handoff/wvd/results/SALON-WVD-003/uk-pricing-followup.md",
+      "handoff/wvd/results/SALON-WVD-003/uk-pricing-evidence.json"
+    ],
+    "reportSha256": "63fa795215bf630d2257930ae41e608da7d0bcba84051dd97c016e063b770d12",
+    "nonForcedPush": "PASS",
+    "exactRemoteReadback": "PASS",
+    "checks": "JSON, ten-item overlay, unchanged task dependencies and release/acceptance gates, historical report/evidence bytes and report hash, output references PASS",
+    "actionsRuns": 0,
+    "applicationTests": "NOT_RERUN_DOCUMENTATION_ONLY"
+  },
+  "result": "PRICING_MODEL_CONFLICT_COST_INPUTS_HELD",
+  "independentReview": "NOT_RUN",
+  "factory": {
+    "status": "INCOMPLETE",
+    "nextStage": "research",
+    "planHash": "ed6ab11ace47520f5583283aaeadd54fd5528a8a9d1dc289ddce2fc2bc9d590d"
+  },
+  "drive": [
+    {
+      "key": "start",
+      "documentId": "1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4",
+      "revisionId": "ANLCKQllMIXNzcyOm0iQjiQESa_QS8EyGPZP37nnMUUf97_kox5pL_8LUdNeLjHs7fvJDkNLN6WKaFG9r3R_KY-4MFcr4xgKJDvV_Wl8Ufs",
+      "native": {
+        "dateElement": 1,
+        "richLink": 5
+      },
+      "status": "TEXT_LINK_STYLE_NATIVE_ELEMENTS_PASS",
+      "metadata": {
+        "id": "1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4",
+        "title": "Salon Platform — START HERE — WVD Continuation and Current State",
+        "mime_type": null,
+        "size": null,
+        "url": null,
+        "file_or_folder": null,
+        "created_time": null,
+        "modified_time": "2026-10-08T23:43:52.404Z",
+        "parent_ids": null,
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      }
+    },
+    {
+      "key": "portfolio",
+      "documentId": "1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA",
+      "revisionId": "AHj4eMTTSzt0eWdxKZTX5tK80JQ4_1Hm5uu2NbmqXyDNnrI6LbrpQKl5NMmzWLIFJKUKS6KDRa3q_8QHeLJUDpF7mqrGHih2k_cBIE2gkdg",
+      "native": {
+        "dateElement": 1,
+        "richLink": 1
+      },
+      "status": "TEXT_LINK_STYLE_NATIVE_ELEMENTS_PASS",
+      "metadata": {
+        "id": "1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA",
+        "title": "WVD — Salon Platform — Continuation Intake and Portfolio Receipt",
+        "mime_type": null,
+        "size": null,
+        "url": null,
+        "file_or_folder": null,
+        "created_time": null,
+        "modified_time": "2026-10-08T23:43:53.026Z",
+        "parent_ids": null,
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      }
+    }
+  ],
+  "ownership": {
+    "weddingStaging": "1bcdd422756d15e77c625d669cb3ca0fa8223f93",
+    "weddingIntegration": "d44ae2a24bc50a3eac87ca3d404e83a27aed88eb",
+    "disposition": "Takeover unchanged; product branches/workers left untouched."
+  },
+  "baseCI": {
+    "source": "729b8965b8bd77771072b540133d136b9b8b51d7",
+    "pushRun": 37855227683,
+    "jobs": [
+      {
+        "id": 113577681358,
+        "name": "portal-database",
+        "conclusion": "success"
+      },
+      {
+        "id": 113577681581,
+        "name": "portal-google",
+        "conclusion": "success"
+      },
+      {
+        "id": 113577681700,
+        "name": "quality",
+        "conclusion": "success"
+      },
+      {
+        "id": 113577681766,
+        "name": "google-windows",
+        "conclusion": "success"
+      }
+    ],
+    "prRun": 37855231779,
+    "prConclusion": "success",
+    "containerRun": 37855231775,
+    "containerConclusion": "skipped"
+  },
+  "next": "Distinct research review plus primary-source resolution when transient Meta retrieval clears; ownership-coordinated Wedding reconciliation remains next product-code work. Do not repeat unchanged preflight or bulk price checks.",
+  "limits": [
+    "No new application implementation or deployment",
+    "No release, send, transaction, real-data, audience or spending change",
+    "Neither product intake completed"
+  ]
+}

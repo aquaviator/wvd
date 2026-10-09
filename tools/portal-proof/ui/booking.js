@@ -1,0 +1,150 @@
+// Isolated preview only. Private fragments are removed before API requests.
+const developmentPreview=document.body.dataset.runtimeMode!=='live';
+const confirmationNotice=developmentPreview?'This development preview sends no email invitation.':'Keep your private management link. Email confirmations are not enabled yet.';
+const byId=id=>document.getElementById(id);
+const managedMode=document.body.dataset.managedMode==='true',managementEnabled=document.body.dataset.managementEnabled==='true';
+const storageSuffix=managedMode?'-managed':'';
+let activeToken=null;
+if(managedMode){document.querySelector('h1').textContent='Manage your booking';document.title=developmentPreview?'Manage your introductory call · WVD development':'Manage your introductory call · Wear Valley Digital';const fragment=location.hash.slice(1);history.replaceState(null,'',location.pathname);try{if(fragment){if(/^[A-Za-z0-9_-]{1,128}\.[a-f0-9]{64}$/.test(fragment))sessionStorage.setItem('wvd-management-token',fragment);else sessionStorage.removeItem('wvd-management-token');}activeToken=fragment||sessionStorage.getItem('wvd-management-token');}catch{activeToken=fragment||null;}if(!/^[A-Za-z0-9_-]{1,128}\.[a-f0-9]{64}$/.test(activeToken||''))activeToken=null;}
+const reschedulingEnabled=document.body.dataset.reschedulingEnabled==='true';
+const cancellationEnabled=document.body.dataset.cancellationEnabled==='true';
+const day=byId('day'),find=byId('find'),slots=byId('slots'),confirm=byId('confirm'),retry=byId('retry'),message=byId('message'),meet=byId('meet');
+const dateFormat=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'});
+const dateKey=value=>{const parts=dateFormat.formatToParts(value);return ['year','month','day'].map(type=>parts.find(p=>p.type===type).value).join('-');};
+const timeFormat=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+const fullFormat=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+let selected=null,pending=null,management=null,cancelling=false,busy=false,changing=false,changePending=null,revision=0;
+const changeStorage='wvd-development-booking-change-v1'+storageSuffix,revisionStorage='wvd-development-booking-revision-v1'+storageSuffix;
+const storageKey='wvd-development-booking-retry-v1'+storageSuffix;
+const managementKey='wvd-development-booking-management-v1'+storageSuffix,cancelModeKey='wvd-development-booking-cancel-v1'+storageSuffix;
+let linkAction=null,linkQuestion=null;
+const linkActionStorage='wvd-private-link-action';
+try{const saved=JSON.parse(sessionStorage.getItem(linkActionStorage));if(managedMode&&saved?.body?.token===activeToken&&['replace','revoke'].includes(saved.kind)&&Object.keys(saved.body).sort().join(',')===(saved.kind==='replace'?'managementKey,rotationKey,token':'token')&&(saved.kind==='revoke'||/^[a-f0-9]{64}$/.test(saved.body.managementKey)&&/^[a-f0-9-]{36}$/.test(saved.body.rotationKey)))linkAction=saved;}catch{}
+const lock=()=>{
+ byId('link-controls').hidden=!(managedMode&&document.body.dataset.linkLifecycle==='true'&&(management||linkAction));
+ byId('replace-link').disabled=busy||Boolean(linkAction&&linkAction.kind!=='replace')||!linkAction&&Boolean(pending||changing||changePending);
+ byId('revoke-link').disabled=busy||Boolean(linkAction&&linkAction.kind!=='revoke')||!linkAction&&Boolean(pending||changing||changePending);
+ byId('replace-link').textContent=linkAction?.kind==='replace'?'Check replacement link':'Replace private link';
+ byId('revoke-link').textContent=linkAction?.kind==='revoke'?'Retry link revocation':'Disable private link';
+ byId('link-agree').disabled=busy;byId('link-keep').disabled=busy;
+byId('refresh-booking').disabled=busy;day.disabled=managedMode&&!management||busy||pending!==null||changePending!==null||(management!==null&&!changing);find.disabled=day.disabled;confirm.disabled=busy;retry.disabled=busy;byId('cancel').disabled=busy||pending!==null||changing||changePending!==null;byId('change').disabled=busy||pending!==null||changing||changePending!==null;byId('keep-time').disabled=busy||changePending!==null;byId('cancel-agree').disabled=busy;byId('keep').disabled=busy;byId('share-link').disabled=busy||pending!==null||changing||changePending!==null;byId('share-controls').hidden=!managementEnabled||managedMode||!management;for(const button of slots.querySelectorAll('button'))button.disabled=busy||pending!==null||changePending!==null||(management!==null&&!changing);};
+const say=text=>{message.textContent=text;};
+async function post(path,body){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);try{const response=await fetch(path,{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal,cache:'no-store',redirect:'error'});return {code:response.status,data:await response.json()};}finally{clearTimeout(timer);}}
+function remember(){try{sessionStorage.setItem(storageKey,JSON.stringify(pending));}catch{/* The current page retains the capability if tab storage is unavailable. */}}
+function clear(){pending=null;try{sessionStorage.removeItem(storageKey);}catch{}}
+function clearManagement(){clearChange();revision=0;try{sessionStorage.removeItem(revisionStorage);}catch{}management=null;cancelling=false;byId('management').hidden=true;byId('cancel-question').hidden=true;try{sessionStorage.removeItem(managementKey);sessionStorage.removeItem(cancelModeKey);}catch{}}
+function candidates(value){const base=Date.parse(value+'T00:00:00.000Z'),values=[];for(let minutes=-120;minutes<1440;minutes+=15){const date=new Date(base+minutes*60000),time=timeFormat.format(date);if(dateKey(date)===value&&time>='09:00'&&time<='17:30')values.push(date.toISOString());}return values;}
+byId('availability').addEventListener('submit',async event=>{
+ event.preventDefault();if(busy||pending||changePending||management&&!changing)return;busy=true;selected=null;confirm.hidden=true;meet.hidden=true;slots.replaceChildren();byId('selection').textContent='';lock();say('Checking available times…');
+ try{const scoped=managedMode&&changing&&document.body.dataset.managedAvailability==='true';const {code,data}=await post(scoped?'/api/calls/manage/availability':'/api/calls/availability',scoped?{token:activeToken,start:management.start,revision,starts:candidates(day.value)}:{starts:candidates(day.value)});if(scoped&&code===409){say('This booking has changed since you opened it. Refresh booking details before making another change.');return;}if(scoped&&code===403){say('This management link is unavailable or has expired. Contact us for help with your booking.');return;}if(code!==200||data.provisional!==true||!Array.isArray(data.slots))throw Error();
+  for(const slot of data.slots){const button=document.createElement('button');button.type='button';button.textContent=timeFormat.format(new Date(slot.start));button.setAttribute('aria-pressed','false');button.addEventListener('click',()=>{if(busy||pending)return;selected=slot.start;for(const other of slots.querySelectorAll('button'))other.setAttribute('aria-pressed',String(other===button));byId('selection').textContent=fullFormat.format(new Date(selected))+' · 30 minutes, UK time';confirm.hidden=false;say('This time is available now. It will be checked again when you confirm.');});slots.append(button);}
+  say(data.slots.length?'Choose an available time.':'No times are available on this date. Try another date.');
+ }catch{say('Availability could not be checked. Please try again.');}finally{busy=false;lock();}
+});
+async function submit(){
+ if(busy||!pending)return;busy=true;meet.hidden=true;confirm.hidden=true;retry.hidden=true;lock();say(cancelling?'Checking your cancellation. Please keep this page open.':'Checking your booking. Please keep this page open.');
+ try{const {code,data}=await post(managedMode?(cancelling?'/api/calls/manage/cancel':pending.recoveryAction?'/api/calls/manage/recover':'/api/calls/manage/read'):(cancelling?'/api/calls/cancel':'/api/calls/book'),managedMode?(cancelling?{token:activeToken,start:pending.start,revision}:pending.recoveryAction?{token:activeToken,revision:pending.revision,actionId:pending.recoveryAction}:{token:activeToken}):pending);
+  if(!cancelling&&code===200&&data.status==='CONFIRMED'&&(managedMode||data.start===pending.start)&&/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(data.meetUrl)){day.value=dateKey(new Date(data.start));say('Confirmed: '+fullFormat.format(new Date(data.start))+', UK time. '+confirmationNotice);meet.href=data.meetUrl;meet.hidden=false;management=managedMode?{token:activeToken,start:data.start}:{...pending};if(managedMode&&Number.isSafeInteger(data.revision)&&data.revision>=0)saveRevision(data.revision);try{sessionStorage.setItem(managementKey,JSON.stringify(management));}catch{}clear();byId('management').hidden=!(cancellationEnabled||reschedulingEnabled);byId('cancel-question').hidden=true;slots.replaceChildren();selected=null;byId('selection').textContent='';}
+  else if(managedMode&&code===200&&data.status==='PENDING'&&data.pendingAction){pending={token:activeToken,start:data.start,revision:data.revision,recoveryAction:data.pendingAction.id};retry.hidden=false;say('An earlier booking change is still pending. Check its status to recover the existing action.');}
+  else if(managedMode&&code===403){retry.hidden=true;meet.hidden=true;byId('management').hidden=true;byId('management-help').hidden=false;say('This management link is unavailable or has expired. Contact us for help with your booking.');}
+  else if(managedMode&&code===409&&data.error==='REQUEST_CONFLICT'){retry.hidden=true;say('This booking has changed since you opened it. Refresh booking details before making another change.');}
+  else if(code===409&&data.status==='UNAVAILABLE'){clear();selected=null;slots.replaceChildren();byId('selection').textContent='';say('That time is no longer available. Choose another date or check the times again.');}
+  else if((code===409||code===200)&&data.status==='CANCELLED'){const cancelledStart=data.start??pending?.start;if(typeof cancelledStart==='string'&&Number.isFinite(Date.parse(cancelledStart)))day.value=dateKey(new Date(cancelledStart));if(managedMode)byId('availability').hidden=true;clear();clearManagement();selected=null;slots.replaceChildren();byId('selection').textContent='';say(managedMode?'This booking has been cancelled.':'This booking has been cancelled. You can choose a new time.');}
+  else{retry.hidden=false;say(cancelling?'Cancellation is not confirmed yet. Check its status before booking another time.':'Your booking is not confirmed yet. Check its status before choosing another time.');}
+ }catch{retry.hidden=false;say(cancelling?'The connection was interrupted. Cancellation may still be processing. Check its status before booking another time.':'The connection was interrupted. Your booking may still be processing. Check its status before choosing another time.');}finally{busy=false;retry.textContent=cancelling?'Check cancellation status':'Check booking status';lock();}
+}
+confirm.addEventListener('click',()=>{if(busy||pending||changePending||!selected||managedMode&&!management)return;if(changing){changePending={...management,changeKey:crypto.randomUUID(),targetStart:selected,revision};try{sessionStorage.setItem(changeStorage,JSON.stringify(changePending));}catch{}submitChange();return;}pending={requestKey:crypto.randomUUID(),start:selected};remember();submit();});retry.addEventListener('click',()=>changePending?submitChange():submit());
+byId('cancel').addEventListener('click',()=>{if(busy||pending||!management)return;byId('cancel-question').hidden=false;byId('cancel-agree').focus();});
+byId('keep').addEventListener('click',()=>{byId('cancel-question').hidden=true;byId('cancel').focus();});
+byId('cancel-agree').addEventListener('click',()=>{if(busy||pending||!management)return;pending={...management};cancelling=true;remember();try{sessionStorage.setItem(cancelModeKey,'true');}catch{}byId('cancel-question').hidden=true;submit();});
+
+function clearChange(){changePending=null;changing=false;byId('keep-time').hidden=true;confirm.textContent='Confirm this time';try{sessionStorage.removeItem(changeStorage);}catch{}}
+function saveRevision(value){revision=value;try{sessionStorage.setItem(revisionStorage,String(revision));}catch{}}
+async function submitChange(){
+ if(busy||!changePending)return;busy=true;confirm.hidden=true;retry.hidden=true;lock();say('Checking the new time. Your change is not confirmed yet.');
+ try{let {code,data}=await post(managedMode?'/api/calls/manage/reschedule':'/api/calls/reschedule',changePending);if(managedMode&&code===200&&data.status==='RESCHEDULED'){const current=await post('/api/calls/manage/read',{token:activeToken});if(current.code===200&&current.data.status==='CONFIRMED')data={...current.data,status:'RESCHEDULED'};else{code=202;data={status:'PENDING'};}}
+  if(code===200&&data.status==='RESCHEDULED'&&data.start===changePending.targetStart&&data.revision===changePending.revision+1&&/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(data.meetUrl)){
+   day.value=dateKey(new Date(data.start));management=managedMode?{token:activeToken,start:data.start}:{requestKey:changePending.requestKey,start:data.start};try{sessionStorage.setItem(managementKey,JSON.stringify(management));}catch{}saveRevision(data.revision);clearChange();slots.replaceChildren();selected=null;byId('selection').textContent='';meet.href=data.meetUrl;meet.hidden=false;say('Booking moved: '+fullFormat.format(new Date(data.start))+', UK time. Your Google Meet link stays the same. '+confirmationNotice);
+  }else if(code===409&&data.status==='UNAVAILABLE'&&(data.revision===undefined||data.revision===changePending.revision+1)){
+   if(data.revision!==undefined)saveRevision(data.revision);clearChange();changing=true;byId('keep-time').hidden=false;confirm.textContent='Confirm new time';slots.replaceChildren();selected=null;byId('selection').textContent='';say('The new time is unavailable. Your original booking is unchanged. Choose another time or keep your current booking.');
+  }else if(code===409&&data.status==='CANCELLED'){clearManagement();meet.hidden=true;slots.replaceChildren();byId('selection').textContent='';if(managedMode)byId('availability').hidden=true;say(managedMode?'This booking has been cancelled.':'This booking has been cancelled. You can choose a new time.');}
+  else if(managedMode&&code===403){retry.hidden=true;meet.hidden=true;byId('management').hidden=true;say('This management link is unavailable or has expired. Contact us for help with your booking.');}
+  else if(managedMode&&code===409&&data.error==='REQUEST_CONFLICT'){retry.hidden=true;say('This booking has changed since you opened it. Refresh booking details before making another change.');}
+  else{retry.hidden=false;say('The time change is not confirmed yet. Check its status before making another change.');}
+ }catch{retry.hidden=false;say('The connection was interrupted. Your time change may still be processing. Check its status before making another change.');}
+ finally{busy=false;retry.textContent='Check new time status';lock();}
+}
+byId('change').hidden=!reschedulingEnabled;byId('cancel').hidden=!cancellationEnabled;
+byId('change').addEventListener('click',()=>{if(busy||pending||changePending||!management)return;changing=true;confirm.textContent='Confirm new time';byId('keep-time').hidden=false;byId('cancel-question').hidden=true;say('Choose a new date and time. Your current booking remains protected until the change is confirmed.');lock();day.focus();});
+byId('keep-time').addEventListener('click',()=>{if(busy||changePending)return;clearChange();day.value=dateKey(new Date(management.start));slots.replaceChildren();selected=null;confirm.hidden=true;byId('selection').textContent='';meet.hidden=!/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(meet.href);say('Your current booking is unchanged: '+fullFormat.format(new Date(management.start))+', UK time.');lock();byId('change').focus();});
+
+day.value=dateKey(new Date(Date.now()+172800000));day.min=dateKey(new Date());
+try{const saved=JSON.parse(sessionStorage.getItem(storageKey)||sessionStorage.getItem(managementKey));if(!managedMode&&saved&&Object.keys(saved).sort().join(',')==='requestKey,start'&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(saved.requestKey)&&new Date(saved.start).toISOString()===saved.start){pending=saved;day.value=dateKey(new Date(saved.start));cancelling=sessionStorage.getItem(cancelModeKey)==='true';retry.hidden=false;retry.textContent=cancelling?'Check cancellation status':'Check booking status';byId('selection').textContent=fullFormat.format(new Date(saved.start))+' · UK time';say(cancelling?'A cancellation is waiting for confirmation. Check its status before booking another time.':'Check your existing booking before choosing another time.');}}catch{}
+try{const value=Number(sessionStorage.getItem(revisionStorage)||'0');if(Number.isSafeInteger(value)&&value>=0)revision=value;const saved=JSON.parse(sessionStorage.getItem(changeStorage));if(!managedMode&&reschedulingEnabled&&saved&&Object.keys(saved).sort().join(',')==='changeKey,requestKey,revision,start,targetStart'&&[saved.requestKey,saved.changeKey].every(key=>/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(key))&&[saved.start,saved.targetStart].every(time=>new Date(time).toISOString()===time)&&Number.isSafeInteger(saved.revision)&&saved.revision>=0){changePending=saved;day.value=dateKey(new Date(saved.targetStart));byId('selection').textContent='Requested: '+fullFormat.format(new Date(saved.targetStart))+' · UK time';management={requestKey:saved.requestKey,start:saved.start};pending=null;changing=true;cancelling=false;byId('management').hidden=false;retry.hidden=false;retry.textContent='Check new time status';say('A time change is waiting for confirmation. Check its status before making another change.');}}catch{}
+if(!pending&&!changePending)say('Choose a date to see available times.');lock();
+if(managedMode){byId('management-help').hidden=false;try{const saved=JSON.parse(sessionStorage.getItem(changeStorage));if(saved&&saved.token===activeToken&&Object.keys(saved).sort().join(',')==='changeKey,revision,start,targetStart,token'&&Number.isSafeInteger(saved.revision)&&saved.revision>=0&&/^[0-9a-f-]{36}$/.test(saved.changeKey)&&[saved.start,saved.targetStart].every(time=>new Date(time).toISOString()===time)){changePending=saved;management={token:activeToken,start:saved.start};changing=true;byId('management').hidden=false;byId('selection').textContent='Requested: '+fullFormat.format(new Date(saved.targetStart))+' · UK time';day.value=dateKey(new Date(saved.targetStart));retry.hidden=false;retry.textContent='Check new time status';say('A time change is waiting for confirmation. Check its status before making another change.');}else{const previous=JSON.parse(sessionStorage.getItem(storageKey));if(previous?.token===activeToken&&typeof previous.start==='string'&&sessionStorage.getItem(cancelModeKey)==='true'){pending=previous;day.value=dateKey(new Date(previous.start));cancelling=true;}else pending={token:activeToken};submit();}}catch{pending={token:activeToken};submit();}lock();}
+
+byId('share-link').addEventListener('click',async()=>{
+ if(busy||pending||changing||changePending||!management||managedMode)return;busy=true;lock();byId('share-message').textContent='Preparing your private management link…';
+ try{
+  let saved;try{saved=JSON.parse(sessionStorage.getItem('wvd-booking-link-issuance'));}catch{}
+  if(!saved||saved.requestKey!==management.requestKey||!/^[a-f0-9]{64}$/.test(saved.managementKey)){saved={requestKey:management.requestKey,managementKey:Array.from(crypto.getRandomValues(new Uint8Array(32)),v=>v.toString(16).padStart(2,'0')).join('')};sessionStorage.setItem('wvd-booking-link-issuance',JSON.stringify(saved));}
+  const {code,data}=await post('/api/calls/manage/issue',{...saved,start:management.start});
+  const link=new URL(data.managementUrl);if(code!==200||link.origin!==location.origin||link.pathname!=='/book/manage'||!/^#[a-f0-9]{64}\.[a-f0-9]{64}$/.test(link.hash))throw Error();
+  byId('share-value').value=link.href;byId('share-value').hidden=false;byId('share-label').hidden=false;byId('share-open').href=link.href;byId('share-open').hidden=false;byId('share-message').textContent='Keep this link private. It expires '+fullFormat.format(new Date(data.expiresAt))+', UK time. It has not been emailed.';
+ }catch{byId('share-message').textContent='The private link could not be prepared. Retry here using the same tab, or contact us for help.';}finally{busy=false;lock();}
+});
+
+// Read the authoritative booking without repeating a previous mutation. Pending
+// server actions expose their existing recovery ID; opening/refreshing is read-only.
+byId('refresh-booking').hidden=!managedMode;
+byId('refresh-booking').addEventListener('click',()=>{
+ if(busy||!managedMode)return;
+ clear();clearManagement();selected=null;slots.replaceChildren();
+ byId('selection').textContent='';confirm.hidden=true;meet.hidden=true;
+ byId('availability').hidden=false;retry.hidden=true;
+ pending={token:activeToken};submit();
+});
+
+async function performLinkAction(){
+ if(busy||!linkAction)return;
+ busy=true;lock();byId('link-question').hidden=true;byId('replacement-value').hidden=true;byId('replacement-label').hidden=true;
+ byId('link-message').textContent=linkAction.kind==='replace'?'Preparing your replacement link…':'Disabling this private link…';
+ let refresh=false;
+ try{
+  const {code,data}=await post('/api/calls/manage/'+linkAction.kind,linkAction.body);
+  if(code!==200)throw Error();
+  if(linkAction.kind==='replace'){
+   const url=new URL(data.managementUrl),expected='#'+linkAction.body.token.split('.')[0]+'.'+linkAction.body.managementKey;
+   if(url.origin!==location.origin||url.pathname!=='/book/manage'||url.search||url.hash!==expected)throw Error();
+   activeToken=url.hash.slice(1);
+   try{sessionStorage.setItem('wvd-management-token',activeToken);}catch{}
+   byId('replacement-value').value=url.href;byId('replacement-value').hidden=false;byId('replacement-label').hidden=false;
+   byId('link-message').textContent='Your old link no longer works. Save this replacement link; it has not been emailed.';
+   refresh=true;
+  }else{
+   if(data.status!=='REVOKED')throw Error();
+   activeToken=null;try{sessionStorage.removeItem('wvd-management-token');}catch{}
+   meet.hidden=true;byId('availability').hidden=true;
+   say('This private link is disabled. Your booking is still in place. Contact us if you need to manage it.');
+  }
+  linkAction=null;try{sessionStorage.removeItem(linkActionStorage);}catch{}
+  clear();clearManagement();slots.replaceChildren();selected=null;confirm.hidden=true;retry.hidden=true;byId('selection').textContent='';
+ }catch{byId('link-message').textContent='The link change is not confirmed here. Use the retry button to recover the same action, or contact us for help.';}
+ finally{busy=false;lock();}
+ if(refresh){pending={token:activeToken};submit();}
+}
+for(const kind of ['replace','revoke'])byId(kind+'-link').addEventListener('click',()=>{
+ if(busy)return;if(linkAction){if(linkAction.kind===kind)performLinkAction();return;}
+ if(!management||pending||changing||changePending)return;
+ linkQuestion=kind;byId('link-question').hidden=false;
+ byId('link-question-text').textContent=kind==='replace'?'Replace this private link? All previous copies will stop working. Your booking stays in place.':'Disable this private link? You will need to contact us for further booking changes. This does not cancel your booking.';
+ byId('link-agree').textContent=kind==='replace'?'Replace link now':'Disable link now';byId('link-agree').focus();
+});
+byId('link-keep').addEventListener('click',()=>{if(busy)return;linkQuestion=null;byId('link-question').hidden=true;});
+byId('link-agree').addEventListener('click',()=>{
+ if(busy||!linkQuestion||!activeToken)return;
+ const kind=linkQuestion,body=kind==='replace'?{token:activeToken,managementKey:Array.from(crypto.getRandomValues(new Uint8Array(32)),v=>v.toString(16).padStart(2,'0')).join(''),rotationKey:crypto.randomUUID()}:{token:activeToken};
+ try{sessionStorage.setItem(linkActionStorage,JSON.stringify({kind,body}));}catch{byId('link-message').textContent='This browser cannot retain recovery details. The link was not changed. Contact us for help.';return;}
+ linkAction={kind,body};linkQuestion=null;performLinkAction();
+});

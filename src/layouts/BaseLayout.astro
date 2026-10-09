@@ -3,16 +3,59 @@ import '../styles/global.css';
 import '../styles/case-study.css';
 import { Image } from 'astro:assets';
 import horizontalLogo from '../assets/brand/horizontal-logo.png';
-const { title, description, canonical, index = true, image = '/favicon.svg', structuredData } = Astro.props;
+import {serviceOrigin} from '../lib/contact/service';
+const { title, description, canonical, index = true, image = '/images/wear-valley-digital.webp', structuredData } = Astro.props;
+const siteUrl = new URL('/', Astro.site!).href;
+const canonicalUrl = new URL(canonical ? new URL(canonical).pathname : Astro.url.pathname, siteUrl).href;
+const organisation = {
+  '@context': 'https://schema.org', '@type': 'Organization', '@id': siteUrl + '#organisation',
+  name: 'Wear Valley Digital', url: siteUrl, email: 'hello@wearvalleydigital.com',
+  description: 'Founder-led websites, bespoke software and automation. Based in Weardale with remote delivery across the UK.',
+  logo: new URL('/images/wear-valley-digital.webp', siteUrl).href,
+  founder: { '@type': 'Person', name: 'Andy Clarke' },
+  areaServed: { '@type': 'Country', name: 'United Kingdom' }
+};
+const json = (value: unknown) => JSON.stringify(value).replace(/</g, String.fromCharCode(92) + 'u003c');
 ---
 <!doctype html>
 <html lang="en-GB">
-  <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><title>{title}</title><meta name="description" content={description}><link rel="canonical" href={canonical}><meta name="robots" content={index?'index,follow':'noindex,follow'}><meta property="og:title" content={title}><meta property="og:description" content={description}><meta property="og:image" content={new URL(image, Astro.site)}><meta property="og:type" content="website">{structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}</head>
+  <head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <title>{title}</title><meta name="description" content={description}>
+    <link rel="canonical" href={canonicalUrl}>
+    <meta name="robots" content={index ? 'index,follow' : 'noindex,follow'}>
+    <meta property="og:title" content={title}><meta property="og:description" content={description}>
+    <meta property="og:url" content={canonicalUrl}><meta property="og:site_name" content="Wear Valley Digital">
+    <meta property="og:locale" content="en_GB"><meta property="og:type" content="website">
+    <meta property="og:image" content={new URL(image, siteUrl).href}>
+    <meta property="og:image:alt" content="Wear Valley Digital — Rural roots. Digital reach.">
+    <meta name="twitter:card" content="summary"><meta name="twitter:title" content={title}>
+    <meta name="twitter:description" content={description}><meta name="twitter:image" content={new URL(image, siteUrl).href}>
+    <script type="application/ld+json" set:html={json(organisation)} />
+    {structuredData && <script type="application/ld+json" set:html={json(structuredData)} />}
+  </head>
   <body>
-    <header class="site-header"><div class="wrap header-inner"><a class="brand" href="/" aria-label="Wear Valley Digital home"><Image src={horizontalLogo} alt="Wear Valley Digital — Rural roots. Digital reach." width={260} format="webp" quality={85} /></a><nav class="site-nav" aria-label="Primary"><a href="/products/">Products</a><a href="/work/">Work</a><a href="/legal/contact/">Contact</a></nav></div></header>
-    <main><slot /></main>
-    <footer class="site-footer"><div class="wrap"><p><strong>Wear Valley Digital</strong> — practical digital tools for real-world problems.</p><nav aria-label="Footer"><a href="/products/">Products</a> · <a href="/work/">Work</a> · <a href="/legal/privacy/">Privacy</a> · <a href="/legal/cookies/">Cookies</a> · <a href="/legal/terms/">Terms</a> · <a href="/legal/contact/">Contact</a></nav><small>© {new Date().getFullYear()} Wear Valley Digital</small></div></footer>
-    <aside class="consent panel" id="consent" aria-label="Analytics consent" hidden><strong>Optional analytics</strong><p>Help us understand site use. Purchasing works either way.</p><button class="button" data-consent="granted">Allow</button> <button data-consent="declined">Decline</button></aside>
-    <script is:inline>const c=document.querySelector('#consent');if(!localStorage.getItem('wvd-analytics-consent'))c.hidden=false;document.querySelectorAll('[data-consent]').forEach(b=>b.addEventListener('click',()=>{localStorage.setItem('wvd-analytics-consent',b.dataset.consent);c.hidden=true;}));</script>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header"><div class="wrap header-inner">
+      <a class="brand" href="/" aria-label="Wear Valley Digital home"><Image src={horizontalLogo} alt="Wear Valley Digital — Rural roots. Digital reach." width={260} format="webp" quality={85} /></a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="/services/" aria-current={Astro.url.pathname.startsWith('/services/') ? 'page' : undefined}>Services</a>
+        <a href="/work/" aria-current={Astro.url.pathname.startsWith('/work/') ? 'page' : undefined}>Our work</a>
+        <a href="/products/" aria-current={Astro.url.pathname.startsWith('/products/') ? 'page' : undefined}>Products</a>
+        <a href="/about/" aria-current={Astro.url.pathname.startsWith('/about/') ? 'page' : undefined}>About</a>
+        <a href="/insights/" aria-current={Astro.url.pathname.startsWith('/insights/') ? 'page' : undefined}>Guides</a>
+        <a href={serviceOrigin} title="Sign in to your WVD client project">Client Portal</a>
+        <a href="/enquire/" aria-current={Astro.url.pathname.startsWith('/enquire/') ? 'page' : undefined}>Let’s talk ↗</a>
+      </nav>
+    </div></header>
+    <main id="main-content"><slot /></main>
+    <footer class="site-footer"><div class="wrap">
+      <div class="footer-topline"><p class="footer-statement">Rural roots.<br />Digital reach.</p><a class="text-link" href="/enquire/">Let’s talk about your next project ↗</a></div>
+      <p><strong>Wear Valley Digital</strong> · Websites, software and automation.</p>
+      <p>Based in Weardale · Local in-person and UK remote delivery.<br /><a href="mailto:hello@wearvalleydigital.com">hello@wearvalleydigital.com</a></p>
+      <nav aria-label="Footer"><a href="/services/">Services</a><a href="/products/">Products in development</a><a href="/about/">About Andy</a><a href={serviceOrigin}>Client Portal</a><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/contact/">Contact</a></nav>
+      <small>© {new Date().getFullYear()} Wear Valley Digital</small>
+    </div></footer>
   </body>
 </html>

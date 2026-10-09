@@ -1,0 +1,179 @@
+{
+  "id": "WVD-DEVELOPMENT-STANDARD",
+  "version": "1.5.0",
+  "authority": "Founder instructions, 2, 4 and 5 October 2026",
+  "platform": "google",
+  "newServiceSubscriptionsAllowed": false,
+  "newExternalSpendGBP": 0,
+  "reuseOrder": [
+    "existing-product-code",
+    "shared-wvd-module",
+    "existing-google-service",
+    "adapt-existing-module",
+    "build-missing-capability"
+  ],
+  "requirements": [
+    "Inspect the reuse catalogue and current source before building a capability.",
+    "Reuse established Google ownership, service connections and configuration patterns.",
+    "Configure product/project targets explicitly; never copy another product's identity, data paths or credentials as defaults.",
+    "Authentication may be shared; authorisation and data access must remain product/project scoped.",
+    "Record why existing code cannot be reused before implementing a replacement.",
+    "Keep shared modules parameterised, versioned and covered by consumer contract tests.",
+    "Preserve each product's constitution and deployment requirements.",
+    "Verify existing permissions, billing capacity and storage/runtime compatibility before provisioning or deployment.",
+    "Do not introduce another service provider or subscription as an implementation shortcut.",
+    "Keep secrets outside code, templates and task packets; use credential references.",
+    "Keep public search/AI retrieval separate from private product/customer data.",
+    "Run reproducible isolated development tests unattended where supported; retain bounded synthetic visual evidence and report verified results before handover. Do not require founder-local pulls as the default verification gate.",
+    "Continue authorised development from the agreed brief and current backlog without waiting for another continue instruction. After each verified slice, select and implement the next in-scope item; progress updates and completed slices are not permission gates. Ask the founder only when missing information, access or a decision genuinely blocks the next action, and continue independent in-scope work while awaiting an answer. Do not invent requirements or broaden the brief. Stop when the brief is complete, the founder asks to stop, or no authorised work can proceed without founder input. Production deployment and new external spend still require separate approval.",
+    "All web-facing projects with creative content inherit the visual, short contextual video and complete text bundle. Every page must have a relevant CTA. Keep sources, factual accuracy, review dates, accessibility and truthful public discovery metadata consistent across formats; never expose private content or claim guaranteed AI indexing.",
+    "Production deployment requires separate founder approval.",
+    "Before requesting access or manual evidence, inspect the access registry, discover current controller connectors, verify the target identity and try the existing authorised read path. Record verified changes and failures without credentials. The development flow is the primary reusable product; the website is its first consumer."
+  ],
+  "flavours": {
+    "public-website": {
+      "baseline": "Existing WVD Astro/public content patterns",
+      "googleCapabilities": [
+        "hosting"
+      ],
+      "reuseAssetIds": [
+        "wvd-public-site",
+        "hv1-hosting-config"
+      ]
+    },
+    "web-application": {
+      "baseline": "Existing Human V1 Firebase connection/auth patterns plus product-owned workflows",
+      "googleCapabilities": [
+        "hosting",
+        "authentication",
+        "database",
+        "file-storage"
+      ],
+      "reuseAssetIds": [
+        "hv1-auth-client",
+        "hv1-hosting-config",
+        "hv1-access-rules",
+        "wvd-portal-contracts"
+      ]
+    },
+    "android-application": {
+      "baseline": "Human V1 Kotlin/Compose/Room and Firebase integration patterns",
+      "googleCapabilities": [
+        "authentication",
+        "database",
+        "file-storage"
+      ],
+      "reuseAssetIds": [
+        "hv1-android",
+        "hv1-access-rules"
+      ]
+    },
+    "enterprise-platform": {
+      "baseline": "PECP product constitution and portable provider/contract patterns",
+      "googleCapabilities": [
+        "development-infrastructure"
+      ],
+      "reuseAssetIds": [
+        "pecp-constitution",
+        "wvd-factory"
+      ]
+    }
+  },
+  "developmentVerification": {
+    "preferredEnvironment": "disposable-container",
+    "execution": "unattended-existing-CI",
+    "evidence": [
+      "commit-bound-results",
+      "synthetic-screenshots",
+      "synthetic-browser-video"
+    ],
+    "liveCredentialsAllowed": false,
+    "productionDeploymentAllowed": false,
+    "interactivePreview": "requires-explicit-approved-runtime",
+    "nativeChecks": "keep-platform-specific-checks-outside-container"
+  },
+  "developmentContinuation": {
+    "scopeAuthority": "agreed-brief-and-latest-founder-corrections",
+    "afterVerifiedSlice": "continue-next-in-scope-item",
+    "founderInput": "only-for-blocking-information-access-or-decision",
+    "whileAwaitingInput": "continue-independent-authorised-work",
+    "stopWhen": [
+      "brief-complete",
+      "founder-stop-request",
+      "no-authorised-work-without-founder-input"
+    ],
+    "productionApprovalRequired": true,
+    "newSpendApprovalRequired": true
+  },
+  "webContentStandard": {
+    "id": "WVD-WEB-CONTENT-STANDARD",
+    "version": "1.0.0",
+    "scope": "all-web-facing-projects-with-creative-content",
+    "articleBundle": [
+      "feature-visual",
+      "short-context-video",
+      "complete-text"
+    ],
+    "videoAuthoring": "HyperFrames",
+    "infographics": "optional-when-they-clarify",
+    "cta": "relevant-primary-action-on-every-page",
+    "accuracy": "shared-sources-and-versioned-review-across-formats",
+    "discovery": "truthful-public-metadata-no-indexing-guarantee",
+    "privacy": "private-content-excluded-from-public-search",
+    "reference": "docs/WVD-WEB-CONTENT-STANDARD.md"
+  },
+  "publicDiscovery": {
+    "id": "WVD-PUBLIC-DISCOVERY",
+    "version": "1.0.0",
+    "scope": "authorised-public-product-and-business-content",
+    "reference": "docs/WVD-DEVELOPMENT-STANDARD.md#public-search-and-ai-discovery",
+    "privateData": "authenticated-and-excluded-from-public-retrieval",
+    "prototypeAudience": "preserve-existing-access",
+    "crawlerPolicy": "separate-search-retrieval-from-model-training",
+    "claims": "no-guaranteed-indexing-ranking-or-ai-citation",
+    "checks": [
+      "public-private-route-inventory",
+      "crawlable-html-canonicals-links-and-sitemap",
+      "robots-headers-and-hosting-crawler-access",
+      "visible-content-and-structured-data-agree",
+      "publisher-sources-and-actual-review-dates",
+      "private-data-exclusion-and-access-denial",
+      "deployed-url-verification-and-search-observation"
+    ]
+  },
+  "projectAuthorityOverrides": {
+    "wvd": {
+      "authority": "Founder instruction, 4 October 2026",
+      "reference": "docs/WVD-PROJECT-AUTHORITY.md",
+      "routineApprovalGates": false,
+      "verificationRequiresFounderReview": false,
+      "productionApprovalRequired": false,
+      "specificAuthorisationTriggers": [
+        "user-supplied-data",
+        "elevated-admin-or-configuration",
+        "additional-cost"
+      ],
+      "whileAwaitingInput": "continue-independent-authorised-work",
+      "grantsNewPermissions": false
+    }
+  },
+  "accessDiscovery": {
+    "registry": "tools/factory/access-registry.json",
+    "scope": "per-product; WVD inventory is not inherited as another product grant",
+    "beforeFounderRequest": [
+      "inspect-recorded-access",
+      "discover-current-controller-tools",
+      "verify-connected-identity-and-target",
+      "try-authorised-existing-route",
+      "record-observed-failure"
+    ],
+    "planes": [
+      "controller",
+      "ci",
+      "service"
+    ],
+    "evidence": "historical-until-refreshed; no status upgrades from configuration alone",
+    "storage": "non-secret references, scope, authority, evidence and limitations only",
+    "messagePolicy": "Use authorised read checks for delivery evidence when available; never send an unsolicited test or replay an uncertain send."
+  }
+}

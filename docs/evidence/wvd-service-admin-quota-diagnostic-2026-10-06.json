@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "evidenceType": "FOUNDER_REPORTED_READ_ONLY_DIAGNOSTIC",
+  "reportedAt": "2026-10-06T14:26:15Z",
+  "diagnosticSource": "2c448007cb471d4f0b99fd04563f49cbae787cc9",
+  "targetProject": "wvd-development",
+  "targetProjectNumber": "6616382131",
+  "service": "projects/wvd-development/locations/europe-west2/services/wvd-service",
+  "gcloudContext": {
+    "projectMatches": true,
+    "accountMatchesRecordedFounderSupportIdentity": true,
+    "impersonationConfigured": false,
+    "quotaProjectConfigured": false,
+    "tokenOverridePresent": false,
+    "tokenFileOverridePresent": false,
+    "credentialFileOverridePresent": false
+  },
+  "firebaseQuotaComparison": {
+    "checks": ["google-provider", "authorized-domains"],
+    "withoutHeader": {
+      "httpStatus": 403,
+      "googleStatus": "PERMISSION_DENIED",
+      "reason": "SERVICE_DISABLED",
+      "service": "identitytoolkit.googleapis.com",
+      "consumer": "projects/618104708054"
+    },
+    "withWvdHeader": {
+      "httpStatus": 200,
+      "targetMatches": true,
+      "quotaProject": "wvd-development"
+    }
+  },
+  "projectPermissionsReturnedInBothModes": [
+    "resourcemanager.projects.get",
+    "datastore.databases.getMetadata",
+    "firebaseauth.configs.get",
+    "firebaseauth.configs.update",
+    "datastore.indexes.get",
+    "datastore.indexes.update",
+    "serviceusage.services.use"
+  ],
+  "servicePermissionsReturnedInBothModes": [
+    "run.services.get",
+    "run.services.update",
+    "run.services.setIamPolicy"
+  ],
+  "observedState": {
+    "projectActive": true,
+    "nativeFirestoreDatabaseAtExpectedLocation": true,
+    "serviceAtExpectedOrigin": true,
+    "googleProviderEnabled": true,
+    "serviceDomainAuthorized": false,
+    "enquiryTtlState": "ABSENT",
+    "publicTransportEnabled": false
+  },
+  "stillDenied": [],
+  "quotaHeaderDenied": [],
+  "incompleteChecks": [],
+  "changesMade": false,
+  "interpretation": "The paired Firebase requests establish the missing quota-project header as the observed denial cause. All requested scoped IAM permissions were returned. No role grant is indicated. The administrator setup changes and actual owner sign-in remain pending.",
+  "limits": [
+    "Reported by the founder from their Cloud Shell session; the controller did not acquire or inspect its token.",
+    "Scoped permission tests are not a guarantee that subsequent configuration writes will succeed.",
+    "The diagnostic checks service identity and origin, not the complete deployment receipt."
+  ]
+}

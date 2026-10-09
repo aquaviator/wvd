@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "service": "projects/wvd-development/locations/europe-west2/services/wvd-service",
+  "sourceRevision": "10a41e2b5a5cd80d1a895b21d4ddacf13cbca1ab",
+  "image": "europe-west2-docker.pkg.dev/wvd-development/wvd-booking-runtime/service@sha256:9734100576d2986e67020fcc7db6a18e0c496429c83e2fdb95a98297213118a6",
+  "configSha256": "d943c30fd79f76a07313561a4d15157e58acdfbccda8207994770c67b5782fa7",
+  "url": "https://wvd-service-v3b6mv7uka-nw.a.run.app"
+}

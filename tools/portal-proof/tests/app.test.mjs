@@ -1,0 +1,33 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {LocalAuth} from '../auth.mjs';
+import {DurablePortal} from '../durable.mjs';
+import {createApplication} from '../app.mjs';
+const state={identities:[{id:'owner',active:true},{id:'member',active:true},{id:'other',active:true}],projects:[{id:'a',businessId:'one',stage:'Review'},{id:'b',businessId:'two'}],memberships:[{actorId:'owner',businessId:'one',active:true,role:'Owner',projectIds:['a']},{actorId:'member',businessId:'one',active:true,role:'Member',projectIds:['a']},{actorId:'other',businessId:'two',active:true,role:'Owner',projectIds:['b']}],milestones:[{id:'m',projectId:'a',currentVersionId:'v1',status:'awaiting-client'}]};
+test('real HTTP invitation, login, tenant isolation, approval and logout',async t=>{
+  const dir=mkdtempSync(join(tmpdir(),'wvd-app-')),auth=new LocalAuth(join(dir,'auth.sqlite')),portal=new DurablePortal(join(dir,'portal.sqlite'),state);
+  const origin='http://localhost';const server=createApplication({auth,portal,allowedOrigin:origin});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${server.address().port}`;
+  t.after(async()=>{server.closeIdleConnections();await new Promise(resolve=>server.close(resolve));auth.close();portal.close();rmSync(dir,{recursive:true,force:true});});
+  const post=(path,body,token,requestOrigin=origin)=>fetch(base+path,{method:'POST',headers:{Origin:requestOrigin,'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify(body)});
+  const home=await fetch(base+'/');assert.equal(home.status,200);assert.match(home.headers.get('content-security-policy'),/frame-ancestors 'none'/);assert.match(await home.text(),/Client portal/);
+  assert.equal((await post('/api/auth/login',{email:'owner@example.test',password:'A long test private passphrase'},null,'http://evil.test')).status,403);
+  const tokens={};
+  for(const id of ['owner','member','other']){const invitation=auth.invite(id,`${id}@example.test`);assert.equal((await post('/api/auth/redeem',{invitationToken:invitation.invitationToken,password:'A long test private passphrase'})).status,200);const response=await post('/api/auth/login',{email:`${id}@example.test`,password:'A long test private passphrase'});assert.equal(response.status,200);tokens[id]=(await response.json()).sessionToken;}
+  const get=(path,token)=>fetch(base+path,{headers:{Authorization:`Bearer ${token}`}});
+  assert.deepEqual((await (await get('/api/portal/projects',tokens.owner)).json()).map(x=>x.id),['a']);
+  assert.deepEqual((await (await get('/api/portal/projects',tokens.other)).json()).map(x=>x.id),['b']);
+  assert.equal((await get('/api/portal/overview?projectId=a',tokens.other)).status,403);
+  const approval={projectId:'a',milestoneId:'m',versionId:'v1',operationId:'approval-1'};
+  assert.equal((await post('/api/portal/approve',approval,tokens.member)).status,403);
+  assert.equal((await post('/api/portal/approve',approval,tokens.owner)).status,200);
+  assert.equal((await post('/api/portal/approve',approval,tokens.owner)).status,200);
+  assert.equal(portal.snapshot().receipts.length,1);
+  const created=await post('/api/portal/ticket',{projectId:'a',type:'question',subject:'Question',body:'Please explain the next step.',operationId:'ticket-1'},tokens.member);assert.equal(created.status,200);
+  assert.equal((await get('/api/portal/tickets?projectId=a',tokens.other)).status,403);
+  assert.equal((await (await get('/api/portal/tickets?projectId=a',tokens.owner)).json()).length,1);
+  portal.revokeMembership('owner','one');assert.equal((await get('/api/portal/overview?projectId=a',tokens.owner)).status,403);
+  assert.equal((await post('/api/auth/logout',{},tokens.member)).status,200);assert.equal((await get('/api/portal/projects',tokens.member)).status,401);
+});

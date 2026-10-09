@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "required-discovery-receipts",
+  "observedAt": "2026-10-09T03:50:06.000Z",
+  "sourceCommit": "141d0b18f8a4a78b25e76035d8fa27ae2e2fb7dc",
+  "authority": "docs/WVD-DEVELOPMENT-STANDARD.md#public-search-and-ai-discovery",
+  "problem": "Workflow 1.1.0 included seven unverified discovery checks in plans but no matching required receipt criteria; generic receipts could report RECORDED_DELIVERY_COMPLETE with all discovery evidence omitted.",
+  "change": {
+    "workflowVersion": "1.2.0",
+    "reuse": "publicDiscoveryPlan plus existing exact-revision/predecessor/criterion validator; no parallel receipt system",
+    "verifyCriteria": 6,
+    "deployCriteria": 1,
+    "oldPlans": "REGENERATE_REASSESS_BINDINGS",
+    "audience": "UNCHANGED",
+    "indexingGuarantee": false
+  },
+  "verification": {
+    "environment": "Node v24.19.0",
+    "before": {
+      "command": "node --test tools/factory/tests/delivery.test.mjs",
+      "pass": 15,
+      "fail": 4,
+      "observedFailure": "Generic receipts returned RECORDED_DELIVERY_COMPLETE; no discovery receipt boundary; old planning-only plan accepted."
+    },
+    "after": {
+      "command": "npm --prefix tools/factory test",
+      "pass": 78,
+      "fail": 0,
+      "checks": [
+        "All four flavours map each inherited check to exactly one applicable stage",
+        "Generic receipts without discovery checks hold at verify",
+        "Each of seven checks rejects missing, NOT_RUN and empty evidence references",
+        "Planning-only 1.1.0 plans rejected as PLAN_CHANGED",
+        "Existing full synthetic receipts, source/chain invalidation and shared consumers pass"
+      ]
+    },
+    "factoryDeliveryStatus": "INCOMPLETE_EXPECTED_NO_LIVE_RECEIPTS",
+    "independentReview": "NOT_RUN_NOT_SELF_LABELLED"
+  },
+  "ownership": {
+    "wvd": "141d0b18f8a4a78b25e76035d8fa27ae2e2fb7dc",
+    "salon": "ff1ea934d6046ac83a3d4a2a5dc2c96e516b443d",
+    "weddingStaging": "ddac99a4eb8310d6fb08617e63c8e629a7025cb7",
+    "weddingIntegration": "d44ae2a24bc50a3eac87ca3d404e83a27aed88eb",
+    "weddingMaster": "95f61d8a58c17a70502510846f7863c72481f7a8",
+    "weddingLatest": "Backup verification receipt only; takeover ownership persists; current-state still says candidate not deployed. No backup/data read or product mutation by this slice."
+  },
+  "ciAtDispatch": {
+    "wvdPush": 37874219907,
+    "wvdPr": 37874224137,
+    "wedding": 37877229320,
+    "result": "SUCCESS"
+  },
+  "drive": {
+    "scope": "Direct-child modification scan of WVD, Salon, Wedding and branding roots; not recursive",
+    "from": "2026-10-09T02:19:56.316Z",
+    "result": "Only prior Salon receipt returned; text confirms last resource-discovery receipt, no new task instruction",
+    "salonRevision": "AHj4eMSlrEh3vZcvF3eshdmULVOqfjCU2SWYQNhxbXeud6gMcRcwAU2-cUaBvg2zry0aUnmnozgGV7T_ljgPdm9snbA5GnlLPKsiILGsh8A",
+    "weddingRevision": "AHj4eMRoORSdoUlHIAa1pcMTkORQKgw_WPgPrElDrR5s6Hfd2r3UoNOIY9fU2mGuGi4ogTK4JArrxFlKcIMv4rLSkzpMTfZ0T1WZ8FaYjbo",
+    "writes": 0,
+    "nextOverlapFrom": "2026-10-09T02:19:56.316Z"
+  },
+  "limitations": [
+    "Structural validation only; no provider observation or indexing proof fabricated.",
+    "No crawler configuration, page presentation, private audience, release, payment, send, real-data or spending change.",
+    "No product acceptance state promoted; Salon review/target gates and Wedding ownership preserved."
+  ],
+  "next": "Regenerate active 1.1.0 plans on resumption; use exact new criteria and genuine source/deployment evidence. Continue product-owned work after fresh ownership check.",
+  "metrics": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "elapsedMinutes": null,
+    "repairCount": 0,
+    "escapedDefects": null
+  }
+}

@@ -1,3 +1,12 @@
 User-agent: *
 Allow: /
+Disallow: /qa/
+Disallow: /api/
+Disallow: /client/
+Disallow: /admin/
+
+# Model-training preference; search retrieval remains allowed.
+User-agent: GPTBot
+Disallow: /
+
 Sitemap: https://wearvalleydigital.com/sitemap-index.xml

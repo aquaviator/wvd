@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "productId": "wvd",
+  "updatedAt": "2026-10-09T07:04:59.000Z",
+  "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
+  "connections": [
+    {
+      "id": "controller-gmail",
+      "plane": "controller",
+      "capabilities": [
+        "email.search",
+        "email.read",
+        "email.send"
+      ],
+      "identityRef": "admin@wearvalleydigital.com",
+      "credentialRef": "connected-app:gmail",
+      "discovery": "Discover current Gmail tools, then verify connected profile before account-specific operations.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T15:10:55.234Z",
+        "source": "Live get_profile confirmed admin@wearvalleydigital.com; read_email metadata for authorised test receipt 1a10c28daac6d0c6 confirmed matching subject and INBOX label. No further send authorised."
+      },
+      "limits": [
+        "Controller connection is not available to CI or deployed products.",
+        "Sending requires explicit task authority; presence of a tool is not permission."
+      ]
+    },
+    {
+      "id": "controller-github",
+      "plane": "controller",
+      "capabilities": [
+        "repository.read",
+        "repository.write",
+        "ci.read",
+        "ci.rerun"
+      ],
+      "identityRef": "aquaviator/wvd",
+      "credentialRef": "connected-app:github",
+      "discovery": "Discover current GitHub tools and read current branch before writing.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-09T07:04:59.000Z",
+        "source": "Refreshed all three repository branches and PR2 ownership. Wedding0f030101 CI37896424951/job113708710695 succeeded. Four source blobs matched Git identity; review/hash discrepancy and five exact-source synthetic restore checks recorded in tools/factory/evidence/wedding-recovery-receipts-20261009.json. WVD coordination uses guarded development-only push; no product or provider grant inferred."
+      },
+      "limits": [
+        "Development branch only within current project authority.",
+        "No inferred GitHub administration or shell push credentials."
+      ]
+    },
+    {
+      "id": "controller-sites",
+      "plane": "controller",
+      "capabilities": [
+        "website.edit",
+        "website.publish"
+      ],
+      "identityRef": "appgprj_6ac361a8bfd48191b3bde453565cf2ab",
+      "credentialRef": "connected-app:sites",
+      "discovery": "Read Sites skills and reopen existing Site; recover current source before edits.",
+      "evidence": {
+        "status": "FAILED",
+        "at": "2026-10-07T05:33:00.000Z",
+        "source": "Wedding-specific source recovery failed: current native get_site verified owner role, active version 6, sole-owner custom audience revision 1, no editors/groups/external visitors, project appgprj_6ac3c826d96481919bd4218973832eb2. A fresh repo-scoped credential was issued; the unmodified supported site-workflow.mjs source helper then exited 1 with 'Unable to prepare the Site.' No source was edited/pushed and no deployment requested. Deployed source remains ed03a2e76fd8d4faa57cb9aeb9006dadadb53e12. This is a failed checkout capability, not proof that Sites metadata access or all account permissions are absent. The GitHub-only server candidate and resumption limits are in Wedding handoff/WED-WP-007-REQUEST-LIMITS.md. No credential is persisted. Prior WVD public/saved-version evidence remains in its service handoff and Git history; that Site was not changed."
+      },
+      "limits": [
+        "Sites frontend access does not imply access to Google administrator configuration or private Portal data.",
+        "The prepared version 7 is saved only. Preserve the public audience and branded domains during its later authorised activation.",
+        "Salon and Wedding access/release decisions remain separate; this WVD service update does not publish either product."
+      ]
+    },
+    {
+      "id": "github-google-wif",
+      "plane": "ci",
+      "capabilities": [
+        "google.short-lived-auth"
+      ],
+      "identityRef": "tools/google-development-access/binding.json",
+      "credentialRef": "github-oidc:existing-google-provider",
+      "discovery": "Run existing Google development access workflow; preserve repository/branch/workflow restrictions.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-06T14:31:12.467Z",
+        "source": "Trusted Google development access workflow 37479343393 succeeded for runtime source 5c920347d58ea3f35071fd13b9f9573db5acac0e with existing short-lived WIF authentication. Exact current receipt and fresh automation limits are in docs/WVD-ENQUIRIES-PORTAL-2026-10-06.md. Owner remains null and temporary-ADC/provider-write owner setup skipped. Founder-reported Cloud Shell quota diagnosis is recorded separately; it does not grant these administrator capabilities to automation."
+      },
+      "limits": [
+        "No downloaded service-account keys.",
+        "New products require their own explicit bindings and grants."
+      ]
+    },
+    {
+      "id": "google-drive-calendar",
+      "plane": "service",
+      "capabilities": [
+        "drive.read",
+        "calendar.freebusy",
+        "calendar.events"
+      ],
+      "identityRef": "tools/google-development-access/binding.json",
+      "credentialRef": "github-google-wif / attached-service-identity",
+      "discovery": "Use preflight.mjs, calendar-contract.mjs and calendar-writer-preflight.mjs against the binding.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:02:47.000Z",
+        "source": "Google workflow 37313700651; actual resource scope in binding.json."
+      },
+      "limits": [
+        "Explicit Drive resource grants only; no assumed upload rights.",
+        "Calendar events delegate to admin@wearvalleydigital.com; required personal busy calendars remain mandatory."
+      ]
+    },
+    {
+      "id": "google-booking-mail",
+      "plane": "service",
+      "capabilities": [
+        "email.send"
+      ],
+      "identityRef": "admin@wearvalleydigital.com",
+      "credentialRef": "keyless-workspace-delegation:104947416422178406240",
+      "discovery": "confirmation-key-preflight.mjs verifies application signing without sending mail.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:25:31.000Z",
+        "source": "docs/WVD-CONFIRMATION-LIVE-TEST.md; founder confirmed Inbox arrival."
+      },
+      "limits": [
+        "gmail.send only; no inbox-read permission.",
+        "Customer confirmation activation remains separate from the authorised one-message rehearsal.",
+        "Never rerun a send to test access."
+      ]
+    },
+    {
+      "id": "google-confirmation-key",
+      "plane": "service",
+      "capabilities": [
+        "confirmation-key.read"
+      ],
+      "identityRef": "projects/wvd-development/secrets/wvd-booking-confirmation-key/versions/1",
+      "credentialRef": "attached-service-identity / github-google-wif",
+      "discovery": "confirmation-key-preflight.mjs; fixed version read, no key logging.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:02:47.000Z",
+        "source": "Google workflow 37313700651."
+      },
+      "limits": [
+        "Record secret reference only, never key bytes.",
+        "Accessor on this secret does not imply secret administration."
+      ]
+    },
+    {
+      "id": "google-booking-runtime",
+      "plane": "service",
+      "capabilities": [
+        "booking.availability",
+        "runtime.invoke",
+        "runtime.deploy",
+        "image.upload",
+        "booking-journal.read-write"
+      ],
+      "identityRef": "tools/booking-runtime/wvd-development.candidate.json",
+      "credentialRef": "attached-service-identity / github-google-wif",
+      "discovery": "booking-runtime-preflight.mjs, hosting-discovery.mjs and private-http.mjs.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-05T13:02:47.000Z",
+        "source": "Google workflow 37313700651; deployment configuration in tools/booking-runtime."
+      },
+      "limits": [
+        "Private IAM invocation; no anonymous access grant.",
+        "Service IAM administration was unavailable at last check.",
+        "Total additional WVD hosting authority is GBP 5/month, not a hard billing cap."
+      ]
+    },
+    {
+      "id": "controller-wvd-calendar",
+      "plane": "controller",
+      "capabilities": [
+        "calendar.discover",
+        "calendar.read"
+      ],
+      "identityRef": "admin@wearvalleydigital.com",
+      "credentialRef": "connected-app:google-calendar",
+      "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
+      "evidence": {
+        "status": "OBSERVED",
+        "at": "2026-10-05T15:10:55.234Z",
+        "source": "Live WVD Calendar get_profile confirmed account. Event reads/writes not probed."
+      },
+      "limits": [
+        "Profile identity does not establish target resource permissions.",
+        "Controller access cannot be assumed available to CI or service accounts.",
+        "Writes require task authority."
+      ]
+    },
+    {
+      "id": "controller-personal-calendar",
+      "plane": "controller",
+      "capabilities": [
+        "calendar.discover"
+      ],
+      "identityRef": "leatfield@gmail.com",
+      "credentialRef": "connected-app:google-calendar",
+      "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
+      "evidence": {
+        "status": "OBSERVED",
+        "at": "2026-10-05T15:10:55.234Z",
+        "source": "Account listed by current Calendar tool metadata. Profile/resource access not probed."
+      },
+      "limits": [
+        "Profile identity does not establish target resource permissions.",
+        "Controller access cannot be assumed available to CI or service accounts.",
+        "Writes require task authority."
+      ]
+    },
+    {
+      "id": "controller-drive",
+      "plane": "controller",
+      "capabilities": [
+        "drive.discover",
+        "drive.read",
+        "drive.write"
+      ],
+      "identityRef": "admin@wearvalleydigital.com",
+      "credentialRef": "connected-app:google-drive",
+      "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-09T02:20:25.000Z",
+        "source": "Fresh controller profile admin@wearvalleydigital.com and direct-child modification scan. Salon START and portfolio resource-discovery append verified with pinned GitHub link, effective text styles and prior native chips preserved. Exact revisions and next overlap2026-10-09T02:19:56.316Z in tools/factory/evidence/salon-resource-discovery-20261009.json. No recursive asset scan or service-account grant inferred."
+      },
+      "limits": [
+        "Profile identity does not establish target resource permissions.",
+        "Controller access cannot be assumed available to CI or service accounts.",
+        "Writes require task authority."
+      ]
+    },
+    {
+      "id": "controller-cloudflare",
+      "plane": "controller",
+      "capabilities": [
+        "dns.read",
+        "dns.write"
+      ],
+      "identityRef": "cloudflare:account/220fb33a64b2c61857c059e4ab99d2c8/zone/de2eeaf40be0ed74196e3edcfc0a5ca7 (wearvalleydigital.com)",
+      "credentialRef": "connected-app:cloudflare",
+      "discovery": "Discover current Cloudflare plugin actions, verify the connected account and active target zone, then read current DNS records before an authorised change.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-06T11:21:54.453Z",
+        "source": "Controller Cloudflare plugin verified the account and active wearvalleydigital.com zone with eight initial records. Four Sites ownership TXT records were created at 2026-10-06T11:19:03.927896Z; public TXT checks passed at 11:21:29Z. At 2026-10-06T11:21:54.453699Z, apex CNAME c6f4a7c4d8bfa8fa31b247da403bca99 was changed to A 162.159.143.30; www CNAME 14b9f5d336bc0e04e9796625e580c97e was changed from wvd.pages.dev to custom-domains.chatgpt.site; apex A 172.66.3.26 was created as 871ad78e6dc20565fcae9ac988ce5e4e. All three website records are DNS-only/Auto. Post-write read verified all seven desired website/ownership records and all six initial email/Google/mail/webmail records unchanged, including settings and TTL; nameservers unchanged. This is the DNS access/write checkpoint; subsequent native ACTIVE/TLS and anonymous HTTPS delivery evidence is recorded separately in docs/WVD-SERVICE-LAUNCH-2026-10-06.md."
+      },
+      "limits": [
+        "Controller-session access is not available to CI or deployed services.",
+        "Verified DNS writes cover the authorised TXT/A creations and apex/www record updates in this zone; other operations, zones and account administration are not inferred.",
+        "Keep existing nameservers and email DNS intact; subsequent changes require current target records and task authority.",
+        "Successful DNS writes and public TXT checks do not prove Sites domain activation or TLS readiness."
+      ]
+    },
+    {
+      "id": "google-wvd-service",
+      "plane": "service",
+      "capabilities": [
+        "runtime.invoke",
+        "runtime.deploy",
+        "image.upload"
+      ],
+      "identityRef": "tools/portal-runtime/wvd-development.candidate.json",
+      "credentialRef": "github-google-wif / attached-service-identity",
+      "discovery": "Run service-discovery.mjs through the existing Google development access workflow, then verify the exact service receipt and transport state before any update.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-06T14:31:12.467Z",
+        "source": "Cloud Run wvd-service in wvd-development/europe-west2 was privately updated and verified by workflow 37479343393 at source 5c920347d58ea3f35071fd13b9f9573db5acac0e. Its exact image/config/URL receipt is docs/evidence/wvd-service-last-reviewed-release.json, downloaded from artifact 11419634176 and matched to the successful verification log. Anonymous IAM transport and invalid Firebase private API requests were denied. Live service URL remains https://wvd-service-v3b6mv7uka-nw.a.run.app. Existing booking service was unchanged and mail delegation was checked without sending."
+      },
+      "limits": [
+        "Automation still lacks the administrator setup permissions, as observed 2026-10-06T14:29:27.437Z. The founder diagnostic at 14:26:15Z returned every requested project and service permission for the founder session and proved the missing WVD quota header caused the Firebase denial. The corrected one-time helper is ready; founder execution is pending. See docs/evidence/wvd-service-admin-quota-diagnostic-2026-10-06.json.",
+        "The actual Firebase owner account is absent; owner remains null. Real Google login, enquiry capture and inbox delivery are not yet verified.",
+        "The configured identity, data namespace, zero-to-one-instance bounds and total additional £5/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
+        "Subsequent service updates require the last reviewed source/image/configuration receipt. Public transport does not grant access to private APIs."
+      ]
+    },
+    {
+      "id": "controller-sites-salon-metadata",
+      "plane": "controller",
+      "capabilities": [
+        "site.metadata.read",
+        "site.access.read"
+      ],
+      "identityRef": "connected-app:sites / leatfield@gmail.com / owner",
+      "credentialRef": "connected-app:sites",
+      "discovery": "Discover native Sites get_site and read exact Salon project appgprj_6ac3bb5b197081919d34810fd6ff9ce0 before relying on metadata.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-07T09:55:17.267Z",
+        "source": "Fresh get_site for Salon confirmed active project, owner role, latest version 0, null live URL, sole-owner custom access revision 1 and no editors/groups/external visitors. Product SALON-WVD-002 analysis/evidence at ed0e9c16cdf48abb095a91bdc19b4f088230eb9f records the limits. This is metadata/access-policy evidence only; no source credential/helper, publish, database/object or billing probe was attempted."
+      },
+      "limits": [
+        "Controller read only; no CI/runtime/service identity inferred.",
+        "No commercial target, customer identity, physical DB/R2 mapping, restore or cost proof.",
+        "Sites financial-execution restrictions remain; no payment flow, audience edit or new spending.",
+        "Existing controller-sites failure concerns Wedding source checkout and retains its original timestamp."
+      ]
+    },
+    {
+      "id": "ci-salon-baseline",
+      "plane": "ci",
+      "capabilities": [
+        "repository.read",
+        "baseline.verify"
+      ],
+      "identityRef": "aquaviator/WVD-Salon / GitHub Actions repository-scoped GITHUB_TOKEN",
+      "credentialRef": "github-actions:automatic-read-only-token",
+      "discovery": "Read .github/workflows/salon-baseline.yml, current branch/source, run and complete job metadata; use authenticated logs for exact results.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-09T01:23:09.000Z",
+        "source": "Source281d29d, run37869129262/job113622859107 PASS: clean full Git checkout including four PNGs, native install/typecheck/five tests/build, local empty D1 migrations and source integrity. permissions.contents=read, persist-credentials=false; no provider secret or deployment binding. GitHub artifact11589202434 reported digest retained; local ZIP download403/error1010, byte hash NOT verified. Product ci-reproduction.json retains source/database JSON from authenticated job logs."
+      },
+      "limits": [
+        "Only the existing Salon import/salon-foundation push workflow; twenty-minute standard Ubuntu job and one-day bounded JSON artifact retention.",
+        "CI checkout does not grant controller shell credentials, product hosting access or independent acceptance.",
+        "No remote D1, deployment, payment, message send, real data, billing change or paid runner. Cost/billing measurement remains UNKNOWN."
+      ]
+    },
+    {
+      "id": "controller-cloudflare-platform-metadata",
+      "plane": "controller",
+      "capabilities": [
+        "account.metadata.read",
+        "workers.metadata.read",
+        "d1.metadata.read",
+        "r2.default-jurisdiction.metadata.read"
+      ],
+      "identityRef": "leatfield@gmail.com / user:ae7be58595d31e912d98df6727b18e01 / cloudflare:account/220fb33a64b2c61857c059e4ab99d2c8",
+      "credentialRef": "connected-app:cloudflare",
+      "discovery": "Verify whoami and account list; discover current API schema, then read scoped Worker, D1 and default-jurisdiction R2 metadata. Respect resource ownership.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-09T02:13:33.000Z",
+        "source": "SALON-WVD-002 read-only discovery: Worker list HTTP200 (one Wedding script), D1 HTTP200 (two of two Wedding databases), R2 HTTP200 (one Wedding bucket, default jurisdiction). Account subscriptions read failed authentication error10000; plan/shared spend UNKNOWN. Exact resource references, timestamps, result boundaries and product commit ff1ea934d6046ac83a3d4a2a5dc2c96e516b443d in tools/factory/evidence/salon-resource-discovery-20261009.json and linked product evidence."
+      },
+      "limits": [
+        "Purpose is Salon target feasibility metadata; observed Wedding resources remain Wedding-owned, never Salon defaults.",
+        "No create/deploy/query/export/object/backup or CI/service grant inferred; no provider writes occurred.",
+        "Other accounts/jurisdictions and Sites-managed resources not inspected. No global Salon-resource absence claim.",
+        "Subscription/usage/budget evidence unavailable; account type and usage_model standard do not prove a paid plan. No unchanged retry, billing activation or privilege workaround.",
+        "Total additional WVD hosting authority remains GBP5/month, not per resource and not a technical cap. Commercial target remains unselected."
+      ]
+    }
+  ]
+}

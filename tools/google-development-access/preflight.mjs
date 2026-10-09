@@ -1,0 +1,50 @@
+import {readFileSync} from 'node:fs';
+import {pathToFileURL} from 'node:url';
+import {readGoogleJson} from './google-json.mjs';
+
+export function validateBinding(b) {
+  if (!b || b.projectId !== 'wvd-development' || b.projectNumber !== '6616382131' || b.serviceAccount !== 'wvd-development@wvd-development.iam.gserviceaccount.com' || b.repositoryId !== '1347788556' || b.ownerId !== '78605956' || b.repository !== 'aquaviator/wvd' || b.branch !== 'development/shared-factory-bootstrap' || b.workflow !== '.github/workflows/google-development-access.yml' || b.poolId !== 'wvd-github-development' || b.providerId !== 'github') throw Error('INVALID_ACCESS_BINDING');
+  for (const [key, pattern] of [['driveFileIds', /^[A-Za-z0-9_-]{1,256}$/], ['calendarIds', /^[A-Za-z0-9_.@-]{1,256}$/]]) {
+    if (!Array.isArray(b[key]) || !b[key].length || b[key].length > 20 || new Set(b[key]).size !== b[key].length || b[key].some(id => typeof id !== 'string' || !pattern.test(id))) throw Error('INVALID_ACCESS_BINDING');
+  }
+  return b;
+}
+
+// Read-only API probes; fixed endpoints, bounded time/body, no redirects or retries.
+// Results never include tokens, file names, calendar IDs or busy intervals.
+export async function accessPreflight(binding, token, {request=fetch, now=Date.now()}={}) {
+  const b=validateBinding(binding);
+  if(typeof token !== 'string' || !token.length || /\s/.test(token)) throw Error('CREDENTIAL_REQUIRED');
+  const results=[],calendarResults=[];
+  const probe=async (label,url,options,check)=>{
+    try {
+      const value=await readGoogleJson(url,options,token,{request});
+      results.push({check:label,status:check(value)?'PASS':'INVALID_OR_INCOMPLETE_RESPONSE'});
+    } catch(error) {
+      const allowed=['CREDENTIAL_REJECTED','ACCESS_DENIED_OR_API_DISABLED','TARGET_NOT_FOUND_OR_NOT_SHARED','PROVIDER_ERROR'];
+      results.push({check:label,status:allowed.includes(error?.message)?error.message:'REQUEST_FAILED'});
+    }
+  };
+  for(let i=0;i<b.driveFileIds.length;i++){
+    const id=b.driveFileIds[i];
+    await probe(`drive-${i+1}`,`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,trashed&supportsAllDrives=true`,{method:'GET'},v=>v.id===id&&v.trashed===false);
+  }
+  const start=new Date(now).toISOString(),end=new Date(now+3600000).toISOString();
+  await probe('calendar-freebusy','https://www.googleapis.com/calendar/v3/freeBusy',{method:'POST',body:JSON.stringify({timeMin:start,timeMax:end,items:b.calendarIds.map(id=>({id}))})},v=>{
+    const coverage=Date.parse(v.timeMin)===Date.parse(start)&&Date.parse(v.timeMax)===Date.parse(end);
+    for(let i=0;i<b.calendarIds.length;i++){
+      const row=v.calendars?.[b.calendarIds[i]];
+      const valid=coverage&&row&&(!row.errors||row.errors.length===0)&&Array.isArray(row.busy)&&row.busy.every(x=>Number.isFinite(Date.parse(x.start))&&Number.isFinite(Date.parse(x.end))&&Date.parse(x.start)<Date.parse(x.end));
+      calendarResults.push({check:`calendar-${i+1}`,status:valid?'PASS':row?.errors?.length?'TARGET_NOT_FOUND_OR_NOT_SHARED':'INVALID_OR_INCOMPLETE_RESPONSE'});
+    }
+    return calendarResults.every(x=>x.status==='PASS');
+  });
+  return {status:results.every(x=>x.status==='PASS')?'PASS':'BLOCKED',changesMade:false,results,calendarResults};
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  try{
+    if(process.argv.length!==3)throw Error('BINDING_PATH_REQUIRED');
+    const result=await accessPreflight(JSON.parse(readFileSync(process.argv[2],'utf8')),process.env.WVD_GOOGLE_ACCESS_TOKEN);
+    console.log(JSON.stringify(result,null,2));process.exitCode=result.status==='PASS'?0:1;
+  }catch{console.error('ACCESS_PREFLIGHT_CONFIGURATION_OR_CREDENTIAL_FAILURE');process.exitCode=1;}
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-02",
+  "assets": [
+    {"id":"hv1-auth-client","repository":"aquaviator/humanv1-workout-studio","revision":"1c964b2ef8cdf2438481cb94bb1fbfde4c977bad","path":"src/repositories/FirebaseAuthRepository.ts","kind":"code-candidate","reviewRequired":"Read current implementation and tests; assess invitation/session needs before adapting."},
+    {"id":"hv1-hosting-config","repository":"aquaviator/humanv1-workout-studio","revision":"1c964b2ef8cdf2438481cb94bb1fbfde4c977bad","path":"firebase.json","kind":"configuration-pattern","reviewRequired":"Parameterise hosting target, origin, CSP and endpoints; do not inherit Human V1 targets."},
+    {"id":"hv1-access-rules","repository":"aquaviator/Hv1Strength","revision":"11c929f4bd1730ae13ed65546df7667d5b416db4","path":"firestore.rules","kind":"access-pattern-candidate","reviewRequired":"Inspect ownership semantics; prove new product namespaces and negative access cases."},
+    {"id":"hv1-android","repository":"aquaviator/Hv1Strength","revision":"11c929f4bd1730ae13ed65546df7667d5b416db4","path":"","kind":"repository-candidate","reviewRequired":"Select bounded modules and verify licences/dependencies and offline/sync contracts."},
+    {"id":"pecp-constitution","repository":"aquaviator/pecp","revision":"525ae65312abef78dc1465371856f969ef942539","path":"docs/PRODUCT_CONSTITUTION.md","kind":"product-contract","reviewRequired":"Preserve customer-controlled deployment and provider-neutral engineering state."},
+    {"id":"wvd-public-site","repository":"aquaviator/wvd","revision":"bf1445cd7461e9f706e91e25c3d751981559fd3a","path":"src","kind":"code-candidate","reviewRequired":"Reuse components and content conventions only where the new site's needs fit."},
+    {"id":"wvd-portal-contracts","repository":"aquaviator/wvd","revision":"bf1445cd7461e9f706e91e25c3d751981559fd3a","path":"tools/portal-proof/domain.mjs","kind":"code-candidate","reviewRequired":"Preserve tenant isolation, exact-version approvals and atomic notification intent contracts."},
+    {"id":"wvd-factory","repository":"aquaviator/wvd","revision":"bf1445cd7461e9f706e91e25c3d751981559fd3a","path":"tools/factory","kind":"code-candidate","reviewRequired":"Reuse exact-source context, checkpoint and distinct-reviewer handoff mechanisms."}
+  ]
+}
