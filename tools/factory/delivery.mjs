@@ -22,10 +22,15 @@ export function deliveryPlan(idea) {
       !['problem', 'audience', 'outcome', 'authorityRef'].every(k => text(idea[k])) ||
       !['nonGoals', 'acceptance', 'constraints'].every(k => list(idea[k]))) throw Error('INVALID_IDEA: supply the bounded idea contract; references only, no credentials');
   const profile = developmentStandard().flavours[idea.flavour];
+  const publicDiscovery = publicDiscoveryPlan(idea.flavour);
+  const deployedDiscoveryCheck = 'deployed-url-verification-and-search-observation';
+  const discoveryCriteria = stage => publicDiscovery.checks
+    .filter(check => stage === (check.id === deployedDiscoveryCheck ? 'deploy' : 'verify'))
+    .map(check => check.id);
   const plan = {
-    schemaVersion: 1, workflowVersion: '1.1.0', standardHash,
+    schemaVersion: 1, workflowVersion: '1.2.0', standardHash,
     idea: structuredClone(idea),
-    publicDiscovery: publicDiscoveryPlan(idea.flavour),
+    publicDiscovery,
     blueprint: {id: idea.flavour, baseline: profile.baseline, reviewCandidates: profile.reuseAssetIds,
       policy: 'Inspect current source; reuse, adapt, then build only gaps. Preserve native product stack and constitution.'},
     execution: {mode: 'connected-controller', backgroundService: false, deploysFromThisCommand: false,
@@ -33,7 +38,7 @@ export function deliveryPlan(idea) {
       defaultWorkerCount: 1, secrets: 'existing-product-scoped-secret-store',
       stopFor: ['missing-user-data', 'missing-access-or-required-consent', 'unapproved-cost', 'product-release-restriction']},
     stages: stages.map(([name, criteria], index) => ({id: name, dependsOn: index ? [stages[index - 1][0]] : [],
-      criteria, status: 'NOT_RUN'})),
+      criteria: [...criteria, ...discoveryCriteria(name)], status: 'NOT_RUN'})),
     metrics: {inputTokens: null, outputTokens: null, elapsedMinutes: null, repairCount: 0,
       escapedDefects: null, note: 'Record measured values only; unavailable is not zero.'}
   };

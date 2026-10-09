@@ -102,3 +102,56 @@ test('plans generated before discovery inheritance must be regenerated', () => {
   plan.workflowVersion = '1.0.0';
   assert.throws(() => deliveryStatus(plan, receipts, revision), /PLAN_CHANGED/);
 });
+
+test('delivery stages require every inherited discovery check at the applicable boundary', () => {
+  for (const flavour of Object.keys(developmentStandard().flavours)) {
+    const plan = deliveryPlan({...fixture(), flavour});
+    for (const {id} of plan.publicDiscovery.checks) {
+      const expectedStage = id === 'deployed-url-verification-and-search-observation' ? 'deploy' : 'verify';
+      assert.deepEqual(plan.stages.filter(stage => stage.criteria.includes(id)).map(stage => stage.id), [expectedStage]);
+    }
+  }
+});
+
+test('generic complete receipts cannot omit discovery evidence', () => {
+  const plan = deliveryPlan(fixture());
+  const ids = plan.publicDiscovery.checks.map(check => check.id);
+  const receipts = evidence(plan);
+  for (const receipt of receipts) receipt.checks = receipt.checks.filter(check => !ids.includes(check.id));
+  const result = deliveryStatus(plan, receipts, revision);
+  assert.equal(result.status, 'INCOMPLETE');
+  assert.equal(result.nextStage, 'verify');
+  assert(result.stages[3].reasons.includes('INCOMPLETE_CRITERION_EVIDENCE'));
+  assert(result.stages[4].reasons.includes('INCOMPLETE_CRITERION_EVIDENCE'));
+});
+
+test('each discovery check needs exact evidence without changing audience or claiming indexing', () => {
+  const plan = deliveryPlan(fixture());
+  for (const {id} of plan.publicDiscovery.checks) {
+    for (const mutation of ['missing', 'not-run', 'no-reference']) {
+      const receipts = evidence(plan);
+      const receipt = receipts.find(r => r.checks.some(check => check.id === id));
+      assert(receipt, `No receipt boundary for ${id}`);
+      const check = receipt.checks.find(c => c.id === id);
+      if (mutation === 'missing') receipt.checks = receipt.checks.filter(c => c.id !== id);
+      if (mutation === 'not-run') check.result = 'NOT_RUN';
+      if (mutation === 'no-reference') check.evidenceRef = '';
+      const result = deliveryStatus(plan, receipts, revision);
+      assert.equal(result.status, 'INCOMPLETE');
+      assert.equal(result.nextStage, receipt.stage);
+      assert(result.stages.find(s => s.stage === receipt.stage).reasons.includes('INCOMPLETE_CRITERION_EVIDENCE'));
+    }
+  }
+  assert.equal(plan.publicDiscovery.audienceChangeAllowed, false);
+  assert.equal(plan.publicDiscovery.status, 'NOT_VERIFIED');
+  assert.equal(plan.publicDiscovery.claims, 'no-guaranteed-indexing-ranking-or-ai-citation');
+});
+
+test('planning-only discovery receipts require regeneration and fresh bindings', () => {
+  const plan = deliveryPlan(fixture());
+  const receipts = evidence(plan);
+  const ids = plan.publicDiscovery.checks.map(check => check.id);
+  for (const stage of plan.stages) stage.criteria = stage.criteria.filter(id => !ids.includes(id));
+  plan.workflowVersion = '1.1.0';
+  assert.throws(() => deliveryStatus(plan, receipts, revision), /PLAN_CHANGED/);
+});

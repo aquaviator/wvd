@@ -106,9 +106,17 @@ only the current item, not every historical ticket. The first measured pilot mus
 report both quality and usage before optimising further. The factory's synthetic
 tests verify its bookkeeping; they are not a completed live product pilot.
 
-Idea plans (workflow version 1.1.0) also inherit the same public-search and AI-discovery
+Idea plans (workflow version 1.2.0) also inherit the same public-search and AI-discovery
 policy and seven NOT_RUN checks as `project` plans, including Android public companion
 content. This creates verification work; it does not change audiences or prove indexing.
 Regenerate older idea plans before resuming: their plan hash and downstream receipt
 bindings change. Preserve historical receipts; do not relabel them for the new plan.
 Record actual source/deployment evidence through the existing acceptance workflow.
+
+Workflow 1.2.0 binds those seven checks to required stage receipt criteria: six
+route/content/privacy checks in `verify`, and deployed URL/search observation in
+`deploy`. The existing exact revision, predecessor and evidence-reference rules
+apply. Generic acceptance evidence cannot replace an omitted discovery check.
+Regenerate 1.1.0 plans before continuing; retain historical receipts and reassess
+bindings. A PASS observation may record no indexing; there is no indexing guarantee.
+Private-only scope requires evidence of its boundary, never an audience expansion.

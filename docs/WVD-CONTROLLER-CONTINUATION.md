@@ -1,5 +1,27 @@
 # Controller continuation — 5 October 2026
 
+## Required discovery receipts — 9 October 2026
+
+Fixed a reproduced shared-flow gap: workflow 1.1.0 could record completed delivery
+without any of its inherited public-search/AI-discovery evidence. Workflow 1.2.0
+requires the six route/content/privacy checks in verify receipts and the deployed
+URL/search observation in deploy receipts, using the existing exact-source chain.
+Four new regression tests failed before the fix; all 78 factory tests now pass.
+[Source-bound evidence](../tools/factory/evidence/required-discovery-receipts-20261009.json).
+
+Regenerate older plans and reassess receipt bindings; preserve historical records.
+This is structural validation, not an indexing guarantee or independent acceptance.
+No product audience, crawler configuration, deployment or release state changed.
+Salon remains at ff1ea934 with baseline review and target selection held. Wedding
+staging advanced to ddac99a4 with approved backup verification documented; its
+existing takeover controller still owns implementation and candidate deployment
+remains unclaimed. Do not duplicate workers or read/download backup data here.
+WVD and Wedding CI were green at dispatch. Drive changes contained only the prior
+Salon resource receipt; next scan still overlaps 2026-10-09T02:19:56.316Z.
+Next: use new receipt criteria when resuming an owned product slice, preserving all
+unrun scenarios, payment restrictions and the total GBP5/month authority.
+
+
 ## Salon target resources — 9 October 2026
 
 SALON-WVD-002 now has fresh read-only resource evidence at

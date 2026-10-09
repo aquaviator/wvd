@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-09T02:20:25.000Z",
+  "updatedAt": "2026-10-09T03:50:06.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-09T01:23:09.000Z",
-        "source": "Fresh aquaviator (78605956) profile, all branch heads and Salon draft PR1. Guarded non-forced Salon workflow/repair/receipt pushes ended at60620dd; implementation281d29d passed CI37869129262/job113622859107. Exact workflow and five receipt paths read back. WVD632af CI was already successful. Evidence: tools/factory/evidence/salon-full-git-baseline-20261009.json. No administration, shell credential or provider access inferred."
+        "at": "2026-10-09T03:50:06.000Z",
+        "source": "Authenticated repository reads refreshed WVD141d0b18, Salonff1ea934 and all Wedding heads; Weddingddac99a4 remains takeover-owned. WVD push37874219907/PR37874224137 and Wedding37877229320 successful. Bounded shared discovery-receipt fix uses guarded development push, exact compare and readback; see tools/factory/evidence/required-discovery-receipts-20261009.json. No administration, shell credential or product-hosting grant inferred."
       },
       "limits": [
         "Development branch only within current project authority.",

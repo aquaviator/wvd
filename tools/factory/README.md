@@ -7,6 +7,18 @@ Idea intake and delivery evidence now use the controller-operated
 first incomplete stage and invalidated evidence. These commands do not dispatch
 agents or deploy. Existing provider execution and verification remain required.
 
+Workflow 1.2.0 requires the inherited public-discovery check IDs in stage receipts:
+the six route/content/privacy checks belong to `verify`, and
+`deployed-url-verification-and-search-observation` belongs to `deploy`.
+Use the generated stage criteria rather than a hard-coded generic check list.
+Each needs PASS with an evidence reference bound to the exact candidate through
+the existing receipt chain. Missing, NOT_RUN or reference-free checks hold delivery.
+Regenerate older plans and review their evidence bindings; do not relabel historical
+receipts. Planning checks stay NOT_RUN: receipts carry the actual observations.
+Search observation records what was found, including not indexed; it does not
+require or guarantee indexing. Private-only scope needs evidence of that boundary,
+not publication or wider access. The checker validates structure, not factual truth.
+
 All task packets inherit the versioned [WVD development standard](../../docs/WVD-DEVELOPMENT-STANDARD.md):
 existing Google platform, no new service subscriptions and reuse before build.
 Run `node cli.mjs standard` to inspect the profile and revision-bound candidate
