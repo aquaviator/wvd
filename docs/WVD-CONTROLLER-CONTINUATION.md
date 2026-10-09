@@ -1,5 +1,38 @@
 # Controller continuation — 5 October 2026
 
+## Salon target resources — 9 October 2026
+
+SALON-WVD-002 now has fresh read-only resource evidence at
+[`ff1ea934d6046ac83a3d4a2a5dc2c96e516b443d`](https://github.com/aquaviator/WVD-Salon/commit/ff1ea934d6046ac83a3d4a2a5dc2c96e516b443d).
+The existing Cloudflare controller connection lists Worker, D1 and default-jurisdiction
+R2 metadata successfully. All returned resources are Wedding-owned. Subscription
+read failed with authentication error 10000: plan and total shared spend remain
+UNKNOWN. No resources, provider data, deployment or permissions were changed.
+
+The new access-registry route records identity, account/resource references and
+observed read scopes separately from the existing DNS route. No create/deploy,
+CI/service grant, commercial identity, spare budget or global resource absence is
+inferred. Preserve the original target analysis and Google/Firebase comparison.
+Next: separate Salon resource/identity bindings and plan/shared-cost evidence before
+provisioning, plus distinct exact-output review of the baseline and target reports.
+SALON-WVD-001 acceptance and all unrun scenarios remain held; SALON-WVD-002 remains
+unselected. SALON-WVD-003 research can continue independently. Do not retry denied
+billing unchanged or reuse Wedding resource IDs.
+
+Six product paths were compared and pinned contents read back; unrelated JSON
+states were preserved. Runtime checks were not repeated for this documentation-only
+slice. Factory delivery-status is correctly INCOMPLETE; no independent PASS claimed.
+Salon START and portfolio received concise pinned links, verified styles and retained
+native chips. Evidence and revisions: `tools/factory/evidence/salon-resource-discovery-20261009.json`.
+Next Drive scan overlaps from `2026-10-09T02:19:56.316Z`.
+
+Fresh WVD CI at dispatch was green (push37869656222, PR37869659366; container
+37869659429 path-skipped). Wedding staging remains `1bcdd422756d15e77c625d669cb3ca0fa8223f93`
+under its existing takeover owner; no worker dispatch or backup-download workaround.
+Refresh all heads/ownership before the next slice. No founder input needed for this
+read-only result; release/payment, personal-calendar and total GBP5/month limits remain.
+
+
 ## Latest Salon baseline — 9 October 2026
 
 Full Git reproduction now passes through the existing repository-scoped CI route.

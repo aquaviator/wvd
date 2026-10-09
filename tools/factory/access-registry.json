@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-09T01:23:09.000Z",
+  "updatedAt": "2026-10-09T02:20:25.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-09T01:23:09.000Z",
-        "source": "Fresh admin@wearvalleydigital.com profile and direct-child revision/modification scan; Salon START and portfolio native receipts updated and read back with existing chips and effective hyperlink style retained. Wedding takeover untouched. Exact revisions in tools/factory/evidence/salon-full-git-baseline-20261009.json; next overlap2026-10-09T01:22:37.777Z. Not recursive asset or service-account access proof."
+        "at": "2026-10-09T02:20:25.000Z",
+        "source": "Fresh controller profile admin@wearvalleydigital.com and direct-child modification scan. Salon START and portfolio resource-discovery append verified with pinned GitHub link, effective text styles and prior native chips preserved. Exact revisions and next overlap2026-10-09T02:19:56.316Z in tools/factory/evidence/salon-resource-discovery-20261009.json. No recursive asset scan or service-account grant inferred."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",
@@ -275,7 +275,7 @@
       "limits": [
         "Automation still lacks the administrator setup permissions, as observed 2026-10-06T14:29:27.437Z. The founder diagnostic at 14:26:15Z returned every requested project and service permission for the founder session and proved the missing WVD quota header caused the Firebase denial. The corrected one-time helper is ready; founder execution is pending. See docs/evidence/wvd-service-admin-quota-diagnostic-2026-10-06.json.",
         "The actual Firebase owner account is absent; owner remains null. Real Google login, enquiry capture and inbox delivery are not yet verified.",
-        "The configured identity, data namespace, zero-to-one-instance bounds and total additional \u00a35/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
+        "The configured identity, data namespace, zero-to-one-instance bounds and total additional £5/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
         "Subsequent service updates require the last reviewed source/image/configuration receipt. Public transport does not grant access to private APIs."
       ]
     },
@@ -320,6 +320,31 @@
         "Only the existing Salon import/salon-foundation push workflow; twenty-minute standard Ubuntu job and one-day bounded JSON artifact retention.",
         "CI checkout does not grant controller shell credentials, product hosting access or independent acceptance.",
         "No remote D1, deployment, payment, message send, real data, billing change or paid runner. Cost/billing measurement remains UNKNOWN."
+      ]
+    },
+    {
+      "id": "controller-cloudflare-platform-metadata",
+      "plane": "controller",
+      "capabilities": [
+        "account.metadata.read",
+        "workers.metadata.read",
+        "d1.metadata.read",
+        "r2.default-jurisdiction.metadata.read"
+      ],
+      "identityRef": "leatfield@gmail.com / user:ae7be58595d31e912d98df6727b18e01 / cloudflare:account/220fb33a64b2c61857c059e4ab99d2c8",
+      "credentialRef": "connected-app:cloudflare",
+      "discovery": "Verify whoami and account list; discover current API schema, then read scoped Worker, D1 and default-jurisdiction R2 metadata. Respect resource ownership.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-09T02:13:33.000Z",
+        "source": "SALON-WVD-002 read-only discovery: Worker list HTTP200 (one Wedding script), D1 HTTP200 (two of two Wedding databases), R2 HTTP200 (one Wedding bucket, default jurisdiction). Account subscriptions read failed authentication error10000; plan/shared spend UNKNOWN. Exact resource references, timestamps, result boundaries and product commit ff1ea934d6046ac83a3d4a2a5dc2c96e516b443d in tools/factory/evidence/salon-resource-discovery-20261009.json and linked product evidence."
+      },
+      "limits": [
+        "Purpose is Salon target feasibility metadata; observed Wedding resources remain Wedding-owned, never Salon defaults.",
+        "No create/deploy/query/export/object/backup or CI/service grant inferred; no provider writes occurred.",
+        "Other accounts/jurisdictions and Sites-managed resources not inspected. No global Salon-resource absence claim.",
+        "Subscription/usage/budget evidence unavailable; account type and usage_model standard do not prove a paid plan. No unchanged retry, billing activation or privilege workaround.",
+        "Total additional WVD hosting authority remains GBP5/month, not per resource and not a technical cap. Commercial target remains unselected."
       ]
     }
   ]

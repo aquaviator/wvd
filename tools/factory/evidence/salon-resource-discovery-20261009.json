@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "task": "SALON-WVD-002",
+  "observedAt": "2026-10-09T02:20:25.000Z",
+  "productCommit": "ff1ea934d6046ac83a3d4a2a5dc2c96e516b443d",
+  "sourceCommit": "60620dd57834974ef54b764772c323fe9b7fbf63",
+  "coordinationBase": "dd143a119bd653f9455297fcf13402be637a7cb2",
+  "report": "https://github.com/aquaviator/WVD-Salon/blob/ff1ea934d6046ac83a3d4a2a5dc2c96e516b443d/handoff/wvd/results/SALON-WVD-002/resource-discovery.md",
+  "resourceEvidence": "https://github.com/aquaviator/WVD-Salon/blob/ff1ea934d6046ac83a3d4a2a5dc2c96e516b443d/handoff/wvd/results/SALON-WVD-002/resource-discovery.json",
+  "result": "READ_ONLY_METADATA_VERIFIED_TARGET_UNSELECTED",
+  "checks": {
+    "exactSixPathCompare": "PASS",
+    "sixPinnedReadbacks": "PASS",
+    "unrelatedJsonStatePreservation": "PASS",
+    "factoryDeliveryStatus": "INCOMPLETE_EXPECTED",
+    "productRuntimeTests": "NOT_RERUN_DOCUMENTATION_ONLY",
+    "independentReview": "NOT_RUN"
+  },
+  "ciAtStart": {
+    "wvdPush": 37869656222,
+    "result": "SUCCESS",
+    "wvdPr": 37869659366,
+    "container": 37869659429,
+    "containerResult": "SKIPPED_PATH_FILTERED"
+  },
+  "ownership": {
+    "salonPr": "OPEN_DRAFT_UNASSIGNED",
+    "wedding": "Existing takeover controller/worker ownership retained",
+    "weddingStaging": "1bcdd422756d15e77c625d669cb3ca0fa8223f93",
+    "weddingIntegration": "d44ae2a24bc50a3eac87ca3d404e83a27aed88eb",
+    "weddingMaster": "95f61d8a58c17a70502510846f7863c72481f7a8"
+  },
+  "drive": {
+    "scanFrom": "2026-10-09T01:22:37.777Z",
+    "scope": "Direct children of WVD/Salon/Wedding/branded roots; prior Salon receipt only, no new task dispatch",
+    "start": {
+      "document_id": "1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4",
+      "revision": "ANLCKQkg9rH8oCpFnj-WpDY66yWmYop-WLumOjpsm6hKS8lVjOVo2RgNtEpI6YxSTk0mvLIU8-QLXCimmqLoz819wuiuENJYH-IcOq8OLCA",
+      "chips": {
+        "dateElement": 1,
+        "richLink": 5
+      },
+      "linkVerified": true,
+      "metadata": {
+        "id": "1UWRqPRp4c_khZAPziy8g8y0gkyHhn1gBh8YznWwyAS4",
+        "title": "Salon Platform — START HERE — WVD Continuation and Current State",
+        "mime_type": null,
+        "size": null,
+        "url": null,
+        "file_or_folder": null,
+        "created_time": null,
+        "modified_time": "2026-10-09T02:19:56.316Z",
+        "parent_ids": null,
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      }
+    },
+    "portfolio": {
+      "document_id": "1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA",
+      "revision": "ANLCKQnWXm9HUnTA8jXIDIyBylzf1g40PtdPcgMJtlAPR_9vNtPJNDsHlpB3CUGj-_c4Uf02MTfqS5zsgatZXOSrcVVrsCv3PXpLsQhxknE",
+      "chips": {
+        "dateElement": 1,
+        "richLink": 1
+      },
+      "linkVerified": true,
+      "metadata": {
+        "id": "1efNgxoNGku18nCHM1M_3VbpEWcx_adqkh6Ys2mhzwtA",
+        "title": "WVD — Salon Platform — Continuation Intake and Portfolio Receipt",
+        "mime_type": null,
+        "size": null,
+        "url": null,
+        "file_or_folder": null,
+        "created_time": null,
+        "modified_time": "2026-10-09T02:19:57.408Z",
+        "parent_ids": null,
+        "drive_id": null,
+        "current_user_can_share": null,
+        "has_augmented_permissions": null,
+        "shared": null,
+        "permissions": null,
+        "source_visibility_status": "access_not_verified"
+      }
+    },
+    "nextOverlapFrom": "2026-10-09T02:19:56.316Z"
+  },
+  "limitations": [
+    "No provider writes, SQL, object/backup reads, live messages, transactions, provisioning or spending.",
+    "Subscription read denied with authentication error 10000. Plan/shared spend UNKNOWN; no retry or privilege workaround.",
+    "Three resource views contain Wedding resources, not Salon bindings; no global absence conclusion.",
+    "Baseline acceptance, independent review and commercial target remain open."
+  ],
+  "next": "Product-specific target/identity and shared cost evidence; exact-output baseline/target review; independent SALON-WVD-003 research work. Refresh heads/ownership before execution.",
+  "metrics": {
+    "inputTokens": null,
+    "outputTokens": null,
+    "escapedDefects": null,
+    "providerRepairAttempts": 0
+  }
+}
