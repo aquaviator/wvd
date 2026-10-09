@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-09T03:50:06.000Z",
+  "updatedAt": "2026-10-09T07:04:59.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-09T03:50:06.000Z",
-        "source": "Authenticated repository reads refreshed WVD141d0b18, Salonff1ea934 and all Wedding heads; Weddingddac99a4 remains takeover-owned. WVD push37874219907/PR37874224137 and Wedding37877229320 successful. Bounded shared discovery-receipt fix uses guarded development push, exact compare and readback; see tools/factory/evidence/required-discovery-receipts-20261009.json. No administration, shell credential or product-hosting grant inferred."
+        "at": "2026-10-09T07:04:59.000Z",
+        "source": "Refreshed all three repository branches and PR2 ownership. Wedding0f030101 CI37896424951/job113708710695 succeeded. Four source blobs matched Git identity; review/hash discrepancy and five exact-source synthetic restore checks recorded in tools/factory/evidence/wedding-recovery-receipts-20261009.json. WVD coordination uses guarded development-only push; no product or provider grant inferred."
       },
       "limits": [
         "Development branch only within current project authority.",

@@ -1,5 +1,30 @@
 # Controller continuation — 5 October 2026
 
+## Wedding recovery evidence — 9 October 2026
+
+Wedding's current controller advanced staging to `0f030101`; exact-source CI
+[37896424951](https://github.com/aquaviator/WVD-Wedding/actions/runs/37896424951)
+passed. Recovery tooling preserves pending deletions and terminal message history
+and verifies local object checkpoints. The candidate is still undeployed; no
+owner handback is recorded. Preserve these safeguards during later reconciliation.
+
+[Receipt reconciliation](../tools/factory/evidence/wedding-recovery-receipts-20261009.json)
+verified four source blobs. Two review hashes match CRLF working-copy bytes; the
+restore-helper review hash does not match committed LF or uniform CRLF bytes.
+Five focused synthetic tests pass on the exact committed helper/test pair. This
+does not repair or certify the earlier review's byte binding: the owning controller
+should reconcile that hash or record exact-source review before relying on it.
+Historical evidence is preserved; full product/hosted acceptance is not promoted.
+
+The product records browser initialization and unauthenticated local CLI blockers.
+Its new continuation rule limits unchanged capability retries to a relevant change
+or at most daily. Do not repeat founder prompts, duplicate workers, or download
+backup data here. Reported live source remains `4d89998f`; this task made no provider
+probe. R2 byte checkpoint and hosted sign-off remain open. Salon stays `ff1ea934`.
+Drive has no new handback; overlap remains `2026-10-09T02:19:56.316Z`. No product,
+release, send, payment, audience or spending authority changed.
+
+
 ## Required discovery receipts — 9 October 2026
 
 Fixed a reproduced shared-flow gap: workflow 1.1.0 could record completed delivery
