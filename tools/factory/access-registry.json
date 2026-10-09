@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "productId": "wvd",
-  "updatedAt": "2026-10-09T00:10:23.000Z",
+  "updatedAt": "2026-10-09T01:23:09.000Z",
   "scope": "Shared delivery system supporting Salon, Wedding and WVD; product identities remain separate",
   "connections": [
     {
@@ -39,8 +39,8 @@
       "discovery": "Discover current GitHub tools and read current branch before writing.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-09T00:10:23.000Z",
-        "source": "Fresh profile aquaviator (78605956), current branch heads and draft PRs verified. WVD base7225d536 push37861236930 and PR37861239720 successful; container37861239710 skipped. Salon5b518d4 and Wedding staging1bcdd42/integrationd44ae2a preserved. Shared factory discovery inheritance fix reuses existing code and is locally verified; exact scope in tools/factory/evidence/idea-discovery-inheritance-20261009.json. No provider/deployment access inferred."
+        "at": "2026-10-09T01:23:09.000Z",
+        "source": "Fresh aquaviator (78605956) profile, all branch heads and Salon draft PR1. Guarded non-forced Salon workflow/repair/receipt pushes ended at60620dd; implementation281d29d passed CI37869129262/job113622859107. Exact workflow and five receipt paths read back. WVD632af CI was already successful. Evidence: tools/factory/evidence/salon-full-git-baseline-20261009.json. No administration, shell credential or provider access inferred."
       },
       "limits": [
         "Development branch only within current project authority.",
@@ -225,8 +225,8 @@
       "discovery": "Discover current tool account selectors, verify exact profile and perform the authorised target read.",
       "evidence": {
         "status": "VERIFIED",
-        "at": "2026-10-09T00:10:23.000Z",
-        "source": "Fresh profile admin@wearvalleydigital.com. Direct-child modified-time scan since2026-10-08T22:39:55.913Z across WVD/Salon/Wedding/brand roots returned only previous Salon and Wedding START updates. Salon native revision matches previous receipt; current Wedding correction and continuation read. No writes or worker dispatch. Exact revisions in tools/factory/evidence/idea-discovery-inheritance-20261009.json; next overlapping scan from2026-10-08T23:44:19.564Z. Not recursive asset or service-account access proof."
+        "at": "2026-10-09T01:23:09.000Z",
+        "source": "Fresh admin@wearvalleydigital.com profile and direct-child revision/modification scan; Salon START and portfolio native receipts updated and read back with existing chips and effective hyperlink style retained. Wedding takeover untouched. Exact revisions in tools/factory/evidence/salon-full-git-baseline-20261009.json; next overlap2026-10-09T01:22:37.777Z. Not recursive asset or service-account access proof."
       },
       "limits": [
         "Profile identity does not establish target resource permissions.",
@@ -275,7 +275,7 @@
       "limits": [
         "Automation still lacks the administrator setup permissions, as observed 2026-10-06T14:29:27.437Z. The founder diagnostic at 14:26:15Z returned every requested project and service permission for the founder session and proved the missing WVD quota header caused the Firebase denial. The corrected one-time helper is ready; founder execution is pending. See docs/evidence/wvd-service-admin-quota-diagnostic-2026-10-06.json.",
         "The actual Firebase owner account is absent; owner remains null. Real Google login, enquiry capture and inbox delivery are not yet verified.",
-        "The configured identity, data namespace, zero-to-one-instance bounds and total additional £5/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
+        "The configured identity, data namespace, zero-to-one-instance bounds and total additional \u00a35/month hosting authority must be preserved. That allowance is not a hard technical cost cap.",
         "Subsequent service updates require the last reviewed source/image/configuration receipt. Public transport does not grant access to private APIs."
       ]
     },
@@ -299,6 +299,27 @@
         "No commercial target, customer identity, physical DB/R2 mapping, restore or cost proof.",
         "Sites financial-execution restrictions remain; no payment flow, audience edit or new spending.",
         "Existing controller-sites failure concerns Wedding source checkout and retains its original timestamp."
+      ]
+    },
+    {
+      "id": "ci-salon-baseline",
+      "plane": "ci",
+      "capabilities": [
+        "repository.read",
+        "baseline.verify"
+      ],
+      "identityRef": "aquaviator/WVD-Salon / GitHub Actions repository-scoped GITHUB_TOKEN",
+      "credentialRef": "github-actions:automatic-read-only-token",
+      "discovery": "Read .github/workflows/salon-baseline.yml, current branch/source, run and complete job metadata; use authenticated logs for exact results.",
+      "evidence": {
+        "status": "VERIFIED",
+        "at": "2026-10-09T01:23:09.000Z",
+        "source": "Source281d29d, run37869129262/job113622859107 PASS: clean full Git checkout including four PNGs, native install/typecheck/five tests/build, local empty D1 migrations and source integrity. permissions.contents=read, persist-credentials=false; no provider secret or deployment binding. GitHub artifact11589202434 reported digest retained; local ZIP download403/error1010, byte hash NOT verified. Product ci-reproduction.json retains source/database JSON from authenticated job logs."
+      },
+      "limits": [
+        "Only the existing Salon import/salon-foundation push workflow; twenty-minute standard Ubuntu job and one-day bounded JSON artifact retention.",
+        "CI checkout does not grant controller shell credentials, product hosting access or independent acceptance.",
+        "No remote D1, deployment, payment, message send, real data, billing change or paid runner. Cost/billing measurement remains UNKNOWN."
       ]
     }
   ]

@@ -1,5 +1,18 @@
 # WVD development checkpoint
 
+## Salon full Git baseline — 9 October 2026
+
+Salon native baseline `281d29d` passed clean-checkout CI run37869129262, including
+all four historic PNGs, exact import tree, locked install, typecheck, five tests,
+build and empty local D1 migrations/integrity. A workflow-only metadata-file
+selection error was observed and repaired; application source is unchanged.
+Receipt `60620dd` keeps S4/SALON-AT-028 acceptance held for distinct review.
+Both product Drive receipts and the scoped CI access registry entry are current.
+[Exact evidence and artifact-download limitation](../tools/factory/evidence/salon-full-git-baseline-20261009.json).
+Next: independent exact-output baseline review; target/research work remains
+separate. Wedding's takeover must hand back before branch reconciliation. No
+release, send, payment, real-data, audience or additional-spend authority changed.
+
 ## Shared discovery inheritance — 9 October 2026
 
 Idea plans now inherit the existing seven public-search/AI-discovery checks through

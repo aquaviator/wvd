@@ -1,5 +1,35 @@
 # Controller continuation — 5 October 2026
 
+## Latest Salon baseline — 9 October 2026
+
+Full Git reproduction now passes through the existing repository-scoped CI route.
+Salon implementation `281d29d6474f0de95441b13d542d8ea8ad6d87bd`, run
+[37869129262](https://github.com/aquaviator/WVD-Salon/actions/runs/37869129262),
+job `113622859107`: clean checkout, exact import tree, four historical PNG hashes,
+locked install, TypeScript, five domain tests, native build, both empty local D1
+migrations, thirteen empty application tables and no foreign-key violations.
+The first run exposed only a new workflow assertion that counted Wrangler's
+metadata database; the scoped repair excludes that file and retains all assertions.
+
+Product receipt `60620dd57834974ef54b764772c323fe9b7fbf63` preserves exact evidence
+and the ten-item overlay. [CI supplement](https://github.com/aquaviator/WVD-Salon/blob/60620dd57834974ef54b764772c323fe9b7fbf63/handoff/wvd/results/SALON-WVD-001/ci-reproduction.md).
+The UTF-8-only controller snapshot no longer blocks full-source reproduction in
+CI. Independent review remains NOT_RUN; S4 and full SALON-AT-028 acceptance stay
+held. No application/schema/lockfile/immutable contract changes, hosted deployment
+or release. PR1 remains draft. Target and commercial decisions remain open.
+
+Artifact metadata is verified through GitHub, but local ZIP materialization
+returned 403/error1010. Its byte hash is not certified; source/database JSON is
+retained from authenticated job logs. Native Drive START and portfolio receipts
+were updated and verified. [Coordination/access evidence](../tools/factory/evidence/salon-full-git-baseline-20261009.json).
+Next Drive scan overlaps `2026-10-09T01:22:37.777Z`; compare revisions/content.
+
+Next: distinct exact-output review of the original report plus this supplement,
+then criterion-bound controller acceptance. Do not rerun this unchanged baseline
+for timestamp freshness. Wedding staging takeover remains recorded; refresh its
+owner handback before reconciliation and do not duplicate its workers. Product
+release, Sites payment, live-send, customer-data and shared spending limits remain.
+
 ## Latest shared-flow fix — 9 October 2026
 
 The idea-to-deployment planner now reuses the existing public-discovery builder.
